@@ -12,7 +12,7 @@
         "pp_nodes_list := tlist(pp_nodes, 'separator') | ε",
         "pp_directive := if_section | control_line",
         "if_section := if_part + list(elseif_part) + else_part + 'endif' -> IfSection( if=$0, elif=$1, else=$2 )",
-        "if_part := 'if' + _expr + pp_nodes_list -> If( expr=$1, nodes=$1 )",
+        "if_part := 'if' + _expr + pp_nodes_list -> If( expr=$1, nodes=$2 )",
         "if_part := 'ifdef' + 'identifier' + pp_nodes_list -> IfDef( ident=$1, nodes=$2 )",
         "if_part := 'ifndef' + 'identifier' + pp_nodes_list -> IfNDef( ident=$1, nodes=$2 )",
         "elseif_part := 'elif' + _expr + pp_nodes_list -> ElseIf( expr=$1, nodes=$2 )",
@@ -20,11 +20,9 @@
         "control_line := include_line | define_line | pragma_line | error_line | undef_line | line_line",
         "include_line := 'include' + include_type -> Include( file=$1 )",
         "include_type := 'header_global' | 'header_local' | 'identifier'",
-        "define_line := 'define' + 'identifier' + define_line_body -> Define( ident=$1, body=$2 )",
-        "define_line_body := 'lparen_special' + list('identifier', 'comma') + 'rparen' + replacement_list -> FunctionDecl(params=$1, tokens=$3)",
-        "define_line_body := replacement_list",
-        "define_line_body := ε",
-        "replacement_list := list(pp_tokens) -> ReplacementList( tokens=$0 )",
+        "define_line := 'define' + 'identifier' + replacement_list -> Define( ident=$1, body=$2 )",
+        "define_line := 'define_function' + 'identifier' + 'lparen' + list('identifier', 'comma') + 'rparen' + replacement_list -> DefineFunction( ident=$1, params=$3, body=$5 )",
+        "replacement_list := list(pp_tokens) -> ReplacementList( tokens=$0 ) | ε",
         "pragma_line := 'pragma' + list(pp_tokens) -> Pragma( tokens=$1 )",
         "error_line := 'error' + list(pp_tokens) -> Error( tokens=$1 )",
         "undef_line := 'undef' + 'identifier' -> Undef( ident=$1 )",
@@ -72,7 +70,7 @@
         "_expr := _expr + 'bitxor' + _expr -> BitXOR( left=$0, right=$2 )",
         "_expr := _expr + ^'questionmark' + _expr + 'colon' + _expr -> TernaryOperator( cond=$0, true=$2, false=$4 )",
         "_expr := 'identifier' | 'pp_number' | 'string_literal' | 'character_constant'",
-        "_expr := 'lparen' + _expr + 'rparen'"
+        "_expr := 'lparen' + _expr + 'rparen' -> $1"
       ]
     }
   ]

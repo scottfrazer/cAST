@@ -52,8 +52,14 @@ class cPreprocessingFile:
     self.cST.replace('\\\n', '')
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     self.cPPL.setString(self.cST)
-    ast = cPPP.parse(self.cPPL, 'pp_file').toAst()
-    e = cPreprocessingEvaluator()
+    try:
+      parsetree = cPPP.parse(self.cPPL, 'pp_file')
+    except Exception as e:
+      print(e)
+      print(e.tracer)
+      sys.exit(-1)
+    ast = parsetree.toAst()
+    e = cPreprocessingEvaluator(cPPP)
     s = e.eval(ast)
     print(s)
     sys.exit(-1)
@@ -66,22 +72,58 @@ class cPreprocessingFile:
     # Phase 4: Expand all #include tags with cPreprocessingFile.process, recursively.
     return buf
   
-
+class cPreprocessorFunction:
+  def __init__(self, params, body):
+    self.__dict__.update(locals())
+  def run(self, params):
+    if len(params) != len(self.params):
+      raise Exception('Error: too few parameters to function')
+    values = {self.params[i].lower(): params[i] for i in range(len(params))}
+    nodes = []
+    for node in self.body.getAttr('tokens'):
+      if node.terminal_str.lower() == 'identifier' and node.getString().lower() in values:
+        nodes.append(values[node.getString().lower()])
+      else:
+        nodes.append(node)
+    return nodes
+  def __str__(self):
+    return '[function params=%s body=%s]' % (', '.join(self.params), str(self.body))
+  
 class cPreprocessingEvaluator:
+  def __init__(self, cPPP):
+    self.__dict__.update(locals())
+  
   def eval( self, cPPAST ):
     self.symbols = dict()
     a = self._eval(cPPAST)
-    print(self.symbols)
     return a
+  
+  def newlines(self, number):
+    return ''.join(['\n' for i in range(number)])
+  
   def _eval( self, cPPAST ):
     buf = ''
     if not cPPAST:
       return buf
-    elif isinstance(cPPAST, Token):
+    elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'identifier':
+      if cPPAST.getString() not in self.symbols:
+        raise Exception('Unknown Variable %s' (cPPAST.getString()))
+      x = self.symbols[cPPAST.getString()]
+      # TODO: there has got to be a better way to do this!
+      self.cPPP.iterator = iter(x)
+      self.cPPP.sym = self.cPPP.getsym()
+      ast = self.cPPP.expr().toAst()
+      return self._eval(ast)
+    elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
       string = cPPAST.getString()
       for key, replacement in self.symbols.items():
-        string = string.replace(key, replacement)
+        if isinstance(replacement, cPreprocessorFunction):
+          pass
+        else:
+          pass
       return string + '\n'
+    elif isinstance(cPPAST, Token):
+      return cPPAST
     elif isinstance(cPPAST, list):
       if cPPAST and len(cPPAST):
         for node in cPPAST:
@@ -110,20 +152,31 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'If':
         expr = cPPAST.getAttr('expr')
         nodes = cPPAST.getAttr('nodes')
-        return self._eval(nodes)
+        if self._eval(expr) != 0:
+          return self._eval(nodes)
+        else:
+          return self.newlines(self.countSourceLines(nodes))
       elif cPPAST.name == 'IfDef':
         ident = cPPAST.getAttr('ident').getString()
         nodes = cPPAST.getAttr('nodes')
         if ident in self.symbols:
           return self._eval(nodes)
+        else:
+          return self.newlines(self.countSourceLines(nodes))
       elif cPPAST.name == 'IfNDef':
-        ident = cPPAST.getAttr('ident')
+        ident = cPPAST.getAttr('ident').getString()
         nodes = cPPAST.getAttr('nodes')
-        return self._eval(nodes)
+        if ident in self.symbols:
+          return self._eval(nodes)
+        else:
+          return self.newlines(self.countSourceLines(nodes))
       elif cPPAST.name == 'ElseIf':
         expr = cPPAST.getAttr('expr')
         nodes = cPPAST.getAttr('nodes')
-        return self._eval(nodes)
+        if self._eval(expr) != 0:
+          return self._eval(nodes)
+        else:
+          return self.newlines(self.countSourceLines(nodes))
       elif cPPAST.name == 'Else':
         nodes = cPPAST.getAttr('nodes')
         return self._eval(nodes)
@@ -133,7 +186,13 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'Define':
         ident = cPPAST.getAttr('ident')
         body = cPPAST.getAttr('body')
-        self.symbols[ident.getString()] = str(int(body[0].getString())) if body else ''
+        self.symbols[ident.getString()] = self._eval(body)
+        return '\n'
+      elif cPPAST.name == 'DefineFunction':
+        ident = cPPAST.getAttr('ident')
+        params = cPPAST.getAttr('params')
+        body = cPPAST.getAttr('body')
+        self.symbols[ident.getString()] = cPreprocessorFunction( [p.getString() for p in params], body )
         return '\n'
       elif cPPAST.name == 'Pragma':
         cPPAST.getAttr('tokens')
@@ -149,9 +208,83 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'Line':
         cPPAST.getAttr('tokens')
         return '\n'
+      elif cPPAST.name == 'ReplacementList':
+        tokens = cPPAST.getAttr('tokens')
+        buf = ''
+        advance = 0
+        newTokens = []
+        for (index, token) in enumerate(tokens):
+          if advance > 0:
+            advance -= 1
+            continue
+          if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
+            replacement = self.symbols[token.getString()]
+            if isinstance(replacement, cPreprocessorFunction):
+              advance = 2 # skip the identifier and lparen
+              params = []
+              for token in tokens[index + advance:]:
+                if token.getString() == ')':
+                  break
+                if token.getString() != ',':
+                  params.append(token)
+                advance += 1
+              result = replacement.run(params)
+              newTokens.extend(result)
+            else:
+              newTokens.extend( self.symbols[token.getString()] )
+          else:
+            newTokens.append(token)
+        return newTokens
+      elif cPPAST.name == 'FuncCall':
+        name = cPPAST.getAttr('name')
+        params = cPPAST.getAttr('params')
+      elif cPPAST.name == 'Add':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) + self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'Sub':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) - self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'LessThan':
+        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) < self.ppnumber(self._eval(cPPAST.getAttr('right'))))
+      elif cPPAST.name == 'GreaterThan':
+        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) > self.ppnumber(self._eval(cPPAST.getAttr('right'))))
+      elif cPPAST.name == 'LessThanEq':
+        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) <= self.ppnumber(self._eval(cPPAST.getAttr('right'))))
+      elif cPPAST.name == 'GreaterThanEq':
+        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) >= self.ppnumber(self._eval(cPPAST.getAttr('right'))))
+      elif cPPAST.name == 'Mul':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) * self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'Div':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) / self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'Mod':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) % self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'Equals':
+        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) == self.ppnumber(self._eval(cPPAST.getAttr('right'))))
+      elif cPPAST.name == 'NotEquals':
+        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) != self.ppnumber(self._eval(cPPAST.getAttr('right'))))
+      elif cPPAST.name == 'Comma':
+        self._eval(left)
+        return self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'LeftShift':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) << self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'RightShift':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) >> self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'BitAND':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) & self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'BitOR':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) | self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'BitXOR':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) ^ self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'TernaryOperator':
+        cond = cPPAST.getAttr('cond')
+        true = cPPAST.getAttr('true')
+        false = cPPAST.getAttr('false')
       else:
-        raise Exception('Bad AST Node')
+        raise Exception('Bad AST Node', str(cPPAST))
     return buf
+  
+  def ppnumber(self, element):
+    if isinstance(element, Token):
+      return int(element.getString())
+    return int(element)
   
   def countSourceLines(self, cPPAST):
     lines = 0
@@ -210,6 +343,20 @@ class PatternMatchingLexer(Lexer):
     self.setString(string)
     self.setRegex(regex)
     self.setTerminals(terminals)
+    self.cache = []
+  
+  def addToken(self, token):
+    self.cache.append(token)
+  
+  def hasToken(self):
+    return len(self.cache) > 0
+  
+  def nextToken(self):
+    if not self.hasToken():
+      return None
+    token = self.cache[0]
+    self.cache = self.cache[1:]
+    return token
   
   def setString(self, string):
     self.string = string
@@ -229,12 +376,13 @@ class PatternMatchingLexer(Lexer):
     activity = True
     while activity:
       activity = False
-      for (regex, terminal, function) in self.regex:
+      for (regex, terminal, process_func, format_func) in self.regex:
         match = regex.match(self.string)
         if match:
           activity = True
-          if terminal != None:
-            token = Token(self.terminals[terminal], terminal, match.group(0), self.lineno, self.colno)
+          lineno = self.lineno
+          colno = self.colno
+          
           self.advance( len(match.group(0)) )
           newlines = len(list(filter(lambda x: x == '\n', match.group(0))))
           self.lineno += newlines
@@ -242,14 +390,23 @@ class PatternMatchingLexer(Lexer):
             self.colno = len(match.group(0).split('\n')[-1])
           else:
             self.colno += len(match.group(0))
-          if terminal != None:
-            return token
+
+          if process_func:
+            tokens = process_func(self.string)
+            for token in tokens:
+              self.addToken(Token(self.terminals[token], token, match.group(0), lineno, colno))
+            return self.nextToken()
+          else:
+            if terminal != None:
+              return Token(self.terminals[terminal], terminal, match.group(0), lineno, colno)
     return None
   
   def __iter__(self):
     return self
   
   def __next__(self):
+    if self.hasToken():
+      return self.nextToken()
     if len(self.string.strip()) <= 0:
       raise StopIteration()
     token = self.nextMatch()
@@ -258,77 +415,75 @@ class PatternMatchingLexer(Lexer):
     return token
   
 
+def disambiguateDefine( string ):
+  identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
+  if re.match(r'[ \t]+%s\(' % (identifier_regex), string):
+    return ['DEFINE_FUNCTION']
+  else:
+    return ['DEFINE']
+
+
 class cPreprocessingLexer(Lexer):
+  
   regex = [
-    (re.compile(r'#[ \t]*include'), 'INCLUDE', False),
-    (re.compile(r'#[ \t]*define'), 'DEFINE', False),
-    (re.compile(r'#[ \t]*ifdef'), 'IFDEF', False),
-    (re.compile(r'#[ \t]*ifndef'), 'IFNDEF', False),
-    (re.compile(r'#[ \t]*if'), 'IF', False),
-    (re.compile(r'#[ \t]*elif'), 'ELIF', False),
-    (re.compile(r'#[ \t]*pragma'), 'PRAGMA', False),
-    (re.compile(r'#[ \t]*error'), 'ERROR', False),
-    (re.compile(r'#[ \t]*line'), 'LINE', False),
-    (re.compile(r'#[ \t]*undef'), 'UNDEF', False),
-    (re.compile(r'#[ \t]*endif'), 'ENDIF', False),
-    (re.compile(r'[<][^\n>]+[>]'), 'HEADER_GLOBAL', False),
-    (re.compile(r'["][^\n"]+["]'), 'HEADER_LOCAL', False),
-    (re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None),
-    (re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None),
-    (re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None),
-    (re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None),
-    (re.compile(r'\((?<![ \t])'), 'LPAREN_SPECIAL', False),
+    ( re.compile(r'#[ \t]*include'), 'INCLUDE', None, None ),
+    ( re.compile(r'#[ \t]*define'), None, disambiguateDefine, None ),
+    ( re.compile(r'#[ \t]*ifdef'), 'IFDEF', None, None ),
+    ( re.compile(r'#[ \t]*ifndef'), 'IFNDEF', None, None ),
+    ( re.compile(r'#[ \t]*if'), 'IF', None, None ),
+    ( re.compile(r'#[ \t]*elif'), 'ELIF', None, None ),
+    ( re.compile(r'#[ \t]*pragma'), 'PRAGMA', None, None ),
+    ( re.compile(r'#[ \t]*error'), 'ERROR', None, None ),
+    ( re.compile(r'#[ \t]*line'), 'LINE', None, None ),
+    ( re.compile(r'#[ \t]*undef'), 'UNDEF', None, None ),
+    ( re.compile(r'#[ \t]*endif'), 'ENDIF', None, None ),
+    ( re.compile(r'[<][^\n>]+[>]'), 'HEADER_GLOBAL', None, None ),
+    ( re.compile(r'["][^\n"]+["]'), 'HEADER_LOCAL', None, None ),
+    ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None, None ),
+    ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
+    ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
+    ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None, None ),
     
-    ( re.compile(r'\['), 'LSQUARE', None ),
-    ( re.compile(r'\]'), 'RSQUARE', None ),
-    ( re.compile(r'\('), 'LPAREN', None ),
-    ( re.compile(r'\)'), 'RPAREN', None ),
-    ( re.compile(r'\{'), 'LBRACE', None ),
-    ( re.compile(r'\}'), 'RBRACE', None ),
-    ( re.compile(r'\.'), 'DOT', None ),
-    ( re.compile(r'->'), 'ARROW', None ),
-    ( re.compile(r'\+\+'), 'INCR', None ),
-    ( re.compile(r'--'), 'DECR', None ),
-    ( re.compile(r'&(?!&)'), 'BITAND', None ),
-    ( re.compile(r'\*(?!=)'), 'MUL', None ),
-    ( re.compile(r'\+(?!=)'), 'ADD', None ),
-    ( re.compile(r'-(?!=)'), 'SUB', None ),
-    ( re.compile(r'~'), 'TILDE', None ),
-    ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None ),
-    ( re.compile(r'/(?!=)'), 'DIV', None ),
-    ( re.compile(r'%(?!=)'), 'MOD', None ),
-    ( re.compile(r'<<(?!=)'), 'LSHIFT', None ),
-    ( re.compile(r'>>(?!=)'), 'RSHIFT', None ),
-    ( re.compile(r'<(?!=)'), 'LT', None ),
-    ( re.compile(r'>(?!=)'), 'GT', None ),
-    ( re.compile(r'<='), 'LTEQ', None ),
-    ( re.compile(r'>='), 'GTEQ', None ),
-    ( re.compile(r'=='), 'EQ', None ),
-    ( re.compile(r'!='), 'NEQ', None ),
-    ( re.compile(r'\^(?!=)'), 'BITXOR', None ),
-    ( re.compile(r'\|(?!\|)'), 'BITOR', None ),
-    ( re.compile(r'&&'), 'AND', None ),
-    ( re.compile(r'\|\|'), 'OR', None ),
-    ( re.compile(r'\?'), 'QUESTIONMARK', None ),
-    ( re.compile(r':'), 'COLON', None ),
-    ( re.compile(r';'), 'SEMI', None ),
-    ( re.compile(r'\.\.\.'), 'ELIPSIS', None ),
-    ( re.compile(r'=(?!=)'), 'ASSIGN', None ),
-    ( re.compile(r'\*='), 'MULEQ', None ),
-    ( re.compile(r'/='), 'DIVEQ', None ),
-    ( re.compile(r'%='), 'MODEQ', None ),
-    ( re.compile(r'\+='), 'ADDEQ', None ),
-    ( re.compile(r'-='), 'SUBEQ', None ),
-    ( re.compile(r'<<='), 'LSHIFTEQ', None ),
-    ( re.compile(r'>>='), 'RSHIFTEQ', None ),
-    ( re.compile(r'&='), 'BITANDEQ', None ),
-    ( re.compile(r'\^='), 'BITXOREQ', None ),
-    ( re.compile(r'\|='), 'BITOREQ', None ),
-    ( re.compile(r','), 'COMMA', None ),
-    ( re.compile(r'##'), 'POUNDPOUND', None ),
-    ( re.compile(r'#(?!#)'), 'POUND', None ),
-    ( re.compile(r'[ \t]+', 0), None, None )
+    ( re.compile(r'\['), 'LSQUARE', None, None ),
+    ( re.compile(r'\]'), 'RSQUARE', None, None ),
+    ( re.compile(r'\('), 'LPAREN', None, None ),
+    ( re.compile(r'\)'), 'RPAREN', None, None ),
+    ( re.compile(r'\{'), 'LBRACE', None, None ),
+    ( re.compile(r'\}'), 'RBRACE', None, None ),
+    ( re.compile(r'\.'), 'DOT', None, None ),
+    ( re.compile(r'->'), 'ARROW', None, None ),
+    ( re.compile(r'\+\+'), 'INCR', None, None ),
+    ( re.compile(r'--'), 'DECR', None, None ),
+    ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
+    ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
+    ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
+    ( re.compile(r'-(?!=)'), 'SUB', None, None ),
+    ( re.compile(r'~'), 'TILDE', None, None ),
+    ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
+    ( re.compile(r'/(?!=)'), 'DIV', None, None ),
+    ( re.compile(r'%(?!=)'), 'MOD', None, None ),
+    ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
+    ( re.compile(r'>>(?!=)'), 'RSHIFT', None, None ),
+    ( re.compile(r'<(?!=)'), 'LT', None, None ),
+    ( re.compile(r'>(?!=)'), 'GT', None, None ),
+    ( re.compile(r'<='), 'LTEQ', None, None ),
+    ( re.compile(r'>='), 'GTEQ', None, None ),
+    ( re.compile(r'=='), 'EQ', None, None ),
+    ( re.compile(r'!='), 'NEQ', None, None ),
+    ( re.compile(r'\^(?!=)'), 'BITXOR', None, None ),
+    ( re.compile(r'\|(?!\|)'), 'BITOR', None, None ),
+    ( re.compile(r'&&'), 'AND', None, None ),
+    ( re.compile(r'\|\|'), 'OR', None, None ),
+    ( re.compile(r'\?'), 'QUESTIONMARK', None, None ),
+    ( re.compile(r':'), 'COLON', None, None ),
+    ( re.compile(r';'), 'SEMI', None, None ),
+    ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
+    ( re.compile(r','), 'COMMA', None, None ),
+    ( re.compile(r'##'), 'POUNDPOUND', None, None ),
+    ( re.compile(r'#(?!#)'), 'POUND', None, None ),
+    ( re.compile(r'[ \t]+', 0), None, None, None )
   ]
+
   def __init__(self, patternMatchingLexer, terminals, cST = ''):
     self.__dict__.update(locals())
     self.setString(cST)
@@ -382,7 +537,7 @@ class cPreprocessingLexer(Lexer):
         self.patternMatchingLexer.setString( line )
         for cPPT in self.patternMatchingLexer:
           self._addToken(cPPT)
-          if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'PRAGMA', 'ERROR', 'LINE', 'ENDIF', 'UNDEF']:
+          if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'LINE', 'ENDIF', 'UNDEF']:
             emit_separator = True
         lines += 1
         if self._hasToken():
@@ -417,121 +572,121 @@ class cLexer(PatternMatchingLexer):
     self.setString(string)
     self.setRegex ([
       # Comments
-      ( re.compile(r'/\*.*?\*/', re.S), None, None ),
-      ( re.compile(r'//.*', 0), None, None ),
+      ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
+      ( re.compile(r'//.*', 0), None, None, None ),
 
       # Keywords
-      ( re.compile(r'auto(?=\s)'), 'AUTO', None ),
-      ( re.compile(r'_Bool(?=\s)'), 'BOOL', None ),
-      ( re.compile(r'break(?=\s)'), 'BREAK', None ),
-      ( re.compile(r'case(?=\s)'), 'CASE', None ),
-      ( re.compile(r'char(?=\s)'), 'CHAR', None ),
-      ( re.compile(r'_Complex(?=\s)'), 'COMPLEX', None ),
-      ( re.compile(r'const(?=\s)'), 'CONST', None ),
-      ( re.compile(r'continue(?=\s)'), 'CONTINUE', None ),
-      ( re.compile(r'default(?=\s)'), 'DEFAULT', None ),
-      ( re.compile(r'do(?=\s)'), 'DO', None ),
-      ( re.compile(r'double(?=\s)'), 'DOUBLE', None ),
-      ( re.compile(r'else(?=\s)'), 'ELSE', None ),
-      ( re.compile(r'enum(?=\s)'), 'ENUM', None ),
-      ( re.compile(r'extern(?=\s)'), 'EXTERN', None ),
-      ( re.compile(r'float(?=\s)'), 'FLOAT', None ),
-      ( re.compile(r'for(?=\s)'), 'FOR', None ),
-      ( re.compile(r'goto(?=\s)'), 'GOTO', None ),
-      ( re.compile(r'if(?=\s)'), 'IF', None ),
-      ( re.compile(r'_Imaginary(?=\s)'), 'IMAGINARY', None ),
-      ( re.compile(r'inline(?=\s)'), 'INLINE', None ),
-      ( re.compile(r'int(?=\s)'), 'INT', None ),
-      ( re.compile(r'long(?=\s)'), 'LONG', None ),
-      ( re.compile(r'register(?=\s)'), 'REGISTER', None ),
-      ( re.compile(r'restrict(?=\s)'), 'RESTRICT', None ),
-      ( re.compile(r'return(?=\s)'), 'RETURN', None ),
-      ( re.compile(r'short(?=\s)'), 'SHORT', None ),
-      ( re.compile(r'signed(?=\s)'), 'SIGNED', None ),
-      ( re.compile(r'sizeof(?=\s)'), 'SIZEOF', None ),
-      ( re.compile(r'static(?=\s)'), 'STATIC', None ),
-      ( re.compile(r'struct(?=\s)'), 'STRUCT', None ),
-      ( re.compile(r'switch(?=\s)'), 'SWITCH', None ),
-      ( re.compile(r'typedef(?=\s)'), 'TYPEDEF', None ),
-      ( re.compile(r'union(?=\s)'), 'UNION', None ),
-      ( re.compile(r'unsigned(?=\s)'), 'UNSIGNED', None ),
-      ( re.compile(r'void(?=\s)'), 'VOID', None ),
-      ( re.compile(r'volatile(?=\s)'), 'VOLATILE', None ),
-      ( re.compile(r'while(?=\s)'), 'WHILE', None ),
+      ( re.compile(r'auto(?=\s)'), 'AUTO', None, None ),
+      ( re.compile(r'_Bool(?=\s)'), 'BOOL', None, None ),
+      ( re.compile(r'break(?=\s)'), 'BREAK', None, None ),
+      ( re.compile(r'case(?=\s)'), 'CASE', None, None ),
+      ( re.compile(r'char(?=\s)'), 'CHAR', None, None ),
+      ( re.compile(r'_Complex(?=\s)'), 'COMPLEX', None, None ),
+      ( re.compile(r'const(?=\s)'), 'CONST', None, None ),
+      ( re.compile(r'continue(?=\s)'), 'CONTINUE', None, None ),
+      ( re.compile(r'default(?=\s)'), 'DEFAULT', None, None ),
+      ( re.compile(r'do(?=\s)'), 'DO', None, None ),
+      ( re.compile(r'double(?=\s)'), 'DOUBLE', None, None ),
+      ( re.compile(r'else(?=\s)'), 'ELSE', None, None ),
+      ( re.compile(r'enum(?=\s)'), 'ENUM', None, None ),
+      ( re.compile(r'extern(?=\s)'), 'EXTERN', None, None ),
+      ( re.compile(r'float(?=\s)'), 'FLOAT', None, None ),
+      ( re.compile(r'for(?=\s)'), 'FOR', None, None ),
+      ( re.compile(r'goto(?=\s)'), 'GOTO', None, None ),
+      ( re.compile(r'if(?=\s)'), 'IF', None, None ),
+      ( re.compile(r'_Imaginary(?=\s)'), 'IMAGINARY', None, None ),
+      ( re.compile(r'inline(?=\s)'), 'INLINE', None, None ),
+      ( re.compile(r'int(?=\s)'), 'INT', None, None ),
+      ( re.compile(r'long(?=\s)'), 'LONG', None, None ),
+      ( re.compile(r'register(?=\s)'), 'REGISTER', None, None ),
+      ( re.compile(r'restrict(?=\s)'), 'RESTRICT', None, None ),
+      ( re.compile(r'return(?=\s)'), 'RETURN', None, None ),
+      ( re.compile(r'short(?=\s)'), 'SHORT', None, None ),
+      ( re.compile(r'signed(?=\s)'), 'SIGNED', None, None ),
+      ( re.compile(r'sizeof(?=\s)'), 'SIZEOF', None, None ),
+      ( re.compile(r'static(?=\s)'), 'STATIC', None, None ),
+      ( re.compile(r'struct(?=\s)'), 'STRUCT', None, None ),
+      ( re.compile(r'switch(?=\s)'), 'SWITCH', None, None ),
+      ( re.compile(r'typedef(?=\s)'), 'TYPEDEF', None, None ),
+      ( re.compile(r'union(?=\s)'), 'UNION', None, None ),
+      ( re.compile(r'unsigned(?=\s)'), 'UNSIGNED', None, None ),
+      ( re.compile(r'void(?=\s)'), 'VOID', None, None ),
+      ( re.compile(r'volatile(?=\s)'), 'VOLATILE', None, None ),
+      ( re.compile(r'while(?=\s)'), 'WHILE', None, None ),
 
       # Identifiers
-      ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None ),
+      ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
 
       # Unicode Characters
-      ( re.compile(r'\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?'), 'UNIVERSAL_CHARACTER_NAME', None ),
+      ( re.compile(r'\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?'), 'UNIVERSAL_CHARACTER_NAME', None, None ),
 
       # Digraphs
-      ( re.compile(r'<%'), 'LBRACE', None ),
-      ( re.compile(r'%>'), 'RBRACE', None ),
-      ( re.compile(r'<:'), 'LSQUARE', None ),
-      ( re.compile(r':>'), 'RSQUARE', None ),
-      ( re.compile(r'%:%:'), 'POUNDPOUND', None ),
-      ( re.compile(r'%:'), 'POUND', None ),
+      ( re.compile(r'<%'), 'LBRACE', None, None ),
+      ( re.compile(r'%>'), 'RBRACE', None, None ),
+      ( re.compile(r'<:'), 'LSQUARE', None, None ),
+      ( re.compile(r':>'), 'RSQUARE', None, None ),
+      ( re.compile(r'%:%:'), 'POUNDPOUND', None, None ),
+      ( re.compile(r'%:'), 'POUND', None, None ),
 
       # Punctuators
-      ( re.compile(r'\['), 'LSQUARE', None ),
-      ( re.compile(r'\]'), 'RSQUARE', None ),
-      ( re.compile(r'\('), 'LPAREN', None ),
-      ( re.compile(r'\)'), 'RPAREN', None ),
-      ( re.compile(r'\{'), 'LBRACE', None ),
-      ( re.compile(r'\}'), 'RBRACE', None ),
-      ( re.compile(r'\.'), 'DOT', None ),
-      ( re.compile(r'->'), 'ARROW', None ),
-      ( re.compile(r'\+\+'), 'INCR', None ),
-      ( re.compile(r'--'), 'DECR', None ),
-      ( re.compile(r'&(?!&)'), 'BITAND', None ),
-      ( re.compile(r'\*(?!=)'), 'MUL', None ),
-      ( re.compile(r'\+(?!=)'), 'ADD', None ),
-      ( re.compile(r'-(?!=)'), 'SUB', None ),
-      ( re.compile(r'~'), 'TILDE', None ),
-      ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None ),
-      ( re.compile(r'/(?!=)'), 'DIV', None ),
-      ( re.compile(r'%(?!=)'), 'MOD', None ),
-      ( re.compile(r'<<(?!=)'), 'LSHIFT', None ),
-      ( re.compile(r'>>(?!=)'), 'RSHIFT', None ),
-      ( re.compile(r'<(?!=)'), 'LT', None ),
-      ( re.compile(r'>(?!=)'), 'GT', None ),
-      ( re.compile(r'<='), 'LTEQ', None ),
-      ( re.compile(r'>='), 'GTEQ', None ),
-      ( re.compile(r'=='), 'EQ', None ),
-      ( re.compile(r'!='), 'NEQ', None ),
-      ( re.compile(r'\^(?!=)'), 'BITXOR', None ),
-      ( re.compile(r'\|(?!\|)'), 'BITOR', None ),
-      ( re.compile(r'&&'), 'AND', None ),
-      ( re.compile(r'\|\|'), 'OR', None ),
-      ( re.compile(r'\?'), 'QUESTIONMARK', None ),
-      ( re.compile(r':'), 'COLON', None ),
-      ( re.compile(r';'), 'SEMI', None ),
-      ( re.compile(r'\.\.\.'), 'ELIPSIS', None ),
-      ( re.compile(r'=(?!=)'), 'ASSIGN', None ),
-      ( re.compile(r'\*='), 'MULEQ', None ),
-      ( re.compile(r'/='), 'DIVEQ', None ),
-      ( re.compile(r'%='), 'MODEQ', None ),
-      ( re.compile(r'\+='), 'ADDEQ', None ),
-      ( re.compile(r'-='), 'SUBEQ', None ),
-      ( re.compile(r'<<='), 'LSHIFTEQ', None ),
-      ( re.compile(r'>>='), 'RSHIFTEQ', None ),
-      ( re.compile(r'&='), 'BITANDEQ', None ),
-      ( re.compile(r'\^='), 'BITXOREQ', None ),
-      ( re.compile(r'\|='), 'BITOREQ', None ),
-      ( re.compile(r','), 'COMMA', None ),
-      ( re.compile(r'##'), 'POUNDPOUND', None ),
-      ( re.compile(r'#(?!#)'), 'POUND', None ),
+      ( re.compile(r'\['), 'LSQUARE', None, None ),
+      ( re.compile(r'\]'), 'RSQUARE', None, None ),
+      ( re.compile(r'\('), 'LPAREN', None, None ),
+      ( re.compile(r'\)'), 'RPAREN', None, None ),
+      ( re.compile(r'\{'), 'LBRACE', None, None ),
+      ( re.compile(r'\}'), 'RBRACE', None, None ),
+      ( re.compile(r'\.'), 'DOT', None, None ),
+      ( re.compile(r'->'), 'ARROW', None, None ),
+      ( re.compile(r'\+\+'), 'INCR', None, None ),
+      ( re.compile(r'--'), 'DECR', None, None ),
+      ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
+      ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
+      ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
+      ( re.compile(r'-(?!=)'), 'SUB', None, None ),
+      ( re.compile(r'~'), 'TILDE', None, None ),
+      ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
+      ( re.compile(r'/(?!=)'), 'DIV', None, None ),
+      ( re.compile(r'%(?!=)'), 'MOD', None, None ),
+      ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
+      ( re.compile(r'>>(?!=)'), 'RSHIFT', None, None ),
+      ( re.compile(r'<(?!=)'), 'LT', None, None ),
+      ( re.compile(r'>(?!=)'), 'GT', None, None ),
+      ( re.compile(r'<='), 'LTEQ', None, None ),
+      ( re.compile(r'>='), 'GTEQ', None, None ),
+      ( re.compile(r'=='), 'EQ', None, None ),
+      ( re.compile(r'!='), 'NEQ', None, None ),
+      ( re.compile(r'\^(?!=)'), 'BITXOR', None, None ),
+      ( re.compile(r'\|(?!\|)'), 'BITOR', None, None ),
+      ( re.compile(r'&&'), 'AND', None, None ),
+      ( re.compile(r'\|\|'), 'OR', None, None ),
+      ( re.compile(r'\?'), 'QUESTIONMARK', None, None ),
+      ( re.compile(r':'), 'COLON', None, None ),
+      ( re.compile(r';'), 'SEMI', None, None ),
+      ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
+      ( re.compile(r'=(?!=)'), 'ASSIGN', None, None ),
+      ( re.compile(r'\*='), 'MULEQ', None, None ),
+      ( re.compile(r'/='), 'DIVEQ', None, None ),
+      ( re.compile(r'%='), 'MODEQ', None, None ),
+      ( re.compile(r'\+='), 'ADDEQ', None, None ),
+      ( re.compile(r'-='), 'SUBEQ', None, None ),
+      ( re.compile(r'<<='), 'LSHIFTEQ', None, None ),
+      ( re.compile(r'>>='), 'RSHIFTEQ', None, None ),
+      ( re.compile(r'&='), 'BITANDEQ', None, None ),
+      ( re.compile(r'\^='), 'BITXOREQ', None, None ),
+      ( re.compile(r'\|='), 'BITOREQ', None, None ),
+      ( re.compile(r','), 'COMMA', None, None ),
+      ( re.compile(r'##'), 'POUNDPOUND', None, None ),
+      ( re.compile(r'#(?!#)'), 'POUND', None, None ),
 
       # Constants, Literals
-      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?'), 'DECIMAL_FLOATING_CONSTANT', None ),
-      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None ),
-      ( re.compile(r'([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?'), 'INTEGER_CONSTANT', None ),
-      ( re.compile(r'0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?'), 'HEXADECIMAL_FLOATING_CONSTANT', None ),
-      ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None ),
+      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?'), 'DECIMAL_FLOATING_CONSTANT', None, None ),
+      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None, None ),
+      ( re.compile(r'([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?'), 'INTEGER_CONSTANT', None, None ),
+      ( re.compile(r'0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?'), 'HEXADECIMAL_FLOATING_CONSTANT', None, None ),
+      ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
 
       # Whitespace
-      ( re.compile(r'\s+', 0), None, None )
+      ( re.compile(r'\s+', 0), None, None, None )
     ])
   
 
