@@ -9,9 +9,12 @@ class Token(cParser.Terminal):
     return self.source_string
   
   def __str__( self ):
-    return "'%s'" % (self.terminal_str.lower())
+    #return "'%s'" % (self.terminal_str.lower())
     return '%s (%s) [line %d, col %d]' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
   
+class TokenList(list):
+  pass
+
 # cST = C Source Text
 # cPF = C Pre-Processing File
 # cPTU = C Preprocessing Translation Unit
@@ -41,7 +44,7 @@ class cPreprocessingFile:
     '??>': '}',
     '??-': '~',
   }
-  def __init__( self, cST, cPPL, cPPP ):
+  def __init__( self, cST, cPPL, cPPP, cL ):
     self.__dict__.update(locals())
   
   def process( self ):
@@ -52,16 +55,12 @@ class cPreprocessingFile:
     self.cST.replace('\\\n', '')
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     self.cPPL.setString(self.cST)
-    try:
-      parsetree = cPPP.parse(self.cPPL, 'pp_file')
-    except Exception as e:
-      print(e)
-      print(e.tracer)
-      sys.exit(-1)
+    parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
-    e = cPreprocessingEvaluator(cPPP)
+    e = cPreprocessingEvaluator(self.cPPP, self.cL, cTokens())
     s = e.eval(ast)
-    print(s)
+    for t in s:
+      print(t)
     sys.exit(-1)
     buf = ''
     for cPPT in self.cPPL:
@@ -75,6 +74,7 @@ class cPreprocessingFile:
 class cPreprocessorFunction:
   def __init__(self, params, body):
     self.__dict__.update(locals())
+  
   def run(self, params):
     if len(params) != len(self.params):
       raise Exception('Error: too few parameters to function')
@@ -86,25 +86,29 @@ class cPreprocessorFunction:
       else:
         nodes.append(node)
     return nodes
+  
   def __str__(self):
     return '[function params=%s body=%s]' % (', '.join(self.params), str(self.body))
   
+
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP):
+  def __init__(self, cPPP, cL, cT):
     self.__dict__.update(locals())
   
   def eval( self, cPPAST ):
     self.symbols = dict()
-    a = self._eval(cPPAST)
-    return a
+    self.line = 1
+    return self._eval(cPPAST)
   
   def newlines(self, number):
     return ''.join(['\n' for i in range(number)])
   
   def _eval( self, cPPAST ):
-    buf = ''
+    rtokens = []
     if not cPPAST:
-      return buf
+      return []
+    elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'pp_number':
+      return self.ppnumber(cPPAST)
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'identifier':
       if cPPAST.getString() not in self.symbols:
         raise Exception('Unknown Variable %s' (cPPAST.getString()))
@@ -116,101 +120,118 @@ class cPreprocessingEvaluator:
       return self._eval(ast)
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
       string = cPPAST.getString()
-      for key, replacement in self.symbols.items():
-        if isinstance(replacement, cPreprocessorFunction):
-          pass
-        else:
-          pass
-      return string + '\n'
+      tokens = []
+      self.cL.setString(string)
+      self.cL.setLine(self.line)
+      self.cL.setColumn(1)
+      for token in self.cL:
+        next = [token]
+        if token.terminal_str.lower() == 'identifier':
+          if token.getString() in self.symbols:
+            next = []
+            for ntoken in self.symbols[token.getString()]:
+              ntoken.colno = token.colno
+              ntoken.lineno = token.lineno
+              next.append(ntoken)
+        tokens.extend(next)
+      lines = len(list(filter(lambda x: x == '\n', string))) + 1
+      self.line += lines
+      return TokenList(tokens)
     elif isinstance(cPPAST, Token):
       return cPPAST
     elif isinstance(cPPAST, list):
       if cPPAST and len(cPPAST):
         for node in cPPAST:
-          buf += self._eval(node)
-      return buf
+          rtokens.extend( self._eval(node) )
+      return rtokens
     else:
       if cPPAST.name == 'PPFile':
         nodes = cPPAST.getAttr('nodes')
         return self._eval(nodes)
       elif cPPAST.name == 'IfSection':
-        buf = '\n'
+        self.line += 1
         value = self._eval(cPPAST.getAttr('if'))
         if value:
-          buf += value
+          rtokens.extend( value )
         for elseif in cPPAST.getAttr('elif'):
-          buf += '\n'
+          self.line += 1
           if not value:
             value = self._eval(elseif)
             if value:
-              buf += value
+              rtokens.extend( value )
+          else:
+            self._eval(elseif) # Silent eval to count line numbers properly
         if cPPAST.getAttr('else') and not value:
           value = self._eval(cPPAST.getAttr('else'))
-          buf += value
-        buf += '\n'
-        return buf
+          rtokens.extend( value )
+        self.line += 1
+        return rtokens
       elif cPPAST.name == 'If':
         expr = cPPAST.getAttr('expr')
         nodes = cPPAST.getAttr('nodes')
         if self._eval(expr) != 0:
           return self._eval(nodes)
         else:
-          return self.newlines(self.countSourceLines(nodes))
+          self.line += self.countSourceLines(nodes)
+        return None
       elif cPPAST.name == 'IfDef':
         ident = cPPAST.getAttr('ident').getString()
         nodes = cPPAST.getAttr('nodes')
         if ident in self.symbols:
           return self._eval(nodes)
         else:
-          return self.newlines(self.countSourceLines(nodes))
+          self.line += self.countSourceLines(nodes)
+        return None
       elif cPPAST.name == 'IfNDef':
         ident = cPPAST.getAttr('ident').getString()
         nodes = cPPAST.getAttr('nodes')
-        if ident in self.symbols:
+        if ident not in self.symbols:
           return self._eval(nodes)
         else:
-          return self.newlines(self.countSourceLines(nodes))
+          self.line += self.countSourceLines(nodes)
+        return None
       elif cPPAST.name == 'ElseIf':
         expr = cPPAST.getAttr('expr')
         nodes = cPPAST.getAttr('nodes')
         if self._eval(expr) != 0:
           return self._eval(nodes)
         else:
-          return self.newlines(self.countSourceLines(nodes))
+          self.line += self.countSourceLines(nodes)
+        return None
       elif cPPAST.name == 'Else':
         nodes = cPPAST.getAttr('nodes')
         return self._eval(nodes)
       elif cPPAST.name == 'Include':
         cPPAST.getAttr('file')
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'Define':
         ident = cPPAST.getAttr('ident')
         body = cPPAST.getAttr('body')
         self.symbols[ident.getString()] = self._eval(body)
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'DefineFunction':
         ident = cPPAST.getAttr('ident')
         params = cPPAST.getAttr('params')
         body = cPPAST.getAttr('body')
         self.symbols[ident.getString()] = cPreprocessorFunction( [p.getString() for p in params], body )
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'Pragma':
         cPPAST.getAttr('tokens')
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'Error':
         cPPAST.getAttr('tokens')
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'Undef':
         ident = cPPAST.getAttr('ident').getString()
         if ident in self.symbols:
           del self.symbols[ident]
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'Line':
         cPPAST.getAttr('tokens')
-        return '\n'
+        self.line += 1
       elif cPPAST.name == 'ReplacementList':
         tokens = cPPAST.getAttr('tokens')
-        buf = ''
+        rtokens = []
         advance = 0
         newTokens = []
         for (index, token) in enumerate(tokens):
@@ -277,9 +298,13 @@ class cPreprocessingEvaluator:
         cond = cPPAST.getAttr('cond')
         true = cPPAST.getAttr('true')
         false = cPPAST.getAttr('false')
+        if self._eval(cond) != 0:
+          return self._eval(true)
+        else:
+          return self._eval(false)
       else:
         raise Exception('Bad AST Node', str(cPPAST))
-    return buf
+    return rtokens
   
   def ppnumber(self, element):
     if isinstance(element, Token):
@@ -288,6 +313,8 @@ class cPreprocessingEvaluator:
   
   def countSourceLines(self, cPPAST):
     lines = 0
+    if not cPPAST:
+      return 0
     if isinstance(cPPAST, Token):
       return len(cPPAST.source_string.split('\n'))
     if isinstance(cPPAST, list):
@@ -314,17 +341,25 @@ class cPreprocessingEvaluator:
     return lines
   
 
+class cTokens:
+  def __init__(self):
+    self.tokens = []
+  def __iter__(self):
+    return iter(self.token)
+  def addTokens(self, tokens):
+    self.tokens.extend(tokens)
+  def addToken(self, token):
+    self.tokens.append(token)
+
 # This is what can be tokenized and parsed as C code.
 class cTranslationUnit:
-  def __init__( self, cPF, cL, cP ):
+  def __init__( self, cT, cP ):
     self.__dict__.update(locals())
   
   def process( self ):
     # Returns (cParseTree, cAst)
-    self.cL.setString(self.cPF.process())
-    for cT in self.cL:
-      print(cT)
-    return self.cPF
+    for token in self.cT:
+      print(token)
   
 
 class cParseTree:
@@ -363,6 +398,12 @@ class PatternMatchingLexer(Lexer):
     self.colno = 1
     self.lineno = 1
   
+  def setLine(self, lineno):
+    self.lineno = lineno
+  
+  def setColumn(self, colno):
+    self.colno = colno
+  
   def setRegex(self, regex):
     self.regex = regex
   
@@ -387,7 +428,7 @@ class PatternMatchingLexer(Lexer):
           newlines = len(list(filter(lambda x: x == '\n', match.group(0))))
           self.lineno += newlines
           if newlines > 0:
-            self.colno = len(match.group(0).split('\n')[-1])
+            self.colno = len(match.group(0).split('\n')[-1]) + 1
           else:
             self.colno += len(match.group(0))
 
@@ -498,6 +539,12 @@ class cPreprocessingLexer(Lexer):
     self.cST_lines_index = 0
     self.cST_current_line_offset = 0
   
+  def setLine(self, lineno):
+    self.lineno = lineno
+  
+  def setColumn(self, colno):
+    self.colno = colno
+  
   def _hasToken(self):
     return len(self.tokenBuffer) > 0
   
@@ -568,6 +615,7 @@ class cPreprocessingLexer(Lexer):
 
 class cLexer(PatternMatchingLexer):
   def __init__(self, terminals, string = ''):
+    self.cache = []
     self.setTerminals(terminals)
     self.setString(string)
     self.setRegex ([
@@ -704,5 +752,7 @@ for filename in sys.argv[1:]:
   ppTokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
   cPPL = cPreprocessingLexer( PatternMatchingLexer(terminals=ppTokenMap), ppTokenMap )
 
-  cTU = cTranslationUnit(cPreprocessingFile(open(filename).read(), cPPL, cPPP), cL, None)
+  cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
+  cT = cPF.process()
+  cTU = cTranslationUnit(cT, cP)
   cTU.process()
