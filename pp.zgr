@@ -3,7 +3,7 @@
     "start": "pp_file",
     "rules": [
 
-        "punctuator := 'arrow' | 'dot' | 'lbrace' | 'rbrace' | 'lsquare' | 'rsquare' | 'lparen' | 'rparen' | 'exclamation_point' | 'tilde' | 'sub' | 'add' | 'mul' | 'div' | 'ampersand' | 'decr' | 'incr' | 'or' | 'and' | 'bitor' | 'bitxor' | 'neq' | 'eq' | 'lteq' | 'gteq' | 'lt' | 'gt' | 'lshift' | 'rshift' | 'mod' | 'elipsis' | 'semi' | 'colon' | 'questionmark' | 'bitoreq' | 'bitxoreq' | 'bitandeq' | 'lshifteq' | 'rshifteq' | 'subeq' | 'addeq' | 'modeq' | 'muleq' | 'assign' | 'poundpound' | 'pound' | 'comma'",
+        "punctuator := 'arrow' | 'dot' | 'lbrace' | 'rbrace' | 'lsquare' | 'rsquare' | 'lparen' | 'rparen' | 'exclamation_point' | 'tilde' | 'sub' | 'add' | 'mul' | 'div' | 'ampersand' | 'decr' | 'incr' | 'or' | 'and' | 'bitor' | 'bitxor' | 'neq' | 'eq' | 'lteq' | 'gteq' | 'lt' | 'gt' | 'lshift' | 'rshift' | 'mod' | 'elipsis' | 'semi' | 'colon' | 'questionmark' | 'bitand' | 'bitnot' | 'bitor' | 'bitxor' | 'bitoreq' | 'bitxoreq' | 'bitandeq' | 'lshifteq' | 'rshifteq' | 'subeq' | 'addeq' | 'modeq' | 'muleq' | 'assign' | 'poundpound' | 'pound' | 'comma' | 'defined'",
         
         "pp_tokens := 'header_global' | 'header_local' | punctuator | 'identifier' | 'pp_number' | 'character_constant' | 'string_literal'",
 
@@ -16,7 +16,7 @@
         "if_part := 'ifdef' + 'identifier' + pp_nodes_list -> IfDef( ident=$1, nodes=$2 )",
         "if_part := 'ifndef' + 'identifier' + pp_nodes_list -> IfNDef( ident=$1, nodes=$2 )",
         "elseif_part := 'elif' + _expr + pp_nodes_list -> ElseIf( expr=$1, nodes=$2 )",
-        "else_part := 'else' + pp_nodes_list -> Else( nodes=$2 )| ε",
+        "else_part := 'else' + pp_nodes_list -> Else( nodes=$1 )| ε",
         "control_line := include_line | define_line | pragma_line | error_line | undef_line | line_line",
         "include_line := 'include' + include_type -> Include( file=$1 )",
         "include_type := 'header_global' | 'header_local' | 'identifier'",
@@ -46,11 +46,12 @@
           {"associativity": "left", "terminals": ["lshift", "rshift"]},
           {"associativity": "left", "terminals": ["add", "sub"]},
           {"associativity": "left", "terminals": ["mul", "div", "mod"]},
-          {"associativity": "unary", "terminals": ["sub", "mul", "bitand", "not", "bitnot"]},
+          {"associativity": "unary", "terminals": ["sub", "mul", "bitand", "exclamation_point", "bitnot", "defined"]},
           {"associativity": "left", "terminals": ["lparen"]}
       ],
       "rules": [
         "_expr := 'identifier' + ^'lparen' + list(_expr, 'comma') + 'rparen' -> FuncCall( name=$0, params=$2 )",
+        "_expr := 'defined' + _expr -> IsDefined( expr=$1 )",
         "_expr := _expr + 'add' + _expr -> Add( left=$0, right=$2 )",
         "_expr := _expr + 'sub' + _expr -> Sub( left=$0, right=$2 )",
         "_expr := _expr + 'lt' + _expr -> LessThan( left=$0, right=$2 )",
@@ -68,6 +69,10 @@
         "_expr := _expr + 'bitand' + _expr -> BitAND( left=$0, right=$2 )",
         "_expr := _expr + 'bitor' + _expr -> BitOR( left=$0, right=$2 )",
         "_expr := _expr + 'bitxor' + _expr -> BitXOR( left=$0, right=$2 )",
+        "_expr := 'bitnot' + _expr -> BitNOT( expr=$1 )",
+        "_expr := _expr + 'and' + _expr -> And( left=$0, right=$2 )",
+        "_expr := _expr + 'or' + _expr -> Or( left=$0, right=$2 )",
+        "_expr := 'exclamation_point' + _expr -> Not( expr=$1 )",
         "_expr := _expr + ^'questionmark' + _expr + 'colon' + _expr -> TernaryOperator( cond=$0, true=$2, false=$4 )",
         "_expr := 'identifier' | 'pp_number' | 'string_literal' | 'character_constant'",
         "_expr := 'lparen' + _expr + 'rparen' -> $1"
