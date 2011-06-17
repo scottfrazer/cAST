@@ -138,7 +138,7 @@ class Parser:
     self.sym = None
     self.recorder = TokenRecorder()
     self.entry_points = {
-      'terminals': self._TERMINALS,
+      'translation_unit': self._TRANSLATION_UNIT,
     }
   TERMINAL_BITNOT = 0
   TERMINAL_COLON = 1
@@ -148,7 +148,7 @@ class Parser:
   TERMINAL__BOOL = 5
   TERMINAL__COMPLEX = 6
   TERMINAL_IMAGINARY = 7
-  TERMINAL_LSHIFT = 8
+  TERMINAL_BREAK = 8
   TERMINAL_BITOR = 9
   TERMINAL_REGISTER = 10
   TERMINAL__IMAGINARY = 11
@@ -184,7 +184,7 @@ class Parser:
   TERMINAL_RETURN = 41
   TERMINAL_ARROW = 42
   TERMINAL_STRING_LITERAL = 43
-  TERMINAL_BREAK = 44
+  TERMINAL_LSHIFT = 44
   TERMINAL_UNIVERSAL_CHARACTER_NAME = 45
   TERMINAL_BOOL = 46
   TERMINAL_LSQUARE = 47
@@ -249,7 +249,7 @@ class Parser:
     5: '_bool',
     6: '_complex',
     7: 'imaginary',
-    8: 'lshift',
+    8: 'break',
     9: 'bitor',
     10: 'register',
     11: '_imaginary',
@@ -285,7 +285,7 @@ class Parser:
     41: 'return',
     42: 'arrow',
     43: 'string_literal',
-    44: 'break',
+    44: 'lshift',
     45: 'universal_character_name',
     46: 'bool',
     47: 'lsquare',
@@ -343,17 +343,18 @@ class Parser:
     99: 'long',
   }
   nonterminal_str = {
-    100: '_expr',
-    101: '_gen1',
+    100: '_gen0',
+    101: '_direct_declarator',
     102: 'type_qualifier',
-    103: '_gen0',
+    103: 'token',
     104: '_gen2',
-    105: 'token',
-    106: 'punctuator',
-    107: 'terminals',
-    108: 'constant',
-    109: 'keyword',
-    110: '_direct_declarator',
+    105: 'terminals',
+    106: 'constant',
+    107: 'translation_unit',
+    108: '_gen1',
+    109: 'punctuator',
+    110: 'keyword',
+    111: '_expr',
   }
   str_terminal = {
     'bitnot': 0,
@@ -364,7 +365,7 @@ class Parser:
     '_bool': 5,
     '_complex': 6,
     'imaginary': 7,
-    'lshift': 8,
+    'break': 8,
     'bitor': 9,
     'register': 10,
     '_imaginary': 11,
@@ -400,7 +401,7 @@ class Parser:
     'return': 41,
     'arrow': 42,
     'string_literal': 43,
-    'break': 44,
+    'lshift': 44,
     'universal_character_name': 45,
     'bool': 46,
     'lsquare': 47,
@@ -458,31 +459,33 @@ class Parser:
     'long': 99,
   }
   str_nonterminal = {
-    '_expr': 100,
-    '_gen1': 101,
+    '_gen0': 100,
+    '_direct_declarator': 101,
     'type_qualifier': 102,
-    '_gen0': 103,
+    'token': 103,
     '_gen2': 104,
-    'token': 105,
-    'punctuator': 106,
-    'terminals': 107,
-    'constant': 108,
-    'keyword': 109,
-    '_direct_declarator': 110,
+    'terminals': 105,
+    'constant': 106,
+    'translation_unit': 107,
+    '_gen1': 108,
+    'punctuator': 109,
+    'keyword': 110,
+    '_expr': 111,
   }
   terminal_count = 100
-  nonterminal_count = 11
+  nonterminal_count = 12
   parse_table = [
     [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  [-1, 171, 171, -1, 108, 108, 108, -1, 108, 171, 108, 108, 171, 171, 171, 171, -1, 108, 171, 108, 171, 171, 171, 108, -1, 171, 171, -1, 171, 108, 171, 171, 171, 108, 171, 108, 171, 108, 171, 171, 108, 108, 171, 140, 171, -1, -1, 171, 171, 108, 108, 171, 108, 108, 171, 108, 108, 171, -1, 171, 108, 24, 108, -1, 171, 171, 108, 108, -1, 171, 108, 108, 171, 171, 171, 108, 171, -1, 171, 108, 108, -1, 171, 108, 171, 108, 171, -1, 171, 171, 108, 108, 171, 171, 171, 171, 108, 108, 171, 108],
+  [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+  [-1, 136, 102, 170, 134, -1, -1, 53, 69, 182, 104, -1, 35, 154, 22, 184, 21, 175, 121, 81, 158, 78, 93, 146, 178, 80, 76, 183, 161, 141, -1, 4, 16, 159, 72, 103, 75, 137, 36, 43, 73, 56, 64, 118, 62, 15, 95, 5, 1, 129, 0, 156, 128, 110, 9, 122, 54, 109, 135, 123, 168, 85, 7, 83, 11, 166, 169, 142, 167, 91, 17, 160, 149, 23, 116, 99, 92, 177, 49, 131, 70, 51, 147, 114, 34, 19, 94, 157, 57, 10, 101, 89, 32, 90, 187, 150, 180, 41, 65, 97],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, 164, 164, -1, 100, 100, 100, -1, 164, 164, 100, 100, 164, 164, 164, 164, -1, 100, 164, 100, 164, 164, 164, 100, -1, 164, 164, -1, 164, 100, 164, 164, 164, 100, 164, 100, 164, 100, 164, 164, 100, 100, 164, 133, 100, -1, -1, 164, 164, 100, 100, 164, 100, 100, 164, 100, 100, 164, -1, 164, 100, 25, 100, -1, 164, 164, 100, 100, -1, 164, 100, 100, 164, 164, 164, 100, 164, -1, 164, 100, 100, -1, 164, 100, 164, 100, 164, -1, 164, 164, 100, 100, 164, 164, 164, 164, 100, 100, 164, 100],
-  [-1, 30, 31, -1, -1, -1, -1, -1, 71, 147, -1, -1, 34, 41, 7, 85, -1, -1, 175, -1, 66, 58, 12, -1, -1, 51, 171, -1, 105, -1, 135, 60, 169, -1, 28, -1, 10, -1, 87, 187, -1, -1, 99, -1, -1, -1, -1, 48, 46, -1, -1, 86, -1, -1, 144, -1, -1, 163, -1, 136, -1, -1, -1, -1, 120, 22, -1, -1, -1, 140, -1, -1, 98, 116, 24, -1, 69, -1, 179, -1, -1, -1, 54, -1, 154, -1, 142, -1, 76, 84, -1, -1, 2, 132, 189, 160, -1, -1, 104, -1],
-  [-1, 95, 101, 131, 127, -1, -1, 53, 62, 173, 102, -1, 37, 146, 23, 145, 21, 172, 114, 81, 155, 78, 83, 141, 149, 79, 68, 178, 121, 138, -1, 156, 16, 151, 64, 93, 75, 129, 29, 45, 73, 56, 63, 112, 61, 14, 94, 26, 106, 123, 152, 153, 126, 103, 6, 122, 55, 109, 134, 117, 161, 77, 5, 82, 188, 159, 167, 181, 165, 91, 8, 158, 108, 15, 110, 90, 43, 174, 13, 125, 70, 44, 137, 113, 35, 19, 92, 148, 183, 9, 52, 80, 33, 89, 177, 139, 176, 42, 65, 96],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-  [-1, -1, -1, -1, 20, 49, 67, -1, -1, -1, 1, 47, -1, -1, -1, -1, -1, 118, -1, 4, -1, -1, -1, 32, -1, -1, -1, -1, -1, 59, -1, -1, -1, 72, -1, 168, -1, 124, -1, -1, 3, 111, -1, -1, 130, -1, -1, -1, -1, 0, 36, -1, 119, 38, -1, 11, 88, -1, -1, -1, 143, -1, 184, -1, -1, -1, 185, 162, -1, -1, 74, 180, -1, -1, -1, 170, -1, -1, -1, 50, 97, -1, -1, 17, -1, 107, -1, -1, -1, -1, 57, 115, -1, -1, -1, -1, 39, 18, -1, 27],
+  [-1, 29, 31, -1, -1, -1, -1, -1, -1, 151, -1, -1, 133, 39, 59, 86, -1, -1, 185, -1, 112, 66, 13, -1, -1, 50, 125, -1, 105, -1, 144, 61, 172, -1, 27, -1, 12, -1, 88, 115, -1, -1, 100, -1, 79, -1, -1, 46, 45, -1, -1, 96, -1, -1, 148, -1, -1, 165, -1, 138, -1, -1, -1, -1, 127, 30, -1, -1, -1, 181, -1, -1, 98, 117, 74, -1, 68, -1, 189, -1, -1, -1, 63, -1, 162, -1, 152, -1, 77, 84, -1, -1, 3, 132, 8, 163, -1, -1, 145, -1],
+  [-1, -1, -1, -1, 143, 48, 67, -1, 28, -1, 52, 55, -1, -1, -1, -1, -1, 126, -1, 14, -1, -1, -1, 40, -1, -1, -1, -1, -1, 58, -1, -1, -1, 71, -1, 176, -1, 124, -1, -1, 6, 111, -1, -1, -1, -1, -1, -1, -1, 2, 44, -1, 119, 87, -1, 20, 120, -1, -1, -1, 173, -1, 42, -1, -1, -1, 188, 139, -1, -1, 82, 37, -1, -1, -1, 179, -1, -1, -1, 60, 107, -1, -1, 18, -1, 113, -1, -1, -1, -1, 106, 155, -1, -1, -1, -1, 38, 26, -1, 25],
   [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1]
   ]
   def terminal(self, str):
@@ -492,7 +495,7 @@ class Parser:
   def isTerminal(self, id):
     return 0 <= id <= 99
   def isNonTerminal(self, id):
-    return 100 <= id <= 110
+    return 100 <= id <= 111
   def rewind(self, recorder):
     global tokens
     tokens = recorder.tokens().append(tokens)
@@ -543,10 +546,22 @@ class Parser:
     return self.parse_table[n - 100][self.sym.getId()]
   def call(self, nt_str):
     return getattr(self, nt_str)()
-  def __GEN1(self, depth = 0):
+  def __GEN0(self, depth = 0):
+    rule = self.rule(100)
+    if depth is not False:
+      tracer = DebugTracer("__GEN0", str(self.sym), rule, depth)
+      depth = depth + 1
+    else:
+      tracer = None
+    tree = ParseTree( NonTerminal(100, self.getAtomString(100)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    raise SyntaxError('Error: Unexpected symbol', tracer)
+  def __DIRECT_DECLARATOR(self, depth = 0):
     rule = self.rule(101)
     if depth is not False:
-      tracer = DebugTracer("__GEN1", str(self.sym), rule, depth)
+      tracer = DebugTracer("__DIRECT_DECLARATOR", str(self.sym), rule, depth)
       depth = depth + 1
     else:
       tracer = None
@@ -567,10 +582,10 @@ class Parser:
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
     raise SyntaxError('Error: Unexpected symbol', tracer)
-  def __GEN0(self, depth = 0):
+  def _TOKEN(self, depth = 0):
     rule = self.rule(103)
     if depth is not False:
-      tracer = DebugTracer("__GEN0", str(self.sym), rule, depth)
+      tracer = DebugTracer("_TOKEN", str(self.sym), rule, depth)
       depth = depth + 1
     else:
       tracer = None
@@ -578,6 +593,35 @@ class Parser:
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 24:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_IDENTIFIER, tracer) )
+      return tree
+    elif rule == 47:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._CONSTANT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 108:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._KEYWORD(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 140:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_STRING_LITERAL, tracer) )
+      return tree
+    elif rule == 171:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._PUNCTUATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
     raise SyntaxError('Error: Unexpected symbol', tracer)
   def __GEN2(self, depth = 0):
     rule = self.rule(104)
@@ -591,10 +635,10 @@ class Parser:
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
     raise SyntaxError('Error: Unexpected symbol', tracer)
-  def _TOKEN(self, depth = 0):
+  def _TERMINALS(self, depth = 0):
     rule = self.rule(105)
     if depth is not False:
-      tracer = DebugTracer("_TOKEN", str(self.sym), rule, depth)
+      tracer = DebugTracer("_TERMINALS", str(self.sym), rule, depth)
       depth = depth + 1
     else:
       tracer = None
@@ -602,278 +646,49 @@ class Parser:
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 25:
+    if rule == 0:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_IDENTIFIER, tracer) )
+      tree.add( self.expect(self.TERMINAL_FOR, tracer) )
       return tree
-    elif rule == 40:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._CONSTANT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 100:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._KEYWORD(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 133:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_STRING_LITERAL, tracer) )
-      return tree
-    elif rule == 164:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PUNCTUATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol', tracer)
-  def _PUNCTUATOR(self, depth = 0):
-    rule = self.rule(106)
-    if depth is not False:
-      tracer = DebugTracer("_PUNCTUATOR", str(self.sym), rule, depth)
-      depth = depth + 1
-    else:
-      tracer = None
-    tree = ParseTree( NonTerminal(106, self.getAtomString(106)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 2:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_EQ, tracer) )
-      return tree
-    elif rule == 7:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITXOR, tracer) )
-      return tree
-    elif rule == 10:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RSHIFT, tracer) )
-      return tree
-    elif rule == 12:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LBRACE, tracer) )
-      return tree
-    elif rule == 22:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_EXCLAMATION_POINT, tracer) )
-      return tree
-    elif rule == 24:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_POUND, tracer) )
-      return tree
-    elif rule == 28:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SUBEQ, tracer) )
-      return tree
-    elif rule == 30:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_COLON, tracer) )
-      return tree
-    elif rule == 31:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RSHIFTEQ, tracer) )
-      return tree
-    elif rule == 34:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_TILDE, tracer) )
-      return tree
-    elif rule == 41:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LT, tracer) )
-      return tree
-    elif rule == 46:
+    elif rule == 1:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_SUB, tracer) )
       return tree
-    elif rule == 48:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LSQUARE, tracer) )
-      return tree
-    elif rule == 51:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_AND, tracer) )
-      return tree
-    elif rule == 54:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MULEQ, tracer) )
-      return tree
-    elif rule == 58:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ASSIGN, tracer) )
-      return tree
-    elif rule == 60:
+    elif rule == 4:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_RBRACE, tracer) )
       return tree
-    elif rule == 66:
+    elif rule == 5:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_GTEQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_LSQUARE, tracer) )
       return tree
-    elif rule == 69:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RSQUARE, tracer) )
-      return tree
-    elif rule == 71:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LSHIFT, tracer) )
-      return tree
-    elif rule == 76:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LSHIFTEQ, tracer) )
-      return tree
-    elif rule == 84:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LPAREN, tracer) )
-      return tree
-    elif rule == 85:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MODEQ, tracer) )
-      return tree
-    elif rule == 86:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DECR, tracer) )
-      return tree
-    elif rule == 87:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_POUNDPOUND, tracer) )
-      return tree
-    elif rule == 98:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_QUESTIONMARK, tracer) )
-      return tree
-    elif rule == 99:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ARROW, tracer) )
-      return tree
-    elif rule == 104:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_INCR, tracer) )
-      return tree
-    elif rule == 105:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RPAREN, tracer) )
-      return tree
-    elif rule == 116:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MOD, tracer) )
-      return tree
-    elif rule == 120:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ADDEQ, tracer) )
-      return tree
-    elif rule == 132:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ELIPSIS, tracer) )
-      return tree
-    elif rule == 135:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_AMPERSAND, tracer) )
-      return tree
-    elif rule == 136:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_GT, tracer) )
-      return tree
-    elif rule == 140:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DIV, tracer) )
-      return tree
-    elif rule == 142:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_OR, tracer) )
-      return tree
-    elif rule == 144:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SEMI, tracer) )
-      return tree
-    elif rule == 147:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITOR, tracer) )
-      return tree
-    elif rule == 154:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DOT, tracer) )
-      return tree
-    elif rule == 160:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ADD, tracer) )
-      return tree
-    elif rule == 163:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITANDEQ, tracer) )
-      return tree
-    elif rule == 169:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MUL, tracer) )
-      return tree
-    elif rule == 171:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LTEQ, tracer) )
-      return tree
-    elif rule == 175:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITXOREQ, tracer) )
-      return tree
-    elif rule == 179:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITOREQ, tracer) )
-      return tree
-    elif rule == 187:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_NEQ, tracer) )
-      return tree
-    elif rule == 189:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_COMMA, tracer) )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol', tracer)
-  def _TERMINALS(self, depth = 0):
-    rule = self.rule(107)
-    if depth is not False:
-      tracer = DebugTracer("_TERMINALS", str(self.sym), rule, depth)
-      depth = depth + 1
-    else:
-      tracer = None
-    tree = ParseTree( NonTerminal(107, self.getAtomString(107)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 5:
+    elif rule == 7:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_SIZEOF, tracer) )
       return tree
-    elif rule == 6:
+    elif rule == 9:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_SEMI, tracer) )
       return tree
-    elif rule == 8:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_EXTERN, tracer) )
-      return tree
-    elif rule == 9:
+    elif rule == 10:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_LPAREN, tracer) )
       return tree
-    elif rule == 13:
+    elif rule == 11:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITOREQ, tracer) )
-      return tree
-    elif rule == 14:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_UNIVERSAL_CHARACTER_NAME, tracer) )
+      tree.add( self.expect(self.TERMINAL_ADDEQ, tracer) )
       return tree
     elif rule == 15:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MOD, tracer) )
+      tree.add( self.expect(self.TERMINAL_UNIVERSAL_CHARACTER_NAME, tracer) )
       return tree
     elif rule == 16:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_MUL, tracer) )
+      return tree
+    elif rule == 17:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_EXTERN, tracer) )
       return tree
     elif rule == 19:
       tree.astTransform = AstTransformSubstitution(0)
@@ -883,55 +698,55 @@ class Parser:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_BITAND, tracer) )
       return tree
-    elif rule == 23:
+    elif rule == 22:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_BITXOR, tracer) )
       return tree
-    elif rule == 26:
+    elif rule == 23:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LSQUARE, tracer) )
+      tree.add( self.expect(self.TERMINAL_MOD, tracer) )
       return tree
-    elif rule == 29:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_POUNDPOUND, tracer) )
-      return tree
-    elif rule == 33:
+    elif rule == 32:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_EQ, tracer) )
       return tree
-    elif rule == 35:
+    elif rule == 33:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_LSQUARE, tracer) )
+      return tree
+    elif rule == 34:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_DOT, tracer) )
       return tree
-    elif rule == 37:
+    elif rule == 35:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_TILDE, tracer) )
       return tree
-    elif rule == 42:
+    elif rule == 36:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_POUNDPOUND, tracer) )
+      return tree
+    elif rule == 41:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_IF, tracer) )
       return tree
     elif rule == 43:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RSQUARE, tracer) )
-      return tree
-    elif rule == 44:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CHARACTER_CONSTANT, tracer) )
-      return tree
-    elif rule == 45:
-      tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_NEQ, tracer) )
       return tree
-    elif rule == 52:
+    elif rule == 49:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CONST, tracer) )
+      tree.add( self.expect(self.TERMINAL_BITOREQ, tracer) )
+      return tree
+    elif rule == 51:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_CHARACTER_CONSTANT, tracer) )
       return tree
     elif rule == 53:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_IMAGINARY, tracer) )
       return tree
-    elif rule == 55:
+    elif rule == 54:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_STATIC, tracer) )
       return tree
@@ -939,33 +754,33 @@ class Parser:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_RETURN, tracer) )
       return tree
-    elif rule == 61:
+    elif rule == 57:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BREAK, tracer) )
+      tree.add( self.expect(self.TERMINAL_LSHIFTEQ, tracer) )
       return tree
     elif rule == 62:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_LSHIFT, tracer) )
       return tree
-    elif rule == 63:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ARROW, tracer) )
-      return tree
     elif rule == 64:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SUBEQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_ARROW, tracer) )
       return tree
     elif rule == 65:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_INCR, tracer) )
       return tree
-    elif rule == 68:
+    elif rule == 69:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LTEQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_BREAK, tracer) )
       return tree
     elif rule == 70:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_GOTO, tracer) )
+      return tree
+    elif rule == 72:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_SUBEQ, tracer) )
       return tree
     elif rule == 73:
       tree.astTransform = AstTransformSubstitution(0)
@@ -975,41 +790,37 @@ class Parser:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_RSHIFT, tracer) )
       return tree
-    elif rule == 77:
+    elif rule == 76:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_IDENTIFIER, tracer) )
+      tree.add( self.expect(self.TERMINAL_LTEQ, tracer) )
       return tree
     elif rule == 78:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_ASSIGN, tracer) )
       return tree
-    elif rule == 79:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_AND, tracer) )
-      return tree
     elif rule == 80:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SWITCH, tracer) )
+      tree.add( self.expect(self.TERMINAL_AND, tracer) )
       return tree
     elif rule == 81:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_AUTO, tracer) )
       return tree
-    elif rule == 82:
+    elif rule == 83:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_NUMBER, tracer) )
       return tree
-    elif rule == 83:
+    elif rule == 85:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LBRACE, tracer) )
+      tree.add( self.expect(self.TERMINAL_IDENTIFIER, tracer) )
       return tree
     elif rule == 89:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ELIPSIS, tracer) )
+      tree.add( self.expect(self.TERMINAL_SWITCH, tracer) )
       return tree
     elif rule == 90:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_FLOAT, tracer) )
+      tree.add( self.expect(self.TERMINAL_ELIPSIS, tracer) )
       return tree
     elif rule == 91:
       tree.astTransform = AstTransformSubstitution(0)
@@ -1017,43 +828,43 @@ class Parser:
       return tree
     elif rule == 92:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_OR, tracer) )
+      tree.add( self.expect(self.TERMINAL_RSQUARE, tracer) )
       return tree
     elif rule == 93:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SIGNED, tracer) )
+      tree.add( self.expect(self.TERMINAL_LBRACE, tracer) )
       return tree
     elif rule == 94:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BOOL, tracer) )
+      tree.add( self.expect(self.TERMINAL_OR, tracer) )
       return tree
     elif rule == 95:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_COLON, tracer) )
+      tree.add( self.expect(self.TERMINAL_BOOL, tracer) )
       return tree
-    elif rule == 96:
+    elif rule == 97:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_LONG, tracer) )
       return tree
+    elif rule == 99:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_FLOAT, tracer) )
+      return tree
     elif rule == 101:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RSHIFTEQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_CONST, tracer) )
       return tree
     elif rule == 102:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_REGISTER, tracer) )
+      tree.add( self.expect(self.TERMINAL_RSHIFTEQ, tracer) )
       return tree
     elif rule == 103:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ELSE, tracer) )
+      tree.add( self.expect(self.TERMINAL_SIGNED, tracer) )
       return tree
-    elif rule == 106:
+    elif rule == 104:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SUB, tracer) )
-      return tree
-    elif rule == 108:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_QUESTIONMARK, tracer) )
+      tree.add( self.expect(self.TERMINAL_REGISTER, tracer) )
       return tree
     elif rule == 109:
       tree.astTransform = AstTransformSubstitution(0)
@@ -1061,27 +872,23 @@ class Parser:
       return tree
     elif rule == 110:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_POUND, tracer) )
-      return tree
-    elif rule == 112:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_STRING_LITERAL, tracer) )
-      return tree
-    elif rule == 113:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_UNSIGNED, tracer) )
+      tree.add( self.expect(self.TERMINAL_ELSE, tracer) )
       return tree
     elif rule == 114:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITXOREQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_UNSIGNED, tracer) )
       return tree
-    elif rule == 117:
+    elif rule == 116:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_GT, tracer) )
+      tree.add( self.expect(self.TERMINAL_POUND, tracer) )
+      return tree
+    elif rule == 118:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_STRING_LITERAL, tracer) )
       return tree
     elif rule == 121:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RPAREN, tracer) )
+      tree.add( self.expect(self.TERMINAL_BITXOREQ, tracer) )
       return tree
     elif rule == 122:
       tree.astTransform = AstTransformSubstitution(0)
@@ -1089,169 +896,189 @@ class Parser:
       return tree
     elif rule == 123:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CASE, tracer) )
-      return tree
-    elif rule == 125:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_INT, tracer) )
-      return tree
-    elif rule == 126:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CHAR, tracer) )
-      return tree
-    elif rule == 127:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DOUBLE, tracer) )
+      tree.add( self.expect(self.TERMINAL_GT, tracer) )
       return tree
     elif rule == 128:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_POUNDPOUND, tracer) )
+      tree.add( self.expect(self.TERMINAL_CHAR, tracer) )
       return tree
     elif rule == 129:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RESTRICT, tracer) )
+      tree.add( self.expect(self.TERMINAL_CASE, tracer) )
+      return tree
+    elif rule == 130:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_POUNDPOUND, tracer) )
       return tree
     elif rule == 131:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_INTEGER_CONSTANT, tracer) )
+      tree.add( self.expect(self.TERMINAL_INT, tracer) )
       return tree
     elif rule == 134:
       tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DOUBLE, tracer) )
+      return tree
+    elif rule == 135:
+      tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_COMPLEX, tracer) )
+      return tree
+    elif rule == 136:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_COLON, tracer) )
       return tree
     elif rule == 137:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MULEQ, tracer) )
-      return tree
-    elif rule == 138:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_TYPEDEF, tracer) )
-      return tree
-    elif rule == 139:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ADD, tracer) )
+      tree.add( self.expect(self.TERMINAL_RESTRICT, tracer) )
       return tree
     elif rule == 141:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_WHILE, tracer) )
+      tree.add( self.expect(self.TERMINAL_TYPEDEF, tracer) )
       return tree
-    elif rule == 145:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_MODEQ, tracer) )
-      return tree
-    elif rule == 146:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LT, tracer) )
-      return tree
-    elif rule == 148:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DIVEQ, tracer) )
-      return tree
-    elif rule == 149:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_NOT, tracer) )
-      return tree
-    elif rule == 150:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_POUND, tracer) )
-      return tree
-    elif rule == 151:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ENUM, tracer) )
-      return tree
-    elif rule == 152:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_FOR, tracer) )
-      return tree
-    elif rule == 153:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DECR, tracer) )
-      return tree
-    elif rule == 155:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_GTEQ, tracer) )
-      return tree
-    elif rule == 156:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RBRACE, tracer) )
-      return tree
-    elif rule == 157:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RBRACE, tracer) )
-      return tree
-    elif rule == 158:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DO, tracer) )
-      return tree
-    elif rule == 159:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_EXCLAMATION_POINT, tracer) )
-      return tree
-    elif rule == 161:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CONTINUE, tracer) )
-      return tree
-    elif rule == 165:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DECIMAL_FLOATING_CONSTANT, tracer) )
-      return tree
-    elif rule == 166:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RSQUARE, tracer) )
-      return tree
-    elif rule == 167:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DEFAULT, tracer) )
-      return tree
-    elif rule == 172:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_STRUCT, tracer) )
-      return tree
-    elif rule == 173:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BITOR, tracer) )
-      return tree
-    elif rule == 174:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_HEXADECIMAL_FLOATING_CONSTANT, tracer) )
-      return tree
-    elif rule == 176:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_VOLATILE, tracer) )
-      return tree
-    elif rule == 177:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_COMMA, tracer) )
-      return tree
-    elif rule == 178:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_HEADER_NAME, tracer) )
-      return tree
-    elif rule == 181:
+    elif rule == 142:
       tree.astTransform = AstTransformSubstitution(0)
       tree.add( self.expect(self.TERMINAL_UNION, tracer) )
       return tree
+    elif rule == 146:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_WHILE, tracer) )
+      return tree
+    elif rule == 147:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_MULEQ, tracer) )
+      return tree
+    elif rule == 149:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_QUESTIONMARK, tracer) )
+      return tree
+    elif rule == 150:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_ADD, tracer) )
+      return tree
+    elif rule == 153:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_POUND, tracer) )
+      return tree
+    elif rule == 154:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_LT, tracer) )
+      return tree
+    elif rule == 156:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DECR, tracer) )
+      return tree
+    elif rule == 157:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DIVEQ, tracer) )
+      return tree
+    elif rule == 158:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_GTEQ, tracer) )
+      return tree
+    elif rule == 159:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_ENUM, tracer) )
+      return tree
+    elif rule == 160:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DO, tracer) )
+      return tree
+    elif rule == 161:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RPAREN, tracer) )
+      return tree
+    elif rule == 164:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RBRACE, tracer) )
+      return tree
+    elif rule == 166:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_EXCLAMATION_POINT, tracer) )
+      return tree
+    elif rule == 167:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DECIMAL_FLOATING_CONSTANT, tracer) )
+      return tree
+    elif rule == 168:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_CONTINUE, tracer) )
+      return tree
+    elif rule == 169:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DEFAULT, tracer) )
+      return tree
+    elif rule == 170:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_INTEGER_CONSTANT, tracer) )
+      return tree
+    elif rule == 174:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RSQUARE, tracer) )
+      return tree
+    elif rule == 175:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_STRUCT, tracer) )
+      return tree
+    elif rule == 177:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_HEXADECIMAL_FLOATING_CONSTANT, tracer) )
+      return tree
+    elif rule == 178:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_NOT, tracer) )
+      return tree
+    elif rule == 180:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_VOLATILE, tracer) )
+      return tree
     elif rule == 182:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LBRACE, tracer) )
+      tree.add( self.expect(self.TERMINAL_BITOR, tracer) )
       return tree
     elif rule == 183:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LSHIFTEQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_HEADER_NAME, tracer) )
+      return tree
+    elif rule == 184:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_MODEQ, tracer) )
       return tree
     elif rule == 186:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LSQUARE, tracer) )
+      tree.add( self.expect(self.TERMINAL_LBRACE, tracer) )
       return tree
-    elif rule == 188:
+    elif rule == 187:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ADDEQ, tracer) )
+      tree.add( self.expect(self.TERMINAL_COMMA, tracer) )
       return tree
     raise SyntaxError('Error: Unexpected symbol', tracer)
   def _CONSTANT(self, depth = 0):
-    rule = self.rule(108)
+    rule = self.rule(106)
     if depth is not False:
       tracer = DebugTracer("_CONSTANT", str(self.sym), rule, depth)
+      depth = depth + 1
+    else:
+      tracer = None
+    tree = ParseTree( NonTerminal(106, self.getAtomString(106)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    raise SyntaxError('Error: Unexpected symbol', tracer)
+  def _TRANSLATION_UNIT(self, depth = 0):
+    rule = self.rule(107)
+    if depth is not False:
+      tracer = DebugTracer("_TRANSLATION_UNIT", str(self.sym), rule, depth)
+      depth = depth + 1
+    else:
+      tracer = None
+    tree = ParseTree( NonTerminal(107, self.getAtomString(107)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    raise SyntaxError('Error: Unexpected symbol', tracer)
+  def __GEN1(self, depth = 0):
+    rule = self.rule(108)
+    if depth is not False:
+      tracer = DebugTracer("__GEN1", str(self.sym), rule, depth)
       depth = depth + 1
     else:
       tracer = None
@@ -1260,10 +1087,10 @@ class Parser:
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
     raise SyntaxError('Error: Unexpected symbol', tracer)
-  def _KEYWORD(self, depth = 0):
+  def _PUNCTUATOR(self, depth = 0):
     rule = self.rule(109)
     if depth is not False:
-      tracer = DebugTracer("_KEYWORD", str(self.sym), rule, depth)
+      tracer = DebugTracer("_PUNCTUATOR", str(self.sym), rule, depth)
       depth = depth + 1
     else:
       tracer = None
@@ -1271,159 +1098,199 @@ class Parser:
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 0:
+    if rule == 3:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CASE, tracer) )
+      tree.add( self.expect(self.TERMINAL_EQ, tracer) )
       return tree
-    elif rule == 1:
+    elif rule == 8:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_REGISTER, tracer) )
+      tree.add( self.expect(self.TERMINAL_COMMA, tracer) )
       return tree
-    elif rule == 3:
+    elif rule == 12:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_INLINE, tracer) )
+      tree.add( self.expect(self.TERMINAL_RSHIFT, tracer) )
       return tree
-    elif rule == 4:
+    elif rule == 13:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_AUTO, tracer) )
-      return tree
-    elif rule == 11:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_VOID, tracer) )
-      return tree
-    elif rule == 17:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_UNSIGNED, tracer) )
-      return tree
-    elif rule == 18:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_IF, tracer) )
-      return tree
-    elif rule == 20:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DOUBLE, tracer) )
+      tree.add( self.expect(self.TERMINAL_LBRACE, tracer) )
       return tree
     elif rule == 27:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_LONG, tracer) )
+      tree.add( self.expect(self.TERMINAL_SUBEQ, tracer) )
       return tree
-    elif rule == 32:
+    elif rule == 29:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_WHILE, tracer) )
+      tree.add( self.expect(self.TERMINAL_COLON, tracer) )
       return tree
-    elif rule == 36:
+    elif rule == 30:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_FOR, tracer) )
+      tree.add( self.expect(self.TERMINAL_EXCLAMATION_POINT, tracer) )
       return tree
-    elif rule == 38:
+    elif rule == 31:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ELSE, tracer) )
+      tree.add( self.expect(self.TERMINAL_RSHIFTEQ, tracer) )
       return tree
     elif rule == 39:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_VOLATILE, tracer) )
+      tree.add( self.expect(self.TERMINAL_LT, tracer) )
       return tree
-    elif rule == 47:
+    elif rule == 45:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL__IMAGINARY, tracer) )
+      tree.add( self.expect(self.TERMINAL_SUB, tracer) )
       return tree
-    elif rule == 49:
+    elif rule == 46:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL__BOOL, tracer) )
+      tree.add( self.expect(self.TERMINAL_LSQUARE, tracer) )
       return tree
     elif rule == 50:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_INT, tracer) )
-      return tree
-    elif rule == 57:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CONST, tracer) )
+      tree.add( self.expect(self.TERMINAL_AND, tracer) )
       return tree
     elif rule == 59:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_TYPEDEF, tracer) )
+      tree.add( self.expect(self.TERMINAL_BITXOR, tracer) )
       return tree
-    elif rule == 67:
+    elif rule == 61:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL__COMPLEX, tracer) )
+      tree.add( self.expect(self.TERMINAL_RBRACE, tracer) )
       return tree
-    elif rule == 72:
+    elif rule == 63:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_ENUM, tracer) )
+      tree.add( self.expect(self.TERMINAL_MULEQ, tracer) )
+      return tree
+    elif rule == 66:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_ASSIGN, tracer) )
+      return tree
+    elif rule == 68:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RSQUARE, tracer) )
       return tree
     elif rule == 74:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_EXTERN, tracer) )
+      tree.add( self.expect(self.TERMINAL_POUND, tracer) )
+      return tree
+    elif rule == 77:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_LSHIFTEQ, tracer) )
+      return tree
+    elif rule == 79:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_LSHIFT, tracer) )
+      return tree
+    elif rule == 84:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_LPAREN, tracer) )
+      return tree
+    elif rule == 86:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_MODEQ, tracer) )
       return tree
     elif rule == 88:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_STATIC, tracer) )
+      tree.add( self.expect(self.TERMINAL_POUNDPOUND, tracer) )
       return tree
-    elif rule == 97:
+    elif rule == 96:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_GOTO, tracer) )
+      tree.add( self.expect(self.TERMINAL_DECR, tracer) )
       return tree
-    elif rule == 107:
+    elif rule == 98:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SHORT, tracer) )
+      tree.add( self.expect(self.TERMINAL_QUESTIONMARK, tracer) )
       return tree
-    elif rule == 111:
+    elif rule == 100:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RETURN, tracer) )
+      tree.add( self.expect(self.TERMINAL_ARROW, tracer) )
+      return tree
+    elif rule == 105:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RPAREN, tracer) )
+      return tree
+    elif rule == 112:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_GTEQ, tracer) )
       return tree
     elif rule == 115:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SWITCH, tracer) )
+      tree.add( self.expect(self.TERMINAL_NEQ, tracer) )
       return tree
-    elif rule == 118:
+    elif rule == 117:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_STRUCT, tracer) )
+      tree.add( self.expect(self.TERMINAL_MOD, tracer) )
       return tree
-    elif rule == 119:
+    elif rule == 125:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CHAR, tracer) )
+      tree.add( self.expect(self.TERMINAL_LTEQ, tracer) )
       return tree
-    elif rule == 124:
+    elif rule == 127:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_RESTRICT, tracer) )
+      tree.add( self.expect(self.TERMINAL_ADDEQ, tracer) )
       return tree
-    elif rule == 130:
+    elif rule == 132:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_BREAK, tracer) )
+      tree.add( self.expect(self.TERMINAL_ELIPSIS, tracer) )
       return tree
-    elif rule == 143:
+    elif rule == 133:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_CONTINUE, tracer) )
+      tree.add( self.expect(self.TERMINAL_TILDE, tracer) )
+      return tree
+    elif rule == 138:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_GT, tracer) )
+      return tree
+    elif rule == 144:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_AMPERSAND, tracer) )
+      return tree
+    elif rule == 145:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_INCR, tracer) )
+      return tree
+    elif rule == 148:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_SEMI, tracer) )
+      return tree
+    elif rule == 151:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_BITOR, tracer) )
+      return tree
+    elif rule == 152:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_OR, tracer) )
       return tree
     elif rule == 162:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_UNION, tracer) )
+      tree.add( self.expect(self.TERMINAL_DOT, tracer) )
       return tree
-    elif rule == 168:
+    elif rule == 163:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SIGNED, tracer) )
+      tree.add( self.expect(self.TERMINAL_ADD, tracer) )
       return tree
-    elif rule == 170:
+    elif rule == 165:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_FLOAT, tracer) )
+      tree.add( self.expect(self.TERMINAL_BITANDEQ, tracer) )
       return tree
-    elif rule == 180:
+    elif rule == 172:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DO, tracer) )
+      tree.add( self.expect(self.TERMINAL_MUL, tracer) )
       return tree
-    elif rule == 184:
+    elif rule == 181:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_SIZEOF, tracer) )
+      tree.add( self.expect(self.TERMINAL_DIV, tracer) )
       return tree
     elif rule == 185:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(self.TERMINAL_DEFAULT, tracer) )
+      tree.add( self.expect(self.TERMINAL_BITXOREQ, tracer) )
+      return tree
+    elif rule == 189:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_BITOREQ, tracer) )
       return tree
     raise SyntaxError('Error: Unexpected symbol', tracer)
-  def __DIRECT_DECLARATOR(self, depth = 0):
+  def _KEYWORD(self, depth = 0):
     rule = self.rule(110)
     if depth is not False:
-      tracer = DebugTracer("__DIRECT_DECLARATOR", str(self.sym), rule, depth)
+      tracer = DebugTracer("_KEYWORD", str(self.sym), rule, depth)
       depth = depth + 1
     else:
       tracer = None
@@ -1431,10 +1298,157 @@ class Parser:
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 2:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_CASE, tracer) )
+      return tree
+    elif rule == 6:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_INLINE, tracer) )
+      return tree
+    elif rule == 14:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_AUTO, tracer) )
+      return tree
+    elif rule == 18:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_UNSIGNED, tracer) )
+      return tree
+    elif rule == 20:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_VOID, tracer) )
+      return tree
+    elif rule == 25:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_LONG, tracer) )
+      return tree
+    elif rule == 26:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_IF, tracer) )
+      return tree
+    elif rule == 28:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_BREAK, tracer) )
+      return tree
+    elif rule == 37:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DO, tracer) )
+      return tree
+    elif rule == 38:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_VOLATILE, tracer) )
+      return tree
+    elif rule == 40:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_WHILE, tracer) )
+      return tree
+    elif rule == 42:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_SIZEOF, tracer) )
+      return tree
+    elif rule == 44:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_FOR, tracer) )
+      return tree
+    elif rule == 48:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL__BOOL, tracer) )
+      return tree
+    elif rule == 52:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_REGISTER, tracer) )
+      return tree
+    elif rule == 55:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL__IMAGINARY, tracer) )
+      return tree
+    elif rule == 58:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_TYPEDEF, tracer) )
+      return tree
+    elif rule == 60:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_INT, tracer) )
+      return tree
+    elif rule == 67:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL__COMPLEX, tracer) )
+      return tree
+    elif rule == 71:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_ENUM, tracer) )
+      return tree
+    elif rule == 82:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_EXTERN, tracer) )
+      return tree
+    elif rule == 87:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_ELSE, tracer) )
+      return tree
+    elif rule == 106:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_CONST, tracer) )
+      return tree
+    elif rule == 107:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_GOTO, tracer) )
+      return tree
+    elif rule == 111:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RETURN, tracer) )
+      return tree
+    elif rule == 113:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_SHORT, tracer) )
+      return tree
+    elif rule == 119:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_CHAR, tracer) )
+      return tree
+    elif rule == 120:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_STATIC, tracer) )
+      return tree
+    elif rule == 124:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_RESTRICT, tracer) )
+      return tree
+    elif rule == 126:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_STRUCT, tracer) )
+      return tree
+    elif rule == 139:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_UNION, tracer) )
+      return tree
+    elif rule == 143:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DOUBLE, tracer) )
+      return tree
+    elif rule == 155:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_SWITCH, tracer) )
+      return tree
+    elif rule == 173:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_CONTINUE, tracer) )
+      return tree
+    elif rule == 176:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_SIGNED, tracer) )
+      return tree
+    elif rule == 179:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_FLOAT, tracer) )
+      return tree
+    elif rule == 188:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(self.TERMINAL_DEFAULT, tracer) )
+      return tree
     raise SyntaxError('Error: Unexpected symbol', tracer)
   bp0 = {
     2: 2000,
-    8: 11000,
     9: 8000,
     13: 10000,
     14: 7000,
@@ -1450,6 +1464,7 @@ class Parser:
     36: 11000,
     39: 9000,
     42: 15000,
+    44: 11000,
     47: 15000,
     48: 12000,
     51: 15000,
@@ -1503,13 +1518,13 @@ class Parser:
       tree.add( self.__EXPR(14000) )
       tree.astTransform = AstTransformNodeCreator('PreIncr', {'var': 1})
       return tree
-    if self.sym.getId() == 100:
+    if self.sym.getId() == 106:
+      return self.expect( 106, tracer )
       return tree
     if self.sym.getId() == 43:
       return self.expect( 43, tracer )
       return tree
-    if self.sym.getId() == 108:
-      return self.expect( 108, tracer )
+    if self.sym.getId() == 111:
       return tree
     if self.sym.getId() == 16:
       tree.add( self.expect( self.sym.getId(), tracer ) )
@@ -1528,7 +1543,7 @@ class Parser:
       return tree
     if self.sym.getId() == 61:
       return self.expect( 61, tracer )
-      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
+      tree.astTransform = AstTransformNodeCreator('FuncCall', {'params': 2, 'name': 0})
       return tree
   def led0(self, left, tracer):
     tree = ParseTree( NonTerminal(self.str_nonterminal['_expr'], '_expr') )
@@ -1538,13 +1553,6 @@ class Parser:
       tree.add( self.expect( self.sym.getId(), tracer ) )
       tree.add( self.__EXPR(1999) )
       tree.astTransform = AstTransformNodeCreator('RightShiftAssign', {'right': 2, 'left': 0})
-      return tree
-    if self.sym.getId() == 8:
-      if left:
-        tree.add( left )
-      tree.add( self.expect( self.sym.getId(), tracer ) )
-      tree.add( self.__EXPR(11000) )
-      tree.astTransform = AstTransformNodeCreator('LeftShift', {'right': 2, 'left': 0})
       return tree
     if self.sym.getId() == 9:
       if left:
@@ -1636,6 +1644,13 @@ class Parser:
       tree.add( self.expect( self.sym.getId(), tracer ) )
       tree.add( self.__EXPR(0) )
       tree.astTransform = AstTransformNodeCreator('DerefMemberSelect', {'member': 2, 'object': 0})
+      return tree
+    if self.sym.getId() == 44:
+      if left:
+        tree.add( left )
+      tree.add( self.expect( self.sym.getId(), tracer ) )
+      tree.add( self.__EXPR(11000) )
+      tree.astTransform = AstTransformNodeCreator('LeftShift', {'right': 2, 'left': 0})
       return tree
     if self.sym.getId() == 47:
       if left:
@@ -1814,10 +1829,10 @@ class Parser:
     return left
   def nud1(self, tracer):
     tree = ParseTree( NonTerminal(self.str_nonterminal['_direct_declarator'], '_direct_declarator') )
+    if self.sym.getId() == 101:
+      return tree
     if self.sym.getId() == 61:
       return self.expect( 61, tracer )
-      return tree
-    if self.sym.getId() == 110:
       return tree
   def led1(self, left, tracer):
     tree = ParseTree( NonTerminal(self.str_nonterminal['_expr'], '_expr') )

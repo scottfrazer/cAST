@@ -1,6 +1,6 @@
 {
   "ll1": {
-    "start": "terminals",
+    "start": "translation_unit",
     "rules": [
 
       "token := keyword | 'identifier' | constant | 'string_literal' | punctuator",

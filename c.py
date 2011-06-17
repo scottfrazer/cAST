@@ -1,20 +1,8 @@
-import sys, re, pprint
+import sys, re
 import cParser, ppParser
 
-class Token(cParser.Terminal):
-  def __init__( self, id, terminal_str, source_string, lineno, colno):
-    self.__dict__.update(locals())
-  
-  def getString(self):
-    return self.source_string
-  
-  def __str__( self ):
-    #return "'%s'" % (self.terminal_str.lower())
-    return '%s (%s) [line %d, col %d]' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
-  
-class TokenList(list):
-  pass
-
+# Abbreviations:
+#
 # cST = C Source Text
 # cPF = C Pre-Processing File
 # cPTU = C Preprocessing Translation Unit
@@ -29,10 +17,31 @@ class TokenList(list):
 # cAST = C Abstract Syntax Tree
 # cPT = C Parse Tree
 
-# Also called 'source file' in ISO docs.  Takes C source code,
-# and expands all #include directives
-class cPreprocessingFile:
+class Token(cParser.Terminal):
+  def __init__( self, id, terminal_str, source_string, lineno, colno):
+    self.__dict__.update(locals())
   
+  def getString(self):
+    return self.source_string
+  
+  def getLine(self):
+    return self.lineno
+  
+  def getColumn(self):
+    return self.colno
+  
+  def __str__( self ):
+    #return "'%s'" % (self.terminal_str.lower())
+    return '%s (%s) [line %d, col %d]' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
+  
+class TokenList(list):
+  pass
+
+
+
+# Also called 'source file' in ISO docs.
+# Takes C source code, pre-processes, returns C tokens
+class cPreprocessingFile:  
   trigraphs = {
     '??=': '#',
     '??(': '[',
@@ -55,10 +64,11 @@ class cPreprocessingFile:
     self.cPPL.setString( self.cST )
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
-    pp_evaluator = cPreprocessingEvaluator(self.cPPP, self.cL, cTokens())
+    pp_evaluator = cPreprocessingEvaluator(self.cPPP, self.cL)
     ctokens = pp_evaluator.eval(ast)
     return ctokens
   
+
 class cPreprocessorFunction:
   def __init__(self, params, body):
     self.__dict__.update(locals())
@@ -80,7 +90,7 @@ class cPreprocessorFunction:
   
 
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP, cL, cT):
+  def __init__(self, cPPP, cL):
     self.__dict__.update(locals())
   
   def eval( self, cPPAST ):
@@ -111,22 +121,27 @@ class cPreprocessingEvaluator:
       except TypeError:
         return x
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
-      string = cPPAST.getString()
       tokens = []
-      self.cL.setString(string)
-      self.cL.setLine(self.line)
-      self.cL.setColumn(1)
+      self.cL.setString(cPPAST.getString())
+      self.cL.setLine(cPPAST.getLine())
+      self.cL.setColumn(cPPAST.getColumn())
       for token in self.cL:
         next = [token]
         if token.terminal_str.lower() == 'identifier':
           if token.getString() in self.symbols:
             next = []
-            for ntoken in self.symbols[token.getString()]:
-              ntoken.colno = token.colno
-              ntoken.lineno = token.lineno
-              next.append(ntoken)
+            replacement = self.symbols[token.getString()]
+            if isinstance(replacement, cPreprocessorFunction):
+              pass
+            elif isinstance(replacement, list):
+              for ntoken in replacement:
+                ntoken.colno = token.colno
+                ntoken.lineno = token.lineno
+                next.append(ntoken)
+            else:
+              raise Exception('unknown macro replacement type')
         tokens.extend(next)
-      lines = len(list(filter(lambda x: x == '\n', string))) + 1
+      lines = len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
       self.line += lines
       return TokenList(tokens)
     elif isinstance(cPPAST, Token):
@@ -314,17 +329,25 @@ class cPreprocessingEvaluator:
   def ppnumber(self, element):
     if isinstance(element, Token):
       numstr = element.getString()
-      numstr = re.sub(r'[lL]', '', numstr)
+      numstr = re.sub(r'[lLuU]', '', numstr)
       if 'e' in numstr or 'E' in numstr:
         numstr = numstr.split( 'e' if e in numstr else 'E' )
-        num = int(numstr[0]) ** int(numstr[1])
+        num = int(numstr[0], self._base(numstr[0])) ** int(numstr[1], self._base(numstr[1]))
       elif 'p' in numstr or 'P' in numstr:
         numstr = numstr.split( 'p' if e in numstr else 'P' )
-        num = int(numstr[0] * (2 ** int(numstr[1])))
+        num = int(numstr[0], self._base(numstr[0])) * (2 ** int(numstr[1], self._base(numstr[1])))
       else:
-        num = int(numstr)
+        num = int(numstr, self._base(numstr))
       return num
     return int(element)
+  
+  def _base(self, string):
+    if string[:2] == '0x' or string[:2] == '0X':
+      return 16
+    elif string[0] == '0':
+      return 8
+    else:
+      return 10
   
   def countSourceLines(self, cPPAST):
     lines = 0
@@ -356,33 +379,16 @@ class cPreprocessingEvaluator:
     return lines
   
 
-class cTokens:
-  def __init__(self):
-    self.tokens = []
-  
-  def __iter__(self):
-    return iter(self.token)
-  
-  def addTokens(self, tokens):
-    self.tokens.extend(tokens)
-  
-  def addToken(self, token):
-    self.tokens.append(token)
-  
-
 # This is what can be tokenized and parsed as C code.
 class cTranslationUnit:
   def __init__( self, cT, cP ):
     self.__dict__.update(locals())
   
   def process( self ):
-    # Returns (cParseTree, cAst)
-    for token in self.cT:
-      print(token)
+    parsetree = self.cP.parse( cT, 'translation_unit' )
+    ast = parsetree.toAst()
+    return ast
   
-
-class cParseTree:
-  pass
 
 class Lexer:
   def __iter__(self):
@@ -480,7 +486,6 @@ class PatternMatchingLexer(Lexer):
     return token
   
 
-
 def parseDefine( match, string, lineno, colno, terminals ):
   identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
   if re.match(r'[ \t]+%s\(' % (identifier_regex), string):
@@ -506,9 +511,8 @@ def parseInclude( match, string, lineno, colno, terminals ):
 
 
 class cPreprocessingLexer(Lexer):
-  
   regex = [
-    ( re.compile(r'#[ \t]*include'), 'INCLUDE', parseInclude, None ),
+    ( re.compile(r'#[ \t]*include'), None, parseInclude, None ),
     ( re.compile(r'#[ \t]*define'), None, parseDefine, None ),
     ( re.compile(r'#[ \t]*ifdef'), 'IFDEF', None, None ),
     ( re.compile(r'#[ \t]*ifndef'), 'IFNDEF', None, None ),
@@ -568,10 +572,8 @@ class cPreprocessingLexer(Lexer):
     ( re.compile(r'//.*', 0), None, None, None ),
     ( re.compile(r'/(?!=)'), 'DIV', None, None )
   ]
-
-  def __init__(self, patternMatchingLexer, terminals, cST = ''):
+  def __init__(self, patternMatchingLexer, terminals):
     self.__dict__.update(locals())
-    self.setString(cST)
     self.patternMatchingLexer.setRegex(self.regex)
     self.patternMatchingLexer.setTerminals(terminals)
     self.comment_start = re.compile(r'/\*')
@@ -630,6 +632,7 @@ class cPreprocessingLexer(Lexer):
         continuation = False
         if len(buf):
           self.lineno -= 1
+          emit_csource = True
           break
         if line.strip() == '#':
           lines += 1
@@ -680,11 +683,7 @@ class cPreprocessingLexer(Lexer):
   
 
 class cLexer(PatternMatchingLexer):
-  def __init__(self, terminals, string = ''):
-    self.cache = []
-    self.setTerminals(terminals)
-    self.setString(string)
-    self.setRegex ([
+  cRegex = [
       # Comments
       ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
       ( re.compile(r'//.*', 0), None, None, None ),
@@ -801,7 +800,11 @@ class cLexer(PatternMatchingLexer):
 
       # Whitespace
       ( re.compile(r'\s+', 0), None, None, None )
-    ])
+  ]
+  def __init__(self, terminals):
+    self.cache = []
+    self.setTerminals(terminals)
+    self.setRegex(self.cRegex)
   
 
 if len(sys.argv) < 2:
@@ -818,10 +821,15 @@ for filename in sys.argv[1:]:
   ppTokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
   cPPL = cPreprocessingLexer( PatternMatchingLexer(terminals=ppTokenMap), ppTokenMap )
 
+  #try:
   cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
   cT = cPF.process()
   for t in cT:
     print(t)
-  sys.exit(-1)
+  #except TypeError as e:
+  #  print(e)
+  #  sys.exit(-1)
+  sys.exit(0)
   cTU = cTranslationUnit(cT, cP)
-  cTU.process()
+  cAST = cTU.process()
+  print(cAST)
