@@ -50,14 +50,9 @@ class cPreprocessingFile:
   def process( self ):
     # Phase 1: Replace trigraphs with single-character equivelants
     for (trigraph, replacement) in self.trigraphs.items():
-      self.cST.replace(trigraph, replacement)
-    # Phase 2: Delete all instances of backslash followed by newline
-    self.cST.replace('\\\n', '')
+      self.cST = self.cST.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
-    self.cPPL.setString(self.cST)
-    for t in self.cPPL:
-      print(t)
-    sys.exit(-1)
+    self.cPPL.setString( self.cST )
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
     e = cPreprocessingEvaluator(self.cPPP, self.cL, cTokens())
@@ -113,14 +108,18 @@ class cPreprocessingEvaluator:
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'pp_number':
       return self.ppnumber(cPPAST)
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'identifier':
-      if cPPAST.getString() not in self.symbols:
-        raise Exception('Unknown Variable %s' (cPPAST.getString()))
-      x = self.symbols[cPPAST.getString()]
-      # TODO: there has got to be a better way to do this!
-      self.cPPP.iterator = iter(x)
-      self.cPPP.sym = self.cPPP.getsym()
-      ast = self.cPPP.expr().toAst()
-      return self._eval(ast)
+      x = 0
+      if cPPAST.getString() in self.symbols:
+        x = self.symbols[cPPAST.getString()]
+      
+      try:
+        # TODO: there has got to be a better way to do this!
+        self.cPPP.iterator = iter(x)
+        self.cPPP.sym = self.cPPP.getsym()
+        ast = self.cPPP.expr().toAst()
+        return self._eval(ast)
+      except TypeError:
+        return x
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
       string = cPPAST.getString()
       tokens = []
@@ -265,7 +264,7 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'FuncCall':
         name = cPPAST.getAttr('name')
         params = cPPAST.getAttr('params')
-      elif cPPAST.name == 'Defined':
+      elif cPPAST.name == 'IsDefined':
         return 1
       elif cPPAST.name == 'Add':
         return self.ppnumber(self._eval(cPPAST.getAttr('left'))) + self.ppnumber(self._eval(cPPAST.getAttr('right')))
@@ -304,6 +303,12 @@ class cPreprocessingEvaluator:
         return self.ppnumber(self._eval(cPPAST.getAttr('left'))) ^ self.ppnumber(self._eval(cPPAST.getAttr('right')))
       elif cPPAST.name == 'BitNOT':
         return ~self.ppnumber(self._eval(cPPAST.getAttr('expr')))
+      elif cPPAST.name == 'And':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) and self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'Or':
+        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) or self.ppnumber(self._eval(cPPAST.getAttr('right')))
+      elif cPPAST.name == 'Not':
+        return not self.ppnumber(self._eval(cPPAST.getAttr('expr')))
       elif cPPAST.name == 'TernaryOperator':
         cond = cPPAST.getAttr('cond')
         true = cPPAST.getAttr('true')
