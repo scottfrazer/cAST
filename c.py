@@ -55,19 +55,9 @@ class cPreprocessingFile:
     self.cPPL.setString( self.cST )
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
-    e = cPreprocessingEvaluator(self.cPPP, self.cL, cTokens())
-    s = e.eval(ast)
-    for t in s:
-      print(t)
-    sys.exit(-1)
-    buf = ''
-    for cPPT in self.cPPL:
-      print(cPPT)
-      if cPPT.terminal_str == 'CSOURCE':
-        buf += '\n'+cPPT.source_string
-    #print(buf)
-    # Phase 4: Expand all #include tags with cPreprocessingFile.process, recursively.
-    return buf
+    pp_evaluator = cPreprocessingEvaluator(self.cPPP, self.cL, cTokens())
+    ctokens = pp_evaluator.eval(ast)
+    return ctokens
   
 class cPreprocessorFunction:
   def __init__(self, params, body):
@@ -323,7 +313,17 @@ class cPreprocessingEvaluator:
   
   def ppnumber(self, element):
     if isinstance(element, Token):
-      return int(element.getString())
+      numstr = element.getString()
+      numstr = re.sub(r'[lL]', '', numstr)
+      if 'e' in numstr or 'E' in numstr:
+        numstr = numstr.split( 'e' if e in numstr else 'E' )
+        num = int(numstr[0]) ** int(numstr[1])
+      elif 'p' in numstr or 'P' in numstr:
+        numstr = numstr.split( 'p' if e in numstr else 'P' )
+        num = int(numstr[0] * (2 ** int(numstr[1])))
+      else:
+        num = int(numstr)
+      return num
     return int(element)
   
   def countSourceLines(self, cPPAST):
@@ -574,7 +574,8 @@ class cPreprocessingLexer(Lexer):
     self.setString(cST)
     self.patternMatchingLexer.setRegex(self.regex)
     self.patternMatchingLexer.setTerminals(terminals)
-    self.comment1 = re.compile
+    self.comment_start = re.compile(r'/\*')
+    self.comment_end = re.compile(r'\*/')
     self.tokenBuffer = []
     self.colno = 1
     self.lineno = 0
@@ -622,9 +623,10 @@ class cPreprocessingLexer(Lexer):
     emit_separator = False
     emit_csource = False
     continuation = False
+    comment = False
     for line in self.cST_lines:
       self.lineno += 1
-      if self._isPreprocessingLine( line ) or continuation:
+      if not comment and (self._isPreprocessingLine( line ) or continuation):
         continuation = False
         if len(buf):
           self.lineno -= 1
@@ -655,6 +657,10 @@ class cPreprocessingLexer(Lexer):
         emit_csource = True
         if not len(buf):
           buf_line = self.lineno
+        if self.comment_start.search(line) and not self.comment_end.search(line):
+          comment = True
+        elif not self.comment_start.search(line) and self.comment_end.search(line):
+          comment = False
         buf.append(line)
         lines += 1
 
@@ -814,5 +820,8 @@ for filename in sys.argv[1:]:
 
   cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
   cT = cPF.process()
+  for t in cT:
+    print(t)
+  sys.exit(-1)
   cTU = cTranslationUnit(cT, cP)
   cTU.process()
