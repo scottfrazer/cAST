@@ -301,7 +301,7 @@ class cPreprocessingEvaluator:
         name = cPPAST.getAttr('name')
         params = cPPAST.getAttr('params')
       elif cPPAST.name == 'IsDefined':
-        return 1
+        return self._eval(cPPAST.getAttr('expr'))
       elif cPPAST.name == 'Add':
         return self.ppnumber(self._eval(cPPAST.getAttr('left'))) + self.ppnumber(self._eval(cPPAST.getAttr('right')))
       elif cPPAST.name == 'Sub':
@@ -544,6 +544,7 @@ def parseInclude( match, string, lineno, colno, terminals ):
 class cPreprocessingLexer(Lexer):
   regex = [
     ( re.compile(r'#[ \t]*include(?=[ \t\n])'), None, parseInclude, None ),
+    ( re.compile(r'#[ \t]*include_next(?=[ \t\n])'), None, parseInclude, None ), # GCC extension
     ( re.compile(r'#[ \t]*define(?=[ \t\n])'), None, parseDefine, None ),
     ( re.compile(r'#[ \t]*ifdef(?=[ \t\n])'), 'IFDEF', None, None ),
     ( re.compile(r'#[ \t]*ifndef(?=[ \t\n])'), 'IFNDEF', None, None ),
@@ -869,7 +870,7 @@ for filename in sys.argv[1:]:
     #  print(t)
   except Exception as e:
   #except TypeError as e:
-  #  print(e, '\n', e.tracer)
+    #print(e, '\n', e.tracer)
     sys.exit(-1)
   sys.exit(0)
   cTU = cTranslationUnit(cT, cP)
