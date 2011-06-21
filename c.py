@@ -34,9 +34,9 @@ class Token(cParser.Terminal):
     #return "'%s'" % (self.terminal_str.lower())
     return '%s (%s) [line %d, col %d]' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
   
+
 class TokenList(list):
   pass
-
 
 
 # Also called 'source file' in ISO docs.
@@ -62,6 +62,9 @@ class cPreprocessingFile:
       self.cST = self.cST.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     self.cPPL.setString( self.cST )
+    #for t in self.cPPL:
+    #  print(t)
+    #sys.exit(0)
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
     pp_evaluator = cPreprocessingEvaluator(self.cPPP, self.cL)
@@ -75,7 +78,7 @@ class cPreprocessorFunction:
   
   def run(self, params):
     if len(params) != len(self.params):
-      raise Exception('Error: too few parameters to function')
+      raise Exception('Error: too %s parameters to function: %s' % ('many' if len(params) > len(self.params) else 'few', ', '.join([str(x) for x in params])))
     values = {self.params[i].lower(): params[i] for i in range(len(params))}
     nodes = []
     for node in self.body.getAttr('tokens'):
@@ -101,6 +104,12 @@ class cPreprocessingEvaluator:
   def newlines(self, number):
     return ''.join(['\n' for i in range(number)])
   
+  def _parseExpr(self, tokens):
+    self.cPPP.iterator = iter(tokens)
+    self.cPPP.sym = self.cPPP.getsym()
+    ast = self.cPPP.expr().toAst()
+    return self._eval(ast)
+  
   def _eval( self, cPPAST ):
     rtokens = []
     if not cPPAST:
@@ -114,25 +123,33 @@ class cPreprocessingEvaluator:
       
       try:
         # TODO: there has got to be a better way to do this!
-        self.cPPP.iterator = iter(x)
-        self.cPPP.sym = self.cPPP.getsym()
-        ast = self.cPPP.expr().toAst()
-        return self._eval(ast)
+        return self._parseExpr( x )
       except TypeError:
         return x
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
       tokens = []
+      params = []
+      collect_params = False
       self.cL.setString(cPPAST.getString())
       self.cL.setLine(cPPAST.getLine())
       self.cL.setColumn(cPPAST.getColumn())
       for token in self.cL:
+        if False and collect_params:
+          if token.terminal_str.lower() == 'rparen':
+            collect_params = False
+          elif token.terminal_str.lower() not in ['comma', 'lparen']:
+            params.append(token)
+          continue
         next = [token]
         if token.terminal_str.lower() == 'identifier':
           if token.getString() in self.symbols:
             next = []
             replacement = self.symbols[token.getString()]
             if isinstance(replacement, cPreprocessorFunction):
-              pass
+              continue
+              params = []
+              collect_parameters = True
+              continue
             elif isinstance(replacement, list):
               for ntoken in replacement:
                 ntoken.colno = token.colno
@@ -231,6 +248,9 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'Error':
         cPPAST.getAttr('tokens')
         self.line += 1
+      elif cPPAST.name == 'Warning':
+        cPPAST.getAttr('tokens')
+        self.line += 1
       elif cPPAST.name == 'Undef':
         ident = cPPAST.getAttr('ident').getString()
         if ident in self.symbols:
@@ -251,13 +271,24 @@ class cPreprocessingEvaluator:
           if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
             replacement = self.symbols[token.getString()]
             if isinstance(replacement, cPreprocessorFunction):
+              print('function', replacement)
               advance = 2 # skip the identifier and lparen
               params = []
+              param_tokens = []
+              if index >= len(tokens) - 1 or tokens[index+1].getString() != '(':
+                return replacement.body
               for token in tokens[index + advance:]:
                 if token.getString() == ')':
+                  params.append( self._parseExpr( param_tokens ) )
                   break
-                if token.getString() != ',':
-                  params.append(token)
+                elif token.getString() == ',':
+                  param = []
+                  if len(param_tokens):
+                    params.append( self._parseExpr( param_tokens ) )
+                  params.append( param )
+                  param_tokens = []
+                else:
+                  param_tokens.append(token)
                 advance += 1
               result = replacement.run(params)
               newTokens.extend(result)
@@ -512,19 +543,21 @@ def parseInclude( match, string, lineno, colno, terminals ):
 
 class cPreprocessingLexer(Lexer):
   regex = [
-    ( re.compile(r'#[ \t]*include'), None, parseInclude, None ),
-    ( re.compile(r'#[ \t]*define'), None, parseDefine, None ),
-    ( re.compile(r'#[ \t]*ifdef'), 'IFDEF', None, None ),
-    ( re.compile(r'#[ \t]*ifndef'), 'IFNDEF', None, None ),
-    ( re.compile(r'#[ \t]*if'), 'IF', None, None ),
+    ( re.compile(r'#[ \t]*include(?=[ \t\n])'), None, parseInclude, None ),
+    ( re.compile(r'#[ \t]*define(?=[ \t\n])'), None, parseDefine, None ),
+    ( re.compile(r'#[ \t]*ifdef(?=[ \t\n])'), 'IFDEF', None, None ),
+    ( re.compile(r'#[ \t]*ifndef(?=[ \t\n])'), 'IFNDEF', None, None ),
+    ( re.compile(r'#[ \t]*if(?=[ \t\n])'), 'IF', None, None ),
     ( re.compile(r'#[ \t]*else'), 'ELSE', None, None ),
-    ( re.compile(r'#[ \t]*elif'), 'ELIF', None, None ),
-    ( re.compile(r'#[ \t]*pragma'), 'PRAGMA', None, None ),
-    ( re.compile(r'#[ \t]*error'), 'ERROR', None, None ),
-    ( re.compile(r'#[ \t]*line'), 'LINE', None, None ),
-    ( re.compile(r'#[ \t]*undef'), 'UNDEF', None, None ),
+    ( re.compile(r'#[ \t]*elif(?=[ \t\n])'), 'ELIF', None, None ),
+    ( re.compile(r'#[ \t]*pragma(?=[ \t\n])'), 'PRAGMA', None, None ),
+    ( re.compile(r'#[ \t]*error(?=[ \t\n])'), 'ERROR', None, None ),
+    ( re.compile(r'#[ \t]*warning(?=[ \t\n])'), 'WARNING', None, None ),
+    ( re.compile(r'#[ \t]*line(?=[ \t\n])'), 'LINE', None, None ),
+    ( re.compile(r'#[ \t]*undef(?=[ \t\n])'), 'UNDEF', None, None ),
     ( re.compile(r'#[ \t]*endif'), 'ENDIF', None, None ),
     ( re.compile(r'defined'), 'DEFINED', None, None ),
+    ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
     ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None, None ),
     ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
     ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
@@ -535,16 +568,23 @@ class cPreprocessingLexer(Lexer):
     ( re.compile(r'\)'), 'RPAREN', None, None ),
     ( re.compile(r'\{'), 'LBRACE', None, None ),
     ( re.compile(r'\}'), 'RBRACE', None, None ),
-    ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
     ( re.compile(r'\.'), 'DOT', None, None ),
     ( re.compile(r'->'), 'ARROW', None, None ),
     ( re.compile(r'\+\+'), 'INCR', None, None ),
     ( re.compile(r'--'), 'DECR', None, None ),
+    ( re.compile(r'\*='), 'MULEQ', None, None ),
+    ( re.compile(r'\+='), 'ADDEQ', None, None ),
+    ( re.compile(r'-='), 'SUBEQ', None, None ),
+    ( re.compile(r'%='), 'MODEQ', None, None ),
+    ( re.compile(r'&='), 'BITANDEQ', None, None ),
+    ( re.compile(r'\|='), 'BITOREQ', None, None ),
+    ( re.compile(r'\^='), 'BITXOREQ', None, None ),
+    ( re.compile(r'<<='), 'LSHIFTEQ', None, None ),
+    ( re.compile(r'>>='), 'RSHIFTEQ', None, None ),
     ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
     ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
     ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
     ( re.compile(r'-(?!=)'), 'SUB', None, None ),
-    ( re.compile(r'~'), 'TILDE', None, None ),
     ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
     ( re.compile(r'%(?!=)'), 'MOD', None, None ),
     ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
@@ -570,7 +610,8 @@ class cPreprocessingLexer(Lexer):
     ( re.compile(r'[ \t]+', 0), None, None, None ),
     ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
     ( re.compile(r'//.*', 0), None, None, None ),
-    ( re.compile(r'/(?!=)'), 'DIV', None, None )
+    ( re.compile(r'/='), 'DIVEQ', None, None ),
+    ( re.compile(r'/'), 'DIV', None, None )
   ]
   def __init__(self, patternMatchingLexer, terminals):
     self.__dict__.update(locals())
@@ -645,7 +686,7 @@ class cPreprocessingLexer(Lexer):
         self.patternMatchingLexer.setColumn( 1 )
         for cPPT in self.patternMatchingLexer:
           self._addToken(cPPT)
-          if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'LINE', 'ENDIF', 'UNDEF']:
+          if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'WARNING', 'LINE', 'ENDIF', 'UNDEF']:
             emit_separator = True
         if continuation:
           lines += 1
@@ -821,14 +862,15 @@ for filename in sys.argv[1:]:
   ppTokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
   cPPL = cPreprocessingLexer( PatternMatchingLexer(terminals=ppTokenMap), ppTokenMap )
 
-  #try:
-  cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
-  cT = cPF.process()
-  for t in cT:
-    print(t)
+  try:
+    cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
+    cT = cPF.process()
+  #for t in cT:
+  #  print(t)
+  except Exception as e:
   #except TypeError as e:
-  #  print(e)
-  #  sys.exit(-1)
+    print(e, '\n', e.tracer)
+    sys.exit(-1)
   sys.exit(0)
   cTU = cTranslationUnit(cT, cP)
   cAST = cTU.process()
