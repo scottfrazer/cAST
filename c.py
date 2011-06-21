@@ -62,9 +62,6 @@ class cPreprocessingFile:
       self.cST = self.cST.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     self.cPPL.setString( self.cST )
-    #for t in self.cPPL:
-    #  print(t)
-    #sys.exit(0)
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
     pp_evaluator = cPreprocessingEvaluator(self.cPPP, self.cL)
@@ -271,22 +268,25 @@ class cPreprocessingEvaluator:
           if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
             replacement = self.symbols[token.getString()]
             if isinstance(replacement, cPreprocessorFunction):
-              print('function', replacement)
               advance = 2 # skip the identifier and lparen
               params = []
               param_tokens = []
+              lparen_count = 1
               if index >= len(tokens) - 1 or tokens[index+1].getString() != '(':
                 return replacement.body
               for token in tokens[index + advance:]:
+                if token.getString() == '(':
+                  lparen_count += 1
                 if token.getString() == ')':
-                  params.append( self._parseExpr( param_tokens ) )
-                  break
+                  if lparen_count == 1:
+                    params.append( self._parseExpr( param_tokens ) )
+                    break
+                  lparen_count -= 1
+                  param_tokens.append(token)
                 elif token.getString() == ',':
-                  param = []
                   if len(param_tokens):
                     params.append( self._parseExpr( param_tokens ) )
-                  params.append( param )
-                  param_tokens = []
+                    param_tokens = []
                 else:
                   param_tokens.append(token)
                 advance += 1
@@ -865,11 +865,11 @@ for filename in sys.argv[1:]:
   try:
     cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
     cT = cPF.process()
-  #for t in cT:
-  #  print(t)
+    #for t in cT:
+    #  print(t)
   except Exception as e:
   #except TypeError as e:
-    print(e, '\n', e.tracer)
+  #  print(e, '\n', e.tracer)
     sys.exit(-1)
   sys.exit(0)
   cTU = cTranslationUnit(cT, cP)
