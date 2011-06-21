@@ -1,0 +1,28 @@
+1.  Test for alias functions:
+
+#define foo(x, y) x+y
+#define bar foo
+
+2.  Test for variable parameter functions
+
+#define foo(x, ...) __VA_ARGS__, x
+--
+#define foo(..., x) // bad
+--
+
+3.  Test # and ## operators
+4.  Implement #include, #error, #warning, #pragma
+5.  Skip areas that are not going to be parsed.
+
+#define GCC 0
+#if GCC
+#include_next <header.h> // should be skipped
+#endif
+
+    Interesting side note: does this even make sense?
+    Why allow non-standard syntax ever?  I might skip
+    this because it's bad language design.
+    
+    Alternatively, I could lex it as:
+    
+    [#include], [_next], [<], [header.h], [>]
