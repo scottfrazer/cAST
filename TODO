@@ -26,3 +26,8 @@
     Alternatively, I could lex it as:
     
     [#include], [_next], [<], [header.h], [>]
+
+6.  Macro function replacement in csource
+
+#define foo(a,b) a+b
+printf("%d\n", foo(1,2));

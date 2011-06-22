@@ -1,4 +1,4 @@
-import sys, re
+import sys, re, os
 import cParser, ppParser
 
 # Abbreviations:
@@ -16,9 +16,36 @@ import cParser, ppParser
 # cPPAST = C Pre-Processing Abstract Syntax Tree
 # cAST = C Abstract Syntax Tree
 # cPT = C Parse Tree
+# cPE = C Preprocessor Evaluator
 
+class Debugger:
+  class DebugLogger:
+    def __init__(self, module, filepath):
+      self.__dict__.update(locals())
+      self.fp = open(filepath, 'w')
+    
+    def log( self, category, line ):
+      self.fp.write( "[%s] %s\n" % (category, line) )
+      # TODO close file in destructor
+      self.fp.flush()
+    
+  
+  def __init__(self, directory):
+    self.__dict__.update(locals())
+    self.loggers = {}
+  
+  def getLogger(self, module):
+    filepath = os.path.join(self.directory, module)
+    if module in self.loggers:
+      logger = self.loggers[module]
+    else:
+      logger = self.DebugLogger(module, filepath)
+      self.loggers[module] = logger
+    return logger
+  
+  
 class Token(cParser.Terminal):
-  def __init__( self, id, terminal_str, source_string, lineno, colno):
+  def __init__(self, id, terminal_str, source_string, lineno, colno):
     self.__dict__.update(locals())
   
   def getString(self):
@@ -53,7 +80,7 @@ class cPreprocessingFile:
     '??>': '}',
     '??-': '~',
   }
-  def __init__( self, cST, cPPL, cPPP, cL ):
+  def __init__( self, cST, cPPL, cPPP, cL, cPE, logger = None ):
     self.__dict__.update(locals())
   
   def process( self ):
@@ -64,13 +91,12 @@ class cPreprocessingFile:
     self.cPPL.setString( self.cST )
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
-    pp_evaluator = cPreprocessingEvaluator(self.cPPP, self.cL)
-    ctokens = pp_evaluator.eval(ast)
+    ctokens = self.cPE.eval(ast)
     return ctokens
   
 
 class cPreprocessorFunction:
-  def __init__(self, params, body):
+  def __init__(self, params, body, logger = None):
     self.__dict__.update(locals())
   
   def run(self, params):
@@ -90,7 +116,7 @@ class cPreprocessorFunction:
   
 
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP, cL):
+  def __init__(self, cPPP, cL, logger = None):
     self.__dict__.update(locals())
   
   def eval( self, cPPAST ):
@@ -107,8 +133,24 @@ class cPreprocessingEvaluator:
     ast = self.cPPP.expr().toAst()
     return self._eval(ast)
   
+  def _debugStr(self, cPPAST):
+    if isinstance(cPPAST, Token):
+      string = 'Token (%s) [line %d, col %d]' % (cPPAST.terminal_str.lower(), cPPAST.lineno, cPPAST.colno)
+      if cPPAST.terminal_str.lower() not in ['pp_number', 'identifier', 'csource']:
+        string = '(unidentified) ' + string
+      return string
+    if isinstance(cPPAST, list):
+      return 'List: [%s]' % (', '.join([self._debugStr(x) for x in cPPAST]))
+    if isinstance(cPPAST, ppParser.Ast):
+      return 'Ast: %s' % (cPPAST.name)
+  
   def _eval( self, cPPAST ):
     rtokens = []
+    if self.logger:
+      self._log('eval', self._debugStr(cPPAST))
+      for symbol, replacement in self.symbols.items():
+        continue
+        self._log('symbol', '%s: [%s]' % (str(symbol), ', '.join([str(x) for x in replacement])))
     if not cPPAST:
       return []
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'pp_number':
@@ -119,8 +161,10 @@ class cPreprocessingEvaluator:
         x = self.symbols[cPPAST.getString()]
       
       try:
-        # TODO: there has got to be a better way to do this!
-        return self._parseExpr( x )
+        self._log('eval', 'evaluating expression for identifier %s' % (cPPAST.getString()))
+        self._log('eval', 'expression tokens: [%s]' % (self._debugStr(x)))
+        if len(x):
+          return self._parseExpr( x )
       except TypeError:
         return x
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
@@ -301,7 +345,7 @@ class cPreprocessingEvaluator:
         name = cPPAST.getAttr('name')
         params = cPPAST.getAttr('params')
       elif cPPAST.name == 'IsDefined':
-        return self._eval(cPPAST.getAttr('expr'))
+        return cPPAST.getAttr('expr').getString() in self.symbols
       elif cPPAST.name == 'Add':
         return self.ppnumber(self._eval(cPPAST.getAttr('left'))) + self.ppnumber(self._eval(cPPAST.getAttr('right')))
       elif cPPAST.name == 'Sub':
@@ -380,6 +424,11 @@ class cPreprocessingEvaluator:
     else:
       return 10
   
+  def _log(self, category, message):
+    if not self.logger:
+      return
+    self.logger.log(category, message)
+  
   def countSourceLines(self, cPPAST):
     lines = 0
     if not cPPAST:
@@ -412,7 +461,7 @@ class cPreprocessingEvaluator:
 
 # This is what can be tokenized and parsed as C code.
 class cTranslationUnit:
-  def __init__( self, cT, cP ):
+  def __init__( self, cT, cP, logger = None ):
     self.__dict__.update(locals())
   
   def process( self ):
@@ -430,10 +479,11 @@ class Lexer:
   
 
 class PatternMatchingLexer(Lexer):
-  def __init__(self, string = '', regex = [], terminals = {}):
-    self.setString(string)
+  def __init__(self, string = '', regex = [], terminals = {}, logger = None):
+    self.setLogger(logger)
     self.setRegex(regex)
     self.setTerminals(terminals)
+    self.setString(string)
     self.cache = []
   
   def addToken(self, token):
@@ -453,6 +503,7 @@ class PatternMatchingLexer(Lexer):
     self.string = string
     self.colno = 1
     self.lineno = 1
+    self._log('info', 'SetString: "%s"' %(string))
   
   def setLine(self, lineno):
     self.lineno = lineno
@@ -465,6 +516,9 @@ class PatternMatchingLexer(Lexer):
   
   def setTerminals(self, terminals):
     self.terminals = terminals
+  
+  def setLogger(self, logger):
+    self.logger = logger
   
   def advance(self, i):
     self.string = self.string[i:]
@@ -508,13 +562,27 @@ class PatternMatchingLexer(Lexer):
   
   def __next__(self):
     if self.hasToken():
-      return self.nextToken()
+      token = self.nextToken()
+      self._log('token', '(queued) %s' % (self._debugToken(token)))
+      return token
     if len(self.string.strip()) <= 0:
+      self._log('info', 'StopIteration')
       raise StopIteration()
     token = self.nextMatch()
     if not token:
-      raise Exception('Invalid character on line %d, col %d' % (self.lineno, self.colno))
+      error = 'Invalid character on line %d, col %d' % (self.lineno, self.colno)
+      self._log('error', error)
+      raise Exception(error)
+    self._log('token', str(self._debugToken(token)))
     return token
+  
+  def _debugToken(self, token):
+    return '[line %d, col %d] %s (%s)' % ( token.lineno, token.colno, token.terminal_str.lower(), token.source_string )
+  
+  def _log(self, category, message):
+    if not self.logger:
+      return
+    self.logger.log(category, message)
   
 
 def parseDefine( match, string, lineno, colno, terminals ):
@@ -614,7 +682,7 @@ class cPreprocessingLexer(Lexer):
     ( re.compile(r'/='), 'DIVEQ', None, None ),
     ( re.compile(r'/'), 'DIV', None, None )
   ]
-  def __init__(self, patternMatchingLexer, terminals):
+  def __init__(self, patternMatchingLexer, terminals, logger = None):
     self.__dict__.update(locals())
     self.patternMatchingLexer.setRegex(self.regex)
     self.patternMatchingLexer.setTerminals(terminals)
@@ -843,10 +911,11 @@ class cLexer(PatternMatchingLexer):
       # Whitespace
       ( re.compile(r'\s+', 0), None, None, None )
   ]
-  def __init__(self, terminals):
+  def __init__(self, terminals, logger = None):
     self.cache = []
     self.setTerminals(terminals)
     self.setRegex(self.cRegex)
+    self.setLogger(logger)
   
 
 if len(sys.argv) < 2:
@@ -854,23 +923,23 @@ if len(sys.argv) < 2:
   sys.exit(-1)
 
 for filename in sys.argv[1:]:
+  debugger = Debugger('./debug')
   cP = cParser.Parser()
   cPPP = ppParser.Parser()
   
   cTokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
-  cL = cLexer(cTokenMap)
+  cL = cLexer(cTokenMap, logger=debugger.getLogger('cmatch'))
 
-  ppTokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
-  cPPL = cPreprocessingLexer( PatternMatchingLexer(terminals=ppTokenMap), ppTokenMap )
-
+  cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
+  cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=cPPL_TokenMap, logger=debugger.getLogger('ppmatch'))
+  cPPL = cPreprocessingLexer( cPPL_PatternMatchingLexer, cPPL_TokenMap, logger=debugger.getLogger('pplex') )
+  cPE = cPreprocessingEvaluator(cPPP, cL, logger=debugger.getLogger('ppeval'))
+  cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL, cPE, logger=debugger.getLogger('ppfile'))
+  
   try:
-    cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL)
     cT = cPF.process()
-    #for t in cT:
-    #  print(t)
   except Exception as e:
-  #except TypeError as e:
-    #print(e, '\n', e.tracer)
+    print(e, '\n', e.tracer)
     sys.exit(-1)
   sys.exit(0)
   cTU = cTranslationUnit(cT, cP)
