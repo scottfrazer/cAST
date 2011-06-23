@@ -208,9 +208,7 @@ class cPreprocessingEvaluator:
             lparen = 1
             buf = []
             params = []
-            print('--')
             for paramToken, plookahead in cLexer:
-              print('pp', paramToken)
               paramTokenStr = paramToken.terminal_str.lower()
               if paramTokenStr == 'lparen':
                 lparen += 1
@@ -518,7 +516,7 @@ class cTranslationUnit:
   
   def process( self ):
     for t in self.cT:
-      pass#print(t)
+      print(t)
     return cT
     parsetree = self.cP.parse( self.cT, 'translation_unit' )
     ast = parsetree.toAst()
