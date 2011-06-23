@@ -160,6 +160,29 @@ class cPreprocessingEvaluator:
     if isinstance(cPPAST, ppParser.Ast):
       return 'Ast: %s' % (cPPAST.name)
   
+  def _getCSourceMacroFunctionParams(self, cLexer):
+    next(cLexer) # skip lparen
+    lparen = 1
+    buf = []
+    params = []
+    for paramToken, plookahead in cLexer:
+      paramTokenStr = paramToken.terminal_str.lower()
+      if paramTokenStr == 'lparen':
+        lparen += 1
+      if paramTokenStr == 'rparen':
+        lparen -= 1
+      if paramTokenStr in ['comma', 'rparen'] and lparen <= 1:
+        params.append( buf )
+        buf = []
+      else:
+        if paramTokenStr in ['integer_constant', 'decimal_floating_constant', 'hexadecimal_floating_constant']:
+          paramToken.id = self.cPPP.terminal('pp_number');
+          paramToken.terminal_str = 'pp_number'
+        buf.append(paramToken)
+      if paramTokenStr == 'rparen' and lparen <= 1:
+        break
+    return params
+  
   def _eval( self, cPPAST ):
     rtokens = []
     if self.logger:
@@ -204,35 +227,23 @@ class cPreprocessingEvaluator:
             if lookahead.getString() != '(':
               tokens.extend(token)
               continue
-            next(cLexer) # skip lparen
-            lparen = 1
-            buf = []
-            params = []
-            for paramToken, plookahead in cLexer:
-              paramTokenStr = paramToken.terminal_str.lower()
-              if paramTokenStr == 'lparen':
-                lparen += 1
-              if paramTokenStr == 'rparen':
-                lparen -= 1
-              if paramTokenStr in ['comma', 'rparen'] and lparen <= 1:
-                params.append( buf )
-                buf = []
-              else:
-                if paramTokenStr in ['integer_constant', 'decimal_floating_constant', 'hexadecimal_floating_constant']:
-                  paramToken.id = self.cPPP.terminal('pp_number');
-                  paramToken.terminal_str = 'pp_number'
-                buf.append(paramToken)
-              if paramTokenStr == 'rparen' and lparen <= 1:
-                break
-            print(', '.join([str(x) for x in buf]))
-            result = replacement.run(params)
-            tokens.extend(result)
+            else:
+              params = self._getCSourceMacroFunctionParams(cLexer)
+              result = replacement.run(params)
+              tokens.extend(result)
           elif isinstance(replacement, list):
             tmp = []
-            for ntoken in replacement:
-              ntoken.colno = token.colno
-              ntoken.lineno = token.lineno
-              tmp.append(ntoken)
+            for (replacement_token, next_token) in zip_longest(replacement, replacement[1:]):
+              if not next_token:
+                if isinstance(replacement_token, cPreprocessorFunction) and \
+                   lookahead.getString() == '(':
+                   params = self._getCSourceMacroFunctionParams(cLexer)
+                   result = replacement_token.run(params)
+                   tmp.extend(result)
+                   break
+              replacement_token.colno = token.colno
+              replacement_token.lineno = token.lineno
+              tmp.append(replacement_token)
             tokens.extend(tmp)
             continue
           else:
