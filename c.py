@@ -175,9 +175,6 @@ class cPreprocessingEvaluator:
         params.append( buf )
         buf = []
       else:
-        if paramTokenStr in ['integer_constant', 'decimal_floating_constant', 'hexadecimal_floating_constant']:
-          paramToken.id = self.cPPP.terminal('pp_number');
-          paramToken.terminal_str = 'pp_number'
         buf.append(paramToken)
       if paramTokenStr == 'rparen' and lparen <= 1:
         break
