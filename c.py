@@ -1,5 +1,8 @@
 import sys, re, os
+from itertools import zip_longest, islice
 import cParser, ppParser
+
+sys.setrecursionlimit(2000)
 
 # Abbreviations:
 #
@@ -91,28 +94,40 @@ class cPreprocessingFile:
     self.cPPL.setString( self.cST )
     parsetree = cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
+    if self.logger:
+      try:
+        self.logger.log('parsetree', str(parsetree))
+        self.logger.log('ast', str(ast))
+      except RuntimeError:
+        pass
     ctokens = self.cPE.eval(ast)
     return ctokens
   
 
 class cPreprocessorFunction:
-  def __init__(self, params, body, logger = None):
+  def __init__(self, name, params, body, logger = None):
     self.__dict__.update(locals())
   
   def run(self, params):
     if len(params) != len(self.params):
-      raise Exception('Error: too %s parameters to function: %s' % ('many' if len(params) > len(self.params) else 'few', ', '.join([str(x) for x in params])))
+      raise Exception('Error: too %s parameters to function %s: %s' % ('many' if len(params) > len(self.params) else 'few', self.name, ', '.join([str(x) for x in params])))
     values = {self.params[i].lower(): params[i] for i in range(len(params))}
     nodes = []
+    if not self.body:
+      return nodes
     for node in self.body.getAttr('tokens'):
       if node.terminal_str.lower() == 'identifier' and node.getString().lower() in values:
-        nodes.append(values[node.getString().lower()])
+        val = values[node.getString().lower()]
+        if isinstance(val, list):
+          nodes.extend(val)
+        else:
+          nodes.append(val)
       else:
         nodes.append(node)
     return nodes
   
   def __str__(self):
-    return '[function params=%s body=%s]' % (', '.join(self.params), str(self.body))
+    return '[cPreprocessorFunction params=%s body=%s]' % (', '.join(self.params), str(self.body))
   
 
 class cPreprocessingEvaluator:
@@ -131,7 +146,8 @@ class cPreprocessingEvaluator:
     self.cPPP.iterator = iter(tokens)
     self.cPPP.sym = self.cPPP.getsym()
     ast = self.cPPP.expr().toAst()
-    return self._eval(ast)
+    value = self._eval(ast)
+    return Token(cPPP.terminal('pp_number'), 'pp_number', value, 0, 0)
   
   def _debugStr(self, cPPAST):
     if isinstance(cPPAST, Token):
@@ -149,8 +165,11 @@ class cPreprocessingEvaluator:
     if self.logger:
       self._log('eval', self._debugStr(cPPAST))
       for symbol, replacement in self.symbols.items():
-        continue
-        self._log('symbol', '%s: [%s]' % (str(symbol), ', '.join([str(x) for x in replacement])))
+        if isinstance(replacement, list):
+          replacementList = '[%s]' % (', '.join([str(x) for x in replacement]))
+        else:
+          replacementList = str(replacement)
+        self._log('symbol', '%s: %s' % (str(symbol), replacementList))
     if not cPPAST:
       return []
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'pp_number':
@@ -170,35 +189,58 @@ class cPreprocessingEvaluator:
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
       tokens = []
       params = []
-      collect_params = False
+      advance = 0
       self.cL.setString(cPPAST.getString())
       self.cL.setLine(cPPAST.getLine())
       self.cL.setColumn(cPPAST.getColumn())
-      for token in self.cL:
-        if False and collect_params:
-          if token.terminal_str.lower() == 'rparen':
-            collect_params = False
-          elif token.terminal_str.lower() not in ['comma', 'lparen']:
-            params.append(token)
-          continue
-        next = [token]
-        if token.terminal_str.lower() == 'identifier':
-          if token.getString() in self.symbols:
-            next = []
-            replacement = self.symbols[token.getString()]
-            if isinstance(replacement, cPreprocessorFunction):
+      # token with lookahead
+      cTokens = list(self.cL)
+      cLexer = zip_longest(cTokens, cTokens[1:])
+      for token, lookahead in cLexer:
+        if token.terminal_str.lower() == 'identifier' and \
+           token.getString() in self.symbols:
+          replacement = self.symbols[token.getString()]
+          if isinstance(replacement, cPreprocessorFunction):
+            if lookahead.getString() != '(':
+              tokens.extend(token)
               continue
-              params = []
-              collect_parameters = True
-              continue
-            elif isinstance(replacement, list):
-              for ntoken in replacement:
-                ntoken.colno = token.colno
-                ntoken.lineno = token.lineno
-                next.append(ntoken)
-            else:
-              raise Exception('unknown macro replacement type')
-        tokens.extend(next)
+            next(cLexer) # skip lparen
+            lparen = 1
+            buf = []
+            params = []
+            print('--')
+            for paramToken, plookahead in cLexer:
+              print('pp', paramToken)
+              paramTokenStr = paramToken.terminal_str.lower()
+              if paramTokenStr == 'lparen':
+                lparen += 1
+              if paramTokenStr == 'rparen':
+                lparen -= 1
+              if paramTokenStr in ['comma', 'rparen'] and lparen <= 1:
+                params.append( buf )
+                buf = []
+              else:
+                if paramTokenStr in ['integer_constant', 'decimal_floating_constant', 'hexadecimal_floating_constant']:
+                  paramToken.id = self.cPPP.terminal('pp_number');
+                  paramToken.terminal_str = 'pp_number'
+                buf.append(paramToken)
+              if paramTokenStr == 'rparen' and lparen <= 1:
+                break
+            print(', '.join([str(x) for x in buf]))
+            result = replacement.run(params)
+            tokens.extend(result)
+          elif isinstance(replacement, list):
+            tmp = []
+            for ntoken in replacement:
+              ntoken.colno = token.colno
+              ntoken.lineno = token.lineno
+              tmp.append(ntoken)
+            tokens.extend(tmp)
+            continue
+          else:
+            raise Exception('unknown macro replacement type')
+        else:
+          tokens.append(token)
       lines = len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
       self.line += lines
       return TokenList(tokens)
@@ -207,7 +249,11 @@ class cPreprocessingEvaluator:
     elif isinstance(cPPAST, list):
       if cPPAST and len(cPPAST):
         for node in cPPAST:
-          rtokens.extend( self._eval(node) )
+          result = self._eval(node)
+          if isinstance(result, list):
+            rtokens.extend(result)
+          else:
+            rtokens.append(result)
       return rtokens
     else:
       if cPPAST.name == 'PPFile':
@@ -275,13 +321,14 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'Define':
         ident = cPPAST.getAttr('ident')
         body = cPPAST.getAttr('body')
+        self._log('DEFINE', str(body))
         self.symbols[ident.getString()] = self._eval(body)
         self.line += 1
       elif cPPAST.name == 'DefineFunction':
         ident = cPPAST.getAttr('ident')
         params = cPPAST.getAttr('params')
         body = cPPAST.getAttr('body')
-        self.symbols[ident.getString()] = cPreprocessorFunction( [p.getString() for p in params], body )
+        self.symbols[ident.getString()] = cPreprocessorFunction( ident, [p.getString() for p in params], body )
         self.line += 1
       elif cPPAST.name == 'Pragma':
         cPPAST.getAttr('tokens')
@@ -312,30 +359,33 @@ class cPreprocessingEvaluator:
           if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
             replacement = self.symbols[token.getString()]
             if isinstance(replacement, cPreprocessorFunction):
-              advance = 2 # skip the identifier and lparen
-              params = []
-              param_tokens = []
-              lparen_count = 1
-              if index >= len(tokens) - 1 or tokens[index+1].getString() != '(':
-                return replacement.body
-              for token in tokens[index + advance:]:
-                if token.getString() == '(':
-                  lparen_count += 1
-                if token.getString() == ')':
-                  if lparen_count == 1:
-                    params.append( self._parseExpr( param_tokens ) )
-                    break
-                  lparen_count -= 1
-                  param_tokens.append(token)
-                elif token.getString() == ',':
-                  if len(param_tokens):
-                    params.append( self._parseExpr( param_tokens ) )
-                    param_tokens = []
-                else:
-                  param_tokens.append(token)
-                advance += 1
-              result = replacement.run(params)
-              newTokens.extend(result)
+              if index >= len(tokens) - 1:
+                newTokens.append(replacement)
+              elif tokens[index + 1].getString() == '(':
+                advance = 2 # skip the identifier and lparen
+                params = []
+                param_tokens = []
+                lparen_count = 1
+                for token in tokens[index + advance:]:
+                  if token.getString() == '(':
+                    lparen_count += 1
+                  if token.getString() == ')':
+                    if lparen_count == 1:
+                      params.append( self._parseExpr( param_tokens ) )
+                      break
+                    lparen_count -= 1
+                    param_tokens.append(token)
+                  elif token.getString() == ',':
+                    if len(param_tokens):
+                      params.append( self._parseExpr( param_tokens ) )
+                      param_tokens = []
+                  else:
+                    param_tokens.append(token)
+                  advance += 1
+                result = replacement.run(params)
+                newTokens.extend(result)
+              else:
+                newTokens.append(token)
             else:
               newTokens.extend( self.symbols[token.getString()] )
           else:
@@ -404,6 +454,8 @@ class cPreprocessingEvaluator:
   def ppnumber(self, element):
     if isinstance(element, Token):
       numstr = element.getString()
+      if isinstance(numstr, int) or isinstance(numstr, float):
+        return numstr
       numstr = re.sub(r'[lLuU]', '', numstr)
       if 'e' in numstr or 'E' in numstr:
         numstr = numstr.split( 'e' if e in numstr else 'E' )
@@ -465,7 +517,10 @@ class cTranslationUnit:
     self.__dict__.update(locals())
   
   def process( self ):
-    parsetree = self.cP.parse( cT, 'translation_unit' )
+    for t in self.cT:
+      pass#print(t)
+    return cT
+    parsetree = self.cP.parse( self.cT, 'translation_unit' )
     ast = parsetree.toAst()
     return ast
   
@@ -938,10 +993,10 @@ for filename in sys.argv[1:]:
   
   try:
     cT = cPF.process()
+    cTU = cTranslationUnit(cT, cP)
+    cAST = cTU.process()
   except Exception as e:
     print(e, '\n', e.tracer)
     sys.exit(-1)
   sys.exit(0)
-  cTU = cTranslationUnit(cT, cP)
-  cAST = cTU.process()
   print(cAST)
