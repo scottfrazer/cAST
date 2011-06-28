@@ -1,5 +1,6 @@
 import sys, re, os
 from itertools import zip_longest, islice
+from copy import copy, deepcopy
 import cParser, ppParser
 
 sys.setrecursionlimit(2000)
@@ -38,6 +39,7 @@ class Debugger:
     self.loggers = {}
   
   def getLogger(self, module):
+    return None
     filepath = os.path.join(self.directory, module)
     if module in self.loggers:
       logger = self.loggers[module]
@@ -62,9 +64,15 @@ class Token(cParser.Terminal):
   
   def __str__( self ):
     #return "'%s'" % (self.terminal_str.lower())
-    #return '%s (%s) [line %d, col %d]' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
-    return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
+    return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
+    #return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
   
+
+class ppToken(Token):
+  type = 'pp'
+
+class cToken(Token):
+  type = 'c'
 
 class TokenList(list):
   pass
@@ -108,7 +116,7 @@ class cPreprocessingFile:
 #cPFF
 class cPreprocessorFunctionFactory:
   class cPreprocessorFunction:
-    def __init__(self, name, params, body, cPPP, cPE, logger = None):
+    def __init__(self, name, params, body, cP, cPE, logger = None):
       self.__dict__.update(locals())
     
     def run(self, params, lineno, colno):
@@ -123,7 +131,7 @@ class cPreprocessorFunctionFactory:
           for va_arg_rlist, next in zip_longest(params[index:], params[index+1:]):
             paramValues['__VA_ARGS__'].extend(va_arg_rlist)
             if next:
-              paramValues['__VA_ARGS__'].append(Token(self.cPPP.terminal('comma'), 'comma', ',', 0, 0))
+              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminal('comma'), 'comma', ',', 0, 0))
         else:
           paramValues[param] = params[index]
       nodes = []
@@ -133,11 +141,12 @@ class cPreprocessorFunctionFactory:
         if node.terminal_str.lower() == 'identifier' and node.getString() in paramValues:
           val = paramValues[node.getString()]
           if isinstance(val, list):
-            nodes.extend(val)
+            nodes.extend(deepcopy(val))
           else:
-            nodes.append(val)
+            nodes.append(copy(val))
         else:
-          nodes.append(node)
+          newNode = copy(node)
+          nodes.append(newNode)
       nodes = self.cPE._eval(ppParser.Ast('ReplacementList', {'tokens': nodes}))
       for node in nodes:
         node.lineno = lineno
@@ -148,18 +157,82 @@ class cPreprocessorFunctionFactory:
       return '[cPreprocessorFunction params=%s body=%s]' % (', '.join(self.params), str(self.body))
     
 
-  def __init__(self, cPPP, cPE, logger = None):
+  def __init__(self, cP, cPE, logger = None):
     self.__dict__.update(locals())
   
   def create(self, name, params, body):
-    return self.cPreprocessorFunction(name, params, body, self.cPPP, self.cPE, self.logger)
+    return self.cPreprocessorFunction(name, params, body, self.cP, self.cPE, self.logger)
   
 
 
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP, cPPL, cL, logger = None):
+  class ParamList(list):
+    def setType(self, type):
+      self.type = type
+    
+    def getType(self):
+      return self.type
+    
+
+  def __init__(self, cPPP, cPPL, cL, cP, logger = None):
     self.__dict__.update(locals())
-    self.cPFF = cPreprocessorFunctionFactory(self.cPPP, self, self.logger)
+    self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
+    self.cPPTtocT = {
+      self.cPPP.TERMINAL_BITOREQ : self.cP.TERMINAL_BITOREQ ,
+      self.cPPP.TERMINAL_OR : self.cP.TERMINAL_OR ,
+      self.cPPP.TERMINAL_BITXOREQ : self.cP.TERMINAL_BITXOREQ ,
+      self.cPPP.TERMINAL_DIV : self.cP.TERMINAL_DIV ,
+      self.cPPP.TERMINAL_AND : self.cP.TERMINAL_AND ,
+      self.cPPP.TERMINAL_ELIPSIS : self.cP.TERMINAL_ELIPSIS ,
+      self.cPPP.TERMINAL_BITOR : self.cP.TERMINAL_BITOR ,
+      self.cPPP.TERMINAL_LSHIFTEQ : self.cP.TERMINAL_LSHIFTEQ ,
+      self.cPPP.TERMINAL_BITNOT : self.cP.TERMINAL_BITNOT ,
+      self.cPPP.TERMINAL_BITXOR : self.cP.TERMINAL_BITXOR ,
+      self.cPPP.TERMINAL_RSHIFTEQ : self.cP.TERMINAL_RSHIFTEQ ,
+      self.cPPP.TERMINAL_ARROW : self.cP.TERMINAL_ARROW ,
+      self.cPPP.TERMINAL_SUB : self.cP.TERMINAL_SUB ,
+      self.cPPP.TERMINAL_RBRACE : self.cP.TERMINAL_RBRACE ,
+      self.cPPP.TERMINAL_DOT : self.cP.TERMINAL_DOT ,
+      self.cPPP.TERMINAL_LTEQ : self.cP.TERMINAL_LTEQ ,
+      self.cPPP.TERMINAL_MODEQ : self.cP.TERMINAL_MODEQ ,
+      self.cPPP.TERMINAL_ADDEQ : self.cP.TERMINAL_ADDEQ ,
+      self.cPPP.TERMINAL_MULEQ : self.cP.TERMINAL_MULEQ ,
+      self.cPPP.TERMINAL_GTEQ : self.cP.TERMINAL_GTEQ ,
+      self.cPPP.TERMINAL_RPAREN : self.cP.TERMINAL_RPAREN ,
+      self.cPPP.TERMINAL_LT : self.cP.TERMINAL_LT ,
+      self.cPPP.TERMINAL_ASSIGN : self.cP.TERMINAL_ASSIGN ,
+      self.cPPP.TERMINAL_NEQ : self.cP.TERMINAL_NEQ ,
+      self.cPPP.TERMINAL_RSQUARE : self.cP.TERMINAL_RSQUARE ,
+      self.cPPP.TERMINAL_LPAREN : self.cP.TERMINAL_LPAREN ,
+      self.cPPP.TERMINAL_ADD : self.cP.TERMINAL_ADD ,
+      self.cPPP.TERMINAL_POUND : self.cP.TERMINAL_POUND ,
+      self.cPPP.TERMINAL_LSQUARE : self.cP.TERMINAL_LSQUARE ,
+      self.cPPP.TERMINAL_RSHIFT : self.cP.TERMINAL_RSHIFT ,
+      self.cPPP.TERMINAL_COMMA : self.cP.TERMINAL_COMMA ,
+      self.cPPP.TERMINAL_EXCLAMATION_POINT : self.cP.TERMINAL_EXCLAMATION_POINT ,
+      self.cPPP.TERMINAL_BITANDEQ : self.cP.TERMINAL_BITANDEQ ,
+      self.cPPP.TERMINAL_SEMI : self.cP.TERMINAL_SEMI ,
+      self.cPPP.TERMINAL_EQ : self.cP.TERMINAL_EQ ,
+      self.cPPP.TERMINAL_MOD : self.cP.TERMINAL_MOD ,
+      self.cPPP.TERMINAL_COLON : self.cP.TERMINAL_COLON ,
+      self.cPPP.TERMINAL_QUESTIONMARK : self.cP.TERMINAL_QUESTIONMARK ,
+      self.cPPP.TERMINAL_MUL : self.cP.TERMINAL_MUL ,
+      self.cPPP.TERMINAL_IDENTIFIER : self.cP.TERMINAL_IDENTIFIER ,
+      self.cPPP.TERMINAL_GT : self.cP.TERMINAL_GT ,
+      self.cPPP.TERMINAL_BITAND : self.cP.TERMINAL_BITAND ,
+      self.cPPP.TERMINAL_PP_NUMBER : self.cP.TERMINAL_PP_NUMBER ,
+      self.cPPP.TERMINAL_LSHIFT : self.cP.TERMINAL_LSHIFT ,
+      self.cPPP.TERMINAL_CHARACTER_CONSTANT : self.cP.TERMINAL_CHARACTER_CONSTANT ,
+      self.cPPP.TERMINAL_POUNDPOUND : self.cP.TERMINAL_POUNDPOUND ,
+      self.cPPP.TERMINAL_DECR : self.cP.TERMINAL_DECR ,
+      self.cPPP.TERMINAL_STRING_LITERAL : self.cP.TERMINAL_STRING_LITERAL ,
+      self.cPPP.TERMINAL_SUBEQ : self.cP.TERMINAL_SUBEQ ,
+      self.cPPP.TERMINAL_TILDE : self.cP.TERMINAL_TILDE ,
+      self.cPPP.TERMINAL_AMPERSAND : self.cP.TERMINAL_AMPERSAND ,
+      self.cPPP.TERMINAL_INCR : self.cP.TERMINAL_INCR ,
+      self.cPPP.TERMINAL_LBRACE : self.cP.TERMINAL_LBRACE
+    }
+    self.cTtocPPT = {v: k for k, v in self.cPPTtocT.items()}
   
   def eval( self, cPPAST ):
     self.symbols = dict()
@@ -179,7 +252,7 @@ class cPreprocessingEvaluator:
     if isinstance(value, Token):
       return value
     else:
-      return Token(self.cPPP.terminal('pp_number'), 'pp_number', value, 0, 0)
+      return ppToken(self.cPPP.terminal('pp_number'), 'pp_number', value, 0, 0)
   
   def _debugStr(self, cPPAST):
     if isinstance(cPPAST, Token):
@@ -193,6 +266,7 @@ class cPreprocessingEvaluator:
       return 'Ast: %s' % (cPPAST.name)
   
   def _getCSourceMacroFunctionParams(self, cLexer):
+    # returns PP tokens
     next(cLexer) # skip lparen
     lparen = 1
     buf = []
@@ -207,10 +281,20 @@ class cPreprocessingEvaluator:
         params.append( buf )
         buf = []
       else:
-        buf.append( paramToken)
+        buf.append(self.cPPL.matchString(paramToken.getString()))
       if paramTokenStr == 'rparen' and lparen <= 1:
         break
     return params
+  
+  def _tokenToCToken(self, token):
+    try:
+      if token.type == 'c':
+        return token
+    except AttributeError:
+      print('ERROR: ', token)
+      sys.exit(-1)
+    return cToken( self.cPPTtocT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno )
+  
   
   def _eval( self, cPPAST ):
     rtokens = []
@@ -245,7 +329,6 @@ class cPreprocessingEvaluator:
       self.cL.setString(cPPAST.getString())
       self.cL.setLine(cPPAST.getLine())
       self.cL.setColumn(cPPAST.getColumn())
-      # token with lookahead
       cTokens = list(self.cL)
       cLexer = zip_longest(cTokens, cTokens[1:])
       for token, lookahead in cLexer:
@@ -386,6 +469,13 @@ class cPreprocessingEvaluator:
         cPPAST.getAttr('tokens')
         self.line += 1
       elif cPPAST.name == 'ReplacementList':
+        # This means: return the replacement with macros replaced.
+        # e.g. #define bar 2
+        #      #define var 1 bar 3
+        # eval( ReplacementList([1, bar, 3]) ) = ReplacementList([1, 2, 3])
+        # input and output tokens are ctokens.
+        
+        # If tokens are not ctokens, convert them!
         tokens = cPPAST.getAttr('tokens')
         rtokens = []
         advance = 0
@@ -409,26 +499,28 @@ class cPreprocessingEvaluator:
                     lparen_count += 1
                   if token.getString() == ')':
                     if lparen_count == 1:
-                      params.append( self._parseExpr( param_tokens ) )
+                      value = self._parseExpr( param_tokens )
+                      params.append( self._tokenToCToken(value) )
                       break
                     lparen_count -= 1
                     param_tokens.append(token)
                   elif token.getString() == ',':
                     if len(param_tokens):
+                      #scott
                       value = self._parseExpr( param_tokens )
-                      params.append(value)
+                      params.append(self._tokenToCToken(value))
                       param_tokens = []
                   else:
-                    param_tokens.append(token)
+                    param_tokens.append(self._tokenToCToken(token))
                   advance += 1
                 result = replacement.run(params, token.lineno, token.colno)
                 newTokens.extend(result)
               else:
-                newTokens.append(token)
+                newTokens.append(self._tokenToCToken(token))
             else:
               newTokens.extend( self.symbols[token.getString()] )
           else:
-            newTokens.append(token)
+            newTokens.append(self._tokenToCToken(token))
         return newTokens
       elif cPPAST.name == 'FuncCall':
         name = cPPAST.getAttr('name')
@@ -689,9 +781,9 @@ class PatternMatchingLexer(Lexer):
 def parseDefine( match, string, lineno, colno, terminals ):
   identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
   if re.match(r'[ \t]+%s\(' % (identifier_regex), string):
-    token = Token(terminals['DEFINE_FUNCTION'], 'DEFINE_FUNCTION', match, lineno, colno - len(match))
+    token = ppToken(terminals['DEFINE_FUNCTION'], 'DEFINE_FUNCTION', match, lineno, colno - len(match))
   else:
-    token = Token(terminals['DEFINE'], 'DEFINE', match, lineno, colno - len(match))
+    token = ppToken(terminals['DEFINE'], 'DEFINE', match, lineno, colno - len(match))
   return ([token], 0)
 
 def parseInclude( match, string, lineno, colno, terminals ):
@@ -699,12 +791,12 @@ def parseInclude( match, string, lineno, colno, terminals ):
   header_local = re.compile(r'["][^\n"]+["]')
   advance = len(re.compile(r'[\t ]*').match(string).group(0))
   string = string[advance:]
-  tokens = [Token(terminals['INCLUDE'], 'INCLUDE', match, lineno, colno)]
+  tokens = [ppToken(terminals['INCLUDE'], 'INCLUDE', match, lineno, colno)]
   for (regex, token) in [(header_global, 'HEADER_GLOBAL'), (header_local, 'HEADER_LOCAL')]:
     rmatch = regex.match(string)
     if rmatch:
       rstring = rmatch.group(0)
-      tokens.append( Token(terminals[token], token, rstring, lineno, colno + advance) )
+      tokens.append( ppToken(terminals[token], token, rstring, lineno, colno + advance) )
       advance += len(rstring)
       break
   return (tokens, advance)
@@ -805,7 +897,8 @@ class cPreprocessingLexer(Lexer):
     self.colno = colno
   
   def matchString(self, string):
-    return self.patternMatchingLexer.matchString(string)
+    token = self.patternMatchingLexer.matchString(string)
+    return ppToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
   
   def _advance(self, lines):
     self.cST_lines = self.cST_lines[lines:]
@@ -858,14 +951,14 @@ class cPreprocessingLexer(Lexer):
         self.patternMatchingLexer.setLine( self.lineno )
         self.patternMatchingLexer.setColumn( 1 )
         for cPPT in self.patternMatchingLexer:
-          self._addToken(cPPT)
+          self._addToken(ppToken(cPPT.id, cPPT.terminal_str, cPPT.source_string, cPPT.lineno, cPPT.colno))
           if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'WARNING', 'LINE', 'ENDIF', 'UNDEF']:
             emit_separator = True
         if continuation:
           lines += 1
           continue
         if emit_separator:
-          self._addToken( Token(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno + 1, 1) )
+          self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno + 1, 1) )
         self._advance( lines + 1 )
         if self._hasToken():
           return self._popToken()
@@ -883,8 +976,8 @@ class cPreprocessingLexer(Lexer):
 
     self._advance(lines)
     if emit_csource:
-      token = Token(self.terminals['CSOURCE'], 'CSOURCE', '\n'.join(buf), buf_line, 1)
-      self._addToken( Token(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno, 1) )
+      token = ppToken(self.terminals['CSOURCE'], 'CSOURCE', '\n'.join(buf), buf_line, 1)
+      self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno, 1) )
       return token
     raise StopIteration()
   
@@ -1020,6 +1113,9 @@ class cLexer(PatternMatchingLexer):
     self.setTerminals(terminals)
     self.setRegex(self.cRegex)
     self.setLogger(logger)
+  def __next__(self):
+    token = super().__next__()
+    return cToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
   
 
 if len(sys.argv) < 2:
@@ -1037,7 +1133,7 @@ for filename in sys.argv[1:]:
   cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
   cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=cPPL_TokenMap, logger=debugger.getLogger('ppmatch'))
   cPPL = cPreprocessingLexer( cPPL_PatternMatchingLexer, cPPL_TokenMap, logger=debugger.getLogger('pplex') )
-  cPE = cPreprocessingEvaluator(cPPP, cPPL, cL, logger=debugger.getLogger('ppeval'))
+  cPE = cPreprocessingEvaluator(cPPP, cPPL, cL, cP, logger=debugger.getLogger('ppeval'))
   cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL, cPE, logger=debugger.getLogger('ppfile'))
   
   try:
