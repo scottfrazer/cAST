@@ -164,16 +164,7 @@ class cPreprocessorFunctionFactory:
     return self.cPreprocessorFunction(name, params, body, self.cP, self.cPE, self.logger)
   
 
-
 class cPreprocessingEvaluator:
-  class ParamList(list):
-    def setType(self, type):
-      self.type = type
-    
-    def getType(self):
-      return self.type
-    
-
   def __init__(self, cPPP, cPPL, cL, cP, logger = None):
     self.__dict__.update(locals())
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
@@ -294,7 +285,6 @@ class cPreprocessingEvaluator:
       print('ERROR: ', token)
       sys.exit(-1)
     return cToken( self.cPPTtocT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno )
-  
   
   def _eval( self, cPPAST ):
     rtokens = []
@@ -648,8 +638,8 @@ class cTranslationUnit:
     self.__dict__.update(locals())
   
   def process( self ):
-    for t in self.cT:
-      print(t)
+    #for t in self.cT:
+    #  print(t)
     return cT
     parsetree = self.cP.parse( self.cT, 'translation_unit' )
     ast = parsetree.toAst()
@@ -817,7 +807,7 @@ class cPreprocessingLexer(Lexer):
     ( re.compile(r'#[ \t]*warning(?=[ \t\n])'), 'WARNING', None, None ),
     ( re.compile(r'#[ \t]*line(?=[ \t\n])'), 'LINE', None, None ),
     ( re.compile(r'#[ \t]*undef(?=[ \t\n])'), 'UNDEF', None, None ),
-    ( re.compile(r'#[ \t]*endif'), 'ENDIF', None, None ),
+    ( re.compile(r'#[ \t]*endif\s?.*'), 'ENDIF', None, None ),
     ( re.compile(r'defined'), 'DEFINED', None, None ),
     ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
     ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None, None ),
@@ -1113,6 +1103,7 @@ class cLexer(PatternMatchingLexer):
     self.setTerminals(terminals)
     self.setRegex(self.cRegex)
     self.setLogger(logger)
+  
   def __next__(self):
     token = super().__next__()
     return cToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
