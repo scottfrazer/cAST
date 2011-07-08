@@ -48,7 +48,7 @@ class Debugger:
       self.loggers[module] = logger
     return logger
   
-  
+
 class Token(cParser.Terminal):
   def __init__(self, id, terminal_str, source_string, lineno, colno):
     self.__dict__.update(locals())
@@ -233,8 +233,13 @@ class cPreprocessingEvaluator:
   def newlines(self, number):
     return ''.join(['\n' for i in range(number)])
   
+  def _cT_to_cPPT(self, cT_list):
+    tokens = []
+    for token in cT_list:
+      tokens.append(ppToken(self.cTtocPPT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno))
+    return tokens
+  
   def _parseExpr(self, tokens):
-    tokens = list(map(self.cPPL.matchString, [x.getString() for x in tokens]))
     self.cPPP.iterator = iter(tokens)
     self.cPPP.sym = self.cPPP.getsym()
     parsetree = self.cPPP.expr()
@@ -278,12 +283,8 @@ class cPreprocessingEvaluator:
     return params
   
   def _tokenToCToken(self, token):
-    try:
-      if token.type == 'c':
-        return token
-    except AttributeError:
-      print('ERROR: ', token)
-      sys.exit(-1)
+    if token.type == 'c':
+      return token
     return cToken( self.cPPTtocT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno )
   
   def _eval( self, cPPAST ):
@@ -309,7 +310,7 @@ class cPreprocessingEvaluator:
         self._log('eval', 'evaluating expression for identifier %s' % (cPPAST.getString()))
         self._log('eval', 'expression tokens: [%s]' % (self._debugStr(x)))
         if len(x):
-          return self._parseExpr( x )
+          return self._parseExpr( self._cT_to_cPPT(x) )
       except TypeError:
         return x
     elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
@@ -403,6 +404,7 @@ class cPreprocessingEvaluator:
         ident = cPPAST.getAttr('ident').getString()
         nodes = cPPAST.getAttr('nodes')
         if ident in self.symbols:
+          self._log('IFDEF (true)', str(ident))
           return self._eval(nodes)
         else:
           self.line += self.countSourceLines(nodes)
@@ -432,7 +434,6 @@ class cPreprocessingEvaluator:
       elif cPPAST.name == 'Define':
         ident = cPPAST.getAttr('ident')
         body = cPPAST.getAttr('body')
-        self._log('DEFINE', str(body))
         self.symbols[ident.getString()] = self._eval(body)
         self.line += 1
       elif cPPAST.name == 'DefineFunction':
@@ -489,15 +490,14 @@ class cPreprocessingEvaluator:
                     lparen_count += 1
                   if token.getString() == ')':
                     if lparen_count == 1:
-                      value = self._parseExpr( param_tokens )
+                      value = self._parseExpr( self._cT_to_cPPT(param_tokens) )
                       params.append( self._tokenToCToken(value) )
                       break
                     lparen_count -= 1
-                    param_tokens.append(token)
+                    param_tokens.append(self._tokenToCToken(token))
                   elif token.getString() == ',':
                     if len(param_tokens):
-                      #scott
-                      value = self._parseExpr( param_tokens )
+                      value = self._parseExpr( self._cT_to_cPPT(param_tokens) )
                       params.append(self._tokenToCToken(value))
                       param_tokens = []
                   else:
@@ -638,8 +638,9 @@ class cTranslationUnit:
     self.__dict__.update(locals())
   
   def process( self ):
-    #for t in self.cT:
-    #  print(t)
+    if self.logger:
+      for t in self.cT:
+        self.logger.log('token', str(t))
     return cT
     parsetree = self.cP.parse( self.cT, 'translation_unit' )
     ast = parsetree.toAst()
@@ -794,8 +795,8 @@ def parseInclude( match, string, lineno, colno, terminals ):
 
 class cPreprocessingLexer(Lexer):
   regex = [
-    ( re.compile(r'#[ \t]*include(?=[ \t\n])'), None, parseInclude, None ),
-    ( re.compile(r'#[ \t]*include_next(?=[ \t\n])'), None, parseInclude, None ), # GCC extension
+    ( re.compile(r'#[ \t]*include(?=[ \t\n<"])'), None, parseInclude, None ),
+    ( re.compile(r'#[ \t]*include_next(?=[ \t\n<"])'), None, parseInclude, None ), # GCC extension
     ( re.compile(r'#[ \t]*define(?=[ \t\n])'), None, parseDefine, None ),
     ( re.compile(r'#[ \t]*ifdef(?=[ \t\n])'), 'IFDEF', None, None ),
     ( re.compile(r'#[ \t]*ifndef(?=[ \t\n])'), 'IFNDEF', None, None ),
@@ -1128,8 +1129,8 @@ for filename in sys.argv[1:]:
   cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL, cPE, logger=debugger.getLogger('ppfile'))
   
   try:
-    cT = cPF.process()
-    cTU = cTranslationUnit(cT, cP)
+    cT = cPF.process() # list of C tokens
+    cTU = cTranslationUnit(cT, cP, logger=debugger.getLogger('cparse'))
     cAST = cTU.process()
   except Exception as e:
     print(e, '\n', e.tracer)
