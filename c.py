@@ -63,7 +63,8 @@ class Token(cParser.Terminal):
     return self.colno
   
   def __str__( self ):
-    #return "'%s'" % (self.terminal_str.lower())
+    return "'%s'" % (self.source_string)
+    return "'%s'" % (self.terminal_str.lower())
     return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
     #return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
   
@@ -490,15 +491,15 @@ class cPreprocessingEvaluator:
                     lparen_count += 1
                   if token.getString() == ')':
                     if lparen_count == 1:
-                      value = self._parseExpr( self._cT_to_cPPT(param_tokens) )
-                      params.append( self._tokenToCToken(value) )
+                      value = param_tokens
+                      params.append(param_tokens)
                       break
                     lparen_count -= 1
                     param_tokens.append(self._tokenToCToken(token))
                   elif token.getString() == ',':
                     if len(param_tokens):
-                      value = self._parseExpr( self._cT_to_cPPT(param_tokens) )
-                      params.append(self._tokenToCToken(value))
+                      value = param_tokens
+                      params.append(param_tokens)
                       param_tokens = []
                   else:
                     param_tokens.append(self._tokenToCToken(token))
