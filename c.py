@@ -496,7 +496,7 @@ class cPreprocessingEvaluator:
                       break
                     lparen_count -= 1
                     param_tokens.append(self._tokenToCToken(token))
-                  elif token.getString() == ',':
+                  elif token.getString() == ',' and lparen_count == 1:
                     if len(param_tokens):
                       value = param_tokens
                       params.append(param_tokens)
