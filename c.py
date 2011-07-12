@@ -63,8 +63,8 @@ class Token(cParser.Terminal):
     return self.colno
   
   def __str__( self ):
-    return "'%s'" % (self.source_string)
-    return "'%s'" % (self.terminal_str.lower())
+    #return "'%s'" % (self.source_string)
+    #return "'%s'" % (self.terminal_str.lower())
     return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
     #return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
   
@@ -929,6 +929,9 @@ class cPreprocessingLexer(Lexer):
       self.lineno += 1
       if not comment and (self._isPreprocessingLine( line ) or continuation):
         continuation = False
+        if '/*' in line and '*/' not in line:
+          line = re.sub('/\*.*$', '', line)
+          comment = True
         if len(buf):
           self.lineno -= 1
           emit_csource = True
@@ -959,6 +962,7 @@ class cPreprocessingLexer(Lexer):
         emit_csource = True
         if not len(buf):
           buf_line = self.lineno
+        # TODO: simplify this to: if '/*' in line
         if self.comment_start.search(line) and not self.comment_end.search(line):
           comment = True
         elif not self.comment_start.search(line) and self.comment_end.search(line):
