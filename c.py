@@ -170,6 +170,7 @@ class cPreprocessingEvaluator:
     self.__dict__.update(locals())
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
     self.cPPTtocT = {
+      self.cPPP.TERMINAL_DEFINED : self.cP.TERMINAL_DEFINED ,
       self.cPPP.TERMINAL_BITOREQ : self.cP.TERMINAL_BITOREQ ,
       self.cPPP.TERMINAL_OR : self.cP.TERMINAL_OR ,
       self.cPPP.TERMINAL_BITXOREQ : self.cP.TERMINAL_BITXOREQ ,
