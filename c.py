@@ -39,7 +39,6 @@ class Debugger:
     self.loggers = {}
   
   def getLogger(self, module):
-    return None
     filepath = os.path.join(self.directory, module)
     if module in self.loggers:
       logger = self.loggers[module]
@@ -928,6 +927,9 @@ class cPreprocessingLexer(Lexer):
     for line in self.cST_lines:
       self.lineno += 1
       if not comment and (self._isPreprocessingLine( line ) or continuation):
+        if continuation and not len(line):
+          self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno + 1, 1) )
+          continue
         continuation = False
         if '/*' in line and '*/' not in line:
           line = re.sub('/\*.*$', '', line)
