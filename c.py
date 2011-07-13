@@ -588,7 +588,12 @@ class cPreprocessingEvaluator:
       else:
         num = int(numstr, self._base(numstr))
       return num
-    return int(element)
+    elif isinstance(element, list):
+      if len(element):
+        return int(element[0])
+      return 0
+    else:
+      return int(element)
   
   def _base(self, string):
     if string[:2] == '0x' or string[:2] == '0X':
