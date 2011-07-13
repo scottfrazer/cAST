@@ -1123,6 +1123,11 @@ for filename in sys.argv[1:]:
   debugger = Debugger('./debug')
   cP = cParser.Parser()
   cPPP = ppParser.Parser()
+
+  try:
+    cSourceText = open(filename, encoding='utf-8').read()
+  except UnicodeDecodeError:
+    cSourceText = open(filename, encoding='iso-8859-1').read()
   
   cTokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
   cL = cLexer(cTokenMap, logger=debugger.getLogger('cmatch'))
@@ -1131,7 +1136,7 @@ for filename in sys.argv[1:]:
   cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=cPPL_TokenMap, logger=debugger.getLogger('ppmatch'))
   cPPL = cPreprocessingLexer( cPPL_PatternMatchingLexer, cPPL_TokenMap, logger=debugger.getLogger('pplex') )
   cPE = cPreprocessingEvaluator(cPPP, cPPL, cL, cP, logger=debugger.getLogger('ppeval'))
-  cPF = cPreprocessingFile(open(filename).read(), cPPL, cPPP, cL, cPE, logger=debugger.getLogger('ppfile'))
+  cPF = cPreprocessingFile(cSourceText, cPPL, cPPP, cL, cPE, logger=debugger.getLogger('ppfile'))
   
   try:
     cT = cPF.process() # list of C tokens
