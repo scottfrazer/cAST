@@ -6,7 +6,7 @@ from setuptools import setup, find_packages
 
 version = '1.0.0b'
 README = os.path.join(os.path.dirname(__file__), 'README')
-long_description = open(README).read()
+long_description = 'A C99 compliant preprocessor and parser'
 
 setup(
     name='cAST',
@@ -22,7 +22,7 @@ setup(
         ]
       },
     license = "GPL",
-    keywords = "C preprocessor and parser",
+    keywords = "C, preprocessor, parser, C99",
     url = "http://scottfrazer.net/cast",
     classifiers=[
           "License :: OSI Approved :: GNU General Public License (GPL)",

@@ -1,7 +1,12 @@
 import sys, re, os
 from itertools import zip_longest, islice
 from copy import copy, deepcopy
-import cParser, ppParser
+from cast.cParser import Parser as cParser
+from cast.ppParser import Parser as ppParser
+from cast.ppParser import Ast as ppAst
+from cast.ppLexer import Factory as ppLexerFactory
+from cast.cLexer import Factory as cLexerFactory
+from cast.Token import Token, cToken, ppToken, TokenList
 
 sys.setrecursionlimit(2000)
 
@@ -32,8 +37,7 @@ class Debugger:
       self.fp.write( "[%s] %s\n" % (category, line) )
       # TODO close file in destructor
       self.fp.flush()
-    
-  
+
   def __init__(self, directory):
     self.__dict__.update(locals())
     self.loggers = {}
@@ -47,41 +51,27 @@ class Debugger:
       logger = self.DebugLogger(module, filepath)
       self.loggers[module] = logger
     return logger
-  
 
-class Token(cParser.Terminal):
-  def __init__(self, id, terminal_str, source_string, lineno, colno):
-    self.__dict__.update(locals())
-  
-  def getString(self):
-    return self.source_string
-  
-  def getLine(self):
-    return self.lineno
-  
-  def getColumn(self):
-    return self.colno
-  
-  def __str__( self ):
-    #return "'%s'" % (self.source_string)
-    #return "'%s'" % (self.terminal_str.lower())
-    return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
-    #return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
-  
+class Factory:
+  def create(self):
+    cPPLFactory = ppLexerFactory()
+    cLFactory = cLexerFactory()
 
-class ppToken(Token):
-  type = 'pp'
+    cPPP = ppParser()
+    cP = cParser()
 
-class cToken(Token):
-  type = 'c'
+    cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
+    cL_TokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
 
-class TokenList(list):
-  pass
+    cPPL = cPPLFactory.create( cPPL_TokenMap )
+    cL = cLFactory.create( cL_TokenMap )
+    cPE = cPreprocessingEvaluator( cPPP, cPPL, cL, cP )
 
+    return PreProcessor( cPPL, cPPP, cL, cPE )
 
 # Also called 'source file' in ISO docs.
 # Takes C source code, pre-processes, returns C tokens
-class cPreprocessingFile:  
+class PreProcessor:  
   trigraphs = {
     '??=': '#',
     '??(': '[',
@@ -93,16 +83,16 @@ class cPreprocessingFile:
     '??>': '}',
     '??-': '~',
   }
-  def __init__( self, cST, cPPL, cPPP, cL, cPE, logger = None ):
+  def __init__( self, cPPL, cPPP, cL, cPE, logger = None ):
     self.__dict__.update(locals())
   
-  def process( self ):
+  def process( self, cST ):
     # Phase 1: Replace trigraphs with single-character equivelants
     for (trigraph, replacement) in self.trigraphs.items():
-      self.cST = self.cST.replace(trigraph, replacement)
+      self.cST = cST.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
-    self.cPPL.setString( self.cST )
-    parsetree = cPPP.parse(self.cPPL, 'pp_file')
+    self.cPPL.setString( cST )
+    parsetree = self.cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
     if self.logger:
       try:
@@ -148,7 +138,7 @@ class cPreprocessorFunctionFactory:
         else:
           newNode = copy(node)
           nodes.append(newNode)
-      nodes = self.cPE._eval(ppParser.Ast('ReplacementList', {'tokens': nodes}))
+      nodes = self.cPE._eval(ppAst('ReplacementList', {'tokens': nodes}))
       for node in nodes:
         node.lineno = lineno
         node.colno = colno
@@ -652,504 +642,3 @@ class cTranslationUnit:
     parsetree = self.cP.parse( self.cT, 'translation_unit' )
     ast = parsetree.toAst()
     return ast
-  
-
-class Lexer:
-  def __iter__(self):
-    return self
-  
-  def __next__(self):
-    raise StopIteration()
-  
-
-class PatternMatchingLexer(Lexer):
-  def __init__(self, string = '', regex = [], terminals = {}, logger = None):
-    self.setLogger(logger)
-    self.setRegex(regex)
-    self.setTerminals(terminals)
-    self.setString(string)
-    self.cache = []
-  
-  def addToken(self, token):
-    self.cache.append(token)
-  
-  def hasToken(self):
-    return len(self.cache) > 0
-  
-  def nextToken(self):
-    if not self.hasToken():
-      return None
-    token = self.cache[0]
-    self.cache = self.cache[1:]
-    return token
-  
-  def setString(self, string):
-    self.string = string
-    self.colno = 1
-    self.lineno = 1
-    self._log('info', 'SetString: "%s"' %(string))
-  
-  def setLine(self, lineno):
-    self.lineno = lineno
-  
-  def setColumn(self, colno):
-    self.colno = colno
-  
-  def setRegex(self, regex):
-    self.regex = regex
-  
-  def setTerminals(self, terminals):
-    self.terminals = terminals
-  
-  def setLogger(self, logger):
-    self.logger = logger
-  
-  def advance(self, i):
-    self.string = self.string[i:]
-  
-  def nextMatch(self):
-    activity = True
-    while activity:
-      activity = False
-      for (regex, terminal, process_func, format_func) in self.regex:
-        match = regex.match(self.string)
-        if match:
-          activity = True
-          lineno = self.lineno
-          colno = self.colno
-          match_str = match.group(0)
-          self.advance( len(match_str) )
-          
-          if terminal == None and len(self.string) == 0:
-            raise StopIteration()
-
-          newlines = len(list(filter(lambda x: x == '\n', match_str)))
-          self.lineno += newlines
-          if newlines > 0:
-            self.colno = len(match_str.split('\n')[-1]) + 1
-          else:
-            self.colno += len(match_str)
-
-          if process_func:
-            (tokens, advancement) = process_func(match_str, self.string, self.lineno, self.colno, self.terminals)
-            for token in tokens:
-              self.addToken(token)
-            self.advance(advancement)
-            return self.nextToken()
-          else:
-            if terminal != None:
-              return Token(self.terminals[terminal], terminal, match_str, lineno, colno)
-    return None
-  
-  def matchString(self, string):
-    for (regex, terminal, process_func, format_func) in self.regex:
-      match = regex.match(string)
-      if match:
-        return Token(self.terminals[terminal], terminal, match.group(0), 0, 0)
-    return None
-  
-  def __iter__(self):
-    return self
-  
-  def __next__(self):
-    if self.hasToken():
-      token = self.nextToken()
-      self._log('token', '(queued) %s' % (self._debugToken(token)))
-      return token
-    if len(self.string.strip()) <= 0:
-      self._log('info', 'StopIteration')
-      raise StopIteration()
-    token = self.nextMatch()
-    if not token:
-      error = 'Invalid character on line %d, col %d' % (self.lineno, self.colno)
-      self._log('error', error)
-      raise Exception(error)
-    self._log('token', str(self._debugToken(token)))
-    return token
-  
-  def _debugToken(self, token):
-    return '[line %d, col %d] %s (%s)' % ( token.lineno, token.colno, token.terminal_str.lower(), token.source_string )
-  
-  def _log(self, category, message):
-    if not self.logger:
-      return
-    self.logger.log(category, message)
-  
-
-def parseDefine( match, string, lineno, colno, terminals ):
-  identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
-  if re.match(r'[ \t]+%s\(' % (identifier_regex), string):
-    token = ppToken(terminals['DEFINE_FUNCTION'], 'DEFINE_FUNCTION', match, lineno, colno - len(match))
-  else:
-    token = ppToken(terminals['DEFINE'], 'DEFINE', match, lineno, colno - len(match))
-  return ([token], 0)
-
-def parseInclude( match, string, lineno, colno, terminals ):
-  header_global = re.compile(r'[<][^\n>]+[>]')
-  header_local = re.compile(r'["][^\n"]+["]')
-  advance = len(re.compile(r'[\t ]*').match(string).group(0))
-  string = string[advance:]
-  tokens = [ppToken(terminals['INCLUDE'], 'INCLUDE', match, lineno, colno)]
-  for (regex, token) in [(header_global, 'HEADER_GLOBAL'), (header_local, 'HEADER_LOCAL')]:
-    rmatch = regex.match(string)
-    if rmatch:
-      rstring = rmatch.group(0)
-      tokens.append( ppToken(terminals[token], token, rstring, lineno, colno + advance) )
-      advance += len(rstring)
-      break
-  return (tokens, advance)
-
-
-class cPreprocessingLexer(Lexer):
-  regex = [
-    ( re.compile(r'^[ \t]*#[ \t]*include_next(?![a-zA-Z])'), None, parseInclude, None ), # GCC extension
-    ( re.compile(r'^[ \t]*#[ \t]*include(?![a-zA-Z])'), None, parseInclude, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*define(?![a-zA-Z])'), None, parseDefine, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*ifdef(?![a-zA-Z])'), 'IFDEF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*ifndef(?![a-zA-Z])'), 'IFNDEF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*if(?![a-zA-Z])'), 'IF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*else(?![a-zA-Z])'), 'ELSE', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*elif(?![a-zA-Z])'), 'ELIF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*pragma(?![a-zA-Z])'), 'PRAGMA', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*error(?![a-zA-Z])'), 'ERROR', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*warning(?![a-zA-Z])'), 'WARNING', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*line(?![a-zA-Z])'), 'LINE', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*undef(?![a-zA-Z])'), 'UNDEF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*endif\s?.*'), 'ENDIF', None, None ),
-    ( re.compile(r'defined'), 'DEFINED', None, None ),
-    ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
-    ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None, None ),
-    ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
-    ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
-    ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None, None ),
-    ( re.compile(r'\['), 'LSQUARE', None, None ),
-    ( re.compile(r'\]'), 'RSQUARE', None, None ),
-    ( re.compile(r'\('), 'LPAREN', None, None ),
-    ( re.compile(r'\)'), 'RPAREN', None, None ),
-    ( re.compile(r'\{'), 'LBRACE', None, None ),
-    ( re.compile(r'\}'), 'RBRACE', None, None ),
-    ( re.compile(r'\.'), 'DOT', None, None ),
-    ( re.compile(r'->'), 'ARROW', None, None ),
-    ( re.compile(r'\+\+'), 'INCR', None, None ),
-    ( re.compile(r'--'), 'DECR', None, None ),
-    ( re.compile(r'\*='), 'MULEQ', None, None ),
-    ( re.compile(r'\+='), 'ADDEQ', None, None ),
-    ( re.compile(r'-='), 'SUBEQ', None, None ),
-    ( re.compile(r'%='), 'MODEQ', None, None ),
-    ( re.compile(r'&='), 'BITANDEQ', None, None ),
-    ( re.compile(r'\|='), 'BITOREQ', None, None ),
-    ( re.compile(r'\^='), 'BITXOREQ', None, None ),
-    ( re.compile(r'<<='), 'LSHIFTEQ', None, None ),
-    ( re.compile(r'>>='), 'RSHIFTEQ', None, None ),
-    ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
-    ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
-    ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
-    ( re.compile(r'-(?!=)'), 'SUB', None, None ),
-    ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
-    ( re.compile(r'%(?!=)'), 'MOD', None, None ),
-    ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
-    ( re.compile(r'>>(?!=)'), 'RSHIFT', None, None ),
-    ( re.compile(r'<(?!=)'), 'LT', None, None ),
-    ( re.compile(r'>(?!=)'), 'GT', None, None ),
-    ( re.compile(r'<='), 'LTEQ', None, None ),
-    ( re.compile(r'>='), 'GTEQ', None, None ),
-    ( re.compile(r'=='), 'EQ', None, None ),
-    ( re.compile(r'!='), 'NEQ', None, None ),
-    ( re.compile(r'\^(?!=)'), 'BITXOR', None, None ),
-    ( re.compile(r'\|(?!\|)'), 'BITOR', None, None ),
-    ( re.compile(r'~'), 'BITNOT', None, None ),
-    ( re.compile(r'&&'), 'AND', None, None ),
-    ( re.compile(r'\|\|'), 'OR', None, None ),
-    ( re.compile(r'='), 'ASSIGN', None, None ),
-    ( re.compile(r'\?'), 'QUESTIONMARK', None, None ),
-    ( re.compile(r':'), 'COLON', None, None ),
-    ( re.compile(r';'), 'SEMI', None, None ),
-    ( re.compile(r','), 'COMMA', None, None ),
-    ( re.compile(r'##'), 'POUNDPOUND', None, None ),
-    ( re.compile(r'#(?!#)'), 'POUND', None, None ),
-    ( re.compile(r'[ \t]+', 0), None, None, None ),
-    ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
-    ( re.compile(r'//.*', 0), None, None, None ),
-    ( re.compile(r'/='), 'DIVEQ', None, None ),
-    ( re.compile(r'/'), 'DIV', None, None )
-  ]
-  def __init__(self, patternMatchingLexer, terminals, logger = None):
-    self.__dict__.update(locals())
-    self.patternMatchingLexer.setRegex(self.regex)
-    self.patternMatchingLexer.setTerminals(terminals)
-    self.comment_start = re.compile(r'/\*')
-    self.comment_end = re.compile(r'\*/')
-    self.tokenBuffer = []
-    self.colno = 1
-    self.lineno = 0
-  
-  def setString(self, cST):
-    self.cST_lines = cST.split('\n')
-    self.cST_lines_index = 0
-    self.cST_current_line_offset = 0
-  
-  def setLine(self, lineno):
-    self.lineno = lineno
-  
-  def setColumn(self, colno):
-    self.colno = colno
-  
-  def matchString(self, string):
-    token = self.patternMatchingLexer.matchString(string)
-    return ppToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
-  
-  def _advance(self, lines):
-    self.cST_lines = self.cST_lines[lines:]
-  
-  def _hasToken(self):
-    return len(self.tokenBuffer) > 0
-  
-  def _popToken(self):
-    token = self.tokenBuffer[0]
-    self.tokenBuffer = self.tokenBuffer[1:]
-    return token
-  
-  def _addToken(self, token):
-    self.tokenBuffer.append(token)
-  
-  def __iter__(self):
-    return self
-  
-  def __next__(self):
-    if self._hasToken():
-      token = self._popToken()
-      return token
-
-    if not len(self.cST_lines):
-      raise StopIteration()
-
-    buf = []
-    buf_line = 0
-    lines = 0
-    token = None
-    emit_separator = False
-    emit_csource = False
-    continuation = False
-    comment = False
-    for line in self.cST_lines:
-      self.lineno += 1
-      if not comment and (self._isPreprocessingLine( line ) or continuation):
-        continuation = False
-        if '/*' in line and '*/' not in line:
-          line = re.sub('/\*.*$', '', line)
-          comment = True
-        if len(buf):
-          self.lineno -= 1
-          emit_csource = True
-          break
-        if line.strip() == '#':
-          lines += 1
-          continue
-        if len(line) and line[-1] == '\\':
-          line = line[:-1]
-          continuation = True
-        self.patternMatchingLexer.setString( line )
-        self.patternMatchingLexer.setLine( self.lineno )
-        self.patternMatchingLexer.setColumn( 1 )
-        for cPPT in self.patternMatchingLexer:
-          self._addToken(ppToken(cPPT.id, cPPT.terminal_str, cPPT.source_string, cPPT.lineno, cPPT.colno))
-          if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'WARNING', 'LINE', 'ENDIF', 'UNDEF']:
-            emit_separator = True
-        if continuation:
-          lines += 1
-          continue
-        if emit_separator:
-          self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno + 1, 1) )
-        self._advance( lines + 1 )
-        if self._hasToken():
-          return self._popToken()
-        raise Exception('Unexpected')
-      else:
-        emit_csource = True
-        if not len(buf):
-          buf_line = self.lineno
-        # TODO: simplify this to: if '/*' in line
-        if self.comment_start.search(line) and not self.comment_end.search(line):
-          comment = True
-        elif not self.comment_start.search(line) and self.comment_end.search(line):
-          comment = False
-        buf.append(line)
-        lines += 1
-
-    self._advance(lines)
-    if emit_csource:
-      token = ppToken(self.terminals['CSOURCE'], 'CSOURCE', '\n'.join(buf), buf_line, 1)
-      self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno, 1) )
-      return token
-    raise StopIteration()
-  
-  def _isPreprocessingLine(self, line):
-    if not line: return False
-    stripped_line = line.strip()
-    if len(stripped_line) and stripped_line[0] == '#':
-      return True
-    return False
-  
-
-class cLexer(PatternMatchingLexer):
-  cRegex = [
-      # Comments
-      ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
-      ( re.compile(r'//.*', 0), None, None, None ),
-
-      # Keywords
-      ( re.compile(r'auto(?=\s)'), 'AUTO', None, None ),
-      ( re.compile(r'_Bool(?=\s)'), 'BOOL', None, None ),
-      ( re.compile(r'break(?=\s)'), 'BREAK', None, None ),
-      ( re.compile(r'case(?=\s)'), 'CASE', None, None ),
-      ( re.compile(r'char(?=\s)'), 'CHAR', None, None ),
-      ( re.compile(r'_Complex(?=\s)'), 'COMPLEX', None, None ),
-      ( re.compile(r'const(?=\s)'), 'CONST', None, None ),
-      ( re.compile(r'continue(?=\s)'), 'CONTINUE', None, None ),
-      ( re.compile(r'default(?=\s)'), 'DEFAULT', None, None ),
-      ( re.compile(r'do(?=\s)'), 'DO', None, None ),
-      ( re.compile(r'double(?=\s)'), 'DOUBLE', None, None ),
-      ( re.compile(r'else(?=\s)'), 'ELSE', None, None ),
-      ( re.compile(r'enum(?=\s)'), 'ENUM', None, None ),
-      ( re.compile(r'extern(?=\s)'), 'EXTERN', None, None ),
-      ( re.compile(r'float(?=\s)'), 'FLOAT', None, None ),
-      ( re.compile(r'for(?=\s)'), 'FOR', None, None ),
-      ( re.compile(r'goto(?=\s)'), 'GOTO', None, None ),
-      ( re.compile(r'if(?=\s)'), 'IF', None, None ),
-      ( re.compile(r'_Imaginary(?=\s)'), 'IMAGINARY', None, None ),
-      ( re.compile(r'inline(?=\s)'), 'INLINE', None, None ),
-      ( re.compile(r'int(?=\s)'), 'INT', None, None ),
-      ( re.compile(r'long(?=\s)'), 'LONG', None, None ),
-      ( re.compile(r'register(?=\s)'), 'REGISTER', None, None ),
-      ( re.compile(r'restrict(?=\s)'), 'RESTRICT', None, None ),
-      ( re.compile(r'return(?=\s)'), 'RETURN', None, None ),
-      ( re.compile(r'short(?=\s)'), 'SHORT', None, None ),
-      ( re.compile(r'signed(?=\s)'), 'SIGNED', None, None ),
-      ( re.compile(r'sizeof(?=\s)'), 'SIZEOF', None, None ),
-      ( re.compile(r'static(?=\s)'), 'STATIC', None, None ),
-      ( re.compile(r'struct(?=\s)'), 'STRUCT', None, None ),
-      ( re.compile(r'switch(?=\s)'), 'SWITCH', None, None ),
-      ( re.compile(r'typedef(?=\s)'), 'TYPEDEF', None, None ),
-      ( re.compile(r'union(?=\s)'), 'UNION', None, None ),
-      ( re.compile(r'unsigned(?=\s)'), 'UNSIGNED', None, None ),
-      ( re.compile(r'void(?=\s)'), 'VOID', None, None ),
-      ( re.compile(r'volatile(?=\s)'), 'VOLATILE', None, None ),
-      ( re.compile(r'while(?=\s)'), 'WHILE', None, None ),
-
-      # Identifiers
-      ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
-
-      # Unicode Characters
-      ( re.compile(r'\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?'), 'UNIVERSAL_CHARACTER_NAME', None, None ),
-
-      # Digraphs
-      ( re.compile(r'<%'), 'LBRACE', None, None ),
-      ( re.compile(r'%>'), 'RBRACE', None, None ),
-      ( re.compile(r'<:'), 'LSQUARE', None, None ),
-      ( re.compile(r':>'), 'RSQUARE', None, None ),
-      ( re.compile(r'%:%:'), 'POUNDPOUND', None, None ),
-      ( re.compile(r'%:'), 'POUND', None, None ),
-
-      # Punctuators
-      ( re.compile(r'\['), 'LSQUARE', None, None ),
-      ( re.compile(r'\]'), 'RSQUARE', None, None ),
-      ( re.compile(r'\('), 'LPAREN', None, None ),
-      ( re.compile(r'\)'), 'RPAREN', None, None ),
-      ( re.compile(r'\{'), 'LBRACE', None, None ),
-      ( re.compile(r'\}'), 'RBRACE', None, None ),
-      ( re.compile(r'\.'), 'DOT', None, None ),
-      ( re.compile(r'->'), 'ARROW', None, None ),
-      ( re.compile(r'\+\+'), 'INCR', None, None ),
-      ( re.compile(r'--'), 'DECR', None, None ),
-      ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
-      ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
-      ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
-      ( re.compile(r'-(?!=)'), 'SUB', None, None ),
-      ( re.compile(r'~'), 'TILDE', None, None ),
-      ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
-      ( re.compile(r'/(?!=)'), 'DIV', None, None ),
-      ( re.compile(r'%(?!=)'), 'MOD', None, None ),
-      ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
-      ( re.compile(r'>>(?!=)'), 'RSHIFT', None, None ),
-      ( re.compile(r'<(?!=)'), 'LT', None, None ),
-      ( re.compile(r'>(?!=)'), 'GT', None, None ),
-      ( re.compile(r'<='), 'LTEQ', None, None ),
-      ( re.compile(r'>='), 'GTEQ', None, None ),
-      ( re.compile(r'=='), 'EQ', None, None ),
-      ( re.compile(r'!='), 'NEQ', None, None ),
-      ( re.compile(r'\^(?!=)'), 'BITXOR', None, None ),
-      ( re.compile(r'\|(?!\|)'), 'BITOR', None, None ),
-      ( re.compile(r'&&'), 'AND', None, None ),
-      ( re.compile(r'\|\|'), 'OR', None, None ),
-      ( re.compile(r'\?'), 'QUESTIONMARK', None, None ),
-      ( re.compile(r':'), 'COLON', None, None ),
-      ( re.compile(r';'), 'SEMI', None, None ),
-      ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
-      ( re.compile(r'=(?!=)'), 'ASSIGN', None, None ),
-      ( re.compile(r'\*='), 'MULEQ', None, None ),
-      ( re.compile(r'/='), 'DIVEQ', None, None ),
-      ( re.compile(r'%='), 'MODEQ', None, None ),
-      ( re.compile(r'\+='), 'ADDEQ', None, None ),
-      ( re.compile(r'-='), 'SUBEQ', None, None ),
-      ( re.compile(r'<<='), 'LSHIFTEQ', None, None ),
-      ( re.compile(r'>>='), 'RSHIFTEQ', None, None ),
-      ( re.compile(r'&='), 'BITANDEQ', None, None ),
-      ( re.compile(r'\^='), 'BITXOREQ', None, None ),
-      ( re.compile(r'\|='), 'BITOREQ', None, None ),
-      ( re.compile(r','), 'COMMA', None, None ),
-      ( re.compile(r'##'), 'POUNDPOUND', None, None ),
-      ( re.compile(r'#(?!#)'), 'POUND', None, None ),
-
-      # Constants, Literals
-      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?'), 'DECIMAL_FLOATING_CONSTANT', None, None ),
-      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None, None ),
-      ( re.compile(r'([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?'), 'INTEGER_CONSTANT', None, None ),
-      ( re.compile(r'0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?'), 'HEXADECIMAL_FLOATING_CONSTANT', None, None ),
-      ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
-
-      # Whitespace
-      ( re.compile(r'\s+', 0), None, None, None )
-  ]
-  def __init__(self, terminals, logger = None):
-    self.cache = []
-    self.setTerminals(terminals)
-    self.setRegex(self.cRegex)
-    self.setLogger(logger)
-  
-  def __next__(self):
-    token = super().__next__()
-    return cToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
-  
-
-if len(sys.argv) < 2:
-  print("missing C file(s)")
-  sys.exit(-1)
-
-for filename in sys.argv[1:]:
-  debugger = Debugger('./debug')
-  cP = cParser.Parser()
-  cPPP = ppParser.Parser()
-
-  try:
-    cSourceText = open(filename, encoding='utf-8').read()
-  except UnicodeDecodeError:
-    cSourceText = open(filename, encoding='iso-8859-1').read()
-  
-  cTokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
-  cL = cLexer(cTokenMap, logger=debugger.getLogger('cmatch'))
-
-  cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
-  cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=cPPL_TokenMap, logger=debugger.getLogger('ppmatch'))
-  cPPL = cPreprocessingLexer( cPPL_PatternMatchingLexer, cPPL_TokenMap, logger=debugger.getLogger('pplex') )
-  cPE = cPreprocessingEvaluator(cPPP, cPPL, cL, cP, logger=debugger.getLogger('ppeval'))
-  cPF = cPreprocessingFile(cSourceText, cPPL, cPPP, cL, cPE, logger=debugger.getLogger('ppfile'))
-  
-  try:
-    cT = cPF.process() # list of C tokens
-    cTU = cTranslationUnit(cT, cP, logger=debugger.getLogger('cparse'))
-    cAST = cTU.process()
-  except Exception as e:
-    print(e, '\n', e.tracer)
-    sys.exit(-1)
-  sys.exit(0)
-  print(cAST)
