@@ -13,7 +13,7 @@ for file in os.listdir('/usr/include'):
       if mode == 'gcc':
         subprocess.check_call(['gcc', '-E', '/usr/include/' + file], stdout=open('/dev/null', 'w'))
       else:
-        subprocess.check_call(['python3', 'c.py', '/usr/include/' + file])
+        subprocess.check_call(['cast', 'ctok', '/usr/include/' + file], stdout=open('/dev/null', 'w'))
       good += 1
       sys.stdout.write('OKAY\n')
     except subprocess.CalledProcessError:

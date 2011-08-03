@@ -4,6 +4,7 @@ from copy import copy, deepcopy
 from cast.cParser import Parser as cParser
 from cast.ppParser import Parser as ppParser
 from cast.ppParser import Ast as ppAst
+from cast.ppParser import Ast as ppAst
 from cast.ppLexer import Factory as ppLexerFactory
 from cast.cLexer import Factory as cLexerFactory
 from cast.Token import Token, cToken, ppToken, TokenList
@@ -250,7 +251,7 @@ class cPreprocessingEvaluator:
       return string
     if isinstance(cPPAST, list):
       return 'List: [%s]' % (', '.join([self._debugStr(x) for x in cPPAST]))
-    if isinstance(cPPAST, ppParser.Ast):
+    if isinstance(cPPAST, ppAst):
       return 'Ast: %s' % (cPPAST.name)
   
   def _getCSourceMacroFunctionParams(self, cLexer):

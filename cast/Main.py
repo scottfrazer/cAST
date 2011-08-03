@@ -4,6 +4,8 @@ from types import *
 from os import path
 import sys, os, argparse
 from cast.PreProcessor import Factory as PreProcessorFactory
+from cast.ppLexer import Factory as ppLexerFactory
+from cast.ppParser import Parser as ppParser
 
 def Cli():
 
@@ -30,6 +32,14 @@ def Cli():
   parser.add_argument('-d', '--debug',
               required = False,
               help = 'Writes debug information')
+  
+  parser.add_argument('-e', '--encoding',
+              required = False,
+              help = 'File encoding')
+
+  parser.add_argument('-f', '--format',
+              required = False,
+              help = "'tiny', 'short', 'long' for outputting tokens.")
 
   result = parser.parse_args()
 
@@ -37,27 +47,31 @@ def Cli():
     sys.stderr.write("Error: Source file does not exist\n")
     sys.exit(-1)
 
+  try:
+    cSourceText = open(result.source_file[0], encoding='utf-8').read()
+  except UnicodeDecodeError:
+    cSourceText = open(result.source_file[0], encoding='iso-8859-1').read()
+
   if result.action == 'pp':
     pass
 
   if result.action == 'pptok':
-    pass
+    cPPLFactory = ppLexerFactory()
+    cPPP = ppParser()
+    cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
+    cPPL = cPPLFactory.create(cPPL_TokenMap)
+    cPPL.setString(cSourceText)
+    for token in cPPL:
+      print(token)
 
   if result.action == 'ctok':
-    # debugger = Debugger('./debug')
-
-    try:
-      cSourceText = open(result.source_file[0], encoding='utf-8').read()
-    except UnicodeDecodeError:
-      cSourceText = open(result.source_file[0], encoding='iso-8859-1').read()
-    
     cPPFactory = PreProcessorFactory()
     cPP = cPPFactory.create()
 
     try:
       cT = cPP.process( cSourceText )
-      for t in cT:
-        print(t)
+      for token in cT:
+        print(token)
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
