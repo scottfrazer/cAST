@@ -281,7 +281,7 @@ class cPreprocessingEvaluator:
     return cToken( self.cPPTtocT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno )
   
   def _eval( self, cPPAST ):
-    rtokens = []
+    rtokens = TokenList()
     if self.logger:
       self._log('eval', self._debugStr(cPPAST))
       for symbol, replacement in self.symbols.items():

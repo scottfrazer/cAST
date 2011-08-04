@@ -22,7 +22,18 @@ class Token:
     #return "'%s'" % (self.terminal_str.lower())
     return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
     #return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
-  
+
+  def toString( self, format = 'long' ):
+    if format == 'tiny':
+      return "%s" % (self.source_string)
+    elif format == 'short':
+      if len(self.source_string):
+        return "%s ('%s')" % ( self.terminal_str.lower(), self.source_string )
+      else:
+        return "%s" % ( self.terminal_str.lower() )
+    else:
+      return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
+
 class ppToken(Token):
   type = 'pp'
 
@@ -30,4 +41,24 @@ class cToken(Token):
   type = 'c'
 
 class TokenList(list):
-  pass
+  def toString(self):
+    class Cursor:
+      string = ''
+      lineno = 1
+      colno = 1
+      def add(self, token):
+        if token.lineno > self.lineno:
+          self.string += ''.join('\n' for i in range(token.lineno - self.lineno))
+          self.lineno = token.lineno
+          self.colno = 1
+        if token.colno > self.colno:
+          self.string += ''.join(' ' for i in range(token.colno - self.colno))
+          self.colno = token.colno
+        self.string += token.source_string
+        self.colno += len(token.source_string)
+      def __str__(self):
+        return self.string
+    cursor = Cursor()
+    for token in self:
+      cursor.add( token )
+    return str(cursor)

@@ -39,6 +39,7 @@ def Cli():
 
   parser.add_argument('-f', '--format',
               required = False,
+              default = 'long',
               help = "'tiny', 'short', 'long' for outputting tokens.")
 
   result = parser.parse_args()
@@ -52,8 +53,16 @@ def Cli():
   except UnicodeDecodeError:
     cSourceText = open(result.source_file[0], encoding='iso-8859-1').read()
 
+  cPPFactory = PreProcessorFactory()
+  cPP = cPPFactory.create()
+
   if result.action == 'pp':
-    pass
+    try:
+      cT = cPP.process( cSourceText )
+      print(cT.toString())
+    except Exception as e:
+      print(e, '\n', e.tracer)
+      sys.exit(-1)
 
   if result.action == 'pptok':
     cPPLFactory = ppLexerFactory()
@@ -62,16 +71,13 @@ def Cli():
     cPPL = cPPLFactory.create(cPPL_TokenMap)
     cPPL.setString(cSourceText)
     for token in cPPL:
-      print(token)
+      print(token.toString(result.format))
 
   if result.action == 'ctok':
-    cPPFactory = PreProcessorFactory()
-    cPP = cPPFactory.create()
-
     try:
       cT = cPP.process( cSourceText )
       for token in cT:
-        print(token)
+        print(token.toString(result.format))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
