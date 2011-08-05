@@ -102,8 +102,6 @@ class ppLexer(Lexer):
     self.__dict__.update(locals())
     self.patternMatchingLexer.setRegex(self.regex)
     self.patternMatchingLexer.setTerminals(terminals)
-    self.comment_start = re.compile(r'/\*')
-    self.comment_end = re.compile(r'\*/')
     self.tokenBuffer = []
     self.colno = 1
     self.lineno = 0
@@ -125,7 +123,7 @@ class ppLexer(Lexer):
   
   def _advance(self, lines):
     self.cST_lines = self.cST_lines[lines:]
-  
+
   def _hasToken(self):
     return len(self.tokenBuffer) > 0
   
@@ -156,17 +154,28 @@ class ppLexer(Lexer):
     emit_csource = False
     continuation = False
     comment = False
-    for line in self.cST_lines:
+    advance = 0
+    for index, line in enumerate(self.cST_lines):
       self.lineno += 1
-      if not comment and (self._isPreprocessingLine( line ) or continuation):
+
+      if self._isPreprocessingLine( line ) or continuation:
         continuation = False
-        if '/*' in line and '*/' not in line:
-          line = re.sub('/\*.*$', '', line)
-          comment = True
         if len(buf):
           self.lineno -= 1
           emit_csource = True
           break
+        if '/*' in line and '*/' not in line:
+          line = re.sub('/\*.*$', '', line)
+          try:
+            i = index
+            while True:
+              i += 1
+              lines += 1
+              if '*/' in self.cST_lines[i]:
+                line += re.sub('^.*\*/', '', self.cST_lines[i])
+                break
+          except IndexError:
+            pass
         if line.strip() == '#':
           lines += 1
           continue
@@ -193,11 +202,6 @@ class ppLexer(Lexer):
         emit_csource = True
         if not len(buf):
           buf_line = self.lineno
-        # TODO: simplify this to: if '/*' in line
-        if self.comment_start.search(line) and not self.comment_end.search(line):
-          comment = True
-        elif not self.comment_start.search(line) and self.comment_end.search(line):
-          comment = False
         buf.append(line)
         lines += 1
 
