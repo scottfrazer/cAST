@@ -2,7 +2,7 @@
 
 from types import *
 from os import path
-import sys, os, argparse
+import sys, os, argparse, subprocess, re
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.ppLexer import Factory as ppLexerFactory
 from cast.ppParser import Parser as ppParser
@@ -42,6 +42,11 @@ def Cli():
               default = 'long',
               help = "'tiny', 'short', 'long' for outputting tokens.")
 
+  parser.add_argument('-I', '--include-path',
+              required = False,
+              default = '',
+              help = "A path containing the list of directories separated by colons.")
+
   result = parser.parse_args()
 
   if not os.path.isfile( result.source_file[0] ):
@@ -53,12 +58,17 @@ def Cli():
   except UnicodeDecodeError:
     cSourceText = open(result.source_file[0], encoding='iso-8859-1').read()
 
+  target = subprocess.check_output(["gcc", "-dumpmachine"]).decode('ascii').strip()
+  include_path_global = ['/usr/include', '/usr/local/include', 'usr/' + target + '/include']
+  include_path_global.extend( list(filter(lambda x: x, result.include_path.split(':'))) )
+  include_path_local = [os.path.dirname(os.path.abspath(result.source_file[0]))]
+
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create()
+  cPP = cPPFactory.create( include_path_global, include_path_local )
 
   if result.action == 'pp':
     try:
-      cT = cPP.process( cSourceText )
+      (cT, symbols) = cPP.process( cSourceText )
       print(cT.toString())
     except Exception as e:
       print(e, '\n', e.tracer)
@@ -75,7 +85,7 @@ def Cli():
 
   if result.action == 'ctok':
     try:
-      cT = cPP.process( cSourceText )
+      cT, symbols = cPP.process( cSourceText )
       for token in cT:
         print(token.toString(result.format))
     except Exception as e:

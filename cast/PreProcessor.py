@@ -54,21 +54,21 @@ class Debugger:
     return logger
 
 class Factory:
-  def create(self):
-    cPPLFactory = ppLexerFactory()
-    cLFactory = cLexerFactory()
+  def __init__(self):
+    self.cPPLFactory = ppLexerFactory()
+    self.cLFactory = cLexerFactory()
 
-    cPPP = ppParser()
-    cP = cParser()
+    self.cPPP = ppParser()
+    self.cP = cParser()
 
-    cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
-    cL_TokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
+    cPPL_TokenMap = { terminalString.upper(): self.cPPP.terminal(terminalString) for terminalString in self.cPPP.terminalNames() }
+    cL_TokenMap = { terminalString.upper(): self.cP.terminal(terminalString) for terminalString in self.cP.terminalNames() }
 
-    cPPL = cPPLFactory.create( cPPL_TokenMap )
-    cL = cLFactory.create( cL_TokenMap )
-    cPE = cPreprocessingEvaluator( cPPP, cPPL, cL, cP )
-
-    return PreProcessor( cPPL, cPPP, cL, cPE )
+    self.cPPL = self.cPPLFactory.create( cPPL_TokenMap )
+    self.cL = self.cLFactory.create( cL_TokenMap )
+  def create(self, includePathGlobal = ['.'], includePathLocal = ['.']):
+    cPE = cPreprocessingEvaluator( self.cPPP, self.cPPL, self.cL, self.cP, self, includePathGlobal, includePathLocal )
+    return PreProcessor( self.cPPL, self.cPPP, self.cL, cPE )
 
 # Also called 'source file' in ISO docs.
 # Takes C source code, pre-processes, returns C tokens
@@ -87,7 +87,7 @@ class PreProcessor:
   def __init__( self, cPPL, cPPP, cL, cPE, logger = None ):
     self.__dict__.update(locals())
   
-  def process( self, cST ):
+  def process( self, cST, symbols = {} ):
     # Phase 1: Replace trigraphs with single-character equivelants
     for (trigraph, replacement) in self.trigraphs.items():
       self.cST = cST.replace(trigraph, replacement)
@@ -101,8 +101,8 @@ class PreProcessor:
         self.logger.log('ast', str(ast))
       except RuntimeError:
         pass
-    ctokens = self.cPE.eval(ast)
-    return ctokens
+    ctokens = self.cPE.eval(ast, symbols)
+    return (ctokens, self.cPE.getSymbolTable())
   
 
 #cPFF
@@ -157,7 +157,7 @@ class cPreprocessorFunctionFactory:
   
 
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP, cPPL, cL, cP, logger = None):
+  def __init__(self, cPPP, cPPL, cL, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
     self.__dict__.update(locals())
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
     self.cPPTtocT = {
@@ -217,12 +217,15 @@ class cPreprocessingEvaluator:
       self.cPPP.TERMINAL_LBRACE : self.cP.TERMINAL_LBRACE
     }
     self.cTtocPPT = {v: k for k, v in self.cPPTtocT.items()}
-  
-  def eval( self, cPPAST ):
-    self.symbols = dict()
+
+  def eval( self, cPPAST, symbols = {} ):
+    self.symbols = symbols
     self.line = 1
     return self._eval(cPPAST)
-  
+
+  def getSymbolTable(self):
+    return self.symbols
+
   def newlines(self, number):
     return ''.join(['\n' for i in range(number)])
   
@@ -422,8 +425,31 @@ class cPreprocessingEvaluator:
         nodes = cPPAST.getAttr('nodes')
         return self._eval(nodes)
       elif cPPAST.name == 'Include':
-        cPPAST.getAttr('file')
-        self.line += 1
+        filename = cPPAST.getAttr('file').getString()
+        if (filename[0], filename[-1]) == ('"', '"'):
+          filename = filename.strip('"')
+          for directory in self.includePathLocal:
+            path = os.path.join( directory, filename )
+            if os.path.isfile( path ):
+              self.line += 1
+              preprocessor = self.preProcessorFactory.create()
+              (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
+              self.symbols = symbolTable
+              return tokens
+          raise NameError(filename + ' not found in include path')
+        elif (filename[0], filename[-1]) == ('<', '>'):
+          filename = filename.strip('<>')
+          for directory in self.includePathGlobal:
+            path = os.path.join( directory, filename )
+            if os.path.isfile( path ):
+              self.line += 1
+              preprocessor = self.preProcessorFactory.create()
+              (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
+              self.symbols = symbolTable
+              return tokens
+          raise NameError(filename + ' not found in include path')
+        else:
+          raise NameError('invalid include type')
       elif cPPAST.name == 'Define':
         ident = cPPAST.getAttr('ident')
         body = cPPAST.getAttr('body')
