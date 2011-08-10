@@ -1,6 +1,7 @@
 import re
 from cast.Lexer import Lexer, PatternMatchingLexer
 from cast.Token import ppToken
+from cast.ppParser import Parser as ppParser
 
 def parseDefine( match, string, lineno, colno, terminals ):
   identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
@@ -220,12 +221,15 @@ class ppLexer(Lexer):
     return False
 
 class Factory:
-  def create( self, tokenMap, debug = False ):
+  def create( self, debug = False ):
     matchLogger = None
     lexLogger = None
     if debug:
       matchLogger = debugger.getLogger('ppmatch')
       lexLogger = debugger.getLogger('pplex')
-    cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=tokenMap, logger=matchLogger)
-    cPPL = ppLexer( cPPL_PatternMatchingLexer, tokenMap, logger=lexLogger )
+
+    cPPP = ppParser()
+    cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
+    cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=cPPL_TokenMap, logger=matchLogger)
+    cPPL = ppLexer( cPPL_PatternMatchingLexer, cPPL_TokenMap, logger=lexLogger )
     return cPPL

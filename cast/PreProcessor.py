@@ -61,11 +61,8 @@ class Factory:
     self.cPPP = ppParser()
     self.cP = cParser()
 
-    cPPL_TokenMap = { terminalString.upper(): self.cPPP.terminal(terminalString) for terminalString in self.cPPP.terminalNames() }
-    cL_TokenMap = { terminalString.upper(): self.cP.terminal(terminalString) for terminalString in self.cP.terminalNames() }
-
-    self.cPPL = self.cPPLFactory.create( cPPL_TokenMap )
-    self.cL = self.cLFactory.create( cL_TokenMap )
+    self.cPPL = self.cPPLFactory.create()
+    self.cL = self.cLFactory.create()
   def create(self, includePathGlobal = ['.'], includePathLocal = ['.']):
     cPE = cPreprocessingEvaluator( self.cPPP, self.cPPL, self.cL, self.cP, self, includePathGlobal, includePathLocal )
     return PreProcessor( self.cPPL, self.cPPP, self.cL, cPE )

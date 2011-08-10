@@ -21,7 +21,7 @@ def Cli():
               epilog = '(c) 2011 Scott Frazer')
 
   parser.add_argument('action',
-              choices = ['pp', 'pptok', 'ctok'],
+              choices = ['pp', 'pptok', 'ppast', 'ctok'],
               help = 'Parser Generator Actions')
 
   parser.add_argument('source_file',
@@ -76,12 +76,24 @@ def Cli():
 
   if result.action == 'pptok':
     cPPLFactory = ppLexerFactory()
-    cPPP = ppParser()
-    cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
-    cPPL = cPPLFactory.create(cPPL_TokenMap)
+    cPPL = cPPLFactory.create()
     cPPL.setString(cSourceText)
     for token in cPPL:
       print(token.toString(result.format))
+
+  if result.action == 'ppast':
+    from cast.ppParser import Parser as ppParser
+    try:
+      cPPLFactory = ppLexerFactory()
+      cPPL = cPPLFactory.create()
+      cPPL.setString(cSourceText)
+      parser = ppParser()
+      parsetree = parser.parse(cPPL, 'pp_file')
+      ast = parsetree.toAst()
+      print(ast)
+    except Exception as e:
+      print(e, '\n', e.tracer)
+      sys.exit(-1)
 
   if result.action == 'ctok':
     try:

@@ -1,6 +1,7 @@
 import re
 from cast.Lexer import PatternMatchingLexer
 from cast.Token import cToken
+from cast.cParser import Parser as cParser
 
 class cLexer(PatternMatchingLexer):
   cRegex = [
@@ -132,10 +133,12 @@ class cLexer(PatternMatchingLexer):
     return cToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
 
 class Factory:
-  def create( self, tokenMap, debug = False ):
+  def create( self, debug = False ):
     lexLogger = None
     if debug:
       lexLogger = debugger.getLogger('cmatch')
-    cL = cLexer(terminals=tokenMap, logger=lexLogger)
+    cP = cParser()
+    cL_TokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
+    cL = cLexer(terminals=cL_TokenMap, logger=lexLogger)
     return cL
   
