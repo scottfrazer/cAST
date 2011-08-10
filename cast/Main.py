@@ -6,6 +6,7 @@ import sys, os, argparse, subprocess, re
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.ppLexer import Factory as ppLexerFactory
 from cast.ppParser import Parser as ppParser
+from cast.Ast import AstPrettyPrintable
 
 def Cli():
 
@@ -90,7 +91,7 @@ def Cli():
       parser = ppParser()
       parsetree = parser.parse(cPPL, 'pp_file')
       ast = parsetree.toAst()
-      print(ast)
+      print(AstPrettyPrintable(ast))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
