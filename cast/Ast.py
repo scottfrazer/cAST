@@ -1,5 +1,4 @@
 from cast.ppParser import Ast
-import sys
 
 class AstPrettyPrintable:
   def __init__(self, ast):

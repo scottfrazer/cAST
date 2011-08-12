@@ -84,12 +84,14 @@ class PreProcessor:
   def __init__( self, cPPL, cPPP, cL, cPE, logger = None ):
     self.__dict__.update(locals())
   
-  def process( self, cST, symbols = {} ):
-    # Phase 1: Replace trigraphs with single-character equivelants
+  def process( self, cST, symbols = {}, lineno = 1 ):
+    # Phase 1: Replace trigraphs with single-character equivalents
     for (trigraph, replacement) in self.trigraphs.items():
       self.cST = cST.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     self.cPPL.setString( cST )
+    self.cPPL.setLine( lineno - 1 )
+    self.cPPL.setColumn( 1 )
     parsetree = self.cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
     if self.logger:
@@ -266,12 +268,12 @@ class cPreprocessingEvaluator:
         lparen += 1
       if paramTokenStr == 'rparen':
         lparen -= 1
-      if paramTokenStr in ['comma', 'rparen'] and lparen <= 1:
+      if paramTokenStr in ['comma', 'rparen'] and lparen == 0:
         params.append( buf )
         buf = []
       else:
         buf.append(self.cPPL.matchString(paramToken.getString()))
-      if paramTokenStr == 'rparen' and lparen <= 1:
+      if paramTokenStr == 'rparen' and lparen == 0:
         break
     return params
   
@@ -429,7 +431,7 @@ class cPreprocessingEvaluator:
             path = os.path.join( directory, filename )
             if os.path.isfile( path ):
               self.line += 1
-              preprocessor = self.preProcessorFactory.create()
+              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, self.includePathLocal)
               (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
               self.symbols = symbolTable
               return tokens
@@ -440,7 +442,7 @@ class cPreprocessingEvaluator:
             path = os.path.join( directory, filename )
             if os.path.isfile( path ):
               self.line += 1
-              preprocessor = self.preProcessorFactory.create()
+              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, self.includePathLocal)
               (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
               self.symbols = symbolTable
               return tokens

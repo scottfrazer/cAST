@@ -1,5 +1,4 @@
 #include    <stdio.h>
-#include<stdlib.h>
 #define stdin   (&__sF[0])
 #ifdef stdin
 int func();
@@ -16,7 +15,6 @@ int add(int x, int y) {return x+y;}
 #define X FUNC(1,J) + Y
 #define Z add(1,2)
 #define THETA 1 + PHI(10, 2)
-#include PATH
 #define PATH "c.c"
 int main()
 {
