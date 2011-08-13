@@ -339,9 +339,10 @@ class cPreprocessingEvaluator:
                    result = replacement_token.run(params, token.lineno, token.colno)
                    tmp.extend(result)
                    break
-              replacement_token.colno = token.colno
-              replacement_token.lineno = token.lineno
-              tmp.append(replacement_token)
+              new_token = copy(replacement_token)
+              new_token.colno = token.colno
+              new_token.lineno = token.lineno
+              tmp.append(new_token)
             tokens.extend(tmp)
             continue
           else:
