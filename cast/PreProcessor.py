@@ -268,7 +268,7 @@ class cPreprocessingEvaluator:
         lparen += 1
       if paramTokenStr == 'rparen':
         lparen -= 1
-      if paramTokenStr in ['comma', 'rparen'] and lparen == 0:
+      if (paramTokenStr == 'rparen' and lparen == 0) or (paramTokenStr == 'comma' and lparen == 1):
         params.append( buf )
         buf = []
       else:
