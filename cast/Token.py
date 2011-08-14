@@ -14,6 +14,9 @@ class Token:
   def getId(self):
     return self.id
 
+  def getTerminalStr(self):
+    return self.terminal_str
+
   def toAst(self):
     return self
   

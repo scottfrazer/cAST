@@ -1,4 +1,3 @@
-#include    <stdio.h>
 #define stdin   (&__sF[0])
 #ifdef stdin
 int func();
