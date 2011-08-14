@@ -1,166 +1,38 @@
-import unittest
+import unittest, os
 from CastTest import CastTest
 from cast.Token import ppToken
 
 class ppTokenTest(CastTest):
 
-  def setUp(self):
-    pass
-  
+  def __init__(self, filename):
+    super(ppTokenTest, self).__init__('test_ppTokens')
+    self.__dict__.update(locals())
+
   def test_ppTokens(self):
-    tokens = [
-      'DEFINE,1,1',
-      'IDENTIFIER,1,9',
-      'LPAREN,1,17',
-      'BITAND,1,18',
-      'IDENTIFIER,1,19',
-      'LSQUARE,1,23',
-      'PP_NUMBER,1,24',
-      'RSQUARE,1,25',
-      'RPAREN,1,26',
-      'SEPARATOR,2,1',
-      'IFDEF,2,1',
-      'IDENTIFIER,2,8',
-      'CSOURCE,3,1',
-      'SEPARATOR,3,1',
-      'ELSE,4,1',
-      'CSOURCE,5,1',
-      'SEPARATOR,5,1',
-      'ENDIF,6,1',
-      'SEPARATOR,7,1',
-      'CSOURCE,7,1',
-      'SEPARATOR,7,1',
-      'DEFINE_FUNCTION,8,1',
-      'IDENTIFIER,8,9',
-      'LPAREN,8,13',
-      'IDENTIFIER,8,14',
-      'COMMA,8,15',
-      'IDENTIFIER,8,16',
-      'RPAREN,8,17',
-      'IDENTIFIER,8,19',
-      'ADD,8,20',
-      'IDENTIFIER,8,21',
-      'SEPARATOR,9,1',
-      'DEFINE,9,1',
-      'IDENTIFIER,9,9',
-      'PP_NUMBER,9,11',
-      'SEPARATOR,10,1',
-      'DEFINE,10,1',
-      'IDENTIFIER,10,9',
-      'PP_NUMBER,10,11',
-      'SEPARATOR,11,1',
-      'DEFINE,11,1',
-      'IDENTIFIER,11,9',
-      'STRING_LITERAL,11,14',
-      'SEPARATOR,12,1',
-      'DEFINE_FUNCTION,12,1',
-      'IDENTIFIER,12,9',
-      'LPAREN,12,12',
-      'IDENTIFIER,12,13',
-      'COMMA,12,14',
-      'IDENTIFIER,12,16',
-      'RPAREN,12,17',
-      'IDENTIFIER,12,19',
-      'SUB,12,20',
-      'IDENTIFIER,12,21',
-      'SEPARATOR,13,1',
-      'CSOURCE,13,1',
-      'SEPARATOR,13,1',
-      'DEFINE,14,1',
-      'IDENTIFIER,14,9',
-      'IDENTIFIER,14,11',
-      'LPAREN,14,15',
-      'PP_NUMBER,14,16',
-      'COMMA,14,17',
-      'IDENTIFIER,14,18',
-      'RPAREN,14,19',
-      'ADD,14,21',
-      'IDENTIFIER,14,23',
-      'SEPARATOR,15,1',
-      'DEFINE,15,1',
-      'IDENTIFIER,15,9',
-      'IDENTIFIER,15,11',
-      'LPAREN,15,14',
-      'PP_NUMBER,15,15',
-      'COMMA,15,16',
-      'PP_NUMBER,15,17',
-      'RPAREN,15,18',
-      'SEPARATOR,16,1',
-      'DEFINE,16,1',
-      'IDENTIFIER,16,9',
-      'PP_NUMBER,16,15',
-      'ADD,16,17',
-      'IDENTIFIER,16,19',
-      'LPAREN,16,22',
-      'PP_NUMBER,16,23',
-      'COMMA,16,25',
-      'PP_NUMBER,16,27',
-      'RPAREN,16,28',
-      'SEPARATOR,17,1',
-      'DEFINE,17,1',
-      'IDENTIFIER,17,9',
-      'STRING_LITERAL,17,14',
-      'SEPARATOR,18,1',
-      'CSOURCE,18,1',
-      'SEPARATOR,21,1',
-      'IF,22,1',
-      'IDENTIFIER,22,5',
-      'EQ,22,6',
-      'PP_NUMBER,22,8',
-      'CSOURCE,23,1',
-      'SEPARATOR,24,1',
-      'ENDIF,25,1',
-      'SEPARATOR,26,1',
-      'CSOURCE,26,1',
-      'SEPARATOR,26,1',
-      'DEFINE,27,1',
-      'IDENTIFIER,27,9',
-      'PP_NUMBER,27,11',
-      'SEPARATOR,28,1',
-      'DEFINE,28,1',
-      'IDENTIFIER,28,9',
-      'PP_NUMBER,28,13',
-      'SEPARATOR,29,1',
-      'IFDEF,29,1',
-      'IDENTIFIER,29,8',
-      'IFNDEF,30,1',
-      'IDENTIFIER,30,13',
-      'CSOURCE,31,1',
-      'SEPARATOR,32,1',
-      'ENDIF,33,1',
-      'SEPARATOR,34,1',
-      'ELIF,34,1',
-      'PP_NUMBER,34,7',
-      'ELIF,35,1',
-      'PP_NUMBER,35,7',
-      'SUB,35,8',
-      'PP_NUMBER,35,9',
-      'CSOURCE,36,1',
-      'SEPARATOR,36,1',
-      'ELIF,37,1',
-      'PP_NUMBER,37,7',
-      'SUB,37,8',
-      'PP_NUMBER,37,9',
-      'CSOURCE,38,1',
-      'SEPARATOR,38,1',
-      'ENDIF,39,1',
-      'SEPARATOR,40,1',
-      'CSOURCE,40,1',
-      'SEPARATOR,40,1',
-      'UNDEF,41,1',
-      'IDENTIFIER,41,8',
-      'SEPARATOR,42,1',
-      'CSOURCE,42,1',
-      'SEPARATOR,42,1',
-      'UNDEF,43,1',
-      'IDENTIFIER,43,8',
-      'SEPARATOR,44,1',
-      'CSOURCE,44,1',
-      'SEPARATOR,45,1']
-    fp = open('c/a.c')
-    contents = fp.read()
-    fp.close()
-    self.assert_pptok( contents, tokens )
+    csource = os.path.join('c', self.filename)
+    pptokens = os.path.join('c', self.filename + '.pptok')
+
+    if not os.path.isfile(pptokens):
+      self.write_pptok(pptokens)
+
+    if os.path.isfile(csource) and os.path.isfile(pptokens):
+
+      fp = open( csource )
+      contents = fp.read()
+      fp.close()
+
+      fp = open( pptokens )
+      expected = list(filter(lambda x: len(x), fp.read().split('\n')))
+      fp.close()
+
+      self.assert_pptok( contents, expected )
+
+def load_tests(loader, tests, pattern):
+    files = list(filter(lambda x: x.endswith('.c'), os.listdir('c')))
+    suite = unittest.TestSuite()
+    for filename in files:
+      suite.addTest( ppTokenTest(filename) )
+    return suite
 
 if __name__ == '__main__':
   unittest.main()
