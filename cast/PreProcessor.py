@@ -323,7 +323,11 @@ class cPreprocessingEvaluator:
           replacement = self.symbols[token.getString()]
           if isinstance(replacement, self.cPFF.cPreprocessorFunction):
             if lookahead.getString() != '(':
-              tokens.extend(token)
+              if not isinstance(token, list):
+                tmptoken = [token]
+              else:
+                tmptoken = token
+              tokens.extend(tmptoken)
               continue
             else:
               params = self._getCSourceMacroFunctionParams(cLexer)

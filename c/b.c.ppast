@@ -1,0 +1,27 @@
+(PPFile:
+  nodes=[
+    (DefineFunction:
+      body=(ReplacementList:
+        tokens=[
+          IDENTIFIER,
+          ADD,
+          IDENTIFIER
+        ]
+      ),
+      ident=IDENTIFIER,
+      params=[
+        IDENTIFIER,
+        IDENTIFIER
+      ]
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          IDENTIFIER
+        ]
+      ),
+      ident=IDENTIFIER
+    ),
+    CSOURCE
+  ]
+)

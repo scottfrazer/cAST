@@ -1,4 +1,3 @@
-#include <stdio.h>
 #define EXT(a,b) a+b
 #define alias EXT
 int main() {

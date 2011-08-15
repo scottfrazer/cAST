@@ -1,0 +1,27 @@
+(PPFile:
+  nodes=[
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          PP_NUMBER,
+          COMMA,
+          PP_NUMBER
+        ]
+      ),
+      ident=IDENTIFIER
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          PP_NUMBER
+        ]
+      ),
+      ident=IDENTIFIER
+    ),
+    CSOURCE,
+    (Include:
+      file=HEADER_LOCAL
+    ),
+    CSOURCE
+  ]
+)

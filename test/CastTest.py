@@ -80,3 +80,19 @@ class CastTest(unittest.TestCase):
     fp = open(outPath, 'w')
     fp.write('\n'.join(actualTokens))
     fp.close()
+
+  def assert_pp(self, filePath, expected):
+    fp = open(filePath)
+    sourceString = fp.read()
+    fp.close()
+    cL = self.get_cLexer(filePath, sourceString)
+    self.assertEqual(cL.toString(), expected)
+  
+  def write_pp(self, filePath, outPath):
+    fp = open(filePath)
+    sourceString = fp.read()
+    fp.close()
+    cL = self.get_cLexer(filePath, sourceString)
+    fp = open(outPath, 'w')
+    fp.write( cL.toString() )
+    fp.close()

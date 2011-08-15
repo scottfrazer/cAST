@@ -1,4 +1,3 @@
-#include <stdio.h>
 #define qux0 7
 #define qux qux0
 #define foo(x, y) x+y
