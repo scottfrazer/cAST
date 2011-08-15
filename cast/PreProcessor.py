@@ -429,10 +429,13 @@ class cPreprocessingEvaluator:
         if (filename[0], filename[-1]) == ('"', '"'):
           filename = filename.strip('"')
           for directory in self.includePathLocal:
+            print(directory)
             path = os.path.join( directory, filename )
             if os.path.isfile( path ):
               self.line += 1
-              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, self.includePathLocal)
+              includePath = copy(self.includePathLocal)
+              includePath.append( os.path.dirname(path) )
+              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
               (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
               self.symbols = symbolTable
               return tokens
@@ -443,7 +446,9 @@ class cPreprocessingEvaluator:
             path = os.path.join( directory, filename )
             if os.path.isfile( path ):
               self.line += 1
-              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, self.includePathLocal)
+              includePath = copy(self.includePathLocal)
+              includePath.append( os.path.dirname(path) )
+              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
               (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
               self.symbols = symbolTable
               return tokens

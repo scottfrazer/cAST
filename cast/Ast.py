@@ -1,8 +1,9 @@
 from cast.ppParser import Ast
+from cast.Token import Token
 
 class AstPrettyPrintable:
-  def __init__(self, ast):
-    self.ast = ast
+  def __init__(self, ast, tokenFormat='type'):
+    self.__dict__.update(locals())
   def getAttr(self, attr):
     return self.ast.getAttr(attr)
   def __str__(self):
@@ -23,5 +24,7 @@ class AstPrettyPrintable:
       string += ',\n'.join([self._prettyPrint(element, indent + 2) for element in ast])
       string += '\n%s]' % (indentStr)
       return string
+    elif isinstance(ast, Token):
+      return '%s%s' % (indentStr, ast.toString(self.tokenFormat))
     else:
       return '%s%s' % (indentStr, ast)

@@ -28,7 +28,9 @@ class Token:
 
   def toString( self, format = 'long' ):
     if format == 'tiny':
-      return "%s" % (self.source_string)
+      return self.source_string
+    elif format == 'type':
+      return self.terminal_str
     elif format == 'short':
       if len(self.source_string):
         return "%s ('%s')" % ( self.terminal_str.lower(), self.source_string )

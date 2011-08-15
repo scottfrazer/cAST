@@ -2,40 +2,41 @@ import unittest, os
 from CastTest import CastTest
 from cast.Token import ppToken
 
-class ppTokenTest(CastTest):
+class ppAstTest(CastTest):
 
   def __init__(self, filename):
-    super(ppTokenTest, self).__init__('test_ppTokens')
+    super(ppAstTest, self).__init__('test_ppAst')
     self.__dict__.update(locals())
 
-  def test_ppTokens(self):
+  def test_ppAst(self):
     csource = os.path.join('c', self.filename)
-    pptokens = os.path.join('c', self.filename + '.pptok')
+    ppast = os.path.join('c', self.filename + '.ppast')
 
-    if not os.path.isfile(pptokens):
+    if not os.path.isfile(ppast):
       fp = open( csource )
       contents = fp.read()
       fp.close()
-      self.write_pptok(pptokens, contents)
+      self.write_ppast(ppast, contents)
 
-    if os.path.isfile(csource) and os.path.isfile(pptokens):
+    if os.path.isfile(csource) and os.path.isfile(ppast):
 
       fp = open( csource )
       contents = fp.read()
       fp.close()
 
-      fp = open( pptokens )
-      expected = list(filter(lambda x: len(x), fp.read().split('\n')))
+      fp = open( ppast )
+      expected = fp.read()
       fp.close()
 
-      self.assert_pptok( contents, expected )
+      self.assert_ppast( contents, expected )
 
 def load_tests(loader, tests, pattern):
     files = list(filter(lambda x: x.endswith('.c'), os.listdir('c')))
     suite = unittest.TestSuite()
     for filename in files:
-      suite.addTest( ppTokenTest(filename) )
+      suite.addTest( ppAstTest(filename) )
     return suite
 
 if __name__ == '__main__':
   unittest.main()
+
