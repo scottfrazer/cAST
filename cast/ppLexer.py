@@ -2,26 +2,30 @@ import re
 from cast.Lexer import Lexer, PatternMatchingLexer
 from cast.Token import ppToken
 from cast.ppParser import Parser as ppParser
+from cast.SourceCode import SourceCodeString
+from cast.Logger import Factory as LoggerFactory
 
-def parseDefine( match, string, lineno, colno, terminals ):
+moduleLogger = LoggerFactory().getModuleLogger(__name__)
+
+def parseDefine( match, string, lineno, colno, terminals, resource ):
   identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
   if re.match(r'[ \t]+%s\(' % (identifier_regex), string):
-    token = ppToken(terminals['DEFINE_FUNCTION'], 'DEFINE_FUNCTION', match, lineno, colno - len(match))
+    token = ppToken(terminals['DEFINE_FUNCTION'], resource, 'DEFINE_FUNCTION', match, lineno, colno - len(match))
   else:
-    token = ppToken(terminals['DEFINE'], 'DEFINE', match, lineno, colno - len(match))
+    token = ppToken(terminals['DEFINE'], resource, 'DEFINE', match, lineno, colno - len(match))
   return ([token], 0)
 
-def parseInclude( match, string, lineno, colno, terminals ):
+def parseInclude( match, string, lineno, colno, terminals, resource ):
   header_global = re.compile(r'[<][^\n>]+[>]')
   header_local = re.compile(r'["][^\n"]+["]')
   advance = len(re.compile(r'[\t ]*').match(string).group(0))
   string = string[advance:]
-  tokens = [ppToken(terminals['INCLUDE'], 'INCLUDE', match, lineno, colno)]
+  tokens = [ppToken(terminals['INCLUDE'], resource, 'INCLUDE', match, lineno, colno)]
   for (regex, token) in [(header_global, 'HEADER_GLOBAL'), (header_local, 'HEADER_LOCAL')]:
     rmatch = regex.match(string)
     if rmatch:
       rstring = rmatch.group(0)
-      tokens.append( ppToken(terminals[token], token, rstring, lineno, colno + advance) )
+      tokens.append( ppToken(terminals[token], resource, token, rstring, lineno, colno + advance) )
       advance += len(rstring)
       break
   return (tokens, advance)
@@ -99,18 +103,17 @@ class ppLexer(Lexer):
     ( re.compile(r'/='), 'DIVEQ', None, None ),
     ( re.compile(r'/'), 'DIV', None, None )
   ]
-  def __init__(self, patternMatchingLexer, terminals, logger = None):
+  def __init__(self, patternMatchingLexer, sourceCode = None, terminals = None):
     self.__dict__.update(locals())
     self.patternMatchingLexer.setRegex(self.regex)
     self.patternMatchingLexer.setTerminals(terminals)
+    self.logger = LoggerFactory().getClassLogger(__name__, self.__class__.__name__)
     self.tokenBuffer = []
-    self.colno = 1
-    self.lineno = 0
   
-  def setString(self, cST):
-    self.cST_lines = cST.split('\n')
-    self.cST_lines_index = 0
-    self.cST_current_line_offset = 0
+  def setSourceCode(self, sourceCode):
+    super(ppLexer, self).setSourceCode(sourceCode)
+    self.cST_lines = self.string.split('\n')
+    self.lineno  -= 1
   
   def setLine(self, lineno):
     self.lineno = lineno
@@ -120,7 +123,7 @@ class ppLexer(Lexer):
   
   def matchString(self, string):
     token = self.patternMatchingLexer.matchString(string)
-    return ppToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
+    return ppToken(token.id, self.resource, token.terminal_str, token.source_string, token.lineno, token.colno)
   
   def _advance(self, lines):
     self.cST_lines = self.cST_lines[lines:]
@@ -172,6 +175,7 @@ class ppLexer(Lexer):
             while True:
               i += 1
               lines += 1
+              self.lineno += 1
               if '*/' in self.cST_lines[i]:
                 line += re.sub('^.*\*/', '', self.cST_lines[i])
                 break
@@ -183,18 +187,16 @@ class ppLexer(Lexer):
         if len(line) and line[-1] == '\\':
           line = line[:-1]
           continuation = True
-        self.patternMatchingLexer.setString( line )
-        self.patternMatchingLexer.setLine( self.lineno )
-        self.patternMatchingLexer.setColumn( 1 )
+        self.patternMatchingLexer.setSourceCode( SourceCodeString(self.resource, line, self.lineno, 1) )
         for cPPT in self.patternMatchingLexer:
-          self._addToken(ppToken(cPPT.id, cPPT.terminal_str, cPPT.source_string, cPPT.lineno, cPPT.colno))
+          self._addToken(ppToken(cPPT.id, self.resource, cPPT.terminal_str, cPPT.source_string, cPPT.lineno, cPPT.colno))
           if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'WARNING', 'LINE', 'ENDIF', 'UNDEF']:
             emit_separator = True
         if continuation:
           lines += 1
           continue
         if emit_separator:
-          self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno + 1, 1) )
+          self._addToken( ppToken(self.terminals['SEPARATOR'], self.resource, 'SEPARATOR', '', self.lineno, 1) )
         self._advance( lines + 1 )
         if self._hasToken():
           return self._popToken()
@@ -208,8 +210,8 @@ class ppLexer(Lexer):
 
     self._advance(lines)
     if emit_csource:
-      token = ppToken(self.terminals['CSOURCE'], 'CSOURCE', '\n'.join(buf), buf_line, 1)
-      self._addToken( ppToken(self.terminals['SEPARATOR'], 'SEPARATOR', '', self.lineno, 1) )
+      token = ppToken(self.terminals['CSOURCE'], self.resource, 'CSOURCE', '\n'.join(buf), buf_line, 1)
+      self._addToken( ppToken(self.terminals['SEPARATOR'], self.resource, 'SEPARATOR', '', self.lineno, 1) )
       return token
     raise StopIteration()
   
@@ -221,15 +223,9 @@ class ppLexer(Lexer):
     return False
 
 class Factory:
-  def create( self, debug = False ):
-    matchLogger = None
-    lexLogger = None
-    if debug:
-      matchLogger = debugger.getLogger('ppmatch')
-      lexLogger = debugger.getLogger('pplex')
-
+  def create( self, sourceCode = None ):
     cPPP = ppParser()
     cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
-    cPPL_PatternMatchingLexer = PatternMatchingLexer(terminals=cPPL_TokenMap, logger=matchLogger)
-    cPPL = ppLexer( cPPL_PatternMatchingLexer, cPPL_TokenMap, logger=lexLogger )
+    cPPL_PatternMatchingLexer = PatternMatchingLexer(sourceCode, terminals=cPPL_TokenMap)
+    cPPL = ppLexer(cPPL_PatternMatchingLexer, sourceCode=sourceCode, terminals=cPPL_TokenMap)
     return cPPL

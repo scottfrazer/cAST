@@ -122,23 +122,20 @@ class cLexer(PatternMatchingLexer):
       # Whitespace
       ( re.compile(r'\s+', 0), None, None, None )
   ]
-  def __init__(self, terminals, logger = None):
-    self.cache = []
+  def __init__(self, sourceCode = None, terminals = None, logger = None):
+    super(cLexer, self).__init__(sourceCode)
     self.setTerminals(terminals)
     self.setRegex(self.cRegex)
     self.setLogger(logger)
   
   def __next__(self):
     token = super().__next__()
-    return cToken(token.id, token.terminal_str, token.source_string, token.lineno, token.colno)
+    return cToken(token.id, self.resource, token.terminal_str, token.source_string, token.lineno, token.colno)
 
 class Factory:
-  def create( self, debug = False ):
-    lexLogger = None
-    if debug:
-      lexLogger = debugger.getLogger('cmatch')
+  def create( self, sourceCode = None, logger = None):
     cP = cParser()
     cL_TokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
-    cL = cLexer(terminals=cL_TokenMap, logger=lexLogger)
+    cL = cLexer(sourceCode=sourceCode, terminals=cL_TokenMap, logger=logger)
     return cL
   

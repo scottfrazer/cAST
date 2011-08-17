@@ -1,19 +1,30 @@
 from cast.Token import Token
+from cast.SourceCode import SourceCode
 
 class Lexer:
+  def __init__(self, sourceCode):
+    self.__dict__.update(locals())
+    if sourceCode:
+      self.setSourceCode(sourceCode)
+
   def __iter__(self):
     return self
   
   def __next__(self):
     raise StopIteration()
-  
+
+  def setSourceCode(self, sourceCode):
+    self.string = sourceCode.getString()
+    self.resource = sourceCode.getResource()
+    self.colno = sourceCode.getColumn()
+    self.lineno = sourceCode.getLine()
 
 class PatternMatchingLexer(Lexer):
-  def __init__(self, string = '', regex = [], terminals = {}, logger = None):
+  def __init__(self, resource, regex = [], terminals = {}, logger = None):
+    super(PatternMatchingLexer, self).__init__(resource)
     self.setLogger(logger)
     self.setRegex(regex)
     self.setTerminals(terminals)
-    self.setString(string)
     self.cache = []
   
   def addToken(self, token):
@@ -28,12 +39,6 @@ class PatternMatchingLexer(Lexer):
     token = self.cache[0]
     self.cache = self.cache[1:]
     return token
-  
-  def setString(self, string):
-    self.string = string
-    self.colno = 1
-    self.lineno = 1
-    self._log('info', 'SetString: "%s"' %(string))
   
   def setLine(self, lineno):
     self.lineno = lineno
@@ -77,21 +82,21 @@ class PatternMatchingLexer(Lexer):
             self.colno += len(match_str)
 
           if process_func:
-            (tokens, advancement) = process_func(match_str, self.string, self.lineno, self.colno, self.terminals)
+            (tokens, advancement) = process_func(match_str, self.string, self.lineno, self.colno, self.terminals, self.resource)
             for token in tokens:
               self.addToken(token)
             self.advance(advancement)
             return self.nextToken()
           else:
             if terminal != None:
-              return Token(self.terminals[terminal], terminal, match_str, lineno, colno)
+              return Token(self.terminals[terminal], self.resource, terminal, match_str, lineno, colno)
     return None
   
   def matchString(self, string):
     for (regex, terminal, process_func, format_func) in self.regex:
       match = regex.match(string)
       if match:
-        return Token(self.terminals[terminal], terminal, match.group(0), 0, 0)
+        return Token(self.terminals[terminal], self.resource, terminal, match.group(0), 0, 0)
     return None
   
   def __iter__(self):

@@ -13,22 +13,15 @@ class ppTokenTest(CastTest):
     pptokens = os.path.join('c', self.filename + '.pptok')
 
     if not os.path.isfile(pptokens):
-      fp = open( csource )
-      contents = fp.read()
-      fp.close()
-      self.write_pptok(pptokens, contents)
+      self.write_pptok(pptokens, csource)
 
     if os.path.isfile(csource) and os.path.isfile(pptokens):
-
-      fp = open( csource )
-      contents = fp.read()
-      fp.close()
 
       fp = open( pptokens )
       expected = list(filter(lambda x: len(x), fp.read().split('\n')))
       fp.close()
 
-      self.assert_pptok( contents, expected )
+      self.assert_pptok( csource, expected )
 
 def load_tests(loader, tests, pattern):
     files = list(filter(lambda x: x.endswith('.c'), os.listdir('c')))

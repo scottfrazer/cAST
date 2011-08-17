@@ -1,5 +1,8 @@
+from cast.cParser import Parser as cParser
+from cast.ppParser import Parser as ppParser
+
 class Token:
-  def __init__(self, id, terminal_str, source_string, lineno, colno):
+  def __init__(self, id, resource, terminal_str, source_string, lineno, colno):
     self.__dict__.update(locals())
   
   def getString(self):
@@ -15,7 +18,10 @@ class Token:
     return self.id
 
   def getTerminalStr(self):
-    return self.terminal_str
+    return 'id:' + self.id
+
+  def getResource(self):
+    return self.resource
 
   def toAst(self):
     return self
@@ -28,22 +34,28 @@ class Token:
 
   def toString( self, format = 'long' ):
     if format == 'tiny':
-      return self.source_string
+      return self.getString()
     elif format == 'type':
-      return self.terminal_str
+      return self.getTerminalStr()
     elif format == 'short':
-      if len(self.source_string):
-        return "%s ('%s')" % ( self.terminal_str.lower(), self.source_string )
+      if len(self.getString()):
+        return "%s ('%s')" % ( self.getTerminalStr(), self.getString() )
       else:
-        return "%s" % ( self.terminal_str.lower() )
+        return "%s" % ( self.getTerminalStr() )
     else:
       return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
 
 class ppToken(Token):
   type = 'pp'
 
+  def getTerminalStr(self):
+    return ppParser.terminal_str[self.getId()].lower()
+
 class cToken(Token):
   type = 'c'
+
+  def getTerminalStr(self):
+    return cParser.terminal_str[self.getId()].lower()
 
 class TokenList(list):
   def toString(self):

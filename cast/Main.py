@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
 from types import *
-from os import path
-import sys, os, argparse, subprocess, re
+import sys, os, argparse, subprocess, re, logging
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.ppLexer import Factory as ppLexerFactory
 from cast.ppParser import Parser as ppParser
 from cast.Ast import AstPrettyPrintable
+from cast.SourceCode import SourceCode
+from cast.Logger import Factory as LoggerFactory
 
 def Cli():
 
@@ -21,14 +22,17 @@ def Cli():
               description = 'cAST: C Preprocessor and Parser',
               epilog = '(c) 2011 Scott Frazer')
 
-  parser.add_argument('action',
-              choices = ['pp', 'pptok', 'ppast', 'ctok'],
-              help = 'Parser Generator Actions')
+  commands = dict()
+  subparsers = parser.add_subparsers(help='Available actions', dest='command')
+  commands['pp'] = subparsers.add_parser('pp', help='Preprocess.')
+  commands['pptok'] = subparsers.add_parser('pptok', help='Tokenize C preprocessor.')
+  commands['ppast'] = subparsers.add_parser('ppast', help='Parse C preprocessor.')
+  commands['ctok'] = subparsers.add_parser('ctok', help='Preprocess and tokenize C code.')
 
   parser.add_argument('source_file',
               metavar = 'SOURCE_FILE',
               nargs = 1,
-              help = 'C Source File(s)')
+              help = 'C Source File')
   
   parser.add_argument('-d', '--debug',
               required = False,
@@ -48,46 +52,50 @@ def Cli():
               default = '',
               help = "A path containing the list of directories separated by colons.")
 
-  result = parser.parse_args()
+  cli = parser.parse_args()
+  logger = LoggerFactory().initialize()
+  logger.debug('CLI Parameters: %s' % (cli))
 
-  if not os.path.isfile( result.source_file[0] ):
+  if not os.path.isfile( cli.source_file[0] ):
     sys.stderr.write("Error: Source file does not exist\n")
     sys.exit(-1)
 
   try:
-    cSourceText = open(result.source_file[0], encoding='utf-8').read()
+    cSourceFp = open(cli.source_file[0], encoding='utf-8')
   except UnicodeDecodeError:
-    cSourceText = open(result.source_file[0], encoding='iso-8859-1').read()
+    cSourceFp = open(cli.source_file[0], encoding='iso-8859-1').read()
+
+  cSourceCode = SourceCode(cli.source_file[0], cSourceFp)
 
   target = subprocess.check_output(["gcc", "-dumpmachine"]).decode('ascii').strip()
   include_path_global = ['/usr/include', '/usr/local/include', 'usr/' + target + '/include']
-  include_path_global.extend( list(filter(lambda x: x, result.include_path.split(':'))) )
-  include_path_local = [os.path.dirname(os.path.abspath(result.source_file[0]))]
+  include_path_global.extend( list(filter(lambda x: x, cli.include_path.split(':'))) )
+  include_path_local = [os.path.dirname(os.path.abspath(cli.source_file[0]))]
 
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create( include_path_global, include_path_local )
 
-  if result.action == 'pp':
+  if cli.command == 'pp':
     try:
-      (cT, symbols) = cPP.process( cSourceText )
+      (cT, symbols) = cPP.process( cSourceCode )
       print(cT.toString())
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
 
-  if result.action == 'pptok':
+  if cli.command == 'pptok':
     cPPLFactory = ppLexerFactory()
     cPPL = cPPLFactory.create()
-    cPPL.setString(cSourceText)
+    cPPL.setSourceCode(cSourceCode)
     for token in cPPL:
-      print(token.toString(result.format))
+      print(token.toString(cli.format))
 
-  if result.action == 'ppast':
+  if cli.command == 'ppast':
     from cast.ppParser import Parser as ppParser
     try:
       cPPLFactory = ppLexerFactory()
       cPPL = cPPLFactory.create()
-      cPPL.setString(cSourceText)
+      cPPL.setSourceCode(cSourceCode)
       parser = ppParser()
       parsetree = parser.parse(cPPL, 'pp_file')
       ast = parsetree.toAst()
@@ -96,11 +104,11 @@ def Cli():
       print(e, '\n', e.tracer)
       sys.exit(-1)
 
-  if result.action == 'ctok':
+  if cli.command == 'ctok':
     try:
-      cT, symbols = cPP.process( cSourceText )
+      cT, symbols = cPP.process( cSourceCode )
       for token in cT:
-        print(token.toString(result.format))
+        print(token.toString(cli.format))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)

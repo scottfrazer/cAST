@@ -8,6 +8,7 @@ from cast.ppParser import Ast as ppAst
 from cast.ppLexer import Factory as ppLexerFactory
 from cast.cLexer import Factory as cLexerFactory
 from cast.Token import Token, cToken, ppToken, TokenList
+from cast.SourceCode import SourceCode, SourceCodeString
 
 sys.setrecursionlimit(2000)
 
@@ -84,14 +85,12 @@ class PreProcessor:
   def __init__( self, cPPL, cPPP, cL, cPE, logger = None ):
     self.__dict__.update(locals())
   
-  def process( self, cST, symbols = {}, lineno = 1 ):
+  def process( self, sourceCode, symbols = {}, lineno = 1 ):
     # Phase 1: Replace trigraphs with single-character equivalents
     for (trigraph, replacement) in self.trigraphs.items():
-      self.cST = cST.replace(trigraph, replacement)
+      sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
-    self.cPPL.setString( cST )
-    self.cPPL.setLine( lineno - 1 )
-    self.cPPL.setColumn( 1 )
+    self.cPPL.setSourceCode( sourceCode )
     parsetree = self.cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
     if self.logger:
@@ -122,7 +121,7 @@ class cPreprocessorFunctionFactory:
           for va_arg_rlist, next in zip_longest(params[index:], params[index+1:]):
             paramValues['__VA_ARGS__'].extend(va_arg_rlist)
             if next:
-              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminal('comma'), 'comma', ',', 0, 0))
+              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminal('comma'), '<stream>', 'comma', ',', 0, 0))
         else:
           paramValues[param] = params[index]
       nodes = []
@@ -231,7 +230,7 @@ class cPreprocessingEvaluator:
   def _cT_to_cPPT(self, cT_list):
     tokens = []
     for token in cT_list:
-      tokens.append(ppToken(self.cTtocPPT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno))
+      tokens.append(ppToken(self.cTtocPPT[token.id], token.resource, token.terminal_str, token.source_string, token.lineno, token.colno))
     return tokens
   
   def _parseExpr(self, tokens):
@@ -243,7 +242,7 @@ class cPreprocessingEvaluator:
     if isinstance(value, Token):
       return value
     else:
-      return ppToken(self.cPPP.terminal('pp_number'), 'pp_number', value, 0, 0)
+      return ppToken(self.cPPP.terminal('pp_number'), None, 'pp_number', value, 0, 0)
   
   def _debugStr(self, cPPAST):
     if isinstance(cPPAST, Token):
@@ -280,7 +279,7 @@ class cPreprocessingEvaluator:
   def _tokenToCToken(self, token):
     if token.type == 'c':
       return token
-    return cToken( self.cPPTtocT[token.id], token.terminal_str, token.source_string, token.lineno, token.colno )
+    return cToken( self.cPPTtocT[token.id], token.resource, token.terminal_str, token.source_string, token.lineno, token.colno )
   
   def _eval( self, cPPAST ):
     rtokens = TokenList()
@@ -312,9 +311,9 @@ class cPreprocessingEvaluator:
       tokens = []
       params = []
       advance = 0
-      self.cL.setString(cPPAST.getString())
-      self.cL.setLine(cPPAST.getLine())
-      self.cL.setColumn(cPPAST.getColumn())
+
+      sourceCode = SourceCodeString( cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
+      self.cL.setSourceCode(sourceCode)
       cTokens = list(self.cL)
       cLexer = zip_longest(cTokens, cTokens[1:])
       for token, lookahead in cLexer:
@@ -433,14 +432,14 @@ class cPreprocessingEvaluator:
         if (filename[0], filename[-1]) == ('"', '"'):
           filename = filename.strip('"')
           for directory in self.includePathLocal:
-            print(directory)
             path = os.path.join( directory, filename )
             if os.path.isfile( path ):
               self.line += 1
               includePath = copy(self.includePathLocal)
               includePath.append( os.path.dirname(path) )
               preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
-              (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
+              sourceCode = SourceCode( path, open(path) )
+              (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
               self.symbols = symbolTable
               return tokens
           raise NameError(filename + ' not found in include path')
@@ -453,7 +452,8 @@ class cPreprocessingEvaluator:
               includePath = copy(self.includePathLocal)
               includePath.append( os.path.dirname(path) )
               preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
-              (tokens, symbolTable) = preprocessor.process( open(path).read(), self.symbols )
+              sourceCode = SourceCode( path, open(path) )
+              (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
               self.symbols = symbolTable
               return tokens
           raise NameError(filename + ' not found in include path')

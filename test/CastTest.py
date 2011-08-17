@@ -3,96 +3,75 @@ from cast.ppLexer import Factory as ppLexerFactory
 from cast.ppParser import Parser as ppParser
 from cast.Ast import AstPrettyPrintable
 from cast.PreProcessor import Factory as PreProcessorFactory
-
-def dataProvider(fn_data_provider):
-    def test_decorator(fn):
-        def repl(self, *args):
-            for i in fn_data_provider():
-                try:
-                    fn(self, *i)
-                except AssertionError:
-                    print("Assertion error caught with data set ", i)
-                    raise
-        return repl
-    return test_decorator
+from cast.SourceCode import SourceCode, SourceCodeString
 
 class CastTest(unittest.TestCase):
 
-  mapFunc = lambda y, x: '%s,%s,%s' % (x.getTerminalStr(), x.getLine(), x.getColumn())
+  mapFunc = lambda y, x: "%s,%s,%s,%s,%s" % (x.getTerminalStr(), x.getLine(), x.getColumn(), x.getString().replace('\n', '\\n'), x.getResource())
 
-  def get_ppLexer(self, sourceString):
+  def get_ppLexer(self, filePath):
     cPPLFactory = ppLexerFactory()
     cPPL = cPPLFactory.create()
-    cPPL.setString(sourceString)
+    sourceCode = SourceCode( filePath, open(filePath) )
+    cPPL.setSourceCode(sourceCode)
     return cPPL
 
-  def get_ppAst(self, sourceString):
-    cPPL = self.get_ppLexer(sourceString)
+  def get_ppAst(self, filePath):
+    cPPL = self.get_ppLexer(filePath)
     parser = ppParser()
     parsetree = parser.parse(cPPL, 'pp_file')
     return parsetree.toAst()
 
-  def get_cLexer(self, filePath, sourceString):
-    ppAst = self.get_ppAst( sourceString )
+  def get_cLexer(self, filePath):
+    ppAst = self.get_ppAst( filePath )
     cPPFactory = PreProcessorFactory()
-    cPP = cPPFactory.create([], [os.path.dirname(os.path.abspath(filePath))])
-    cT, symbols = cPP.process( sourceString )
+    cPP = cPPFactory.create([], [os.path.dirname(filePath)])
+    cSourceCode = SourceCode(filePath, open(filePath))
+    cT, symbols = cPP.process( cSourceCode )
     return cT
 
-  def assert_pptok(self, sourceString, expectedTokens):
-    cPPL = self.get_ppLexer(sourceString) 
+  def assert_pptok(self, filePath, expectedTokens):
+    cPPL = self.get_ppLexer(filePath) 
     actualTokens = list(map(self.mapFunc, list(cPPL)))
     self.assertEqual(actualTokens, expectedTokens)
   
-  def write_pptok(self, path, sourceString):
-    cPPL = self.get_ppLexer(sourceString)
+  def write_pptok(self, path, filePath):
+    cPPL = self.get_ppLexer(filePath)
     actualTokens = list(map(self.mapFunc, list(cPPL)))
     fp = open(path, 'w')
     fp.write('\n'.join(actualTokens))
     fp.close()
   
-  def assert_ppast(self, sourceString, expectedAst):
-    ast = self.get_ppAst(sourceString)
+  def assert_ppast(self, filePath, expectedAst):
+    ast = self.get_ppAst(filePath)
     prettyprint = str(AstPrettyPrintable(ast, 'type'))
     self.assertEqual(prettyprint, expectedAst)
   
-  def write_ppast(self, path, sourceString):
-    ast = self.get_ppAst(sourceString)
+  def write_ppast(self, path, filePath):
+    ast = self.get_ppAst(filePath)
     prettyprint = str(AstPrettyPrintable(ast, 'type'))
     fp = open(path, 'w')
     fp.write(prettyprint)
     fp.close()
 
   def assert_ctok(self, filePath, expectedTokens):
-    fp = open(filePath)
-    sourceString = fp.read()
-    fp.close()
-    cL = self.get_cLexer(filePath, sourceString)
+    cL = self.get_cLexer(filePath)
     actualTokens = list(map(self.mapFunc, list(cL)))
     self.assertEqual(actualTokens, expectedTokens)
   
   def write_ctok(self, filePath, outPath):
-    fp = open(filePath)
-    sourceString = fp.read()
-    fp.close()
-    cL = self.get_cLexer(filePath, sourceString)
+    cL = self.get_cLexer(filePath)
     actualTokens = list(map(self.mapFunc, list(cL)))
     fp = open(outPath, 'w')
     fp.write('\n'.join(actualTokens))
     fp.close()
 
   def assert_pp(self, filePath, expected):
-    fp = open(filePath)
-    sourceString = fp.read()
-    fp.close()
-    cL = self.get_cLexer(filePath, sourceString)
+    cL = self.get_cLexer(filePath)
     self.assertEqual(cL.toString(), expected)
   
   def write_pp(self, filePath, outPath):
-    fp = open(filePath)
-    sourceString = fp.read()
-    fp.close()
-    cL = self.get_cLexer(filePath, sourceString)
+    cL = self.get_cLexer(filePath)
     fp = open(outPath, 'w')
     fp.write( cL.toString() )
     fp.close()

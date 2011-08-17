@@ -13,22 +13,15 @@ class ppAstTest(CastTest):
     ppast = os.path.join('c', self.filename + '.ppast')
 
     if not os.path.isfile(ppast):
-      fp = open( csource )
-      contents = fp.read()
-      fp.close()
-      self.write_ppast(ppast, contents)
+      self.write_ppast(ppast, csource)
 
     if os.path.isfile(csource) and os.path.isfile(ppast):
-
-      fp = open( csource )
-      contents = fp.read()
-      fp.close()
 
       fp = open( ppast )
       expected = fp.read()
       fp.close()
 
-      self.assert_ppast( contents, expected )
+      self.assert_ppast( csource, expected )
 
 def load_tests(loader, tests, pattern):
     files = list(filter(lambda x: x.endswith('.c'), os.listdir('c')))
