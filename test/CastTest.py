@@ -27,7 +27,7 @@ class CastTest(unittest.TestCase):
     cPPFactory = PreProcessorFactory()
     cPP = cPPFactory.create([], [os.path.dirname(filePath)])
     cSourceCode = SourceCode(filePath, open(filePath))
-    cT, symbols = cPP.process( cSourceCode )
+    cT, symbols = cPP.process( cSourceCode, dict() )
     return cT
 
   def assert_pptok(self, filePath, expectedTokens):
