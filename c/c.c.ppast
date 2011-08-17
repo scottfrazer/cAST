@@ -3,85 +3,85 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER
+          identifier
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          ADD,
-          IDENTIFIER
+          identifier,
+          add,
+          identifier
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER,
-        IDENTIFIER
+        identifier,
+        identifier
       ]
     ),
-    CSOURCE,
+    csource,
     (Define:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          IDENTIFIER,
-          LPAREN,
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER,
-          RPAREN,
-          IDENTIFIER,
-          IDENTIFIER
+          identifier,
+          identifier,
+          lparen,
+          pp_number,
+          comma,
+          pp_number,
+          rparen,
+          identifier,
+          identifier
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE,
+    csource,
     (Define:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          LPAREN,
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER,
-          RPAREN
+          identifier,
+          lparen,
+          pp_number,
+          comma,
+          pp_number,
+          rparen
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE,
+    csource,
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          ADD,
-          IDENTIFIER,
-          ADD,
-          IDENTIFIER,
-          LPAREN,
-          IDENTIFIER,
-          RPAREN
+          identifier,
+          add,
+          identifier,
+          add,
+          identifier,
+          lparen,
+          identifier,
+          rparen
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER,
-        IDENTIFIER,
-        ELIPSIS
+        identifier,
+        identifier,
+        elipsis
       ]
     ),
-    CSOURCE
+    csource
   ]
 )
