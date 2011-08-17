@@ -3,25 +3,25 @@
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          ADD,
-          IDENTIFIER
+          identifier,
+          add,
+          identifier
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER,
-        IDENTIFIER
+        identifier,
+        identifier
       ]
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER
+          identifier
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE
+    csource
   ]
 )
