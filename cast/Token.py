@@ -53,6 +53,7 @@ class ppToken(Token):
 
 class cToken(Token):
   type = 'c'
+  fromPreprocessor = False
 
   def getTerminalStr(self):
     return cParser.terminal_str[self.getId()].lower()
@@ -72,6 +73,8 @@ class TokenList(list):
           self.string += ''.join(' ' for i in range(token.colno - self.colno))
           self.colno = token.colno
         self.string += token.source_string
+        if token.fromPreprocessor:
+          self.string += ' '
         self.colno += len(token.source_string)
       def __str__(self):
         return self.string

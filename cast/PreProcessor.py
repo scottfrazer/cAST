@@ -4,7 +4,6 @@ from copy import copy, deepcopy
 from cast.cParser import Parser as cParser
 from cast.ppParser import Parser as ppParser
 from cast.ppParser import Ast as ppAst
-from cast.ppParser import Ast as ppAst
 from cast.ppLexer import Factory as ppLexerFactory
 from cast.cLexer import Factory as cLexerFactory
 from cast.Token import Token, cToken, ppToken, TokenList
@@ -82,7 +81,7 @@ class PreProcessor:
     '??>': '}',
     '??-': '~',
   }
-  def __init__( self, cPPL, cPPP, cL, cPE, logger = None ):
+  def __init__( self, cPPL, cPPP, cL, cPE ):
     self.__dict__.update(locals())
   
   def process( self, sourceCode, symbols = {}, lineno = 1 ):
@@ -93,12 +92,6 @@ class PreProcessor:
     self.cPPL.setSourceCode( sourceCode )
     parsetree = self.cPPP.parse(self.cPPL, 'pp_file')
     ast = parsetree.toAst()
-    if self.logger:
-      try:
-        self.logger.log('parsetree', str(parsetree))
-        self.logger.log('ast', str(ast))
-      except RuntimeError:
-        pass
     ctokens = self.cPE.eval(ast, symbols)
     return (ctokens, self.cPE.getSymbolTable())
   
@@ -271,7 +264,9 @@ class cPreprocessingEvaluator:
         params.append( buf )
         buf = []
       else:
-        buf.append(self.cPPL.matchString(paramToken.getString()))
+        token = self.cPPL.matchString(paramToken.getString())
+        token.fromPreprocessor = True
+        buf.append(token)
       if paramTokenStr == 'rparen' and lparen == 0:
         break
     return params
@@ -345,6 +340,7 @@ class cPreprocessingEvaluator:
               new_token = copy(replacement_token)
               new_token.colno = token.colno
               new_token.lineno = token.lineno
+              new_token.fromPreprocessor = True
               tmp.append(new_token)
             tokens.extend(tmp)
             continue
