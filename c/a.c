@@ -18,7 +18,7 @@ int add(int x, int y) {return x+y;}
 int main()
 {
 printf("THETA %d\n", THETA);
-printf("EXT %d\n", EXT);
+printf("PATH %s\n", PATH);
 #if X==10
     printf("first\n");
 

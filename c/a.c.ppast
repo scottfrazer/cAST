@@ -3,189 +3,189 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          LPAREN,
-          BITAND,
-          IDENTIFIER,
-          LSQUARE,
-          PP_NUMBER,
-          RSQUARE,
-          RPAREN
+          lparen,
+          bitand,
+          identifier,
+          lsquare,
+          pp_number,
+          rsquare,
+          rparen
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (IfSection:
       elif=[],
       else=(Else:
         nodes=[
-          CSOURCE
+          csource
         ]
       ),
       if=(IfDef:
         nodes=[
-          CSOURCE
+          csource
         ],
-        ident=IDENTIFIER
+        ident=identifier
       )
     ),
-    CSOURCE,
+    csource,
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          ADD,
-          IDENTIFIER
+          identifier,
+          add,
+          identifier
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER,
-        IDENTIFIER
+        identifier,
+        identifier
       ]
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          STRING_LITERAL
+          string_literal
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          SUB,
-          IDENTIFIER
+          identifier,
+          sub,
+          identifier
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER,
-        IDENTIFIER
+        identifier,
+        identifier
       ]
     ),
-    CSOURCE,
+    csource,
     (Define:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          LPAREN,
-          PP_NUMBER,
-          COMMA,
-          IDENTIFIER,
-          RPAREN,
-          ADD,
-          IDENTIFIER
+          identifier,
+          lparen,
+          pp_number,
+          comma,
+          identifier,
+          rparen,
+          add,
+          identifier
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          LPAREN,
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER,
-          RPAREN
+          identifier,
+          lparen,
+          pp_number,
+          comma,
+          pp_number,
+          rparen
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER,
-          ADD,
-          IDENTIFIER,
-          LPAREN,
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER,
-          RPAREN
+          pp_number,
+          add,
+          identifier,
+          lparen,
+          pp_number,
+          comma,
+          pp_number,
+          rparen
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          STRING_LITERAL
+          string_literal
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE,
+    csource,
     (IfSection:
       elif=[],
       else=None,
       if=(If:
         expr=(Equals:
-          right=PP_NUMBER,
-          left=IDENTIFIER
+          right=pp_number,
+          left=identifier
         ),
         nodes=[
-          CSOURCE
+          csource
         ]
       )
     ),
-    CSOURCE,
+    csource,
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (IfSection:
       elif=[
         (ElseIf:
-          expr=PP_NUMBER,
+          expr=pp_number,
           nodes=None
         ),
         (ElseIf:
           expr=(Sub:
-            right=PP_NUMBER,
-            left=PP_NUMBER
+            right=pp_number,
+            left=pp_number
           ),
           nodes=[
-            CSOURCE
+            csource
           ]
         ),
         (ElseIf:
           expr=(Sub:
-            right=PP_NUMBER,
-            left=PP_NUMBER
+            right=pp_number,
+            left=pp_number
           ),
           nodes=[
-            CSOURCE
+            csource
           ]
         )
       ],
@@ -197,23 +197,23 @@
             else=None,
             if=(IfNDef:
               nodes=[
-                CSOURCE
+                csource
               ],
-              ident=IDENTIFIER
+              ident=identifier
             )
           )
         ],
-        ident=IDENTIFIER
+        ident=identifier
       )
     ),
-    CSOURCE,
+    csource,
     (Undef:
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE,
+    csource,
     (Undef:
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE
+    csource
   ]
 )
