@@ -176,15 +176,19 @@ A.2.2 Declarations
 6.7 init-declarator-list := init-declarator
 6.7 init-declarator-list := init-declarator-list + ',' + init-declarator
 6.7 init-declarator := declarator | declarator + '=' + initializer
+
+# How/where is it stored?
 6.7.1 storage-class-specifier := 'typedef' | 'extern' | 'static' | 'auto' | 'register'
+
+# What type is it?
 6.7.2 type-specifier := 'void' | 'char' | 'short' | 'int' | 'long' | 'float' | 'double' | 'signed' | 'unsigned' | '_Bool' | '_Complex'
-6.7.2 type-specifier := struct-or-union-specifier | enum-specifier | 'typedef-name'
+6.7.2 type-specifier := struct-or-union-specifier | enum-specifier | typedef-name
 6.7.2.1 struct-or-union-specifier := struct-or-union + identifier-opt + '{' + struct-declaration-list + '}'
 6.7.2.1 struct-or-union-specifier := struct-or-union + identifier
 6.7.2.1 struct-or-union := 'struct' | 'union'
 6.7.2.1 struct-declaration-list := struct-declaration
 6.7.2.1 struct-declaration-list := struct-declaration-list + struct-declaration
-6.7.2.1 struct-declaration := 
+6.7.2.1 struct-declaration := specifier-qualifier-list + struct-declarator-list + ';'
 6.7.2.1 struct-or-union-specifier := struct-or-union + identifier
 6.7.2.1 struct-or-union := 'struct' | 'union'
 6.7.2.1 struct-declaration-list := struct-declaration
@@ -203,16 +207,21 @@ A.2.2 Declarations
 6.7.2.2 enumerator-list := enumerator-list + ',' + enumerator
 6.7.2.2 enumerator := enumeration-constant
 6.7.2.2 enumerator := enumeration-constant + '=' + constant-expression
+
+# What other properties does it have?
 6.7.3 type-qualifier := 'const' | 'restrict' | 'volatile'
 6.7.4 function-specifier := 'inline'
+
+# What is its name/size/parameters?
+6.7.5 declarator := pointer-opt + direct-declarator
 6.7.5 direct-declarator := identifier
 6.7.5 direct-declarator := '(' + declarator + ')'
-6.7.5 direct-declarator := '[' + type-qualifier-list-opt + assignment-expression-opt + ']'
-6.7.5 direct-declarator := '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
-6.7.5 direct-declarator := '[' + type-qualifier-list 'static' + assignment-expression + ']'
-6.7.5 direct-declarator := '[' + type-qualifier-list-opt + '*' + ']'
-6.7.5 direct-declarator := '[' + parameter-type-list + ']'
-6.7.5 direct-declarator := '(' + identifier-list-opt + ')'
+6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + assignment-expression-opt + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list 'static' + assignment-expression + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + '*' + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + parameter-type-list + ']'
+6.7.5 direct-declarator := direct-declarator + '(' + identifier-list-opt + ')'
 6.7.5 pointer := '*' + type-qualifier-list-opt
 6.7.5 pointer := '*' + type-qualifier-list-opt + pointer
 6.7.5 type-qualifier-list := type-qualifier
@@ -235,6 +244,8 @@ A.2.2 Declarations
 6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '[' + '*' + ']'
 6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '(' + parameter-type-list-opt + ')'
 6.7.7 typedef-name := identifier
+
+# What is its initial value?
 6.7.8 initializer := assignment-expression
 6.7.8 initializer := '{' + initializer-list + '}'
 6.7.8 initializer := '{' + initializer-list + ',' + '}'
