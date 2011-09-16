@@ -1,0 +1,231 @@
+A.1.1 Lexical Elements
+
+token := keyword | identifier | constant | string_literal | punctuator
+preprocessing_token := header_name | identifier | pp_number | character_constant | string_literal | punctuator
+
+A.1.2 Keywords
+
+keyword := 'auto' | 'enum' | ...
+
+A.1.3 Identifiers
+
+identifier := ([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z0-9_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*
+
+A.1.4 Universal Character Names
+
+universal_character_name := \\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?
+
+A.1.5 Constants
+
+constant := integer_contant | floating_constant | enumeration_constant | character_constant
+integer_constant := ([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?
+floating_constant := decimal_floating_constant | hexadecimal_floating_constant
+decimal_floating_constant := (([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?
+hexadecimal_floating_constant := 0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?
+enumeration_constant := identifier
+character_constant := [L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'
+
+A.1.6 String Literals
+
+string_literal := "([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"
+
+A.1.7 Punctuators
+
+punctuator := '[' | ']' | ...
+
+A.2 Phrase Structure Grammar
+
+A.2.1 Expressions
+
+primary_expression := identifier | constant | string_literal | '(' + expression + ')'
+postfix_expression := primary_expression
+postfix_expression := postfix_expression + '[' + expression + ']'
+postfix_expression := postfix_expression + '[' + argument_expression_list_opt + ']'
+postfix_expression := postfix_expression + '.' + identifier
+postfix_expression := postfix_expression + '->' + identifier
+postfix_expression := postfix_expression + '++'
+postfix_expression := postfix_expression + '--'
+postfix_expression := '(' + type_name + ')' + '{' + list(initilizer_list_item, ',') + comma_opt + '}'
+argument_expression_list := assignment_expression
+argument_expression_list := argument_expression_list + ',' + assignment_expression
+unary_expression := postfix_expression
+unary_expression := '++' + unary_expression
+unary_expression := '--' + unary_expression
+unary_expression := unary_operator + cast_expression
+unary_expression := 'sizeof' + unary_expression
+unary_expression := 'sizeof' + '(' + type_name + ')'
+unary_operator := '&' | '*' | '+' | '-' | '~' | '!'
+cast_expression := unary_expression
+cast_expression := '(' + type_name + ')' + cast_expression
+multiplicative_expression := cast_expression
+multiplicative_expression := multiplicative_expression + '*' + cast_expression 
+multiplicative_expression := multiplicative_expression + '/' + cast_expression 
+multiplicative_expression := multiplicative_expression + '%' + cast_expression 
+additive_expression := multiplicative_expression
+additive_expression := additive_expression + '+' + multiplicative_expression 
+additive_expression := additive_expression + '-' + multiplicative_expression 
+shift_expression := additive_expression
+shift_expression := shift_expression + '<<' + additive_expression
+shift_expression := shift_expression + '>>' + additive_expression
+relational_expression := shift_expression
+relational_expression := relational_expression + '<' + shift_expression
+relational_expression := relational_expression + '>' + shift_expression
+relational_expression := relational_expression + '<=' + shift_expression
+relational_expression := relational_expression + '>=' + shift_expression
+equality_expression := relational_expression
+equality_expression := equality_expression + '==' + relational_expression
+equality_expression := equality_expression + '!=' + relational_expression
+and_expression := equality_expression
+and_expression := and_expression + '&' equality_expression 
+exclusive_or_expression := and_expression
+exclusive_or_expression := inclusive_or_expression + '^' and_expression
+inclusive_or_expression := exclusive_or_expression
+inclusive_or_expression := inclusive_or_expression + '|' + exclusive_or_expression
+logical_and_expression := inclusive_or_expression
+logical_and_expression := logical_and_expression + '&&' + inclusive_or_expression
+logical_or_expression := logical_and_expression
+logical_or_expression := logical_or_expression + '||' + logical_and_expression
+conditional_expression := logical_or_expression
+conditional_expression := logical_or_expression + '?' + expression + ':' + conditional_expression
+assignment_expression := conditional_expression
+assignment_expression := unary_expression + assignment_operator + assignment_expression
+assignment_operator := '=' | '*=' | ...
+expression := assignment_expression 
+expression := expression + ',' + assignment_expression
+constant_expression := conditional_expression
+
+A.2.2 Declarations
+
+declaration := list(declaration_specifier) + init_declarator_list_opt
+declaration_specifier := storage_class_specifier | type_specifier | type_qualifier | function_specifier
+init_declarator_list_opt := list(init_declarator) | _empty
+init_declarator := declarator | declarator + '=' + initializer
+
+# How/where is it stored?
+storage_class_specifier := 'typedef' | 'extern' | 'static' | 'auto' | 'register'
+
+# What type is it?
+type_specifier := 'void' | 'char' | 'short' | 'int' | 'long' | 'float' | 'double' | 'signed' | 'unsigned' | '_Bool' | '_Complex'
+type_specifier := struct_or_union_specifier | enum_specifier | typedef_name
+struct_or_union_specifier := struct_or_union + identifier_opt + struct_or_union_specifier_body
+struct_or_union_specifier_body := '{' + list(struct_declaration) + '}' | _empty
+struct_or_union := 'struct' | 'union'
+struct_declaration := list(specifier_qualifier) + list(struct_declarator, ',') + ';'
+specifier_qualifier := type_specifier | type_qualifier
+struct_declarator := struct_declarator_size
+struct_declarator := declarator + struct_declarator_size_opt
+struct_declarator_size := ':' + constant_expression
+struct_declarator_size_opt : struct_declarator_size | _empty
+enum_specifier := 'enum' + enum_specifier_sub
+enum_specifier_sub := identifier enum_specifier_body_opt | enum_specifier_body
+enum_specifier_body := '{' + list(enumerator, ',') + comma_opt + '}'
+enum_specifier_body_opt := enum_specifier_body | _empty
+comma_opt := ',' | _empty
+enumerator := enumeration_constant + enumerator_assignment_opt
+enumerator_assignment_opt := enumerator_assignment | _empty
+enumerator_assignment := '=' + constant_expression
+
+# What other properties does it have?
+type_qualifier := 'const' | 'restrict' | 'volatile'
+function_specifier := 'inline'
+
+# What is its name/size/parameters?
+declarator := pointer_opt + direct_declarator
+
+# (expr)
+direct_declarator := identifier
+direct_declarator := '(' + declarator + ')'
+direct_declarator := direct_declarator + ^'[' + direct_declarator_expr + ']'
+direct_declarator := direct_declarator + ^'(' + direct_declarator_parameter_list + ')'
+direct_declarator_expr := type_qualifier_list_opt + direct_declarator_size | _empty
+direct_declarator_size := static_opt + assignment_expression | type_qualifier_list_opt + '*'
+direct_declarator_parameter_list := parameter_type_list | list(identifier) | _empty
+
+pointer_opt := pointer | _empty
+pointer := list(pointer_sub)
+pointer_sub := '*' + type_qualifier_list_opt
+type_qualifier_list_opt := list(type_qualifier) | _empty
+parameter_type_list := list(parameter_declaration, ',') + va_args
+parameter_type_list_opt := parameter_type_list | _empty
+va_args := ',' + '...' | _empty
+parameter_declaration := list(declaration_specifier) + parameter_declaration_sub
+parameter_declaration_sub := declarator | abstract_declarator | _empty
+identifier_list_opt := list(identifier) | _empty
+
+# Types
+type_name := list(specifier_qualifier) + abstract_declarator_opt
+abstract_declarator := pointer_opt + direct_abstract_declarator_opt
+
+# (expr)
+direct_abstract_declarator_opt := direct_abstract_declarator | _empty
+direct_abstract_declarator := '(' + abstract_declarator + ')'
+direct_abstract_declarator := direct_abstract_declarator_opt + ^'[' + direct_abstract_declarator_expr + ']'
+direct_abstract_declarator := direct_abstract_declarator_opt + ^'(' + parameter_type_list_opt + ')'
+direct_abstract_declarator_expr := type_qualifier_list_opt + static_opt + assignment_expression | '*' | _empty
+
+static_opt := 'static' | _empty
+typedef_name := identifier
+
+# Initial value
+initializer := assignment_expression
+initializer := '{' + list(initilizer_list_item, ',') + comma_opt + '}'
+initializer_list_item := designation_opt + initializer
+designation := list(designator) + '='
+designator := '[' + constant_expression + ']'
+designator := '.' + identifier
+
+A.2.3 Statements
+
+statement := labeled_statement
+statement := compound_statement
+statement := expression_statement
+statement := selection_statement
+statement := iteration_statement
+statement := jump_statement
+labeled_statement := identifier + ':' + statement
+labeled_statement := 'case' + constant_expression + ':' + statement
+labeled_statement := 'default' + ':' + statement
+compound_statement := '{' + block_item_list_opt + '}'
+block_item_list_opt := list(block_item) | _empty
+block_item := declaration | statement
+expression_statement := expression_opt + ';'
+selection_statement := 'if' + '(' + expression + ')' + statement + else_statement_opt
+else_statement := 'else' + statement
+else_statement_opt := else_statement | _empty
+selection_statement := 'switch' + '(' + expression + ')' + statement
+iteration_statement := 'while' + '(' + expression + ')' + statement
+iteration_statement := 'do' + statement + 'while' + '(' + expression + ')' + ';'
+iteration_statement := 'for' + '(' + for_init + for_cond + for_incr + ')' + statement
+for_init := declaration + expression_opt | expression | _empty
+for_cond := ';' + expression_opt
+for_incr := ';' + expression_opt | _empty
+jump_statement := 'goto' + identifier + ';'
+jump_statement := 'continue'
+jump_statement := 'break' + ';'
+jump_statement := 'return' + expression_opt + ';'
+
+A.2.4 External Definitions
+
+translation_unit := list(external_declaration)
+external_declaration := function_definition | declaration
+function_definition := list(declaration_specifier) + declarator + declaration_list_opt + compound_statement
+declaration_list_opt := list(declaration) | _empty
+
+Regular Expressions
+
+integer_constant := ([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?
+decimal_constant := [1-9][0-9]+
+octal_constant := 0[0-7]+
+hexadecimal_constant := 0[xX][0-9a-fA-F]+
+integer_suffix := ([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])
+decimal_floating_constant := (([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?
+hexadecimal_floating_constant := 0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?
+fractional_constant := (([0-9]+)?\.([0-9]+)|[0-9]+\.)
+exponent_part := [eE][-+]?[0-9]+
+hexadecimal_fractional_constant := (([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)
+binary_exponent_part := [pP][-+]?[0-9]+
+character_constant := [L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'
+escape_sequence := (\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)
+string_literal := "([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"
+pp_number := [\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)+
+header_name := [<][^\n>]+[>]|["][^\n"]+["]
