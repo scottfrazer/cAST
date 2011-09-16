@@ -54,10 +54,10 @@ class CastTest(unittest.TestCase):
     fp.write(prettyprint)
     fp.close()
 
-  def assert_ctok(self, filePath, expectedTokens):
+  def assert_ctok(self, filePath, expectedTokens, file):
     cL = self.get_cLexer(filePath)
     actualTokens = list(map(self.mapFunc, list(cL)))
-    self.assertEqual(actualTokens, expectedTokens)
+    self.assertEqual(actualTokens, expectedTokens, "%s C token mismatch" % (file))
   
   def write_ctok(self, filePath, outPath):
     cL = self.get_cLexer(filePath)

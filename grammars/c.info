@@ -218,14 +218,13 @@ A.2.2 Declarations
 6.7.5 direct-declarator := '(' + declarator + ')'
 6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + assignment-expression-opt + ']'
 6.7.5 direct-declarator := direct-declarator + '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
-6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list 'static' + assignment-expression + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + list(type-qualifier) 'static' + assignment-expression + ']'
 6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + '*' + ']'
-6.7.5 direct-declarator := direct-declarator + '[' + parameter-type-list + ']'
+6.7.5 direct-declarator := direct-declarator + '(' + parameter-type-list + ')'
 6.7.5 direct-declarator := direct-declarator + '(' + identifier-list-opt + ')'
 6.7.5 pointer := '*' + type-qualifier-list-opt
 6.7.5 pointer := '*' + type-qualifier-list-opt + pointer
-6.7.5 type-qualifier-list := type-qualifier
-6.7.5 type-qualifier-list := type-qualifier-list + type-qualifier
+6.7.5 type-qualifier-list-opt := list(type-qualifier) | _empty
 6.7.5 parameter-type-list := parameter-list
 6.7.5 parameter-type-list := parameter-list + ',' + '...'
 6.7.5 parameter-list := parameter-declaration
@@ -240,7 +239,7 @@ A.2.2 Declarations
 6.7.6 direct-abstract-declarator := '(' + abstract-declarator + ')'
 6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '[' + type-qualifier-list-opt + assignment-expression-opt + ']'
 6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
-6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '[' + type-qualifier-list + 'static' + assignment-expression + ']'
+6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '[' + list(type-qualifier) + 'static' + assignment-expression + ']'
 6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '[' + '*' + ']'
 6.7.6 direct-abstract-declarator := direct-abstract-declarator-opt + '(' + parameter-type-list-opt + ')'
 6.7.7 typedef-name := identifier

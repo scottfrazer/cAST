@@ -21,7 +21,7 @@ class cTokenTest(CastTest):
       expected = list(filter(lambda x: len(x), fp.read().split('\n')))
       fp.close()
 
-      self.assert_ctok( csource, expected )
+      self.assert_ctok( csource, expected, self.filename )
 
 def load_tests(loader, tests, pattern):
     files = list(filter(lambda x: x.endswith('.c'), os.listdir('c')))

@@ -3,15 +3,15 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER
+          pp_number,
+          comma,
+          pp_number,
+          comma,
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE
+    csource
   ]
 )

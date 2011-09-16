@@ -32,17 +32,23 @@
           {"associativity": "left", "terminals": ["add", "sub"]},
           {"associativity": "left", "terminals": ["mul", "div", "mod"]},
           {"associativity": "unary", "terminals": ["sub", "incr", "decr", "mul", "bitand", "not", "bitnot"]},
+          {"associativity": "left", "terminals": ["lbrace"]},
           {"associativity": "left", "terminals": ["lparen", "lsquare", "dot", "arrow", "incr", "decr"]}
       ],
       "rules": [
+        "_expr := 'lparen' + type_name + 'rparen' + ^_expr",
         "_expr := 'identifier' + ^'lparen' + list(_expr, 'comma') + 'rparen' -> FuncCall( name=$0, params=$2 )",
         "_expr := 'identifier' + ^'lsquare' + list(_expr, 'comma') + 'rsquare' -> ArrayIndex( name=$0, params=$2 )",
+        "_expr := 'lparen' + type_name + 'rparen' + ^'lbrace' + list(initilizer_list_item, 'comma') + comma_opt + 'rbrace' -> TypeInitializion( type=$0, initializer=$4 )",
         "_expr := _expr + ^'dot' + _expr -> MemberSelect( object=$0, member=$2 )",
         "_expr := _expr + ^'arrow' + _expr -> DerefMemberSelect( object=$0, member=$2 )",
         "_expr := _expr + ^'decr' -> PostDecr( var=$0 )",
         "_expr := _expr + ^'incr' -> PostIncr( var=$0 )",
         "_expr := 'decr' + _expr -> PreDecr( var=$1 )",
         "_expr := 'incr' + _expr -> PreIncr( var=$1 )",
+        "_expr := 'sizeof' + _expr -> SizeOfVar( var=$1 )",
+        "_expr := 'sizeof' + 'lparen' + type_name + 'rparen' -> SizeOfType( type=$2 )",
+        "_expr := _expr + ^'questionmark' + _expr + 'colon' + _expr -> TernaryOperator( cond=$0, true=$2, false=$4 )",
         "_expr := 'bitand' + _expr -> AddressOf( var=$1 )",
         "_expr := 'mul' + _expr -> Dereference( var=$1 )",
         "_expr := _expr + 'add' + _expr -> Add( left=$0, right=$2 )",
@@ -72,9 +78,8 @@
         "_expr := _expr + 'bitxoreq' + _expr -> XORAssign( left=$0, right=$2 )",
         "_expr := _expr + 'lshifteq' + _expr -> LeftShiftAssign( left=$0, right=$2 )",
         "_expr := _expr + 'rshifteq' + _expr -> RightShiftAssign( left=$0, right=$2 )",
-        "_expr := _expr + ^'questionmark' + _expr + 'colon' + _expr -> TernaryOperator( cond=$0, true=$2, false=$4 )",
         "_expr := 'identifier' | constant | 'string_literal'",
-        "_expr := 'lparen' + _expr + 'rparen'"
+        "_expr := 'lparen' + _expr + 'rparen' -> $2"
       ]
     },
     {

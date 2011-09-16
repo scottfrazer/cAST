@@ -3,46 +3,46 @@
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          ADD,
-          PP_NUMBER
+          identifier,
+          add,
+          pp_number
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER
+        identifier
       ]
     ),
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          ADD,
-          PP_NUMBER
+          identifier,
+          add,
+          pp_number
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER
+        identifier
       ]
     ),
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          IDENTIFIER,
-          LPAREN,
-          IDENTIFIER,
-          LPAREN,
-          IDENTIFIER,
-          RPAREN,
-          RPAREN
+          identifier,
+          lparen,
+          identifier,
+          lparen,
+          identifier,
+          rparen,
+          rparen
         ]
       ),
-      ident=IDENTIFIER,
+      ident=identifier,
       params=[
-        IDENTIFIER
+        identifier
       ]
     ),
-    CSOURCE
+    csource
   ]
 )

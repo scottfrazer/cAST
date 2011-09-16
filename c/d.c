@@ -7,6 +7,6 @@ comment */ , 4
 #include "test.h"
 int main()
 {
-    printf("%d %d\n", A, B);
+    printf("%d %d %d\n", A, B);
     return 0;
 }

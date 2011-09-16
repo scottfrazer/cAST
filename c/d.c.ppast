@@ -3,25 +3,25 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER,
-          COMMA,
-          PP_NUMBER
+          pp_number,
+          comma,
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          PP_NUMBER
+          pp_number
         ]
       ),
-      ident=IDENTIFIER
+      ident=identifier
     ),
-    CSOURCE,
+    csource,
     (Include:
-      file=HEADER_LOCAL
+      file=header_local
     ),
-    CSOURCE
+    csource
   ]
 )
