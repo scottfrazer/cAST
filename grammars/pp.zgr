@@ -53,8 +53,8 @@
           {"associativity": "left", "terminals": ["lparen"]}
       ],
       "rules": [
-        "_expr := 'identifier' + ^'lparen' + list(_expr, 'comma') + 'rparen' -> FuncCall( name=$0, params=$2 )",
-        "_expr := 'defined' + _expr -> IsDefined( expr=$1 )",
+        "_expr := {'identifier'} + {'lparen' + list(_expr, 'comma') + 'rparen'} -> FuncCall( name=$0, params=$2 )",
+        "_expr := {'defined' + _expr} -> IsDefined( expr=$1 )",
         "_expr := _expr + 'add' + _expr -> Add( left=$0, right=$2 )",
         "_expr := _expr + 'sub' + _expr -> Sub( left=$0, right=$2 )",
         "_expr := _expr + 'lt' + _expr -> LessThan( left=$0, right=$2 )",
@@ -76,9 +76,9 @@
         "_expr := _expr + 'and' + _expr -> And( left=$0, right=$2 )",
         "_expr := _expr + 'or' + _expr -> Or( left=$0, right=$2 )",
         "_expr := 'exclamation_point' + _expr -> Not( expr=$1 )",
-        "_expr := _expr + ^'questionmark' + _expr + 'colon' + _expr -> TernaryOperator( cond=$0, true=$2, false=$4 )",
-        "_expr := 'identifier' | 'pp_number' | 'string_literal' | 'character_constant'",
-        "_expr := 'lparen' + _expr + 'rparen' -> $1"
+        "_expr := {_expr} + {'questionmark' + _expr + 'colon' + _expr} -> TernaryOperator( cond=$0, true=$2, false=$4 )",
+        "_expr := {'identifier'} | {'pp_number'} | {'string_literal'} | {'character_constant'}",
+        "_expr := {'lparen' + _expr + 'rparen'} -> $1"
       ]
     }
   ]
