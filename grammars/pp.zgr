@@ -54,7 +54,7 @@
       ],
       "rules": [
         "_expr := {'identifier'} + {'lparen' + list(_expr, 'comma') + 'rparen'} -> FuncCall( name=$0, params=$2 )",
-        "_expr := {'defined' + _expr} -> IsDefined( expr=$1 )",
+        "_expr := {'defined' + 'identifier'} -> IsDefined( expr=$1 )",
         "_expr := _expr + 'add' + _expr -> Add( left=$0, right=$2 )",
         "_expr := _expr + 'sub' + _expr -> Sub( left=$0, right=$2 )",
         "_expr := _expr + 'lt' + _expr -> LessThan( left=$0, right=$2 )",
