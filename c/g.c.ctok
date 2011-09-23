@@ -1,0 +1,9 @@
+int,6,1,int,c/g.c
+identifier,6,5,main,c/g.c
+lparen,6,9,(,c/g.c
+rparen,6,10,),c/g.c
+lbrace,7,1,{,c/g.c
+return,8,2,return,c/g.c
+integer_constant,8,9,0,c/g.c
+semi,8,10,;,c/g.c
+rbrace,9,1,},c/g.c

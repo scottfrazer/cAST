@@ -99,19 +99,19 @@ def Cli():
       parser = ppParser()
       parsetree = parser.parse(cPPL, 'pp_file')
       ast = parsetree.toAst()
-      print(AstPrettyPrintable(ast))
+      print(AstPrettyPrintable(ast, cli.format))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
 
   if cli.command == 'ctok':
-    try:
+    #try:
       cT, symbols = cPP.process( cSourceCode )
       for token in cT:
         print(token.toString(cli.format))
-    except Exception as e:
-      print(e, '\n', e.tracer)
-      sys.exit(-1)
+    #except Exception as e:
+    #  print(e, '\n', e.tracer)
+    #  sys.exit(-1)
 
 if __name__ == '__main__':
     Cli()

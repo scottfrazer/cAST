@@ -15,6 +15,11 @@ def parseDefine( match, string, lineno, colno, terminals, resource ):
     token = ppToken(terminals['DEFINE'], resource, 'DEFINE', match, lineno, colno - len(match))
   return ([token], 0)
 
+def parseDefined( match, string, lineno, colno, terminals, resource ):
+  token = ppToken(terminals['DEFINED'], resource, 'DEFINED', 'defined', lineno, colno)
+  separator = ppToken(terminals['DEFINED_SEPARATOR'], resource, 'DEFINED_SEPARATOR', '', lineno, colno)
+  return ([token, separator], 0)
+
 def parseInclude( match, string, lineno, colno, terminals, resource ):
   header_global = re.compile(r'[<][^\n>]+[>]')
   header_local = re.compile(r'["][^\n"]+["]')
@@ -46,7 +51,7 @@ class ppLexer(Lexer):
     ( re.compile(r'^[ \t]*#[ \t]*line(?![a-zA-Z])'), 'LINE', None, None ),
     ( re.compile(r'^[ \t]*#[ \t]*undef(?![a-zA-Z])'), 'UNDEF', None, None ),
     ( re.compile(r'^[ \t]*#[ \t]*endif\s?.*'), 'ENDIF', None, None ),
-    ( re.compile(r'defined'), 'DEFINED', None, None ),
+    ( re.compile(r'defined'), None, parseDefined, None ),
     ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
     ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None, None ),
     ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
@@ -157,12 +162,12 @@ class ppLexer(Lexer):
     emit_separator = False
     emit_csource = False
     continuation = False
-    comment = False
     advance = 0
+    cComment = False
     for index, line in enumerate(self.cST_lines):
       self.lineno += 1
 
-      if self._isPreprocessingLine( line ) or continuation:
+      if not cComment and (self._isPreprocessingLine( line ) or continuation):
         continuation = False
         if len(buf):
           self.lineno -= 1
@@ -207,6 +212,10 @@ class ppLexer(Lexer):
           buf_line = self.lineno
         buf.append(line)
         lines += 1
+        if not cComment and '/*' in line and '*/' not in line:
+          cComment = True
+        if cComment and '*/' in line:
+          cComment = False
 
     self._advance(lines)
     if emit_csource:

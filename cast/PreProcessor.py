@@ -153,6 +153,7 @@ class cPreprocessingEvaluator:
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
     self.cPPTtocT = {
       self.cPPP.TERMINAL_DEFINED : self.cP.TERMINAL_DEFINED ,
+      self.cPPP.TERMINAL_DEFINED_SEPARATOR : self.cP.TERMINAL_DEFINED_SEPARATOR ,
       self.cPPP.TERMINAL_BITOREQ : self.cP.TERMINAL_BITOREQ ,
       self.cPPP.TERMINAL_OR : self.cP.TERMINAL_OR ,
       self.cPPP.TERMINAL_BITXOREQ : self.cP.TERMINAL_BITXOREQ ,
@@ -603,10 +604,10 @@ class cPreprocessingEvaluator:
         return numstr
       numstr = re.sub(r'[lLuU]', '', numstr)
       if 'e' in numstr or 'E' in numstr:
-        numstr = numstr.split( 'e' if e in numstr else 'E' )
+        numstr = numstr.split( 'e' if 'e' in numstr else 'E' )
         num = int(numstr[0], self._base(numstr[0])) ** int(numstr[1], self._base(numstr[1]))
       elif 'p' in numstr or 'P' in numstr:
-        numstr = numstr.split( 'p' if e in numstr else 'P' )
+        numstr = numstr.split( 'p' if 'p' in numstr else 'P' )
         num = int(numstr[0], self._base(numstr[0])) * (2 ** int(numstr[1], self._base(numstr[1])))
       else:
         num = int(numstr, self._base(numstr))

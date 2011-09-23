@@ -3,7 +3,7 @@
     "start": "translation_unit",
     "rules": [
 
-      "pp := 'defined'",
+      "pp := 'defined' | 'defined_separator'",
 
       "token := keyword | 'identifier' | constant | 'string_literal' | punctuator | 'pp_number'",
 
