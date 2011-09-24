@@ -53,7 +53,7 @@ def Cli():
               help = "A path containing the list of directories separated by colons.")
 
   cli = parser.parse_args()
-  logger = LoggerFactory().initialize()
+  logger = LoggerFactory().initialize(cli.debug)
   logger.debug('CLI Parameters: %s' % (cli))
 
   if not os.path.isfile( cli.source_file[0] ):

@@ -1,7 +1,7 @@
 import logging
 
 class Factory:
-  def initialize(self):
+  def initialize(self, debug):
     logger = logging.getLogger('cast')
     logger.setLevel(logging.DEBUG)
     fileLogger = logging.FileHandler('cast.log')
@@ -11,8 +11,9 @@ class Factory:
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
     fileLogger.setFormatter(formatter)
     stdoutLogger.setFormatter(formatter)
-    logger.addHandler(fileLogger)
-    logger.addHandler(stdoutLogger)
+    if debug:
+      logger.addHandler(fileLogger)
+      logger.addHandler(stdoutLogger)
     return logger
   def getProgramLogger(self):
     return logging.getLogger('cast')

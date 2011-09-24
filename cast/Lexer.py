@@ -19,9 +19,15 @@ class Lexer:
     self.colno = sourceCode.getColumn()
     self.lineno = sourceCode.getLine()
 
+  def setString(self, string):
+    self.string = string
+
+  def getString(self):
+    return self.string
+
 class PatternMatchingLexer(Lexer):
   def __init__(self, resource, regex = [], terminals = {}, logger = None):
-    super(PatternMatchingLexer, self).__init__(resource)
+    super().__init__(resource)
     self.setLogger(logger)
     self.setRegex(regex)
     self.setTerminals(terminals)

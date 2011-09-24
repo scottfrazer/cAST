@@ -16,6 +16,9 @@ class SourceCode:
   def getLine(self):
     return self.line
 
+  def __str__(self):
+    return '<SourceCode file=%s>' % (self.resource)
+
 class SourceCodeString:
   def __init__(self, resource, string, line, column):
     self.__dict__.update(locals())

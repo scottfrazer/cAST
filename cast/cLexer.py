@@ -123,10 +123,14 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'\s+', 0), None, None, None )
   ]
   def __init__(self, sourceCode = None, terminals = None, logger = None):
-    super(cLexer, self).__init__(sourceCode)
+    super().__init__(sourceCode)
     self.setTerminals(terminals)
     self.setRegex(self.cRegex)
     self.setLogger(logger)
+
+  def setSourceCode(self, sourceCode):
+    super().setSourceCode(sourceCode)
+    self.setString(re.sub(r'\\\n', r'\n', self.getString()))
   
   def __next__(self):
     token = super().__next__()
