@@ -1,7 +1,15 @@
-1.  Rename cPreprocessingLexer to ppLexer
-2.  Implement
+1.  Implement
 	a.  Pragma
 	b.  Error
 	c.  Warning
 	d.  Line
 	e.  FuncCall
+
+2.  AST Transformations.  Possible formats:
+
+  FunctionDefinition( name=declarator.identifier, parameters=declarator.find(ParameterList), return=)
+
+3.  AST Constraints.  Possible formats:
+
+  FunctionDefinition.body == CompoundExpression
+  "A function body must be a compound statement"

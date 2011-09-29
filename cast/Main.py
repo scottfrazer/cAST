@@ -28,6 +28,7 @@ def Cli():
   commands['pptok'] = subparsers.add_parser('pptok', help='Tokenize C preprocessor.')
   commands['ppast'] = subparsers.add_parser('ppast', help='Parse C preprocessor.')
   commands['ctok'] = subparsers.add_parser('ctok', help='Preprocess and tokenize C code.')
+  commands['ast'] = subparsers.add_parser('ast', help='Parse C code.')
 
   parser.add_argument('source_file',
               metavar = 'SOURCE_FILE',
@@ -105,13 +106,25 @@ def Cli():
       sys.exit(-1)
 
   if cli.command == 'ctok':
-    #try:
+    try:
       cT, symbols = cPP.process( cSourceCode )
       for token in cT:
         print(token.toString(cli.format))
-    #except Exception as e:
-    #  print(e, '\n', e.tracer)
-    #  sys.exit(-1)
+    except Exception as e:
+      print(e, '\n', e.tracer)
+      sys.exit(-1)
+
+  if cli.command == 'ast':
+    from cast.cParser import Parser as cParser
+    try:
+      cT, symbols = cPP.process( cSourceCode )
+      parser = cParser()
+      parsetree = parser.parse(cT, 'translation_unit')
+      ast = parsetree.toAst()
+      print(AstPrettyPrintable(ast, cli.format))
+    except Exception as e:
+      print(e, '\n', e.tracer)
+      sys.exit(-1)
 
 if __name__ == '__main__':
     Cli()

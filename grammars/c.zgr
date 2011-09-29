@@ -2,17 +2,76 @@
   "ll1": {
     "start": "translation_unit",
     "rules": [
+      "translation_unit := list(external_declaration)",
+      "external_declaration := function_definition | declaration",
+      "function_definition := list(declaration_specifier) + declarator + declaration_list_opt + compound_statement",
+      "declaration := list(declaration_specifier) + init_declarator_list_opt",
+      "declaration_list_opt := list(declaration) | _empty",
+      "declaration_specifier := storage_class_specifier | type_specifier | type_qualifier | function_specifier",
+      "init_declarator_list_opt := list(init_declarator) | _empty",
+      "init_declarator := declarator | declarator + 'equals' + initializer",
+      "storage_class_specifier := 'typedef' | 'extern' | 'static' | 'auto' | 'register'",
+      "type_specifier := 'void' | 'char' | 'short' | 'int' | 'long' | 'float' | 'double' | 'signed' | 'unsigned' | '_Bool' | '_Complex'",
+      "type_qualifier := 'const' | 'restrict' | 'volatile'",
+      "type_qualifier_list_opt := list(type_qualifier) | _empty",
+      "function_specifier := 'inline'",
+      "declarator := pointer_opt + _direct_declarator",
+      "direct_declarator_expr := type_qualifier_list_opt + direct_declarator_size | _empty",
+      "direct_declarator_size := static_opt + assignment_expression | type_qualifier_list_opt + 'asterisk'",
+      "parameter_type_list := list(parameter_declaration, 'comma') + va_args",
+      "parameter_type_list_opt := parameter_type_list | _empty",
+      "direct_declarator_parameter_list := parameter_type_list | list(identifier) | _empty",
+      "va_args := 'comma' + 'elipsis' | _empty",
+      "parameter_declaration := list(declaration_specifier) + parameter_declaration_sub",
+      "parameter_declaration_sub := declarator | abstract_declarator | _empty",
+      "abstract_declarator := pointer_opt + direct_abstract_declarator_opt",
+      "pointer_opt := pointer | _empty",
+      "pointer := list(pointer_sub)",
+      "pointer_sub := 'asterisk' + type_qualifier_list_opt",
+      "direct_abstract_declarator_opt := _direct_abstract_declarator | _empty",
+      "direct_abstract_declarator_expr := type_qualifier_list_opt + static_opt + assignment_expression | 'asterisk' | _empty",
+
+      "statement := labeled_statement",
+      "statement := compound_statement",
+      "statement := expression_statement",
+      "statement := selection_statement",
+      "statement := iteration_statement",
+      "statement := jump_statement",
+      "labeled_statement := identifier + 'colon' + statement",
+      "labeled_statement := 'case' + constant_expression + 'colon' + statement",
+      "labeled_statement := 'default' + 'colon' + statement",
+      "compound_statement := 'lbrace' + block_item_list_opt + 'rbrace'",
+      "block_item_list_opt := list(block_item) | _empty",
+      "block_item := declaration | statement",
+      "expression_statement := expression_opt + 'semi'",
+      "selection_statement := 'if' + 'lparen' + expression + 'rparen' + statement + else_statement_opt",
+      "else_statement := 'else' + statement",
+      "else_statement_opt := else_statement | _empty",
+      "selection_statement := 'switch' + 'lparen' + expression + 'rparen' + statement",
+      "iteration_statement := 'while' + 'lparen' + expression + 'rparen' + statement",
+      "iteration_statement := 'do' + statement + 'while' + 'lparen' + expression + 'rparen' + 'semi'",
+      "iteration_statement := 'for' + 'lparen' + for_init + for_cond + for_incr + 'rparen' + statement",
+      "for_init := declaration + expression_opt | expression | _empty",
+      "for_cond := 'semi' + expression_opt",
+      "for_incr := 'semi' + expression_opt | _empty",
+      "jump_statement := 'goto' + identifier + 'semi'",
+      "jump_statement := 'continue'",
+      "jump_statement := 'break' + 'semi'",
+      "jump_statement := 'return' + expression_opt + 'semi'",
+
 
       "pp := 'defined' | 'defined_separator'",
-
       "token := keyword | 'identifier' | constant | 'string_literal' | punctuator | 'pp_number'",
-
       "keyword := 'auto' | 'break' | 'case' | 'char' | 'const' | 'continue' | 'default' | 'do' | 'double' | 'else' | 'enum' | 'extern' | 'float' | 'for' | 'goto' | 'if' | 'inline' | 'int' | 'long' | 'register' | 'restrict' | 'return' | 'short' | 'signed' | 'sizeof' | 'static' | 'struct' | 'switch' | 'typedef' | 'union' | 'unsigned' | 'void' | 'volatile' | 'while' | '_Bool' | '_Complex' | '_Imaginary'",
-
       "punctuator := 'arrow' | 'dot' | 'lbrace' | 'rbrace' | 'lsquare' | 'rsquare' | 'lparen' | 'rparen' | 'exclamation_point' | 'tilde' | 'sub' | 'add' | 'mul' | 'div' | 'ampersand' | 'decr' | 'incr' | 'or' | 'and' | 'bitor' | 'bitxor' | 'neq' | 'eq' | 'lteq' | 'gteq' | 'lt' | 'gt' | 'lshift' | 'rshift' | 'mod' | 'elipsis' | 'semi' | 'colon' | 'questionmark' | 'bitoreq' | 'bitxoreq' | 'bitandeq' | 'lshifteq' | 'rshifteq' | 'subeq' | 'addeq' | 'modeq' | 'muleq' | 'assign' | 'poundpound' | 'pound' | 'comma'",
+      "terminals := 'AUTO' | 'BOOL' | 'BREAK' | 'CASE' | 'CHAR' | 'COMPLEX' | 'CONST' | 'CONTINUE' | 'DEFAULT' | 'DO' | 'DOUBLE' | 'ELSE' | 'ENUM' | 'EXTERN' | 'FLOAT' | 'FOR' | 'GOTO' | 'IF' | 'IMAGINARY' | 'INLINE' | 'INT' | 'LONG' | 'REGISTER' | 'RESTRICT' | 'RETURN' | 'SHORT' | 'SIGNED' | 'SIZEOF' | 'STATIC' | 'STRUCT' | 'SWITCH' | 'TYPEDEF' | 'UNION' | 'UNSIGNED' | 'VOID' | 'VOLATILE' | 'WHILE' | 'POUND' | 'UNIVERSAL_CHARACTER_NAME' | 'POUNDPOUND' | 'LBRACE' | 'RBRACE' | 'LSQUARE' | 'RSQUARE' | 'POUNDPOUND' | 'POUND' | 'ELIPSIS' | 'DOT' | 'QUESTIONMARK' | 'ARROW' | 'LTEQ' | 'GTEQ' | 'LT' | 'GT' | 'SEMI' | 'LPAREN' | 'RPAREN' | 'EQ' | 'NEQ' | 'ASSIGN' | 'LBRACE' | 'RBRACE' | 'LSQUARE' | 'RSQUARE' | 'COMMA' | 'COLON' | 'IDENTIFIER' | 'STRING_LITERAL' | 'NUMBER' | 'INCR' | 'DECR' | 'ADDEQ' | 'SUBEQ' | 'MULEQ' | 'DIVEQ' | 'MODEQ' | 'ADD' | 'SUB' | 'MUL' | 'DIV' | 'MOD' | 'AND' | 'OR' | 'BITAND' | 'BITOR' | 'NOT' | 'BITXOR' | 'TILDE' | 'EXCLAMATION_POINT' | 'LSHIFT' | 'RSHIFT' | 'LSHIFTEQ' | 'RSHIFTEQ' | 'BITANDEQ' | 'BITXOREQ' | 'BITOREQ' | 'INTEGER_CONSTANT' | 'HEADER_NAME' | 'DECIMAL_FLOATING_CONSTANT' | 'HEXADECIMAL_FLOATING_CONSTANT' | 'CHARACTER_CONSTANT'",
 
-      "terminals := 'AUTO' | 'BOOL' | 'BREAK' | 'CASE' | 'CHAR' | 'COMPLEX' | 'CONST' | 'CONTINUE' | 'DEFAULT' | 'DO' | 'DOUBLE' | 'ELSE' | 'ENUM' | 'EXTERN' | 'FLOAT' | 'FOR' | 'GOTO' | 'IF' | 'IMAGINARY' | 'INLINE' | 'INT' | 'LONG' | 'REGISTER' | 'RESTRICT' | 'RETURN' | 'SHORT' | 'SIGNED' | 'SIZEOF' | 'STATIC' | 'STRUCT' | 'SWITCH' | 'TYPEDEF' | 'UNION' | 'UNSIGNED' | 'VOID' | 'VOLATILE' | 'WHILE' | 'POUND' | 'UNIVERSAL_CHARACTER_NAME' | 'POUNDPOUND' | 'LBRACE' | 'RBRACE' | 'LSQUARE' | 'RSQUARE' | 'POUNDPOUND' | 'POUND' | 'ELIPSIS' | 'DOT' | 'QUESTIONMARK' | 'ARROW' | 'LTEQ' | 'GTEQ' | 'LT' | 'GT' | 'SEMI' | 'LPAREN' | 'RPAREN' | 'EQ' | 'NEQ' | 'ASSIGN' | 'LBRACE' | 'RBRACE' | 'LSQUARE' | 'RSQUARE' | 'COMMA' | 'COLON' | 'IDENTIFIER' | 'STRING_LITERAL' | 'NUMBER' | 'INCR' | 'DECR' | 'ADDEQ' | 'SUBEQ' | 'MULEQ' | 'DIVEQ' | 'MODEQ' | 'ADD' | 'SUB' | 'MUL' | 'DIV' | 'MOD' | 'AND' | 'OR' | 'BITAND' | 'BITOR' | 'NOT' | 'BITXOR' | 'TILDE' | 'EXCLAMATION_POINT' | 'LSHIFT' | 'RSHIFT' | 'LSHIFTEQ' | 'RSHIFTEQ' | 'BITANDEQ' | 'BITXOREQ' | 'BITOREQ' | 'INTEGER_CONSTANT' | 'HEADER_NAME' | 'DECIMAL_FLOATING_CONSTANT' | 'HEXADECIMAL_FLOATING_CONSTANT' | 'CHARACTER_CONSTANT'"
+      "type_name := 'int' | 'char'",
+      "initializer_list_item := 'integer_constant'",
+      "comma_opt := 'comma' | _empty",
+      "static_opt := 'static' | _empty"
     ]
+
   },
   "expr": [
     {
@@ -38,14 +97,14 @@
       "rules": [
         "_expr := {'identifier'} + {'lparen' + list(_expr, 'comma') + 'rparen'} -> FuncCall( name=$0, params=$2 )",
         "_expr := {'identifier'} + {'lsquare' + list(_expr, 'comma') + 'rsquare'} -> ArrayIndex( name=$0, params=$2 )",
-        "_expr := {'lparen_cast' + type_name + 'rparen'} + {'lbrace' + list(initilizer_list_item, 'comma') + comma_opt + 'rbrace'} -> TypeInitializion( type=$0, initializer=$4 )",
+        "_expr := {'lparen_cast' + type_name + 'rparen'} + {'lbrace' + list(initializer_list_item, 'comma') + comma_opt + 'rbrace'} -> TypeInitializion( type=$1, initializer=$4 )",
         "_expr := {_expr} + {'dot' + _expr} -> MemberSelect( object=$0, member=$2 )",
         "_expr := {_expr} + {'arrow' + _expr} -> DerefMemberSelect( object=$0, member=$2 )",
         "_expr := {_expr} + {'decr'} -> PostDecr( var=$0 )",
         "_expr := {_expr} + {'incr'} -> PostIncr( var=$0 )",
         "_expr := 'decr' + _expr -> PreDecr( var=$1 )",
         "_expr := 'incr' + _expr -> PreIncr( var=$1 )",
-        "_expr := {'sizeof' + _expr} -> SizeOfVar( var=$1 )",
+        "_expr := {'sizeof'} + {'identifier'} -> SizeOfVar( var=$1 )",
         "_expr := {'sizeof' + 'lparen' + type_name + 'rparen'} -> SizeOfType( type=$2 )",
         "_expr := {_expr} + {'questionmark' + _expr + 'colon' + _expr} -> TernaryOperator( cond=$0, true=$2, false=$4 )",
         "_expr := 'bitand' + _expr -> AddressOf( var=$1 )",
@@ -82,13 +141,26 @@
       ]
     },
     {
+      "nonterminal": "_direct_abstract_declarator",
+      "rules": [
+        "_direct_abstract_declarator := {'lparen' + abstract_declarator + 'rparen'}",
+        "_direct_abstract_declarator := {_direct_abstract_declarator_opt} + {'lsquare' + _direct_abstract_declarator_expr + 'rsquare'}",
+        "_direct_abstract_declarator := {_direct_abstract_declarator_opt} + {'lparen' + parameter_type_list_opt + 'rparen'}"
+      ],
+      "binding_power": [
+          {"associativity": "left", "terminals": ["lsquare", "lparen"]}
+      ]
+    },
+    {
       "nonterminal": "_direct_declarator",
       "rules": [
         "_direct_declarator := {'identifier'}",
-        "_direct_declarator := {_direct_declarator} + {'lsquare' + list(type_qualifier) + 'rsquare'}"
+        "_direct_declarator := {'lparen' + declarator + 'rparen'}",
+        "_direct_declarator := {_direct_declarator} + {'lsquare' + direct_declarator_expr + 'rsquare'}",
+        "_direct_declarator := {_direct_declarator} + {'lparen' + direct_declarator_parameter_list + 'rparen'}"
       ],
       "binding_power": [
-          {"associativity": "left", "terminals": ["lsquare"]}
+          {"associativity": "left", "terminals": ["lsquare", "lparen"]}
       ]
     }
   ]
