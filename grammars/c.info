@@ -217,9 +217,9 @@ A.2.2 Declarations
 6.7.5 direct-declarator := identifier
 6.7.5 direct-declarator := '(' + declarator + ')'
 6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + assignment-expression-opt + ']'
-6.7.5 direct-declarator := direct-declarator + '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
-6.7.5 direct-declarator := direct-declarator + '[' + list(type-qualifier) 'static' + assignment-expression + ']'
 6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + '*' + ']'
+35.7.5 direct-declarator := direct-declarator + '[' + list(type-qualifier) + 'static' + assignment-expression + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
 6.7.5 direct-declarator := direct-declarator + '(' + parameter-type-list + ')'
 6.7.5 direct-declarator := direct-declarator + '(' + identifier-list-opt + ')'
 6.7.5 pointer := '*' + type-qualifier-list-opt
@@ -289,7 +289,7 @@ A.2.4 External Definitions
 6.9 translation-unit := external-declaration
 6.9 translation-unit := translation-unit + external-declaration
 6.9 external-declaration := function-definition
-6.9 external-declaration := definition
+6.9 external-declaration := declaration
 6.9.1 function-definition := declaration-specifiers + declarator + declaration-list-opt + compound-statement
 6.9.1 declaration-list := declaration
 6.9.1 declaration-list := declaration-list + declaration

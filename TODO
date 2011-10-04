@@ -13,3 +13,26 @@
 
   FunctionDefinition.body == CompoundExpression
   "A function body must be a compound statement"
+
+4.  function_definition and declaration?
+
+both start with a list of declaration_specifiers
+
+function := list(declaration_specifier) + declarator + declaration_list_opt + compound_statement
+
+<decl_spec>inline</decl_spec>
+<declarator>int func(a,b,c)</declarator>
+<decl_list>
+int a;
+int * b;
+char c;
+<decl_list>
+<compound_statement>
+{
+  return a;
+}
+</compound_statement>
+
+declaration := list(declaration_specifier) + init_declarator_list_opt + 'semi'
+
+extern extern int b = 3;
