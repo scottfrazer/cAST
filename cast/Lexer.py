@@ -88,7 +88,7 @@ class PatternMatchingLexer(Lexer):
             self.colno += len(match_str)
 
           if process_func:
-            (tokens, advancement) = process_func(match_str, self.string, self.lineno, self.colno, self.terminals, self.resource)
+            (tokens, advancement) = process_func(match_str, self)
             for token in tokens:
               self.addToken(token)
             self.advance(advancement)

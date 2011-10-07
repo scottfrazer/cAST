@@ -189,17 +189,12 @@ A.2.2 Declarations
 6.7.2.1 struct-declaration-list := struct-declaration
 6.7.2.1 struct-declaration-list := struct-declaration-list + struct-declaration
 6.7.2.1 struct-declaration := specifier-qualifier-list + struct-declarator-list + ';'
-6.7.2.1 struct-or-union-specifier := struct-or-union + identifier
-6.7.2.1 struct-or-union := 'struct' | 'union'
-6.7.2.1 struct-declaration-list := struct-declaration
-6.7.2.1 struct-declaration-list := struct-declaration-list + struct-declaration
-6.7.2.1 struct-declaration := specifier-qualifier-list + struct-declarator-list + ';'
 6.7.2.1 specifier-qualifier-list := type-specifier + specifier-qualifier-list-opt
 6.7.2.1 specifier-qualifier-list := type-qualifier + specifier-qualifier-list-opt
 6.7.2.1 struct-declarator-list := struct-declarator
 6.7.2.1 struct-declarator-list := struct-declarator-list + ',' + struct-declarator
 6.7.2.1 struct-declarator := declarator
-6.7.2.1 struct-declarator := declarator-opt + := declarator
+6.7.2.1 struct-declarator := declarator-opt + ':' + declarator
 6.7.2.2 enum-specifier := 'enum' + identifier-opt + '{' + enumerator-list + '}'
 6.7.2.2 enum-specifier := 'enum' + identifier-opt + '{' + enumerator-list + ',' + '}'
 6.7.2.2 enum-specifier := 'enum' + identifier

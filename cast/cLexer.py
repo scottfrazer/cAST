@@ -3,6 +3,9 @@ from cast.Lexer import PatternMatchingLexer
 from cast.Token import cToken
 from cast.cParser import Parser as cParser
 
+def parseTypedef( match, lexer ):
+  pass
+
 class cLexer(PatternMatchingLexer):
   type_specifier = ['void', 'char', 'short', 'int', 'long', 'float', 'double', 'signed', 'unsigned', '_Bool', '_Complex']
   cRegex = [
@@ -42,7 +45,7 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'static(?=\s)'), 'STATIC', None, None ),
       ( re.compile(r'struct(?=\s)'), 'STRUCT', None, None ),
       ( re.compile(r'switch(?=\s)'), 'SWITCH', None, None ),
-      ( re.compile(r'typedef(?=\s)'), 'TYPEDEF', None, None ),
+      ( re.compile(r'typedef(?=\s)'), None, parseTypedef, None ),
       ( re.compile(r'union(?=\s)'), 'UNION', None, None ),
       ( re.compile(r'unsigned(?=\s)'), 'UNSIGNED', None, None ),
       ( re.compile(r'void(?=[\s\)])'), 'VOID', None, None ),

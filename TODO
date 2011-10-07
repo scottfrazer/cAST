@@ -36,3 +36,35 @@ char c;
 declaration := list(declaration_specifier) + init_declarator_list_opt + 'semi'
 
 extern extern int b = 3;
+
+C Helper Tokens
+---------------
+
+comma_va_args - a comma that comes before an elipsis
+trailing_comma - comma before an rbrace
+declarator_hint - 
+function_definition_hint
+defined_separator
+typedef_identifier
+
+Typedefs, how do they work?
+---------------------------
+
+A typedef_identifier looks like it's the last identifier before a semi-colon at brace level 0;
+  1) Read ahead and cache everything until a semi-colon at brace level 0.
+  2) Loop through stack backwards (from the semi-colon to the current token)
+    if token == identifier:
+      token = typedef_identifier
+
+examples:
+
+typedef struct a {
+  int x;
+  char y;
+} NAME;
+
+typedef int * int_ptr;
+
+typedef int (*pt2Function)(float, char, char);
+
+

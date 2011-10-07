@@ -7,30 +7,31 @@ from cast.Logger import Factory as LoggerFactory
 
 moduleLogger = LoggerFactory().getModuleLogger(__name__)
 
-def parseDefine( match, string, lineno, colno, terminals, resource ):
+def parseDefine( match, lexer ):
   identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
-  if re.match(r'[ \t]+%s\(' % (identifier_regex), string):
-    token = ppToken(terminals['DEFINE_FUNCTION'], resource, 'DEFINE_FUNCTION', match, lineno, colno - len(match))
+  if re.match(r'[ \t]+%s\(' % (identifier_regex), lexer.string):
+    token = ppToken(lexer.terminals['DEFINE_FUNCTION'], lexer.resource, 'DEFINE_FUNCTION', match, lexer.lineno, lexer.colno - len(match))
   else:
-    token = ppToken(terminals['DEFINE'], resource, 'DEFINE', match, lineno, colno - len(match))
+    # TODO: why bother going through the lexer to get the token identifier?
+    token = ppToken(lexer.terminals['DEFINE'], lexer.resource, 'DEFINE', match, lexer.lineno, lexer.colno - len(match))
   return ([token], 0)
 
-def parseDefined( match, string, lineno, colno, terminals, resource ):
-  token = ppToken(terminals['DEFINED'], resource, 'DEFINED', 'defined', lineno, colno)
-  separator = ppToken(terminals['DEFINED_SEPARATOR'], resource, 'DEFINED_SEPARATOR', '', lineno, colno)
+def parseDefined( match, lexer ):
+  token = ppToken(lexer.terminals['DEFINED'], lexer.resource, 'DEFINED', 'defined', lexer.lineno, lexer.colno)
+  separator = ppToken(lexer.terminals['DEFINED_SEPARATOR'], lexer.resource, 'DEFINED_SEPARATOR', '', lexer.lineno, lexer.colno)
   return ([token, separator], 0)
 
-def parseInclude( match, string, lineno, colno, terminals, resource ):
+def parseInclude( match, lexer ):
   header_global = re.compile(r'[<][^\n>]+[>]')
   header_local = re.compile(r'["][^\n"]+["]')
-  advance = len(re.compile(r'[\t ]*').match(string).group(0))
-  string = string[advance:]
-  tokens = [ppToken(terminals['INCLUDE'], resource, 'INCLUDE', match, lineno, colno)]
+  advance = len(re.compile(r'[\t ]*').match(lexer.string).group(0))
+  lexer.string = lexer.string[advance:]
+  tokens = [ppToken(lexer.terminals['INCLUDE'], lexer.resource, 'INCLUDE', match, lexer.lineno, lexer.colno)]
   for (regex, token) in [(header_global, 'HEADER_GLOBAL'), (header_local, 'HEADER_LOCAL')]:
-    rmatch = regex.match(string)
+    rmatch = regex.match(lexer.string)
     if rmatch:
       rstring = rmatch.group(0)
-      tokens.append( ppToken(terminals[token], resource, token, rstring, lineno, colno + advance) )
+      tokens.append( ppToken(lexer.terminals[token], lexer.resource, token, rstring, lexer.lineno, lexer.colno + advance) )
       advance += len(rstring)
       break
   return (tokens, advance)
