@@ -4,7 +4,20 @@ from cast.Token import cToken
 from cast.cParser import Parser as cParser
 
 def parseTypedef( match, lexer ):
-  pass
+  queue = []
+  ident = None
+  token = cToken(cParser.TERMINAL_TYPEDEF, lexer.resource, 'TYPEDEF', match, lexer.lineno, lexer.colno - len(match))
+  queue.append(token)
+  for token in lexer:
+    queue.append(token)
+    if token.id == cParser.TERMINAL_IDENTIFIER:
+      ident = token
+    if token.id == cParser.TERMINAL_SEMI:
+      break
+  if ident:
+    ident.id = cParser.TERMINAL_TYPEDEF_IDENTIFIER
+    ident.terminal_str = 'TYPEDEF_IDENTIFIER'
+  return (queue, 0)
 
 class cLexer(PatternMatchingLexer):
   type_specifier = ['void', 'char', 'short', 'int', 'long', 'float', 'double', 'signed', 'unsigned', '_Bool', '_Complex']
@@ -15,32 +28,32 @@ class cLexer(PatternMatchingLexer):
 
       # Keywords
       ( re.compile(r'auto(?=\s)'), 'AUTO', None, None ),
-      ( re.compile(r'_Bool(?=[\s\)])'), 'BOOL', None, None ),
+      ( re.compile(r'_Bool(?=[\s\),])'), 'BOOL', None, None ),
       ( re.compile(r'break(?=\s)'), 'BREAK', None, None ),
       ( re.compile(r'case(?=\s)'), 'CASE', None, None ),
-      ( re.compile(r'char(?=[\s\)])'), 'CHAR', None, None ),
-      ( re.compile(r'_Complex(?=[\s\)])'), 'COMPLEX', None, None ),
-      ( re.compile(r'const(?=[\s\)])'), 'CONST', None, None ),
+      ( re.compile(r'char(?=[\s\),])'), 'CHAR', None, None ),
+      ( re.compile(r'_Complex(?=[\s\),])'), 'COMPLEX', None, None ),
+      ( re.compile(r'const(?=[\s\),])'), 'CONST', None, None ),
       ( re.compile(r'continue(?=\s)'), 'CONTINUE', None, None ),
       ( re.compile(r'default(?=\s)'), 'DEFAULT', None, None ),
       ( re.compile(r'do(?=\s)'), 'DO', None, None ),
-      ( re.compile(r'double(?=[\s\)])'), 'DOUBLE', None, None ),
+      ( re.compile(r'double(?=[\s\),])'), 'DOUBLE', None, None ),
       ( re.compile(r'else(?=\s)'), 'ELSE', None, None ),
       ( re.compile(r'enum(?=\s)'), 'ENUM', None, None ),
-      ( re.compile(r'extern(?=[\s\)])'), 'EXTERN', None, None ),
-      ( re.compile(r'float(?=[\s\)])'), 'FLOAT', None, None ),
+      ( re.compile(r'extern(?=[\s\),])'), 'EXTERN', None, None ),
+      ( re.compile(r'float(?=[\s\),])'), 'FLOAT', None, None ),
       ( re.compile(r'for(?=\s)'), 'FOR', None, None ),
       ( re.compile(r'goto(?=\s)'), 'GOTO', None, None ),
       ( re.compile(r'if(?=\s)'), 'IF', None, None ),
       ( re.compile(r'_Imaginary(?=\s)'), 'IMAGINARY', None, None ),
       ( re.compile(r'inline(?=\s)'), 'INLINE', None, None ),
-      ( re.compile(r'int(?=[\s\)])'), 'INT', None, None ),
-      ( re.compile(r'long(?=[\s\)])'), 'LONG', None, None ),
-      ( re.compile(r'register(?=[\s\)])'), 'REGISTER', None, None ),
-      ( re.compile(r'restrict(?=[\s\)])'), 'RESTRICT', None, None ),
+      ( re.compile(r'int(?=[\s\),])'), 'INT', None, None ),
+      ( re.compile(r'long(?=[\s\),])'), 'LONG', None, None ),
+      ( re.compile(r'register(?=[\s\),])'), 'REGISTER', None, None ),
+      ( re.compile(r'restrict(?=[\s\),])'), 'RESTRICT', None, None ),
       ( re.compile(r'return(?=\s)'), 'RETURN', None, None ),
-      ( re.compile(r'short(?=[\s\)])'), 'SHORT', None, None ),
-      ( re.compile(r'signed(?=[\s\)])'), 'SIGNED', None, None ),
+      ( re.compile(r'short(?=[\s\),])'), 'SHORT', None, None ),
+      ( re.compile(r'signed(?=[\s\),])'), 'SIGNED', None, None ),
       ( re.compile(r'sizeof(?=\s)'), 'SIZEOF', None, None ),
       ( re.compile(r'static(?=\s)'), 'STATIC', None, None ),
       ( re.compile(r'struct(?=\s)'), 'STRUCT', None, None ),
@@ -48,7 +61,7 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'typedef(?=\s)'), None, parseTypedef, None ),
       ( re.compile(r'union(?=\s)'), 'UNION', None, None ),
       ( re.compile(r'unsigned(?=\s)'), 'UNSIGNED', None, None ),
-      ( re.compile(r'void(?=[\s\)])'), 'VOID', None, None ),
+      ( re.compile(r'void(?=[\s\),])'), 'VOID', None, None ),
       ( re.compile(r'volatile(?=\s)'), 'VOLATILE', None, None ),
       ( re.compile(r'while(?=\s)'), 'WHILE', None, None ),
 
