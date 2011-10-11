@@ -4,10 +4,10 @@ from copy import copy, deepcopy
 from cast.cParser import Parser as cParser
 from cast.ppParser import Parser as ppParser
 from cast.ppParser import Ast as ppAst
-from cast.ppLexer import Factory as ppLexerFactory
-from cast.cLexer import Factory as cLexerFactory
+from cast.cLexer import cLexer
+from cast.ppLexer import ppLexer
 from cast.Token import Token, cToken, ppToken, TokenList
-from cast.SourceCode import SourceCode, SourceCodeString
+from cast.SourceCode import SourceCode, SourceCodeString, SourceCodeEmpty
 
 sys.setrecursionlimit(2000)
 
@@ -54,18 +54,11 @@ class Debugger:
     return logger
 
 class Factory:
-  def __init__(self):
-    self.cPPLFactory = ppLexerFactory()
-    self.cLFactory = cLexerFactory()
-
-    self.cPPP = ppParser()
-    self.cP = cParser()
-
-    self.cPPL = self.cPPLFactory.create()
-    self.cL = self.cLFactory.create()
   def create(self, includePathGlobal = ['.'], includePathLocal = ['.']):
-    cPE = cPreprocessingEvaluator( self.cPPP, self.cPPL, self.cL, self.cP, self, includePathGlobal, includePathLocal )
-    return PreProcessor( self.cPPL, self.cPPP, self.cL, cPE )
+    cPPP = ppParser()
+    cP = cParser()
+    cPE = cPreprocessingEvaluator( cPPP, cP, self, includePathGlobal, includePathLocal )
+    return PreProcessor( cPPP, cPE )
 
 # Also called 'source file' in ISO docs.
 # Takes C source code, pre-processes, returns C tokens
@@ -81,7 +74,7 @@ class PreProcessor:
     '??>': '}',
     '??-': '~',
   }
-  def __init__( self, cPPL, cPPP, cL, cPE ):
+  def __init__( self, cPPP, cPE ):
     self.__dict__.update(locals())
   
   def process( self, sourceCode, symbols = {}, lineno = 1 ):
@@ -89,8 +82,7 @@ class PreProcessor:
     for (trigraph, replacement) in self.trigraphs.items():
       sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
-    self.cPPL.setSourceCode( sourceCode )
-    parsetree = self.cPPP.parse(self.cPPL, 'pp_file')
+    parsetree = self.cPPP.parse( ppLexer(sourceCode) )
     ast = parsetree.toAst()
     ctokens = self.cPE.eval(ast, symbols)
     return (ctokens, self.cPE.getSymbolTable())
@@ -148,7 +140,7 @@ class cPreprocessorFunctionFactory:
   
 
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP, cPPL, cL, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
+  def __init__(self, cPPP, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
     self.__dict__.update(locals())
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
     self.cPPTtocT = {
@@ -265,7 +257,8 @@ class cPreprocessingEvaluator:
         params.append( buf )
         buf = []
       else:
-        token = self.cPPL.matchString(paramToken.getString())
+        # TODO: this line is kind of messy
+        token = ppLexer(SourceCodeEmpty(paramToken.getResource())).matchString(paramToken.getString())
         token.fromPreprocessor = True
         buf.append(token)
       if paramTokenStr == 'rparen' and lparen == 0:
@@ -309,10 +302,10 @@ class cPreprocessingEvaluator:
       advance = 0
 
       sourceCode = SourceCodeString( cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
-      self.cL.setSourceCode(sourceCode)
-      cTokens = list(self.cL)
-      cLexer = zip_longest(cTokens, cTokens[1:])
-      for token, lookahead in cLexer:
+      cLex = cLexer(sourceCode)
+      cTokens = list(cLex)
+      cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
+      for token, lookahead in cLexerWithLookahead:
         if token.terminal_str.lower() == 'identifier' and \
            token.getString() in self.symbols:
           replacement = self.symbols[token.getString()]
@@ -325,7 +318,7 @@ class cPreprocessingEvaluator:
               tokens.extend(tmptoken)
               continue
             else:
-              params = self._getCSourceMacroFunctionParams(cLexer)
+              params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
               result = replacement.run(params, token.lineno, token.colno)
               tokens.extend(result)
           elif isinstance(replacement, list):
@@ -334,7 +327,7 @@ class cPreprocessingEvaluator:
               if not next_token:
                 if isinstance(replacement_token, self.cPFF.cPreprocessorFunction) and \
                    lookahead.getString() == '(':
-                   params = self._getCSourceMacroFunctionParams(cLexer)
+                   params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
                    result = replacement_token.run(params, token.lineno, token.colno)
                    tmp.extend(result)
                    break

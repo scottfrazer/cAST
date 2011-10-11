@@ -1,6 +1,6 @@
 import unittest, os
-from cast.ppLexer import Factory as ppLexerFactory
 from cast.ppParser import Parser as ppParser
+from cast.ppLexer import ppLexer
 from cast.Ast import AstPrettyPrintable
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.SourceCode import SourceCode, SourceCodeString
@@ -10,16 +10,13 @@ class CastTest(unittest.TestCase):
   mapFunc = lambda y, x: "%s,%s,%s,%s,%s" % (x.getTerminalStr(), x.getLine(), x.getColumn(), x.getString().replace('\n', '\\n'), x.getResource())
 
   def get_ppLexer(self, filePath):
-    cPPLFactory = ppLexerFactory()
-    cPPL = cPPLFactory.create()
     sourceCode = SourceCode( filePath, open(filePath) )
-    cPPL.setSourceCode(sourceCode)
-    return cPPL
+    return ppLexer(sourceCode)
 
   def get_ppAst(self, filePath):
     cPPL = self.get_ppLexer(filePath)
     parser = ppParser()
-    parsetree = parser.parse(cPPL, 'pp_file')
+    parsetree = parser.parse(cPPL)
     return parsetree.toAst()
 
   def get_cLexer(self, filePath):

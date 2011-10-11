@@ -34,3 +34,19 @@ class SourceCodeString:
 
   def getLine(self):
     return self.line
+
+class SourceCodeEmpty:
+  def __init__(self, resource):
+    self.resource = resource
+
+  def getResource(self):
+    return self.resource
+
+  def getString(self):
+    return ''
+
+  def getColumn(self):
+    return 0
+
+  def getLine(self):
+    return 0

@@ -3,7 +3,7 @@ from cast.Lexer import PatternMatchingLexer
 from cast.Token import cToken
 from cast.cParser import Parser as cParser
 
-def parseTypedef( match, lexer ):
+def parseTypedef( match, terminalId, lexer ):
   queue = []
   ident = None
   token = cToken(cParser.TERMINAL_TYPEDEF, lexer.resource, 'TYPEDEF', match, lexer.lineno, lexer.colno - len(match))
@@ -19,145 +19,162 @@ def parseTypedef( match, lexer ):
     ident.terminal_str = 'TYPEDEF_IDENTIFIER'
   return (queue, 0)
 
+def parseLbrace( string, lineno, colno, terminalId, lexer ):
+  lexer.braceLevel += 1
+  token( string, lineno, colno, terminalId, lexer )
+
+def parseDeclarationSpecifier( string, lineno, colno, terminalId, lexer ):
+  queue = []
+  for token in lexer:
+    queue.append(token)
+    if token.id == cParser.TERMINAL_IDENTIFIER and lexer.braceLevel == 0:
+      ident = True
+      continue
+    elif token.id == cParser.TERMINAL_SEMI and ident:
+      hintId = cParser.TERMINAL_DECLARATION_HINT
+      break
+    elif token.id == cParser.TERMINAL_SEMI and lexer.braceLevel == 0:
+      hintId = cParser.TERMINAL_FUNCTION_DEFINITION_HINT
+      break
+    ident = False
+  hint = cToken(hintId, lexer.resource, cParser.terminal_str[hintId], match, lexer.lineno, lexer.colno - len(match))
+  lexer.addToken(hint)
+  for token in queue:
+    lexer.addToken(token)
+
+def parseRbrace( string, lineno, colno, terminalId, lexer ):
+  lexer.braceLevel -= 1
+  token( string, lineno, colno, terminalId, lexer )
+
+def token(string, lineno, colno, terminalId, lexer):
+  lexer.addToken(cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], string, lineno, colno))
+
 class cLexer(PatternMatchingLexer):
   type_specifier = ['void', 'char', 'short', 'int', 'long', 'float', 'double', 'signed', 'unsigned', '_Bool', '_Complex']
   cRegex = [
       # Comments
-      ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
-      ( re.compile(r'//.*', 0), None, None, None ),
+      ( re.compile(r'/\*.*?\*/', re.S), None, None ),
+      ( re.compile(r'//.*', 0), None, None ),
 
       # Keywords
-      ( re.compile(r'auto(?=\s)'), 'AUTO', None, None ),
-      ( re.compile(r'_Bool(?=[\s\),])'), 'BOOL', None, None ),
-      ( re.compile(r'break(?=\s)'), 'BREAK', None, None ),
-      ( re.compile(r'case(?=\s)'), 'CASE', None, None ),
-      ( re.compile(r'char(?=[\s\),])'), 'CHAR', None, None ),
-      ( re.compile(r'_Complex(?=[\s\),])'), 'COMPLEX', None, None ),
-      ( re.compile(r'const(?=[\s\),])'), 'CONST', None, None ),
-      ( re.compile(r'continue(?=\s)'), 'CONTINUE', None, None ),
-      ( re.compile(r'default(?=\s)'), 'DEFAULT', None, None ),
-      ( re.compile(r'do(?=\s)'), 'DO', None, None ),
-      ( re.compile(r'double(?=[\s\),])'), 'DOUBLE', None, None ),
-      ( re.compile(r'else(?=\s)'), 'ELSE', None, None ),
-      ( re.compile(r'enum(?=\s)'), 'ENUM', None, None ),
-      ( re.compile(r'extern(?=[\s\),])'), 'EXTERN', None, None ),
-      ( re.compile(r'float(?=[\s\),])'), 'FLOAT', None, None ),
-      ( re.compile(r'for(?=\s)'), 'FOR', None, None ),
-      ( re.compile(r'goto(?=\s)'), 'GOTO', None, None ),
-      ( re.compile(r'if(?=\s)'), 'IF', None, None ),
-      ( re.compile(r'_Imaginary(?=\s)'), 'IMAGINARY', None, None ),
-      ( re.compile(r'inline(?=\s)'), 'INLINE', None, None ),
-      ( re.compile(r'int(?=[\s\),])'), 'INT', None, None ),
-      ( re.compile(r'long(?=[\s\),])'), 'LONG', None, None ),
-      ( re.compile(r'register(?=[\s\),])'), 'REGISTER', None, None ),
-      ( re.compile(r'restrict(?=[\s\),])'), 'RESTRICT', None, None ),
-      ( re.compile(r'return(?=\s)'), 'RETURN', None, None ),
-      ( re.compile(r'short(?=[\s\),])'), 'SHORT', None, None ),
-      ( re.compile(r'signed(?=[\s\),])'), 'SIGNED', None, None ),
-      ( re.compile(r'sizeof(?=\s)'), 'SIZEOF', None, None ),
-      ( re.compile(r'static(?=\s)'), 'STATIC', None, None ),
-      ( re.compile(r'struct(?=\s)'), 'STRUCT', None, None ),
-      ( re.compile(r'switch(?=\s)'), 'SWITCH', None, None ),
-      ( re.compile(r'typedef(?=\s)'), None, parseTypedef, None ),
-      ( re.compile(r'union(?=\s)'), 'UNION', None, None ),
-      ( re.compile(r'unsigned(?=\s)'), 'UNSIGNED', None, None ),
-      ( re.compile(r'void(?=[\s\),])'), 'VOID', None, None ),
-      ( re.compile(r'volatile(?=\s)'), 'VOLATILE', None, None ),
-      ( re.compile(r'while(?=\s)'), 'WHILE', None, None ),
+      ( re.compile(r'auto(?=\s)'), cParser.TERMINAL_AUTO, token ),
+      ( re.compile(r'_Bool(?=[\s\),])'), cParser.TERMINAL_BOOL, token ),
+      ( re.compile(r'break(?=\s)'), cParser.TERMINAL_BREAK, token ),
+      ( re.compile(r'case(?=\s)'), cParser.TERMINAL_CASE, token ),
+      ( re.compile(r'char(?=[\s\),])'), cParser.TERMINAL_CHAR, token ),
+      ( re.compile(r'_Complex(?=[\s\),])'), cParser.TERMINAL_COMPLEX, token ),
+      ( re.compile(r'const(?=[\s\),])'), cParser.TERMINAL_CONST, token ),
+      ( re.compile(r'continue(?=\s)'), cParser.TERMINAL_CONTINUE, token ),
+      ( re.compile(r'default(?=\s)'), cParser.TERMINAL_DEFAULT, token ),
+      ( re.compile(r'do(?=\s)'), cParser.TERMINAL_DO, token ),
+      ( re.compile(r'double(?=[\s\),])'), cParser.TERMINAL_DOUBLE, token ),
+      ( re.compile(r'else(?=\s)'), cParser.TERMINAL_ELSE, token ),
+      ( re.compile(r'enum(?=\s)'), cParser.TERMINAL_ENUM, token ),
+      ( re.compile(r'extern(?=[\s\),])'), cParser.TERMINAL_EXTERN, token ),
+      ( re.compile(r'float(?=[\s\),])'), cParser.TERMINAL_FLOAT, token ),
+      ( re.compile(r'for(?=\s)'), cParser.TERMINAL_FOR, token ),
+      ( re.compile(r'goto(?=\s)'), cParser.TERMINAL_GOTO, token ),
+      ( re.compile(r'if(?=\s)'), cParser.TERMINAL_IF, token ),
+      ( re.compile(r'_Imaginary(?=\s)'), cParser.TERMINAL_IMAGINARY, token ),
+      ( re.compile(r'inline(?=\s)'), cParser.TERMINAL_INLINE, token ),
+      ( re.compile(r'int(?=[\s\),])'), cParser.TERMINAL_INT, token ),
+      ( re.compile(r'long(?=[\s\),])'), cParser.TERMINAL_LONG, token ),
+      ( re.compile(r'register(?=[\s\),])'), cParser.TERMINAL_REGISTER, token ),
+      ( re.compile(r'restrict(?=[\s\),])'), cParser.TERMINAL_RESTRICT, token ),
+      ( re.compile(r'return(?=\s)'), cParser.TERMINAL_RETURN, token ),
+      ( re.compile(r'short(?=[\s\),])'), cParser.TERMINAL_SHORT, token ),
+      ( re.compile(r'signed(?=[\s\),])'), cParser.TERMINAL_SIGNED, token ),
+      ( re.compile(r'sizeof(?=\s)'), cParser.TERMINAL_SIZEOF, token ),
+      ( re.compile(r'static(?=\s)'), cParser.TERMINAL_STATIC, token ),
+      ( re.compile(r'struct(?=\s)'), cParser.TERMINAL_STRUCT, token ),
+      ( re.compile(r'switch(?=\s)'), cParser.TERMINAL_SWITCH, token ),
+      ( re.compile(r'typedef(?=\s)'), cParser.TERMINAL_TYPEDEF, parseTypedef ),
+      ( re.compile(r'union(?=\s)'), cParser.TERMINAL_UNION, token ),
+      ( re.compile(r'unsigned(?=\s)'), cParser.TERMINAL_UNSIGNED, token ),
+      ( re.compile(r'void(?=[\s\),])'), cParser.TERMINAL_VOID, token ),
+      ( re.compile(r'volatile(?=\s)'), cParser.TERMINAL_VOLATILE, token ),
+      ( re.compile(r'while(?=\s)'), cParser.TERMINAL_WHILE, token ),
 
       # Identifiers
-      ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
+      ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), cParser.TERMINAL_IDENTIFIER, token ),
 
       # Unicode Characters
-      ( re.compile(r'\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?'), 'UNIVERSAL_CHARACTER_NAME', None, None ),
+      ( re.compile(r'\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?'), cParser.TERMINAL_UNIVERSAL_CHARACTER_NAME, token ),
 
       # Digraphs
-      ( re.compile(r'<%'), 'LBRACE', None, None ),
-      ( re.compile(r'%>'), 'RBRACE', None, None ),
-      ( re.compile(r'<:'), 'LSQUARE', None, None ),
-      ( re.compile(r':>'), 'RSQUARE', None, None ),
-      ( re.compile(r'%:%:'), 'POUNDPOUND', None, None ),
-      ( re.compile(r'%:'), 'POUND', None, None ),
+      ( re.compile(r'<%'), cParser.TERMINAL_LBRACE, token ),
+      ( re.compile(r'%>'), cParser.TERMINAL_RBRACE, token ),
+      ( re.compile(r'<:'), cParser.TERMINAL_LSQUARE, token ),
+      ( re.compile(r':>'), cParser.TERMINAL_RSQUARE, token ),
+      ( re.compile(r'%:%:'), cParser.TERMINAL_POUNDPOUND, token ),
+      ( re.compile(r'%:'), cParser.TERMINAL_POUND, token ),
 
       # Punctuators
-      ( re.compile(r'\['), 'LSQUARE', None, None ),
-      ( re.compile(r'\]'), 'RSQUARE', None, None ),
-      ( re.compile(r'\((?=' + '(' +'|'.join(type_specifier) + ')\s*\))'), 'LPAREN_CAST', None, None ),
-      ( re.compile(r'\('), 'LPAREN', None, None ),
-      ( re.compile(r'\)'), 'RPAREN', None, None ),
-      ( re.compile(r'\{'), 'LBRACE', None, None ),
-      ( re.compile(r'\}'), 'RBRACE', None, None ),
-      ( re.compile(r'\.'), 'DOT', None, None ),
-      ( re.compile(r'->'), 'ARROW', None, None ),
-      ( re.compile(r'\+\+'), 'INCR', None, None ),
-      ( re.compile(r'--'), 'DECR', None, None ),
-      ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
-      ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
-      ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
-      ( re.compile(r'-(?!=)'), 'SUB', None, None ),
-      ( re.compile(r'~'), 'TILDE', None, None ),
-      ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
-      ( re.compile(r'/(?!=)'), 'DIV', None, None ),
-      ( re.compile(r'%(?!=)'), 'MOD', None, None ),
-      ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
-      ( re.compile(r'>>(?!=)'), 'RSHIFT', None, None ),
-      ( re.compile(r'<(?!=)'), 'LT', None, None ),
-      ( re.compile(r'>(?!=)'), 'GT', None, None ),
-      ( re.compile(r'<='), 'LTEQ', None, None ),
-      ( re.compile(r'>='), 'GTEQ', None, None ),
-      ( re.compile(r'=='), 'EQ', None, None ),
-      ( re.compile(r'!='), 'NEQ', None, None ),
-      ( re.compile(r'\^(?!=)'), 'BITXOR', None, None ),
-      ( re.compile(r'\|(?!\|)'), 'BITOR', None, None ),
-      ( re.compile(r'&&'), 'AND', None, None ),
-      ( re.compile(r'\|\|'), 'OR', None, None ),
-      ( re.compile(r'\?'), 'QUESTIONMARK', None, None ),
-      ( re.compile(r':'), 'COLON', None, None ),
-      ( re.compile(r';'), 'SEMI', None, None ),
-      ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
-      ( re.compile(r'=(?!=)'), 'ASSIGN', None, None ),
-      ( re.compile(r'\*='), 'MULEQ', None, None ),
-      ( re.compile(r'/='), 'DIVEQ', None, None ),
-      ( re.compile(r'%='), 'MODEQ', None, None ),
-      ( re.compile(r'\+='), 'ADDEQ', None, None ),
-      ( re.compile(r'-='), 'SUBEQ', None, None ),
-      ( re.compile(r'<<='), 'LSHIFTEQ', None, None ),
-      ( re.compile(r'>>='), 'RSHIFTEQ', None, None ),
-      ( re.compile(r'&='), 'BITANDEQ', None, None ),
-      ( re.compile(r'\^='), 'BITXOREQ', None, None ),
-      ( re.compile(r'\|='), 'BITOREQ', None, None ),
-      ( re.compile(r','), 'COMMA', None, None ),
-      ( re.compile(r'##'), 'POUNDPOUND', None, None ),
-      ( re.compile(r'#(?!#)'), 'POUND', None, None ),
+      ( re.compile(r'\['), cParser.TERMINAL_LSQUARE, token ),
+      ( re.compile(r'\]'), cParser.TERMINAL_RSQUARE, token ),
+      ( re.compile(r'\((?=' + '(' +'|'.join(type_specifier) + ')\s*\))'), cParser.TERMINAL_LPAREN_CAST, token ),
+      ( re.compile(r'\('), cParser.TERMINAL_LPAREN, token ),
+      ( re.compile(r'\)'), cParser.TERMINAL_RPAREN, token ),
+      ( re.compile(r'\{'), cParser.TERMINAL_LBRACE, parseLbrace ),
+      ( re.compile(r'\}'), cParser.TERMINAL_RBRACE, token ),
+      ( re.compile(r'\.'), cParser.TERMINAL_DOT, token ),
+      ( re.compile(r'->'), cParser.TERMINAL_ARROW, token ),
+      ( re.compile(r'\+\+'), cParser.TERMINAL_INCR, token ),
+      ( re.compile(r'--'), cParser.TERMINAL_DECR, token ),
+      ( re.compile(r'&(?!&)'), cParser.TERMINAL_BITAND, token ),
+      ( re.compile(r'\*(?!=)'), cParser.TERMINAL_MUL, token ),
+      ( re.compile(r'\+(?!=)'), cParser.TERMINAL_ADD, token ),
+      ( re.compile(r'-(?!=)'), cParser.TERMINAL_SUB, token ),
+      ( re.compile(r'~'), cParser.TERMINAL_TILDE, token ),
+      ( re.compile(r'!(?!=)'), cParser.TERMINAL_EXCLAMATION_POINT, token ),
+      ( re.compile(r'/(?!=)'), cParser.TERMINAL_DIV, token ),
+      ( re.compile(r'%(?!=)'), cParser.TERMINAL_MOD, token ),
+      ( re.compile(r'<<(?!=)'), cParser.TERMINAL_LSHIFT, token ),
+      ( re.compile(r'>>(?!=)'), cParser.TERMINAL_RSHIFT, token ),
+      ( re.compile(r'<(?!=)'), cParser.TERMINAL_LT, token ),
+      ( re.compile(r'>(?!=)'), cParser.TERMINAL_GT, token ),
+      ( re.compile(r'<='), cParser.TERMINAL_LTEQ, token ),
+      ( re.compile(r'>='), cParser.TERMINAL_GTEQ, token ),
+      ( re.compile(r'=='), cParser.TERMINAL_EQ, token ),
+      ( re.compile(r'!='), cParser.TERMINAL_NEQ, token ),
+      ( re.compile(r'\^(?!=)'), cParser.TERMINAL_BITXOR, token ),
+      ( re.compile(r'\|(?!\|)'), cParser.TERMINAL_BITOR, token ),
+      ( re.compile(r'&&'), cParser.TERMINAL_AND, token ),
+      ( re.compile(r'\|\|'), cParser.TERMINAL_OR, token ),
+      ( re.compile(r'\?'), cParser.TERMINAL_QUESTIONMARK, token ),
+      ( re.compile(r':'), cParser.TERMINAL_COLON, token ),
+      ( re.compile(r';'), cParser.TERMINAL_SEMI, token ),
+      ( re.compile(r'\.\.\.'), cParser.TERMINAL_ELIPSIS, token ),
+      ( re.compile(r'=(?!=)'), cParser.TERMINAL_ASSIGN, token ),
+      ( re.compile(r'\*='), cParser.TERMINAL_MULEQ, token ),
+      ( re.compile(r'/='), cParser.TERMINAL_DIVEQ, token ),
+      ( re.compile(r'%='), cParser.TERMINAL_MODEQ, token ),
+      ( re.compile(r'\+='), cParser.TERMINAL_ADDEQ, token ),
+      ( re.compile(r'-='), cParser.TERMINAL_SUBEQ, token ),
+      ( re.compile(r'<<='), cParser.TERMINAL_LSHIFTEQ, token ),
+      ( re.compile(r'>>='), cParser.TERMINAL_RSHIFTEQ, token ),
+      ( re.compile(r'&='), cParser.TERMINAL_BITANDEQ, token ),
+      ( re.compile(r'\^='), cParser.TERMINAL_BITXOREQ, token ),
+      ( re.compile(r'\|='), cParser.TERMINAL_BITOREQ, token ),
+      ( re.compile(r','), cParser.TERMINAL_COMMA, token ),
+      ( re.compile(r'##'), cParser.TERMINAL_POUNDPOUND, token ),
+      ( re.compile(r'#(?!#)'), cParser.TERMINAL_POUND, token ),
 
       # Constants, Literals
-      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?'), 'DECIMAL_FLOATING_CONSTANT', None, None ),
-      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None, None ),
-      ( re.compile(r'([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?'), 'INTEGER_CONSTANT', None, None ),
-      ( re.compile(r'0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?'), 'HEXADECIMAL_FLOATING_CONSTANT', None, None ),
-      ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
+      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?'), cParser.TERMINAL_DECIMAL_FLOATING_CONSTANT, token ),
+      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), cParser.TERMINAL_STRING_LITERAL, token ),
+      ( re.compile(r'([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?'), cParser.TERMINAL_INTEGER_CONSTANT, token ),
+      ( re.compile(r'0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?'), cParser.TERMINAL_HEXADECIMAL_FLOATING_CONSTANT, token ),
+      ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), cParser.TERMINAL_CHARACTER_CONSTANT, token ),
 
       # Whitespace
-      ( re.compile(r'\s+', 0), None, None, None )
+      ( re.compile(r'\s+', 0), None, None )
   ]
-  def __init__(self, sourceCode = None, terminals = None, logger = None):
-    super().__init__(sourceCode)
-    self.setTerminals(terminals)
-    self.setRegex(self.cRegex)
-    self.setLogger(logger)
 
-  def setSourceCode(self, sourceCode):
-    super().setSourceCode(sourceCode)
-    self.setString(re.sub(r'\\\n', r'\n', self.getString()))
+  def __init__(self, sourceCode):
+    super().__init__(sourceCode, self.cRegex)
+    self.braceLevel = 0
   
   def __next__(self):
     token = super().__next__()
     return cToken(token.id, self.resource, token.terminal_str, token.source_string, token.lineno, token.colno)
-
-class Factory:
-  def create( self, sourceCode = None, logger = None):
-    cP = cParser()
-    cL_TokenMap = { terminalString.upper(): cP.terminal(terminalString) for terminalString in cP.terminalNames() }
-    cL = cLexer(sourceCode=sourceCode, terminals=cL_TokenMap, logger=logger)
-    return cL
-  

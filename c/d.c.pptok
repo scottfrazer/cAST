@@ -10,7 +10,7 @@ pp_number,5,11,2,c/d.c
 separator,5,1,,c/d.c
 csource,6,1,,c/d.c
 separator,6,1,,c/d.c
-include,7,9,#include,c/d.c
+include,7,1,#include,c/d.c
 header_local,7,10,"test.h",c/d.c
 separator,7,1,,c/d.c
 csource,8,1,int main()\n{\n    printf("%d %d %d\n", A, B);\n    return 0;\n}\n,c/d.c

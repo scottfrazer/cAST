@@ -7,119 +7,124 @@ from cast.Logger import Factory as LoggerFactory
 
 moduleLogger = LoggerFactory().getModuleLogger(__name__)
 
-def parseDefine( match, lexer ):
+def parseDefine( match, lineno, colno, terminalId, lexer ):
   identifier_regex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
   if re.match(r'[ \t]+%s\(' % (identifier_regex), lexer.string):
-    token = ppToken(lexer.terminals['DEFINE_FUNCTION'], lexer.resource, 'DEFINE_FUNCTION', match, lexer.lineno, lexer.colno - len(match))
+    terminalId = ppParser.TERMINAL_DEFINE_FUNCTION
   else:
-    # TODO: why bother going through the lexer to get the token identifier?
-    token = ppToken(lexer.terminals['DEFINE'], lexer.resource, 'DEFINE', match, lexer.lineno, lexer.colno - len(match))
-  return ([token], 0)
+    terminalId = ppParser.TERMINAL_DEFINE
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], match, lineno, colno))
 
-def parseDefined( match, lexer ):
-  token = ppToken(lexer.terminals['DEFINED'], lexer.resource, 'DEFINED', 'defined', lexer.lineno, lexer.colno)
-  separator = ppToken(lexer.terminals['DEFINED_SEPARATOR'], lexer.resource, 'DEFINED_SEPARATOR', '', lexer.lineno, lexer.colno)
-  return ([token, separator], 0)
+def parseDefined( match, lineno, colno, terminalId, lexer ):
+  separatorId = ppParser.TERMINAL_DEFINED_SEPARATOR
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], match, lineno, colno))
+  lexer.addToken(ppToken(separatorId, lexer.resource, ppParser.terminal_str[separatorId], match, lineno, colno))
 
-def parseInclude( match, lexer ):
-  header_global = re.compile(r'[<][^\n>]+[>]')
-  header_local = re.compile(r'["][^\n"]+["]')
-  advance = len(re.compile(r'[\t ]*').match(lexer.string).group(0))
-  lexer.string = lexer.string[advance:]
-  tokens = [ppToken(lexer.terminals['INCLUDE'], lexer.resource, 'INCLUDE', match, lexer.lineno, lexer.colno)]
-  for (regex, token) in [(header_global, 'HEADER_GLOBAL'), (header_local, 'HEADER_LOCAL')]:
+def parseInclude( match, lineno, colno, terminalId, lexer ):
+  headerGlobal = re.compile(r'[<][^\n>]+[>]')
+  headerLocal = re.compile(r'["][^\n"]+["]')
+  leadingWhitespace = re.compile(r'[\t ]*')
+
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], match, lineno, colno))
+  lexer.advance( leadingWhitespace.match(lexer.string).group(0) )
+
+  regexes = {
+    ppParser.TERMINAL_HEADER_GLOBAL: headerGlobal,
+    ppParser.TERMINAL_HEADER_LOCAL: headerLocal
+  }
+
+  for terminalId, regex in regexes.items():
     rmatch = regex.match(lexer.string)
     if rmatch:
       rstring = rmatch.group(0)
-      tokens.append( ppToken(lexer.terminals[token], lexer.resource, token, rstring, lexer.lineno, lexer.colno + advance) )
-      advance += len(rstring)
+      token = ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], rstring, lexer.lineno, lexer.colno)
+      lexer.addToken(token)
+      lexer.advance(rstring)
       break
-  return (tokens, advance)
+
+def token(string, lineno, colno, terminalId, lexer):
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], string, lineno, colno))
 
 class ppLexer(Lexer):
   regex = [
-    ( re.compile(r'^[ \t]*#[ \t]*include_next(?![a-zA-Z])'), None, parseInclude, None ), # GCC extension
-    ( re.compile(r'^[ \t]*#[ \t]*include(?![a-zA-Z])'), None, parseInclude, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*define(?![a-zA-Z])'), None, parseDefine, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*ifdef(?![a-zA-Z])'), 'IFDEF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*ifndef(?![a-zA-Z])'), 'IFNDEF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*if(?![a-zA-Z])'), 'IF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*else(?![a-zA-Z])'), 'ELSE', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*elif(?![a-zA-Z])'), 'ELIF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*pragma(?![a-zA-Z])'), 'PRAGMA', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*error(?![a-zA-Z])'), 'ERROR', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*warning(?![a-zA-Z])'), 'WARNING', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*line(?![a-zA-Z])'), 'LINE', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*undef(?![a-zA-Z])'), 'UNDEF', None, None ),
-    ( re.compile(r'^[ \t]*#[ \t]*endif\s?.*'), 'ENDIF', None, None ),
-    ( re.compile(r'defined'), None, parseDefined, None ),
-    ( re.compile(r'\.\.\.'), 'ELIPSIS', None, None ),
-    ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), 'PP_NUMBER', None, None ),
-    ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), 'IDENTIFIER', None, None ),
-    ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), 'CHARACTER_CONSTANT', None, None ),
-    ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), 'STRING_LITERAL', None, None ),
-    ( re.compile(r'\['), 'LSQUARE', None, None ),
-    ( re.compile(r'\]'), 'RSQUARE', None, None ),
-    ( re.compile(r'\('), 'LPAREN', None, None ),
-    ( re.compile(r'\)'), 'RPAREN', None, None ),
-    ( re.compile(r'\{'), 'LBRACE', None, None ),
-    ( re.compile(r'\}'), 'RBRACE', None, None ),
-    ( re.compile(r'\.'), 'DOT', None, None ),
-    ( re.compile(r'->'), 'ARROW', None, None ),
-    ( re.compile(r'\+\+'), 'INCR', None, None ),
-    ( re.compile(r'--'), 'DECR', None, None ),
-    ( re.compile(r'\*='), 'MULEQ', None, None ),
-    ( re.compile(r'\+='), 'ADDEQ', None, None ),
-    ( re.compile(r'-='), 'SUBEQ', None, None ),
-    ( re.compile(r'%='), 'MODEQ', None, None ),
-    ( re.compile(r'&='), 'BITANDEQ', None, None ),
-    ( re.compile(r'\|='), 'BITOREQ', None, None ),
-    ( re.compile(r'\^='), 'BITXOREQ', None, None ),
-    ( re.compile(r'<<='), 'LSHIFTEQ', None, None ),
-    ( re.compile(r'>>='), 'RSHIFTEQ', None, None ),
-    ( re.compile(r'&(?!&)'), 'BITAND', None, None ),
-    ( re.compile(r'\*(?!=)'), 'MUL', None, None ),
-    ( re.compile(r'\+(?!=)'), 'ADD', None, None ),
-    ( re.compile(r'-(?!=)'), 'SUB', None, None ),
-    ( re.compile(r'!(?!=)'), 'EXCLAMATION_POINT', None, None ),
-    ( re.compile(r'%(?!=)'), 'MOD', None, None ),
-    ( re.compile(r'<<(?!=)'), 'LSHIFT', None, None ),
-    ( re.compile(r'>>(?!=)'), 'RSHIFT', None, None ),
-    ( re.compile(r'<(?!=)'), 'LT', None, None ),
-    ( re.compile(r'>(?!=)'), 'GT', None, None ),
-    ( re.compile(r'<='), 'LTEQ', None, None ),
-    ( re.compile(r'>='), 'GTEQ', None, None ),
-    ( re.compile(r'=='), 'EQ', None, None ),
-    ( re.compile(r'!='), 'NEQ', None, None ),
-    ( re.compile(r'\^(?!=)'), 'BITXOR', None, None ),
-    ( re.compile(r'\|(?!\|)'), 'BITOR', None, None ),
-    ( re.compile(r'~'), 'BITNOT', None, None ),
-    ( re.compile(r'&&'), 'AND', None, None ),
-    ( re.compile(r'\|\|'), 'OR', None, None ),
-    ( re.compile(r'='), 'ASSIGN', None, None ),
-    ( re.compile(r'\?'), 'QUESTIONMARK', None, None ),
-    ( re.compile(r':'), 'COLON', None, None ),
-    ( re.compile(r';'), 'SEMI', None, None ),
-    ( re.compile(r','), 'COMMA', None, None ),
-    ( re.compile(r'##'), 'POUNDPOUND', None, None ),
-    ( re.compile(r'#(?!#)'), 'POUND', None, None ),
-    ( re.compile(r'[ \t]+', 0), None, None, None ),
-    ( re.compile(r'/\*.*?\*/', re.S), None, None, None ),
-    ( re.compile(r'//.*', 0), None, None, None ),
-    ( re.compile(r'/='), 'DIVEQ', None, None ),
-    ( re.compile(r'/'), 'DIV', None, None )
+    ( re.compile(r'^[ \t]*#[ \t]*include_next(?![a-zA-Z])'), ppParser.TERMINAL_INCLUDE, parseInclude ),
+    ( re.compile(r'^[ \t]*#[ \t]*include(?![a-zA-Z])'), ppParser.TERMINAL_INCLUDE, parseInclude ),
+    ( re.compile(r'^[ \t]*#[ \t]*define(?![a-zA-Z])'), ppParser.TERMINAL_DEFINE, parseDefine ),
+    ( re.compile(r'^[ \t]*#[ \t]*ifdef(?![a-zA-Z])'), ppParser.TERMINAL_IFDEF, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*ifndef(?![a-zA-Z])'), ppParser.TERMINAL_IFNDEF, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*if(?![a-zA-Z])'), ppParser.TERMINAL_IF, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*else(?![a-zA-Z])'), ppParser.TERMINAL_ELSE, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*elif(?![a-zA-Z])'), ppParser.TERMINAL_ELIF, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*pragma(?![a-zA-Z])'), ppParser.TERMINAL_PRAGMA, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*error(?![a-zA-Z])'), ppParser.TERMINAL_ERROR, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*warning(?![a-zA-Z])'), ppParser.TERMINAL_WARNING, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*line(?![a-zA-Z])'), ppParser.TERMINAL_LINE, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*undef(?![a-zA-Z])'), ppParser.TERMINAL_UNDEF, token ),
+    ( re.compile(r'^[ \t]*#[ \t]*endif\s?.*'), ppParser.TERMINAL_ENDIF, token ),
+    ( re.compile(r'defined'), ppParser.TERMINAL_DEFINED, parseDefined ),
+    ( re.compile(r'\.\.\.'), ppParser.TERMINAL_ELIPSIS, token ),
+    ( re.compile(r'[\.]?[0-9]([0-9]|[a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?|[eEpP][-+]|\.)*'), ppParser.TERMINAL_PP_NUMBER, token ),
+    ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), ppParser.TERMINAL_IDENTIFIER, token ),
+    ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), ppParser.TERMINAL_CHARACTER_CONSTANT, token ),
+    ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), ppParser.TERMINAL_STRING_LITERAL, token ),
+    ( re.compile(r'\['), ppParser.TERMINAL_LSQUARE, token ),
+    ( re.compile(r'\]'), ppParser.TERMINAL_RSQUARE, token ),
+    ( re.compile(r'\('), ppParser.TERMINAL_LPAREN, token ),
+    ( re.compile(r'\)'), ppParser.TERMINAL_RPAREN, token ),
+    ( re.compile(r'\{'), ppParser.TERMINAL_LBRACE, token ),
+    ( re.compile(r'\}'), ppParser.TERMINAL_RBRACE, token ),
+    ( re.compile(r'\.'), ppParser.TERMINAL_DOT, token ),
+    ( re.compile(r'->'), ppParser.TERMINAL_ARROW, token ),
+    ( re.compile(r'\+\+'), ppParser.TERMINAL_INCR, token ),
+    ( re.compile(r'--'), ppParser.TERMINAL_DECR, token ),
+    ( re.compile(r'\*='), ppParser.TERMINAL_MULEQ, token ),
+    ( re.compile(r'\+='), ppParser.TERMINAL_ADDEQ, token ),
+    ( re.compile(r'-='), ppParser.TERMINAL_SUBEQ, token ),
+    ( re.compile(r'%='), ppParser.TERMINAL_MODEQ, token ),
+    ( re.compile(r'&='), ppParser.TERMINAL_BITANDEQ, token ),
+    ( re.compile(r'\|='), ppParser.TERMINAL_BITOREQ, token ),
+    ( re.compile(r'\^='), ppParser.TERMINAL_BITXOREQ, token ),
+    ( re.compile(r'<<='), ppParser.TERMINAL_LSHIFTEQ, token ),
+    ( re.compile(r'>>='), ppParser.TERMINAL_RSHIFTEQ, token ),
+    ( re.compile(r'&(?!&)'), ppParser.TERMINAL_BITAND, token ),
+    ( re.compile(r'\*(?!=)'), ppParser.TERMINAL_MUL, token ),
+    ( re.compile(r'\+(?!=)'), ppParser.TERMINAL_ADD, token ),
+    ( re.compile(r'-(?!=)'), ppParser.TERMINAL_SUB, token ),
+    ( re.compile(r'!(?!=)'), ppParser.TERMINAL_EXCLAMATION_POINT, token ),
+    ( re.compile(r'%(?!=)'), ppParser.TERMINAL_MOD, token ),
+    ( re.compile(r'<<(?!=)'), ppParser.TERMINAL_LSHIFT, token ),
+    ( re.compile(r'>>(?!=)'), ppParser.TERMINAL_RSHIFT, token ),
+    ( re.compile(r'<(?!=)'), ppParser.TERMINAL_LT, token ),
+    ( re.compile(r'>(?!=)'), ppParser.TERMINAL_GT, token ),
+    ( re.compile(r'<='), ppParser.TERMINAL_LTEQ, token ),
+    ( re.compile(r'>='), ppParser.TERMINAL_GTEQ, token ),
+    ( re.compile(r'=='), ppParser.TERMINAL_EQ, token ),
+    ( re.compile(r'!='), ppParser.TERMINAL_NEQ, token ),
+    ( re.compile(r'\^(?!=)'), ppParser.TERMINAL_BITXOR, token ),
+    ( re.compile(r'\|(?!\|)'), ppParser.TERMINAL_BITOR, token ),
+    ( re.compile(r'~'), ppParser.TERMINAL_BITNOT, token ),
+    ( re.compile(r'&&'), ppParser.TERMINAL_AND, token ),
+    ( re.compile(r'\|\|'), ppParser.TERMINAL_OR, token ),
+    ( re.compile(r'='), ppParser.TERMINAL_ASSIGN, token ),
+    ( re.compile(r'\?'), ppParser.TERMINAL_QUESTIONMARK, token ),
+    ( re.compile(r':'), ppParser.TERMINAL_COLON, token ),
+    ( re.compile(r';'), ppParser.TERMINAL_SEMI, token ),
+    ( re.compile(r','), ppParser.TERMINAL_COMMA, token ),
+    ( re.compile(r'##'), ppParser.TERMINAL_POUNDPOUND, token ),
+    ( re.compile(r'#(?!#)'), ppParser.TERMINAL_POUND, token ),
+    ( re.compile(r'[ \t]+', 0), None, None ),
+    ( re.compile(r'/\*.*?\*/', re.S), None, None ),
+    ( re.compile(r'//.*', 0), None, None ),
+    ( re.compile(r'/='), ppParser.TERMINAL_DIVEQ, token ),
+    ( re.compile(r'/'), ppParser.TERMINAL_DIV, token )
   ]
-  def __init__(self, patternMatchingLexer, sourceCode = None, terminals = None):
+  def __init__(self, sourceCode):
     self.__dict__.update(locals())
-    self.patternMatchingLexer.setRegex(self.regex)
-    self.patternMatchingLexer.setTerminals(terminals)
-    self.logger = LoggerFactory().getClassLogger(__name__, self.__class__.__name__)
-    self.tokenBuffer = []
-  
-  def setSourceCode(self, sourceCode):
-    super(ppLexer, self).setSourceCode(sourceCode)
+    super().__init__(sourceCode)
     self.cST_lines = self.string.split('\n')
     self.lineno  -= 1
+    self.logger = LoggerFactory().getClassLogger(__name__, self.__class__.__name__)
+    self.tokenBuffer = []
   
   def setLine(self, lineno):
     self.lineno = lineno
@@ -128,8 +133,11 @@ class ppLexer(Lexer):
     self.colno = colno
   
   def matchString(self, string):
-    token = self.patternMatchingLexer.matchString(string)
-    return ppToken(token.id, self.resource, token.terminal_str, token.source_string, token.lineno, token.colno)
+    for (regex, terminalId, function) in self.regex:
+      match = regex.match(string)
+      if match:
+        return ppToken(terminalId, self.resource, ppParser.terminal_str[terminalId], match.group(0), 0, 0)
+    return None
   
   def _advance(self, lines):
     self.cST_lines = self.cST_lines[lines:]
@@ -193,8 +201,8 @@ class ppLexer(Lexer):
         if len(line) and line[-1] == '\\':
           line = line[:-1]
           continuation = True
-        self.patternMatchingLexer.setSourceCode( SourceCodeString(self.resource, line, self.lineno, 1) )
-        for cPPT in self.patternMatchingLexer:
+        cPPL_PatternMatcher = PatternMatchingLexer( SourceCodeString(self.resource, line, self.lineno, 1), self.regex )
+        for cPPT in cPPL_PatternMatcher:
           self._addToken(ppToken(cPPT.id, self.resource, cPPT.terminal_str, cPPT.source_string, cPPT.lineno, cPPT.colno))
           if cPPT.terminal_str.upper() in ['INCLUDE', 'DEFINE', 'DEFINE_FUNCTION', 'PRAGMA', 'ERROR', 'WARNING', 'LINE', 'ENDIF', 'UNDEF']:
             emit_separator = True
@@ -202,7 +210,8 @@ class ppLexer(Lexer):
           lines += 1
           continue
         if emit_separator:
-          self._addToken( ppToken(self.terminals['SEPARATOR'], self.resource, 'SEPARATOR', '', self.lineno, 1) )
+          terminalId = ppParser.TERMINAL_SEPARATOR
+          self._addToken( ppToken(terminalId, self.resource, ppParser.terminal_str[terminalId], '', self.lineno, 1) )
         self._advance( lines + 1 )
         if self._hasToken():
           return self._popToken()
@@ -220,8 +229,10 @@ class ppLexer(Lexer):
 
     self._advance(lines)
     if emit_csource:
-      token = ppToken(self.terminals['CSOURCE'], self.resource, 'CSOURCE', '\n'.join(buf), buf_line, 1)
-      self._addToken( ppToken(self.terminals['SEPARATOR'], self.resource, 'SEPARATOR', '', self.lineno, 1) )
+      csourceId = ppParser.TERMINAL_CSOURCE
+      separatorId = ppParser.TERMINAL_SEPARATOR
+      token = ppToken(csourceId, self.resource, ppParser.terminal_str[csourceId], '\n'.join(buf), buf_line, 1)
+      self._addToken( ppToken(separatorId, self.resource, ppParser.terminal_str[separatorId], '', self.lineno, 1) )
       return token
     raise StopIteration()
   
@@ -231,11 +242,3 @@ class ppLexer(Lexer):
     if len(stripped_line) and stripped_line[0] == '#':
       return True
     return False
-
-class Factory:
-  def create( self, sourceCode = None ):
-    cPPP = ppParser()
-    cPPL_TokenMap = { terminalString.upper(): cPPP.terminal(terminalString) for terminalString in cPPP.terminalNames() }
-    cPPL_PatternMatchingLexer = PatternMatchingLexer(sourceCode, terminals=cPPL_TokenMap)
-    cPPL = ppLexer(cPPL_PatternMatchingLexer, sourceCode=sourceCode, terminals=cPPL_TokenMap)
-    return cPPL

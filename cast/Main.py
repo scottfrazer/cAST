@@ -2,8 +2,8 @@
 
 from types import *
 import sys, os, argparse, subprocess, re, logging
+from cast.ppLexer import ppLexer
 from cast.PreProcessor import Factory as PreProcessorFactory
-from cast.ppLexer import Factory as ppLexerFactory
 from cast.ppParser import Parser as ppParser
 from cast.Ast import AstPrettyPrintable
 from cast.SourceCode import SourceCode
@@ -85,10 +85,7 @@ def Cli():
       sys.exit(-1)
 
   if cli.command == 'pptok':
-    cPPLFactory = ppLexerFactory()
-    cPPL = cPPLFactory.create()
-    cPPL.setSourceCode(cSourceCode)
-    for token in cPPL:
+    for token in ppLexer(cSourceCode):
       print(token.toString(cli.format))
 
   if cli.command == 'ppast':
@@ -119,7 +116,7 @@ def Cli():
     try:
       cT, symbols = cPP.process( cSourceCode )
       parser = cParser()
-      parsetree = parser.parse(cT, 'translation_unit')
+      parsetree = parser.parse(cT)
       ast = parsetree.toAst()
       print(AstPrettyPrintable(ast, cli.format))
     except Exception as e:
