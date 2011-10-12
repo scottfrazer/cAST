@@ -1,3 +1,4 @@
+function_definition_hint,3,1,,c/test.h
 int,3,1,int,c/test.h
 identifier,3,5,function,c/test.h
 lparen,3,13,(,c/test.h
@@ -14,6 +15,7 @@ add,3,38,+,c/test.h
 identifier,3,39,b,c/test.h
 semi,3,40,;,c/test.h
 rbrace,3,42,},c/test.h
+function_definition_hint,8,1,,c/d.c
 int,8,1,int,c/d.c
 identifier,8,5,main,c/d.c
 lparen,8,9,(,c/d.c

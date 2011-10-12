@@ -122,7 +122,7 @@ class ppLexer(Lexer):
     self.__dict__.update(locals())
     super().__init__(sourceCode)
     self.cST_lines = self.string.split('\n')
-    self.lineno  -= 1
+    self.lineno -= 1
     self.logger = LoggerFactory().getClassLogger(__name__, self.__class__.__name__)
     self.tokenBuffer = []
   

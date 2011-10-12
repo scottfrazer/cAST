@@ -4,7 +4,7 @@
     "rules": [
       "translation_unit := list(external_declaration)",
       "external_declaration := mlist(declaration_specifier, 1) + external_declaration_sub",
-      "external_declaration_sub := 'function_hint' + function_definition | 'declarator_hint' + init_declarator_list_opt + 'semi'",
+      "external_declaration_sub := 'function_definition_hint' + function_definition | 'declarator_hint' + init_declarator_list_opt + 'semi' | 'function_prototype_hint'",
       "function_definition := declarator + declaration_list_opt + compound_statement",
       "declaration_list_opt := list(declaration) | _empty",
       "declaration := mlist(declaration_specifier, 1) + init_declarator_list_opt + 'semi'",

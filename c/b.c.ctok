@@ -1,3 +1,4 @@
+function_definition_hint,3,1,,c/b.c
 int,3,1,int,c/b.c
 identifier,3,5,main,c/b.c
 lparen,3,9,(,c/b.c

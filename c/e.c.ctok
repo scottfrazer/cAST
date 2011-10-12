@@ -1,3 +1,4 @@
+function_definition_hint,6,1,,c/e.c
 int,6,1,int,c/e.c
 identifier,6,5,main,c/e.c
 lparen,6,9,(,c/e.c

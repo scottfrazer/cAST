@@ -1,8 +1,10 @@
+function_prototype_hint,3,1,,c/a.c
 int,3,1,int,c/a.c
 identifier,3,5,func,c/a.c
 lparen,3,9,(,c/a.c
 rparen,3,10,),c/a.c
 semi,3,11,;,c/a.c
+function_definition_hint,13,1,,c/a.c
 int,13,1,int,c/a.c
 identifier,13,5,add,c/a.c
 lparen,13,8,(,c/a.c
@@ -19,6 +21,7 @@ add,13,32,+,c/a.c
 identifier,13,33,y,c/a.c
 semi,13,34,;,c/a.c
 rbrace,13,35,},c/a.c
+function_definition_hint,18,1,,c/a.c
 int,18,1,int,c/a.c
 identifier,18,5,main,c/a.c
 lparen,18,9,(,c/a.c
@@ -47,6 +50,7 @@ lparen,23,11,(,c/a.c
 string_literal,23,12,"first\n",c/a.c
 rparen,23,21,),c/a.c
 semi,23,22,;,c/a.c
+declarator_hint,26,1,,c/a.c
 int,26,1,int,c/a.c
 identifier,26,5,a,c/a.c
 assign,26,7,=,c/a.c
