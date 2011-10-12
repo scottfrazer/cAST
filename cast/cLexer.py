@@ -47,7 +47,7 @@ def token(string, lineno, colno, terminalId, lexer):
   matchedToken = cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], string, lineno, colno)
   if not lexer.lock and lexer.braceLevel == 0 and terminalId in declaration_specifiers():
     queue = [matchedToken]
-    identFound = funcFound = hintId = False
+    identFound = funcFound = rparenFound = hintId = False
     lexer.lock = True
 
     # Note that as we iterate over lexer, the braceLevel will be changing
@@ -59,9 +59,13 @@ def token(string, lineno, colno, terminalId, lexer):
         if token.id == cParser.TERMINAL_LBRACE:
           hintId = cParser.TERMINAL_FUNCTION_DEFINITION_HINT
           break
-        if token.id == cParser.TERMINAL_SEMI:
+        if token.id == cParser.TERMINAL_RPAREN:
+          rparenFound = True
+          continue
+        if rparenFound and token.id == cParser.TERMINAL_SEMI:
           hintId = cParser.TERMINAL_FUNCTION_PROTOTYPE_HINT
           break
+        rparenFound = False
         continue
       if identFound and token.id == cParser.TERMINAL_LPAREN:
         funcFound = True
