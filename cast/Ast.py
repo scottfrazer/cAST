@@ -1,4 +1,5 @@
-from cast.ppParser import Ast
+from cast.ppParser import Ast as ppAst
+from cast.cParser import Ast as cAst
 from cast.Token import Token
 
 class AstPrettyPrintable:
@@ -10,7 +11,7 @@ class AstPrettyPrintable:
     return self._prettyPrint(self.ast, 0)
   def _prettyPrint(self, ast, indent = 0):
     indentStr = ''.join([' ' for x in range(indent)])
-    if isinstance(ast, Ast):
+    if isinstance(ast, ppAst) or isinstance(ast, cAst):
       string = '%s(%s:\n' % (indentStr, ast.name)
       string += ',\n'.join([ \
         '%s  %s=%s' % (indentStr, name, self._prettyPrint(value, indent + 2).lstrip()) for name, value in ast.attributes.items() \

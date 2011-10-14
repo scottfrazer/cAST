@@ -45,7 +45,12 @@ def declaration_specifiers():
 
 def token(string, lineno, colno, terminalId, lexer):
   matchedToken = cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], string, lineno, colno)
-  if not lexer.lock and lexer.braceLevel == 0 and terminalId in declaration_specifiers():
+
+  if lexer.lock:
+    lexer.addToken(matchedToken)
+    return
+
+  if lexer.braceLevel == 0 and terminalId in declaration_specifiers():
     queue = [matchedToken]
     identFound = funcFound = rparenFound = hintId = False
     lexer.lock = True
@@ -163,7 +168,7 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'\+\+'), cParser.TERMINAL_INCR, token ),
       ( re.compile(r'--'), cParser.TERMINAL_DECR, token ),
       ( re.compile(r'&(?!&)'), cParser.TERMINAL_BITAND, token ),
-      ( re.compile(r'\*(?!=)'), cParser.TERMINAL_MUL, token ),
+      ( re.compile(r'\*(?!=)'), cParser.TERMINAL_ASTERISK, token ),
       ( re.compile(r'\+(?!=)'), cParser.TERMINAL_ADD, token ),
       ( re.compile(r'-(?!=)'), cParser.TERMINAL_SUB, token ),
       ( re.compile(r'~'), cParser.TERMINAL_TILDE, token ),

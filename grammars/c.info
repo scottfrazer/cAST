@@ -213,7 +213,7 @@ A.2.2 Declarations
 6.7.5 direct-declarator := '(' + declarator + ')'
 6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + assignment-expression-opt + ']'
 6.7.5 direct-declarator := direct-declarator + '[' + type-qualifier-list-opt + '*' + ']'
-35.7.5 direct-declarator := direct-declarator + '[' + list(type-qualifier) + 'static' + assignment-expression + ']'
+6.7.5 direct-declarator := direct-declarator + '[' + list(type-qualifier) + 'static' + assignment-expression + ']'
 6.7.5 direct-declarator := direct-declarator + '[' + 'static' + type-qualifier-list-opt + assignment-expression + ']'
 6.7.5 direct-declarator := direct-declarator + '(' + parameter-type-list + ')'
 6.7.5 direct-declarator := direct-declarator + '(' + identifier-list-opt + ')'
