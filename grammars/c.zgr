@@ -3,10 +3,11 @@
     "start": "translation_unit",
     "rules": [
       "translation_unit := list(external_declaration) -> TranslationUnit( external_declarations=$0 )",
-      "external_declaration :=  external_function | external_declarator_list | external_prototype",
-      "external_function := 'function_definition_hint' + mlist(declaration_specifier, 1) + declarator + optional(declaration_list) + compound_statement -> FunctionDefinition( declaration_specifiers=$1, signature=$2, declaration_list=$3, body=$4)",
-      "external_declarator_list := 'declarator_hint' + mlist(declaration_specifier, 1) + optional(init_declarator_list) + 'semi' ->  DeclaratorList( declaration_specifiers=$1, declarators=$2)",
-      "external_prototype := 'function_prototype_hint' + mlist(declaration_specifier, 1) + declarator + optional(declaration_list) + compound_statement",
+      "external_declaration :=  'external_declaration_hint' + mlist(declaration_specifier, 1) + list(external_declaration_sub, 'comma') -> ExternalDeclaration( declaration_specifiers=$1, declarations=$2)",
+      "external_declaration_sub := external_function | external_declarator_list | external_prototype",
+      "external_function := 'function_definition_hint' + declarator + optional(declaration_list) + compound_statement -> FunctionDefinition( declaration_specifiers=$1, signature=$2, declaration_list=$3, body=$4)",
+      "external_declarator_list := 'declarator_hint' + optional(init_declarator_list) + 'semi' ->  DeclaratorList( init_declarator_list=$1)",
+      "external_prototype := 'function_prototype_hint' + declarator + optional(declaration_list) -> FunctionPrototype(declarator=$1, declaration_list=$2)",
       "declaration_list := list(declaration)",
       "declaration := mlist(declaration_specifier, 1) + optional(init_declarator_list) + 'semi' -> Declaration( declaration_specifiers=$0, init_declarators=$1 )",
       "declaration_specifier := storage_class_specifier | type_specifier | type_qualifier | function_specifier",
@@ -189,9 +190,9 @@
       "nonterminal": "_direct_declarator",
       "rules": [
         "_direct_declarator := {'identifier'}",
-        "_direct_declarator := {'lparen' + declarator + 'rparen' -> $1}",
+        "_direct_declarator := {'lparen' + declarator + 'rparen'} -> $1",
         "_direct_declarator := {_direct_declarator} + {'lsquare' + direct_declarator_expr + 'rsquare'} -> Array(name=$0, size=$2)",
-        "_direct_declarator := {_direct_declarator} + {'lparen' + direct_declarator_parameter_list + 'rparen'} -> FunctionSignature(name=$0, params=$2)"
+        "_direct_declarator := {_direct_declarator} + {'lparen' + direct_declarator_parameter_list + 'rparen'} -> FunctionSignature(declarator=$0, params=$2)"
       ],
       "binding_power": [
           {"associativity": "left", "terminals": ["lsquare", "lparen"]}

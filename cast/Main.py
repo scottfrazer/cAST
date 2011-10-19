@@ -5,7 +5,7 @@ import sys, os, argparse, subprocess, re, logging
 from cast.ppLexer import ppLexer
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.ppParser import Parser as ppParser
-from cast.Ast import AstPrettyPrintable
+from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.SourceCode import SourceCode
 from cast.Logger import Factory as LoggerFactory
 
@@ -28,7 +28,8 @@ def Cli():
   commands['pptok'] = subparsers.add_parser('pptok', help='Tokenize C preprocessor.')
   commands['ppast'] = subparsers.add_parser('ppast', help='Parse C preprocessor.')
   commands['ctok'] = subparsers.add_parser('ctok', help='Preprocess and tokenize C code.')
-  commands['ast'] = subparsers.add_parser('ast', help='Parse C code.')
+  commands['cparse'] = subparsers.add_parser('cparse', help='Parse C code')
+  commands['ast'] = subparsers.add_parser('ast', help='Parse C code and transform parse tree into an AST')
 
   parser.add_argument('source_file',
               metavar = 'SOURCE_FILE',
@@ -107,6 +108,16 @@ def Cli():
       cT, symbols = cPP.process( cSourceCode )
       for token in cT:
         print(token.toString(cli.format))
+    except Exception as e:
+      print(e, '\n', e.tracer)
+      sys.exit(-1)
+
+  if cli.command == 'cparse':
+    from cast.cParser import Parser as cParser
+    try:
+      cT, symbols = cPP.process( cSourceCode )
+      parsetree = cParser().parse(cT)
+      print(ParseTreePrettyPrintable(parsetree, cli.format))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
