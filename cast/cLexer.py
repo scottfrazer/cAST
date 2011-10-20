@@ -28,6 +28,21 @@ def parseRbrace( string, lineno, colno, terminalId, lexer ):
   lexer.braceLevel -= 1
   token( string, lineno, colno, terminalId, lexer )
 
+def parseLparenCast( string, lineno, colno, terminalId, lexer ):
+  lexer.parenLevel += 1
+  if lexer.braceLevel == 0:
+    token( string, lineno, colno, cParser.TERMINAL_LPAREN, lexer )
+  else:
+    token( string, lineno, colno, cParser.TERMINAL_LPAREN_CAST, lexer )
+
+def parseLparen( string, lineno, colno, terminalId, lexer ):
+  lexer.parenLevel += 1
+  token( string, lineno, colno, terminalId, lexer )
+
+def parseRparen( string, lineno, colno, terminalId, lexer ):
+  lexer.parenLevel -= 1
+  token( string, lineno, colno, terminalId, lexer )
+
 decls = None
 def declaration_specifiers():
   global decls
@@ -76,23 +91,23 @@ def token(string, lineno, colno, terminalId, lexer):
           if token.id == cParser.TERMINAL_RPAREN:
             rparenFound = True
             continue
-          if rparenFound and token.id in [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA]:
+          if rparenFound and token.id in [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA] and lexer.parenLevel == 0:
             hintId = cParser.TERMINAL_FUNCTION_PROTOTYPE_HINT
             if token.id == cParser.TERMINAL_COMMA:
               keepGoing = True
             break
           rparenFound = False
           continue
-        if identFound and token.id == cParser.TERMINAL_LPAREN :
+        if identFound and token.id == cParser.TERMINAL_LPAREN:
           funcFound = True
           continue
-        if token.id == cParser.TERMINAL_IDENTIFIER and lexer.braceLevel == 0 :
+        if token.id == cParser.TERMINAL_IDENTIFIER and lexer.braceLevel == 0:
           identFound = True
           continue
         funcFound = False
         identFound = False
 
-        if token.id in [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA] and lexer.braceLevel == 0:
+        if token.id in [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA] and lexer.braceLevel == 0 and lexer.parenLevel == 0:
           hintId = cParser.TERMINAL_DECLARATOR_HINT
           if token.id == cParser.TERMINAL_COMMA:
             keepGoing = True
@@ -176,10 +191,10 @@ class cLexer(PatternMatchingLexer):
       # Punctuators
       ( re.compile(r'\['), cParser.TERMINAL_LSQUARE, token ),
       ( re.compile(r'\]'), cParser.TERMINAL_RSQUARE, token ),
-      ( re.compile(r'\((?=\s*' + 'void[\s]*\))'), cParser.TERMINAL_LPAREN, token ),
-      ( re.compile(r'\((?=\s*' + '(' +'|'.join(type_specifier) + ')[\*\s]*\))'), cParser.TERMINAL_LPAREN_CAST, token ),
-      ( re.compile(r'\('), cParser.TERMINAL_LPAREN, token ),
-      ( re.compile(r'\)'), cParser.TERMINAL_RPAREN, token ),
+      ( re.compile(r'\((?=\s*' + 'void[\s]*\))'), cParser.TERMINAL_LPAREN, parseLparen ),
+      ( re.compile(r'\((?=\s*' + '(' +'|'.join(type_specifier) + ')[\*\s]*\))'), cParser.TERMINAL_LPAREN_CAST, parseLparenCast ),
+      ( re.compile(r'\('), cParser.TERMINAL_LPAREN, parseLparen ),
+      ( re.compile(r'\)'), cParser.TERMINAL_RPAREN, parseRparen ),
       ( re.compile(r'\{'), cParser.TERMINAL_LBRACE, parseLbrace ),
       ( re.compile(r'\}'), cParser.TERMINAL_RBRACE, parseRbrace ),
       ( re.compile(r'\.\.\.'), cParser.TERMINAL_ELIPSIS, token ),
@@ -241,6 +256,7 @@ class cLexer(PatternMatchingLexer):
   def __init__(self, sourceCode):
     super().__init__(sourceCode, self.cRegex)
     self.braceLevel = 0
+    self.parenLevel = 0
     self.lock = False
   
   def __next__(self):
