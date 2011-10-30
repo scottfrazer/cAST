@@ -1,0 +1,27 @@
+(PPFile:
+  nodes=[
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          pp_number,
+          comma,
+          pp_number
+        ]
+      ),
+      ident=identifier
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          pp_number
+        ]
+      ),
+      ident=identifier
+    ),
+    csource,
+    (Include:
+      file=header_local
+    ),
+    csource
+  ]
+)

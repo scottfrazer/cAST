@@ -126,6 +126,7 @@ class cPreprocessorFunctionFactory:
       for node in nodes:
         node.lineno = lineno
         node.colno = colno
+
       return nodes
     
     def __str__(self):
@@ -142,6 +143,7 @@ class cPreprocessorFunctionFactory:
 class cPreprocessingEvaluator:
   def __init__(self, cPPP, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
     self.__dict__.update(locals())
+    self.cLexerContext = None
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
     self.cPPTtocT = {
       self.cPPP.TERMINAL_DEFINED : self.cP.TERMINAL_DEFINED ,
@@ -188,7 +190,7 @@ class cPreprocessingEvaluator:
       self.cPPP.TERMINAL_IDENTIFIER : self.cP.TERMINAL_IDENTIFIER ,
       self.cPPP.TERMINAL_GT : self.cP.TERMINAL_GT ,
       self.cPPP.TERMINAL_BITAND : self.cP.TERMINAL_BITAND ,
-      self.cPPP.TERMINAL_PP_NUMBER : self.cP.TERMINAL_PP_NUMBER ,
+      self.cPPP.TERMINAL_PP_NUMBER : self.cP.TERMINAL_INTEGER_CONSTANT ,
       self.cPPP.TERMINAL_LSHIFT : self.cP.TERMINAL_LSHIFT ,
       self.cPPP.TERMINAL_CHARACTER_CONSTANT : self.cP.TERMINAL_CHARACTER_CONSTANT ,
       self.cPPP.TERMINAL_POUNDPOUND : self.cP.TERMINAL_POUNDPOUND ,
@@ -268,7 +270,8 @@ class cPreprocessingEvaluator:
   def _tokenToCToken(self, token):
     if token.type == 'c':
       return token
-    return cToken( self.cPPTtocT[token.id], token.resource, token.terminal_str, token.source_string, token.lineno, token.colno )
+    newId = self.cPPTtocT[token.id]
+    return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno )
   
   def _eval( self, cPPAST ):
     rtokens = TokenList()
@@ -302,12 +305,16 @@ class cPreprocessingEvaluator:
       advance = 0
 
       sourceCode = SourceCodeString( cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
+
       cLex = cLexer(sourceCode)
+      if self.cLexerContext:
+        cLex.setContext(self.cLexerContext)
       cTokens = list(cLex)
+      self.cLexerContext = cLex.getContext()
       cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
+
       for token, lookahead in cLexerWithLookahead:
-        if token.terminal_str.lower() == 'identifier' and \
-           token.getString() in self.symbols:
+        if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
           replacement = self.symbols[token.getString()]
           if isinstance(replacement, self.cPFF.cPreprocessorFunction):
             if lookahead.getString() != '(':
@@ -335,6 +342,8 @@ class cPreprocessingEvaluator:
               new_token.colno = token.colno
               new_token.lineno = token.lineno
               new_token.fromPreprocessor = True
+              if new_token.id == ppParser.TERMINAL_PP_NUMBER:
+                new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
               tmp.append(new_token)
             tokens.extend(tmp)
             continue

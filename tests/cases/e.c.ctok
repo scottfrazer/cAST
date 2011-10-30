@@ -1,0 +1,22 @@
+external_declaration_hint,6,1,,e.c
+int,6,1,int,e.c
+function_definition_hint,6,1,,e.c
+identifier,6,5,main,e.c
+lparen,6,9,(,e.c
+rparen,6,10,),e.c
+lbrace,7,1,{,e.c
+identifier,8,5,printf,e.c
+lparen,8,11,(,e.c
+string_literal,8,12,"%d %d %d\n",e.c
+comma,8,24,,,e.c
+integer_constant,8,26,1,e.c
+comma,8,26,,,e.c
+integer_constant,8,26,2,e.c
+comma,8,26,,,e.c
+integer_constant,8,26,3,e.c
+rparen,8,27,),e.c
+semi,8,28,;,e.c
+return,9,5,return,e.c
+integer_constant,9,12,0,e.c
+semi,9,13,;,e.c
+rbrace,10,1,},e.c

@@ -20,7 +20,7 @@ class SourceCode:
     return '<SourceCode file=%s>' % (self.resource)
 
 class SourceCodeString:
-  def __init__(self, resource, string, line, column):
+  def __init__(self, resource, string, line=1, column=1):
     self.__dict__.update(locals())
 
   def getResource(self):

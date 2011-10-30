@@ -1,0 +1,2 @@
+csource,1,1,/* #define FOO(x) x+1\n#define BAR(y) y+2\n#define BAZ(z) FOO(BAR(z))\n*/\n\nint main()\n{\n	return 0;\n}\n,g.c
+separator,10,1,,g.c

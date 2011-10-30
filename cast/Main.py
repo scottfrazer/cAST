@@ -58,21 +58,27 @@ def Cli():
   logger = LoggerFactory().initialize(cli.debug)
   logger.debug('CLI Parameters: %s' % (cli))
 
-  if not os.path.isfile( cli.source_file[0] ):
+  if not os.path.isfile( cli.source_file[0] ) and \
+     not os.path.islink( cli.source_file[0] ):
     sys.stderr.write("Error: Source file does not exist\n")
     sys.exit(-1)
 
-  try:
-    cSourceFp = open(cli.source_file[0], encoding='utf-8')
-  except UnicodeDecodeError:
-    cSourceFp = open(cli.source_file[0], encoding='iso-8859-1').read()
+  if not len(cli.source_file) or not cli.source_file[0]:
+    cSourcePath = open('/dev/stdin')
+  else:
+    cSourcePath = cli.source_file[0]
 
-  cSourceCode = SourceCode(cli.source_file[0], cSourceFp)
+  try:
+    cSourceFp = open(cSourcePath, encoding='utf-8')
+  except UnicodeDecodeError:
+    cSourceFp = open(cSourcePath, encoding='iso-8859-1')
+
+  cSourceCode = SourceCode(cSourcePath, cSourceFp)
 
   target = subprocess.check_output(["gcc", "-dumpmachine"]).decode('ascii').strip()
   include_path_global = ['/usr/include', '/usr/local/include', 'usr/' + target + '/include']
   include_path_global.extend( list(filter(lambda x: x, cli.include_path.split(':'))) )
-  include_path_local = [os.path.dirname(os.path.abspath(cli.source_file[0]))]
+  include_path_local = [os.path.dirname(os.path.abspath(cSourcePath))]
 
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create( include_path_global, include_path_local )

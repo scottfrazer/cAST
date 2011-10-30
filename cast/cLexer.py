@@ -8,7 +8,7 @@ def parseTypedef( string, lineno, colno, terminalId, lexer ):
   ident = None
 
   typedefId = cParser.TERMINAL_TYPEDEF
-  token = cToken(typedefId, lexer.resource, cParser.terminal_str[typdefId], string, lexer.lineno, lexer.colno - len(match))
+  token = cToken(typedefId, lexer.resource, cParser.terminal_str[typedefId], string, lexer.lineno, lexer.colno - len(match))
   lexer.addToken(token)
   for token in lexer:
     lexer.addToken(token)
@@ -258,7 +258,15 @@ class cLexer(PatternMatchingLexer):
     self.braceLevel = 0
     self.parenLevel = 0
     self.lock = False
-  
+
   def __next__(self):
     token = super().__next__()
     return cToken(token.id, self.resource, token.terminal_str, token.source_string, token.lineno, token.colno)
+
+  def getContext(self):
+    return (self.braceLevel, self.parenLevel, self.lock)
+
+  def setContext(self, context):
+    self.braceLevel = context[0]
+    self.parenLevel = context[1]
+    self.lock = context[2]

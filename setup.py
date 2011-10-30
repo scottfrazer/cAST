@@ -14,7 +14,7 @@ setup(
     description=long_description,
     author='Scott Frazer',
     author_email='scott.d.frazer@gmail.com',
-    packages=['cast'],
+    packages=['cast', 'tests'],
     package_dir={'cast': 'cast'},
     entry_points={
       'console_scripts': [
