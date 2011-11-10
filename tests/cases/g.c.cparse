@@ -1,0 +1,57 @@
+(translation_unit:
+  (_gen0:
+    (external_declaration:
+      external_declaration_hint,
+      (_gen1:
+        (declaration_specifier:
+          (type_specifier:
+            int
+          )
+        ),
+        (_gen2: )
+      ),
+      (external_declaration_sub:
+        (external_function:
+          function_definition_hint,
+          (declarator:
+            (pointer_opt: ),
+            (_direct_declarator:
+              identifier,
+              lparen,
+              (direct_declarator_parameter_list: ),
+              rparen
+            )
+          ),
+          (_gen5: ),
+          (compound_statement:
+            lbrace,
+            (_gen32:
+              (block_item_list:
+                (_gen33:
+                  (block_item:
+                    (statement:
+                      (jump_statement:
+                        return,
+                        (expression_opt:
+                          (_expr:
+                            (constant:
+                              integer_constant
+                            )
+                          )
+                        ),
+                        semi
+                      )
+                    )
+                  ),
+                  (_gen33: )
+                )
+              )
+            ),
+            rbrace
+          )
+        )
+      )
+    ),
+    (_gen0: )
+  )
+)

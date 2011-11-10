@@ -22,14 +22,17 @@ separator,4,1,,c.c
 define,5,1,#define,c.c
 identifier,5,9,bar,c.c
 identifier,5,13,foo,c.c
-identifier,5,17,foo,c.c
-lparen,5,20,(,c.c
-pp_number,5,21,66,c.c
-comma,5,23,,,c.c
-pp_number,5,24,33,c.c
-rparen,5,26,),c.c
-identifier,5,28,foo,c.c
+sub,5,17,-,c.c
+identifier,5,19,foo,c.c
+lparen,5,22,(,c.c
+pp_number,5,23,66,c.c
+comma,5,25,,,c.c
+pp_number,5,26,33,c.c
+rparen,5,28,),c.c
+sub,5,30,-,c.c
 identifier,5,32,foo,c.c
+sub,5,36,-,c.c
+identifier,5,38,foo,c.c
 separator,5,1,,c.c
 csource,6,1,//          |---------c----------|,c.c
 separator,6,1,,c.c
@@ -62,5 +65,5 @@ lparen,9,31,(,c.c
 identifier,9,32,__VA_ARGS__,c.c
 rparen,9,43,),c.c
 separator,9,1,,c.c
-csource,10,1,// functions take ctokens as params, return ctokens.\n// replacement tokens are stored as ctokens.\n\nint main()\n{\n  printf("%d\n", 1000+7000);\n  printf("%d\n", var(1,2,qux,4));\n  printf("%d\n", bar(7,8));\n  printf("%d\n", foo(4+1,7-1));\n  return 0;\n}\n,c.c
-separator,21,1,,c.c
+csource,10,1,// functions take ctokens as params, return ctokens.\n// replacement tokens are stored as ctokens.\n\nint main()\n{\n  int foo = 2;\n  printf("%d\n", 1000+7000);\n  printf("%d\n", var(1,2,qux,4));\n  printf("%d\n", bar(7,8));\n  printf("%d\n", foo(4+1,7-1));\n  return 0;\n}\n,c.c
+separator,22,1,,c.c
