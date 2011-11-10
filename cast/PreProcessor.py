@@ -186,7 +186,7 @@ class cPreprocessingEvaluator:
       self.cPPP.TERMINAL_MOD : self.cP.TERMINAL_MOD ,
       self.cPPP.TERMINAL_COLON : self.cP.TERMINAL_COLON ,
       self.cPPP.TERMINAL_QUESTIONMARK : self.cP.TERMINAL_QUESTIONMARK ,
-      self.cPPP.TERMINAL_MUL : self.cP.TERMINAL_MUL ,
+      self.cPPP.TERMINAL_MUL : self.cP.TERMINAL_ASTERISK ,
       self.cPPP.TERMINAL_IDENTIFIER : self.cP.TERMINAL_IDENTIFIER ,
       self.cPPP.TERMINAL_GT : self.cP.TERMINAL_GT ,
       self.cPPP.TERMINAL_BITAND : self.cP.TERMINAL_BITAND ,

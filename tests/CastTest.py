@@ -1,8 +1,9 @@
 import unittest, os, subprocess, re
 from cast.ppParser import Parser as ppParser
+from cast.cParser import Parser as cParser
 from cast.ppLexer import ppLexer
 from cast.cLexer import cLexer
-from cast.Ast import AstPrettyPrintable
+from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.SourceCode import SourceCode, SourceCodeString
 
@@ -61,6 +62,12 @@ def pptok(sourcecode):
   actualTokens = list(map(mapFunc, list(cPPL)))
   return '\n'.join(actualTokens)
 
+def ppparse(sourcecode):
+  cPPL = ppLexer(sourcecode)
+  parsetree = ppParser().parse(cPPL)
+  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
+  return prettyprint
+
 def ppast(sourcecode):
   cPPL = ppLexer(sourcecode)
   ast = ppParser().parse(cPPL).toAst()
@@ -73,11 +80,30 @@ def ctok(sourcecode):
   cT, symbols = cPP.process( sourcecode, dict() )
   actualTokens = list(map(mapFunc, list(cT)))
   return '\n'.join(actualTokens)
+
+def cparse(sourcecode):
+  cPPFactory = PreProcessorFactory()
+  cPP = cPPFactory.create([], [directory])
+  cT, symbols = cPP.process( sourcecode, dict() )
+  parsetree = cParser().parse(cT)
+  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
+  return prettyprint
+
+def cast(sourcecode):
+  cPPFactory = PreProcessorFactory()
+  cPP = cPPFactory.create([], [directory])
+  cT, symbols = cPP.process( sourcecode, dict() )
+  ast = cParser().parse(cT).toAst()
+  prettyprint = str(AstPrettyPrintable(ast, 'type'))
+  return prettyprint
   
 transformations = [
   ('pptok', pptok),
+  ('ppparse', ppparse),
   ('ppast', ppast),
-  ('ctok', ctok)
+  ('ctok', ctok),
+  #('cparse', cparse),
+  #('cast', cast)
 ]
 
 def load_tests(loader, tests, pattern):

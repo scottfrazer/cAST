@@ -3,6 +3,11 @@ from cast.Lexer import PatternMatchingLexer
 from cast.Token import cToken
 from cast.cParser import Parser as cParser
 
+def parseLabelIdentifier( string, lineno, colno, terminalId, lexer ):
+  hintId = ppParser.TERMINAL_LABEL_HINT
+  lexer.addToken(cToken(hintId, lexer.resource, cParser.terminal_str[hintId], match, lineno, colno))
+  lexer.addToken(cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], match, lineno, colno))
+
 def parseTypedef( string, lineno, colno, terminalId, lexer ):
   queue = []
   ident = None
@@ -128,6 +133,8 @@ def token(string, lineno, colno, terminalId, lexer):
   else:
     lexer.addToken(matchedToken)
 
+identifierRegex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
+
 class cLexer(PatternMatchingLexer):
   type_specifier = ['void', 'char', 'short', 'int', 'long', 'float', 'double', 'signed', 'unsigned', '_Bool', '_Complex']
   cRegex = [
@@ -175,7 +182,8 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'while(?=[^a-zA-Z])'), cParser.TERMINAL_WHILE, token ),
 
       # Identifiers
-      ( re.compile(r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'), cParser.TERMINAL_IDENTIFIER, token ),
+      ( re.compile('%s(?=\s*:)' % (identifierRegex)), cParser.TERMINAL_IDENTIFIER, parseLabelIdentifier ),
+      ( re.compile(identifierRegex), cParser.TERMINAL_IDENTIFIER, token ),
 
       # Unicode Characters
       ( re.compile(r'\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?'), cParser.TERMINAL_UNIVERSAL_CHARACTER_NAME, token ),
