@@ -68,6 +68,7 @@ class ParseTree():
     self.isInfix = False
     self.nudMorphemeCount = 0
     self.isExprNud = False # true for rules like _expr := {_expr} + {...}
+    self.listSeparator = None
     self.list = False
   def add( self, tree ):
     self.children.append( tree )
@@ -75,7 +76,7 @@ class ParseTree():
     if self.list == 'slist' or self.list == 'nlist':
       if len(self.children) == 0:
         return AstList()
-      offset = 1 if not isinstance(self.children[0], ParseTree) else 0
+      offset = 1 if self.children[0] == self.listSeparator else 0
       r = AstList([self.children[offset].toAst()])
       r.extend(self.children[offset+1].toAst())
       return r
@@ -183,884 +184,764 @@ class Parser:
   def __init__(self):
     self.iterator = None
     self.sym = None
-  TERMINAL_LSHIFTEQ = 0
-  TERMINAL_IMAGINARY = 1
-  TERMINAL_STRUCT = 2
-  TERMINAL_RSHIFTEQ = 3
-  TERMINAL_FUNCTION_DEFINITION_HINT = 4
-  TERMINAL_COMPLEX = 5
-  TERMINAL_ENDIF = 6
-  TERMINAL_DEFINE = 7
-  TERMINAL_SUBEQ = 8
-  TERMINAL_HEXADECIMAL_FLOATING_CONSTANT = 9
-  TERMINAL_NUMBER = 10
-  TERMINAL_ELSE_IF = 11
-  TERMINAL_FLOAT = 12
-  TERMINAL_DEFINE_FUNCTION = 13
-  TERMINAL__DIRECT_ABSTRACT_DECLARATOR = 14
-  TERMINAL__DIRECT_DECLARATOR = 15
-  TERMINAL_MODEQ = 16
-  TERMINAL_SEMI = 17
-  TERMINAL_ELIF = 18
-  TERMINAL_BOOL = 19
-  TERMINAL_SWITCH = 20
-  TERMINAL_MULEQ = 21
-  TERMINAL_ELSE = 22
-  TERMINAL_WHILE = 23
-  TERMINAL_DIVEQ = 24
-  TERMINAL_SIZEOF = 25
-  TERMINAL_ASSIGN = 26
-  TERMINAL_INTEGER_CONSTANT = 27
-  TERMINAL_IF = 28
-  TERMINAL_POUNDPOUND = 29
-  TERMINAL_HEADER_NAME = 30
-  TERMINAL__COMPLEX = 31
-  TERMINAL_ARROW = 32
-  TERMINAL_POUND = 33
-  TERMINAL_DOUBLE = 34
-  TERMINAL_DECIMAL_FLOATING_CONSTANT = 35
-  TERMINAL_CHAR = 36
-  TERMINAL_COMMA = 37
-  TERMINAL_EXTERNAL_DECLARATION_HINT = 38
-  TERMINAL__BOOL = 39
-  TERMINAL_GT = 40
-  TERMINAL_ASTERISK = 41
-  TERMINAL_LBRACE = 42
-  TERMINAL_HEADER_GLOBAL = 43
-  TERMINAL_DO = 44
-  TERMINAL_RBRACE = 45
-  TERMINAL_LSHIFT = 46
-  TERMINAL_HEADER_LOCAL = 47
-  TERMINAL_FLOATING_CONSTANT = 48
-  TERMINAL_LSQUARE = 49
-  TERMINAL_PRAGMA = 50
-  TERMINAL_ENUMERATION_CONSTANT = 51
-  TERMINAL_GOTO = 52
-  TERMINAL_INLINE = 53
-  TERMINAL_NOT = 54
-  TERMINAL_PP_NUMBER = 55
-  TERMINAL_IFDEF = 56
-  TERMINAL_UNIVERSAL_CHARACTER_NAME = 57
-  TERMINAL_RESTRICT = 58
-  TERMINAL_RPAREN = 59
-  TERMINAL_BREAK = 60
-  TERMINAL_UNDEF = 61
-  TERMINAL_EQ = 62
-  TERMINAL_STRING_LITERAL = 63
-  TERMINAL_RETURN = 64
-  TERMINAL_FOR = 65
-  TERMINAL_LINE = 66
-  TERMINAL_TILDE = 67
-  TERMINAL_DEFINED = 68
-  TERMINAL_RSHIFT = 69
-  TERMINAL_CASE = 70
-  TERMINAL_UNSIGNED = 71
-  TERMINAL_ADDEQ = 72
-  TERMINAL_MOD = 73
-  TERMINAL_SIGNED = 74
-  TERMINAL_IDENTIFIER = 75
-  TERMINAL_ADD = 76
-  TERMINAL_DECLARATOR_HINT = 77
-  TERMINAL_ELIPSIS = 78
-  TERMINAL__IMAGINARY = 79
-  TERMINAL_IFNDEF = 80
-  TERMINAL_MUL = 81
-  TERMINAL_EXCLAMATION_POINT = 82
-  TERMINAL_INCLUDE = 83
-  TERMINAL_CSOURCE = 84
-  TERMINAL_CONTINUE = 85
-  TERMINAL_TYPEDEF = 86
-  TERMINAL_LPAREN_CAST = 87
-  TERMINAL_DIV = 88
-  TERMINAL__EXPR = 89
-  TERMINAL_CHARACTER_CONSTANT = 90
-  TERMINAL_COLON = 91
-  TERMINAL_EXTERN = 92
-  TERMINAL_AMPERSAND = 93
-  TERMINAL_COMMA_VA_ARGS = 94
-  TERMINAL_QUESTIONMARK = 95
-  TERMINAL_RSQUARE = 96
-  TERMINAL_STATIC = 97
-  TERMINAL_DEFAULT = 98
-  TERMINAL_DECR = 99
-  TERMINAL_ERROR = 100
-  TERMINAL_BITAND = 101
-  TERMINAL_AUTO = 102
-  TERMINAL_TYPEDEF_IDENTIFIER = 103
-  TERMINAL_INCR = 104
-  TERMINAL_BITNOT = 105
-  TERMINAL_REGISTER = 106
-  TERMINAL_SUB = 107
-  TERMINAL_CONST = 108
-  TERMINAL_BITOR = 109
-  TERMINAL_VOID = 110
-  TERMINAL_SIZEOF_SEPARATOR = 111
-  TERMINAL_AND = 112
-  TERMINAL_UNION = 113
-  TERMINAL_LPAREN = 114
-  TERMINAL_BITXOR = 115
-  TERMINAL_DEFINED_SEPARATOR = 116
-  TERMINAL_TRAILING_COMMA = 117
-  TERMINAL_FUNCTION_PROTOTYPE_HINT = 118
-  TERMINAL_NEQ = 119
-  TERMINAL_VOLATILE = 120
-  TERMINAL_BITOREQ = 121
-  TERMINAL_SHORT = 122
-  TERMINAL_ENUM = 123
-  TERMINAL_DOT = 124
-  TERMINAL_BITXOREQ = 125
-  TERMINAL_LT = 126
-  TERMINAL_INT = 127
-  TERMINAL_LTEQ = 128
-  TERMINAL_WARNING = 129
-  TERMINAL_BITANDEQ = 130
-  TERMINAL_LONG = 131
-  TERMINAL_OR = 132
-  TERMINAL_SEPARATOR = 133
-  TERMINAL_GTEQ = 134
+  TERMINAL_COMMA = 0
+  TERMINAL_EXCLAMATION_POINT = 1
+  TERMINAL_PP_NUMBER = 2
+  TERMINAL_HEXADECIMAL_FLOATING_CONSTANT = 3
+  TERMINAL_REGISTER = 4
+  TERMINAL_FLOAT = 5
+  TERMINAL_SEMI = 6
+  TERMINAL_MODEQ = 7
+  TERMINAL_DEFINED = 8
+  TERMINAL_CHARACTER_CONSTANT = 9
+  TERMINAL_DOUBLE = 10
+  TERMINAL_TILDE = 11
+  TERMINAL_FLOATING_CONSTANT = 12
+  TERMINAL_EXTERNAL_DECLARATION_HINT = 13
+  TERMINAL_RSHIFTEQ = 14
+  TERMINAL_LTEQ = 15
+  TERMINAL_BITAND = 16
+  TERMINAL_MOD = 17
+  TERMINAL_SIGNED = 18
+  TERMINAL_SHORT = 19
+  TERMINAL_DECR = 20
+  TERMINAL_FUNCTION_PROTOTYPE_HINT = 21
+  TERMINAL_LSHIFTEQ = 22
+  TERMINAL_IF = 23
+  TERMINAL_BITOR = 24
+  TERMINAL_BREAK = 25
+  TERMINAL_FUNCTION_DEFINITION_HINT = 26
+  TERMINAL_RETURN = 27
+  TERMINAL__COMPLEX = 28
+  TERMINAL_BITANDEQ = 29
+  TERMINAL_BITNOT = 30
+  TERMINAL_ASSIGN = 31
+  TERMINAL_POUND = 32
+  TERMINAL_INLINE = 33
+  TERMINAL_COLON = 34
+  TERMINAL_DEFAULT = 35
+  TERMINAL_CASE = 36
+  TERMINAL_ELSE_IF = 37
+  TERMINAL_UNION = 38
+  TERMINAL_IDENTIFIER = 39
+  TERMINAL_LSHIFT = 40
+  TERMINAL_EQ = 41
+  TERMINAL_LONG = 42
+  TERMINAL_ADD = 43
+  TERMINAL_GOTO = 44
+  TERMINAL_DEFINED_SEPARATOR = 45
+  TERMINAL_TYPEDEF = 46
+  TERMINAL_VOID = 47
+  TERMINAL_DECLARATOR_HINT = 48
+  TERMINAL_ELSE = 49
+  TERMINAL_NUMBER = 50
+  TERMINAL_HEADER_NAME = 51
+  TERMINAL_EXTERN = 52
+  TERMINAL_NEQ = 53
+  TERMINAL_BOOL = 54
+  TERMINAL_TRAILING_COMMA = 55
+  TERMINAL_ENUMERATION_CONSTANT = 56
+  TERMINAL_BITXOR = 57
+  TERMINAL_ELIPSIS = 58
+  TERMINAL_UNIVERSAL_CHARACTER_NAME = 59
+  TERMINAL_INCR = 60
+  TERMINAL_OR = 61
+  TERMINAL__IMAGINARY = 62
+  TERMINAL_ADDEQ = 63
+  TERMINAL_SUBEQ = 64
+  TERMINAL_INTEGER_CONSTANT = 65
+  TERMINAL_AUTO = 66
+  TERMINAL_LSQUARE = 67
+  TERMINAL_AND = 68
+  TERMINAL_ENDIF = 69
+  TERMINAL_TYPEDEF_IDENTIFIER = 70
+  TERMINAL_STRUCT = 71
+  TERMINAL_DIV = 72
+  TERMINAL__DIRECT_DECLARATOR = 73
+  TERMINAL_FOR = 74
+  TERMINAL_SUB = 75
+  TERMINAL_DO = 76
+  TERMINAL_LBRACE = 77
+  TERMINAL_LPAREN = 78
+  TERMINAL_QUESTIONMARK = 79
+  TERMINAL_COMPLEX = 80
+  TERMINAL_DOT = 81
+  TERMINAL_NOT = 82
+  TERMINAL_CONST = 83
+  TERMINAL__EXPR_SANS_COMMA = 84
+  TERMINAL_MULEQ = 85
+  TERMINAL_ASTERISK = 86
+  TERMINAL_BITXOREQ = 87
+  TERMINAL_COMMA_VA_ARGS = 88
+  TERMINAL_GTEQ = 89
+  TERMINAL_DIVEQ = 90
+  TERMINAL_LPAREN_CAST = 91
+  TERMINAL_ARROW = 92
+  TERMINAL_RESTRICT = 93
+  TERMINAL_CONTINUE = 94
+  TERMINAL_CHAR = 95
+  TERMINAL_STATIC = 96
+  TERMINAL_RSHIFT = 97
+  TERMINAL__EXPR = 98
+  TERMINAL_RSQUARE = 99
+  TERMINAL_SWITCH = 100
+  TERMINAL_VOLATILE = 101
+  TERMINAL__DIRECT_ABSTRACT_DECLARATOR = 102
+  TERMINAL_UNSIGNED = 103
+  TERMINAL_STRING_LITERAL = 104
+  TERMINAL_RPAREN = 105
+  TERMINAL_ENUM = 106
+  TERMINAL_POUNDPOUND = 107
+  TERMINAL__BOOL = 108
+  TERMINAL_GT = 109
+  TERMINAL_INT = 110
+  TERMINAL_LT = 111
+  TERMINAL_BITOREQ = 112
+  TERMINAL_WHILE = 113
+  TERMINAL_DECIMAL_FLOATING_CONSTANT = 114
+  TERMINAL_RBRACE = 115
+  TERMINAL_SIZEOF_SEPARATOR = 116
+  TERMINAL_SIZEOF = 117
+  TERMINAL_LABEL_HINT = 118
+  TERMINAL_IMAGINARY = 119
+  TERMINAL_AMPERSAND = 120
   terminal_str = {
-    0: 'lshifteq',
-    1: 'imaginary',
-    2: 'struct',
-    3: 'rshifteq',
-    4: 'function_definition_hint',
-    5: 'complex',
-    6: 'endif',
-    7: 'define',
-    8: 'subeq',
-    9: 'hexadecimal_floating_constant',
-    10: 'number',
-    11: 'else_if',
-    12: 'float',
-    13: 'define_function',
-    14: '_direct_abstract_declarator',
-    15: '_direct_declarator',
-    16: 'modeq',
-    17: 'semi',
-    18: 'elif',
-    19: 'bool',
-    20: 'switch',
-    21: 'muleq',
-    22: 'else',
-    23: 'while',
-    24: 'diveq',
-    25: 'sizeof',
-    26: 'assign',
-    27: 'integer_constant',
-    28: 'if',
-    29: 'poundpound',
-    30: 'header_name',
-    31: '_complex',
-    32: 'arrow',
-    33: 'pound',
-    34: 'double',
-    35: 'decimal_floating_constant',
-    36: 'char',
-    37: 'comma',
-    38: 'external_declaration_hint',
-    39: '_bool',
-    40: 'gt',
-    41: 'asterisk',
-    42: 'lbrace',
-    43: 'header_global',
-    44: 'do',
-    45: 'rbrace',
-    46: 'lshift',
-    47: 'header_local',
-    48: 'floating_constant',
-    49: 'lsquare',
-    50: 'pragma',
-    51: 'enumeration_constant',
-    52: 'goto',
-    53: 'inline',
-    54: 'not',
-    55: 'pp_number',
-    56: 'ifdef',
-    57: 'universal_character_name',
-    58: 'restrict',
-    59: 'rparen',
-    60: 'break',
-    61: 'undef',
-    62: 'eq',
-    63: 'string_literal',
-    64: 'return',
-    65: 'for',
-    66: 'line',
-    67: 'tilde',
-    68: 'defined',
-    69: 'rshift',
-    70: 'case',
-    71: 'unsigned',
-    72: 'addeq',
-    73: 'mod',
-    74: 'signed',
-    75: 'identifier',
-    76: 'add',
-    77: 'declarator_hint',
-    78: 'elipsis',
-    79: '_imaginary',
-    80: 'ifndef',
-    81: 'mul',
-    82: 'exclamation_point',
-    83: 'include',
-    84: 'csource',
-    85: 'continue',
-    86: 'typedef',
-    87: 'lparen_cast',
-    88: 'div',
-    89: '_expr',
-    90: 'character_constant',
-    91: 'colon',
-    92: 'extern',
-    93: 'ampersand',
-    94: 'comma_va_args',
-    95: 'questionmark',
-    96: 'rsquare',
-    97: 'static',
-    98: 'default',
-    99: 'decr',
-    100: 'error',
-    101: 'bitand',
-    102: 'auto',
-    103: 'typedef_identifier',
-    104: 'incr',
-    105: 'bitnot',
-    106: 'register',
-    107: 'sub',
-    108: 'const',
-    109: 'bitor',
-    110: 'void',
-    111: 'sizeof_separator',
-    112: 'and',
-    113: 'union',
-    114: 'lparen',
-    115: 'bitxor',
-    116: 'defined_separator',
-    117: 'trailing_comma',
-    118: 'function_prototype_hint',
-    119: 'neq',
-    120: 'volatile',
-    121: 'bitoreq',
-    122: 'short',
-    123: 'enum',
-    124: 'dot',
-    125: 'bitxoreq',
-    126: 'lt',
-    127: 'int',
-    128: 'lteq',
-    129: 'warning',
-    130: 'bitandeq',
-    131: 'long',
-    132: 'or',
-    133: 'separator',
-    134: 'gteq',
+    0: 'comma',
+    1: 'exclamation_point',
+    2: 'pp_number',
+    3: 'hexadecimal_floating_constant',
+    4: 'register',
+    5: 'float',
+    6: 'semi',
+    7: 'modeq',
+    8: 'defined',
+    9: 'character_constant',
+    10: 'double',
+    11: 'tilde',
+    12: 'floating_constant',
+    13: 'external_declaration_hint',
+    14: 'rshifteq',
+    15: 'lteq',
+    16: 'bitand',
+    17: 'mod',
+    18: 'signed',
+    19: 'short',
+    20: 'decr',
+    21: 'function_prototype_hint',
+    22: 'lshifteq',
+    23: 'if',
+    24: 'bitor',
+    25: 'break',
+    26: 'function_definition_hint',
+    27: 'return',
+    28: '_complex',
+    29: 'bitandeq',
+    30: 'bitnot',
+    31: 'assign',
+    32: 'pound',
+    33: 'inline',
+    34: 'colon',
+    35: 'default',
+    36: 'case',
+    37: 'else_if',
+    38: 'union',
+    39: 'identifier',
+    40: 'lshift',
+    41: 'eq',
+    42: 'long',
+    43: 'add',
+    44: 'goto',
+    45: 'defined_separator',
+    46: 'typedef',
+    47: 'void',
+    48: 'declarator_hint',
+    49: 'else',
+    50: 'number',
+    51: 'header_name',
+    52: 'extern',
+    53: 'neq',
+    54: 'bool',
+    55: 'trailing_comma',
+    56: 'enumeration_constant',
+    57: 'bitxor',
+    58: 'elipsis',
+    59: 'universal_character_name',
+    60: 'incr',
+    61: 'or',
+    62: '_imaginary',
+    63: 'addeq',
+    64: 'subeq',
+    65: 'integer_constant',
+    66: 'auto',
+    67: 'lsquare',
+    68: 'and',
+    69: 'endif',
+    70: 'typedef_identifier',
+    71: 'struct',
+    72: 'div',
+    73: '_direct_declarator',
+    74: 'for',
+    75: 'sub',
+    76: 'do',
+    77: 'lbrace',
+    78: 'lparen',
+    79: 'questionmark',
+    80: 'complex',
+    81: 'dot',
+    82: 'not',
+    83: 'const',
+    84: '_expr_sans_comma',
+    85: 'muleq',
+    86: 'asterisk',
+    87: 'bitxoreq',
+    88: 'comma_va_args',
+    89: 'gteq',
+    90: 'diveq',
+    91: 'lparen_cast',
+    92: 'arrow',
+    93: 'restrict',
+    94: 'continue',
+    95: 'char',
+    96: 'static',
+    97: 'rshift',
+    98: '_expr',
+    99: 'rsquare',
+    100: 'switch',
+    101: 'volatile',
+    102: '_direct_abstract_declarator',
+    103: 'unsigned',
+    104: 'string_literal',
+    105: 'rparen',
+    106: 'enum',
+    107: 'poundpound',
+    108: '_bool',
+    109: 'gt',
+    110: 'int',
+    111: 'lt',
+    112: 'bitoreq',
+    113: 'while',
+    114: 'decimal_floating_constant',
+    115: 'rbrace',
+    116: 'sizeof_separator',
+    117: 'sizeof',
+    118: 'label_hint',
+    119: 'imaginary',
+    120: 'ampersand',
   }
   nonterminal_str = {
-    135: 'parameter_type_list',
-    136: 'else_part',
-    137: 'else_if_statement',
-    138: '_gen4',
-    139: '_gen43',
-    140: '_expr',
-    141: 'enum_specifier_sub',
-    142: 'labeled_statement',
-    143: 'pointer_opt',
-    144: 'enumerator_assignment',
-    145: '_direct_declarator',
+    121: 'enum_specifier_body',
+    122: 'union_specifier',
+    123: '_gen21',
+    124: '_gen35',
+    125: '_gen18',
+    126: 'direct_declarator_expr',
+    127: 'struct_declaration',
+    128: 'direct_abstract_declarator_opt',
+    129: 'parameter_type_list',
+    130: '_gen32',
+    131: 'iteration_statement',
+    132: 'direct_declarator_modifier_list_opt',
+    133: '_gen37',
+    134: 'designator',
+    135: 'direct_declarator_parameter_list',
+    136: 'external_declarator',
+    137: '_gen30',
+    138: 'for_cond',
+    139: 'jump_statement',
+    140: 'for_init',
+    141: 'pp',
+    142: 'struct_declarator_body',
+    143: 'external_declaration_sub_sub',
+    144: 'pointer_opt',
+    145: 'labeled_statement',
     146: '_gen36',
-    147: 'declarator',
-    148: '_gen11',
-    149: 'direct_declarator_modifier_list_opt',
-    150: 'direct_declarator_size',
-    151: '_gen9',
-    152: '_gen2',
-    153: '_gen3',
-    154: 'enumeration_constant',
-    155: 'direct_declarator_modifier',
-    156: '_gen32',
-    157: 'constant',
-    158: 'translation_unit',
-    159: '_gen0',
-    160: 'terminals',
-    161: 'include_line',
+    147: 'selection_statement',
+    148: 'enumerator',
+    149: '_gen22',
+    150: '_direct_declarator',
+    151: 'enum_specifier',
+    152: '_gen23',
+    153: 'declarator',
+    154: 'static_opt',
+    155: 'declaration_list',
+    156: '_gen5',
+    157: '_gen29',
+    158: 'declaration_specifier',
+    159: 'external_declaration_sub',
+    160: 'sizeof_body',
+    161: 'specifier_qualifier',
     162: 'external_declaration',
-    163: '_gen7',
-    164: 'pp_tokens',
-    165: 'compound_statement',
-    166: 'defined_identifier',
-    167: 'for_cond',
-    168: 'for_incr',
-    169: 'pragma_line',
-    170: '_gen18',
-    171: 'declaration',
-    172: 'error_line',
-    173: 'pp_directive',
-    174: 'type_name',
-    175: 'pp_nodes',
-    176: '_gen8',
-    177: 'warning_line',
-    178: '_gen41',
-    179: 'parameter_type_list_opt',
-    180: 'undef_line',
-    181: '_gen33',
-    182: '_gen34',
-    183: 'abstract_declarator',
-    184: 'external_declaration_sub',
-    185: 'union_specifier',
-    186: 'replacement_list',
-    187: 'external_function',
-    188: 'include_type',
-    189: 'enum_specifier_body',
-    190: 'va_args',
-    191: '_gen40',
-    192: 'declaration_specifier',
-    193: 'sizeof_body',
-    194: '_gen21',
-    195: 'pp',
-    196: 'line_line',
-    197: 'else_statement',
-    198: '_gen10',
-    199: 'punctuator',
-    200: 'pointer',
-    201: 'storage_class_specifier',
-    202: '_gen23',
-    203: 'jump_statement',
-    204: 'type_specifier',
-    205: 'struct_or_union_body',
-    206: 'define_line',
-    207: 'pointer_sub',
-    208: '_gen29',
-    209: 'type_qualifier',
-    210: 'enumerator',
-    211: 'if_part',
-    212: 'specifier_qualifier',
-    213: '_gen30',
-    214: 'for_init',
-    215: 'external_declarator',
-    216: 'struct_declaration',
-    217: '_gen24',
-    218: 'type_qualifier_list_opt',
-    219: 'elipsis_opt',
-    220: 'init_declarator_list',
-    221: 'keyword',
-    222: 'struct_declarator',
-    223: 'block_item_list',
-    224: '_gen26',
-    225: 'function_specifier',
-    226: 'designator',
+    163: '_gen14',
+    164: '_gen0',
+    165: 'direct_declarator_modifier',
+    166: '_gen20',
+    167: 'compound_statement',
+    168: 'type_qualifier',
+    169: 'constant',
+    170: 'type_name',
+    171: '_gen4',
+    172: 'enumeration_constant',
+    173: '_gen28',
+    174: 'enumerator_assignment',
+    175: 'type_qualifier_list_opt',
+    176: '_gen25',
+    177: 'init_declarator',
+    178: 'trailing_comma_opt',
+    179: 'expression_statement',
+    180: 'direct_abstract_declarator_expr',
+    181: '_gen8',
+    182: '_gen16',
+    183: 'expression_opt',
+    184: 'parameter_type_list_opt',
+    185: 'parameter_declaration_sub',
+    186: '_gen19',
+    187: 'external_prototype',
+    188: 'block_item',
+    189: 'storage_class_specifier',
+    190: 'initializer',
+    191: '_gen1',
+    192: 'initializer_list_item',
+    193: '_gen38',
+    194: '_gen2',
+    195: 'pointer',
+    196: 'declaration',
+    197: 'abstract_declarator',
+    198: '_gen17',
+    199: '_gen6',
+    200: 'block_item_list',
+    201: 'typedef_name',
+    202: 'translation_unit',
+    203: 'struct_specifier',
+    204: 'declarator_initializer',
+    205: 'parameter_declaration_sub_sub',
+    206: 'statement',
+    207: 'token',
+    208: 'punctuator',
+    209: 'direct_declarator_size',
+    210: 'else_if_statement',
+    211: 'for_incr',
+    212: '_gen12',
+    213: '_gen13',
+    214: 'external_function',
+    215: 'function_specifier',
+    216: '_gen33',
+    217: 'init_declarator_list',
+    218: '_gen7',
+    219: 'terminals',
+    220: 'parameter_declaration',
+    221: 'designation',
+    222: '_gen26',
+    223: '_gen9',
+    224: 'keyword',
+    225: '_gen27',
+    226: '_expr',
     227: '_direct_abstract_declarator',
-    228: 'direct_abstract_declarator_opt',
-    229: '_gen6',
-    230: '_gen1',
-    231: 'declaration_list',
-    232: '_gen12',
-    233: 'struct_specifier',
-    234: 'expression_statement',
-    235: 'direct_abstract_declarator_expr',
-    236: 'define_func_param',
-    237: 'expression_opt',
-    238: '_gen38',
-    239: 'block_item',
-    240: '_gen42',
-    241: 'static_opt',
-    242: '_gen16',
-    243: '_gen17',
-    244: 'pp_file',
-    245: 'enum_specifier',
-    246: 'init_declarator',
-    247: 'parameter_declaration',
-    248: 'typedef_name',
-    249: 'struct_declarator_body',
-    250: 'parameter_declaration_sub_sub',
-    251: 'parameter_declaration_sub',
-    252: 'direct_declarator_expr',
-    253: 'initializer',
-    254: '_gen27',
-    255: 'iteration_statement',
-    256: '_gen25',
-    257: 'statement',
-    258: 'struct_or_union_sub',
-    259: '_gen13',
-    260: 'external_prototype',
-    261: 'if_section',
-    262: 'direct_declarator_parameter_list',
-    263: 'initializer_list_item',
-    264: 'else_if_statement_list',
-    265: 'token',
-    266: '_gen19',
-    267: 'control_line',
-    268: '_gen15',
-    269: '_gen37',
-    270: '_gen35',
-    271: 'designation',
-    272: '_gen22',
-    273: '_gen31',
-    274: 'pp_nodes_list',
-    275: 'elseif_part',
-    276: 'declarator_initializer',
-    277: '_gen14',
-    278: '_gen5',
-    279: 'trailing_comma_opt',
-    280: 'external_declaration_sub_sub',
-    281: 'identifier',
-    282: 'selection_statement',
-    283: '_gen28',
-    284: '_gen20',
-    285: '_gen39',
+    228: 'struct_or_union_body',
+    229: '_gen10',
+    230: '_gen15',
+    231: '_gen3',
+    232: 'else_if_statement_list',
+    233: '_gen11',
+    234: 'else_statement',
+    235: '_gen34',
+    236: 'identifier',
+    237: 'struct_or_union_sub',
+    238: 'enum_specifier_sub',
+    239: '_gen31',
+    240: 'pointer_sub',
+    241: '_expr_sans_comma',
+    242: 'va_args',
+    243: '_gen24',
+    244: 'type_specifier',
+    245: 'struct_declarator',
   }
   str_terminal = {
-    'lshifteq': 0,
-    'imaginary': 1,
-    'struct': 2,
-    'rshifteq': 3,
-    'function_definition_hint': 4,
-    'complex': 5,
-    'endif': 6,
-    'define': 7,
-    'subeq': 8,
-    'hexadecimal_floating_constant': 9,
-    'number': 10,
-    'else_if': 11,
-    'float': 12,
-    'define_function': 13,
-    '_direct_abstract_declarator': 14,
-    '_direct_declarator': 15,
-    'modeq': 16,
-    'semi': 17,
-    'elif': 18,
-    'bool': 19,
-    'switch': 20,
-    'muleq': 21,
-    'else': 22,
-    'while': 23,
-    'diveq': 24,
-    'sizeof': 25,
-    'assign': 26,
-    'integer_constant': 27,
-    'if': 28,
-    'poundpound': 29,
-    'header_name': 30,
-    '_complex': 31,
-    'arrow': 32,
-    'pound': 33,
-    'double': 34,
-    'decimal_floating_constant': 35,
-    'char': 36,
-    'comma': 37,
-    'external_declaration_hint': 38,
-    '_bool': 39,
-    'gt': 40,
-    'asterisk': 41,
-    'lbrace': 42,
-    'header_global': 43,
-    'do': 44,
-    'rbrace': 45,
-    'lshift': 46,
-    'header_local': 47,
-    'floating_constant': 48,
-    'lsquare': 49,
-    'pragma': 50,
-    'enumeration_constant': 51,
-    'goto': 52,
-    'inline': 53,
-    'not': 54,
-    'pp_number': 55,
-    'ifdef': 56,
-    'universal_character_name': 57,
-    'restrict': 58,
-    'rparen': 59,
-    'break': 60,
-    'undef': 61,
-    'eq': 62,
-    'string_literal': 63,
-    'return': 64,
-    'for': 65,
-    'line': 66,
-    'tilde': 67,
-    'defined': 68,
-    'rshift': 69,
-    'case': 70,
-    'unsigned': 71,
-    'addeq': 72,
-    'mod': 73,
-    'signed': 74,
-    'identifier': 75,
-    'add': 76,
-    'declarator_hint': 77,
-    'elipsis': 78,
-    '_imaginary': 79,
-    'ifndef': 80,
-    'mul': 81,
-    'exclamation_point': 82,
-    'include': 83,
-    'csource': 84,
-    'continue': 85,
-    'typedef': 86,
-    'lparen_cast': 87,
-    'div': 88,
-    '_expr': 89,
-    'character_constant': 90,
-    'colon': 91,
-    'extern': 92,
-    'ampersand': 93,
-    'comma_va_args': 94,
-    'questionmark': 95,
-    'rsquare': 96,
-    'static': 97,
-    'default': 98,
-    'decr': 99,
-    'error': 100,
-    'bitand': 101,
-    'auto': 102,
-    'typedef_identifier': 103,
-    'incr': 104,
-    'bitnot': 105,
-    'register': 106,
-    'sub': 107,
-    'const': 108,
-    'bitor': 109,
-    'void': 110,
-    'sizeof_separator': 111,
-    'and': 112,
-    'union': 113,
-    'lparen': 114,
-    'bitxor': 115,
-    'defined_separator': 116,
-    'trailing_comma': 117,
-    'function_prototype_hint': 118,
-    'neq': 119,
-    'volatile': 120,
-    'bitoreq': 121,
-    'short': 122,
-    'enum': 123,
-    'dot': 124,
-    'bitxoreq': 125,
-    'lt': 126,
-    'int': 127,
-    'lteq': 128,
-    'warning': 129,
-    'bitandeq': 130,
-    'long': 131,
-    'or': 132,
-    'separator': 133,
-    'gteq': 134,
+    'comma': 0,
+    'exclamation_point': 1,
+    'pp_number': 2,
+    'hexadecimal_floating_constant': 3,
+    'register': 4,
+    'float': 5,
+    'semi': 6,
+    'modeq': 7,
+    'defined': 8,
+    'character_constant': 9,
+    'double': 10,
+    'tilde': 11,
+    'floating_constant': 12,
+    'external_declaration_hint': 13,
+    'rshifteq': 14,
+    'lteq': 15,
+    'bitand': 16,
+    'mod': 17,
+    'signed': 18,
+    'short': 19,
+    'decr': 20,
+    'function_prototype_hint': 21,
+    'lshifteq': 22,
+    'if': 23,
+    'bitor': 24,
+    'break': 25,
+    'function_definition_hint': 26,
+    'return': 27,
+    '_complex': 28,
+    'bitandeq': 29,
+    'bitnot': 30,
+    'assign': 31,
+    'pound': 32,
+    'inline': 33,
+    'colon': 34,
+    'default': 35,
+    'case': 36,
+    'else_if': 37,
+    'union': 38,
+    'identifier': 39,
+    'lshift': 40,
+    'eq': 41,
+    'long': 42,
+    'add': 43,
+    'goto': 44,
+    'defined_separator': 45,
+    'typedef': 46,
+    'void': 47,
+    'declarator_hint': 48,
+    'else': 49,
+    'number': 50,
+    'header_name': 51,
+    'extern': 52,
+    'neq': 53,
+    'bool': 54,
+    'trailing_comma': 55,
+    'enumeration_constant': 56,
+    'bitxor': 57,
+    'elipsis': 58,
+    'universal_character_name': 59,
+    'incr': 60,
+    'or': 61,
+    '_imaginary': 62,
+    'addeq': 63,
+    'subeq': 64,
+    'integer_constant': 65,
+    'auto': 66,
+    'lsquare': 67,
+    'and': 68,
+    'endif': 69,
+    'typedef_identifier': 70,
+    'struct': 71,
+    'div': 72,
+    '_direct_declarator': 73,
+    'for': 74,
+    'sub': 75,
+    'do': 76,
+    'lbrace': 77,
+    'lparen': 78,
+    'questionmark': 79,
+    'complex': 80,
+    'dot': 81,
+    'not': 82,
+    'const': 83,
+    '_expr_sans_comma': 84,
+    'muleq': 85,
+    'asterisk': 86,
+    'bitxoreq': 87,
+    'comma_va_args': 88,
+    'gteq': 89,
+    'diveq': 90,
+    'lparen_cast': 91,
+    'arrow': 92,
+    'restrict': 93,
+    'continue': 94,
+    'char': 95,
+    'static': 96,
+    'rshift': 97,
+    '_expr': 98,
+    'rsquare': 99,
+    'switch': 100,
+    'volatile': 101,
+    '_direct_abstract_declarator': 102,
+    'unsigned': 103,
+    'string_literal': 104,
+    'rparen': 105,
+    'enum': 106,
+    'poundpound': 107,
+    '_bool': 108,
+    'gt': 109,
+    'int': 110,
+    'lt': 111,
+    'bitoreq': 112,
+    'while': 113,
+    'decimal_floating_constant': 114,
+    'rbrace': 115,
+    'sizeof_separator': 116,
+    'sizeof': 117,
+    'label_hint': 118,
+    'imaginary': 119,
+    'ampersand': 120,
   }
   str_nonterminal = {
-    'parameter_type_list': 135,
-    'else_part': 136,
-    'else_if_statement': 137,
-    '_gen4': 138,
-    '_gen43': 139,
-    '_expr': 140,
-    'enum_specifier_sub': 141,
-    'labeled_statement': 142,
-    'pointer_opt': 143,
-    'enumerator_assignment': 144,
-    '_direct_declarator': 145,
+    'enum_specifier_body': 121,
+    'union_specifier': 122,
+    '_gen21': 123,
+    '_gen35': 124,
+    '_gen18': 125,
+    'direct_declarator_expr': 126,
+    'struct_declaration': 127,
+    'direct_abstract_declarator_opt': 128,
+    'parameter_type_list': 129,
+    '_gen32': 130,
+    'iteration_statement': 131,
+    'direct_declarator_modifier_list_opt': 132,
+    '_gen37': 133,
+    'designator': 134,
+    'direct_declarator_parameter_list': 135,
+    'external_declarator': 136,
+    '_gen30': 137,
+    'for_cond': 138,
+    'jump_statement': 139,
+    'for_init': 140,
+    'pp': 141,
+    'struct_declarator_body': 142,
+    'external_declaration_sub_sub': 143,
+    'pointer_opt': 144,
+    'labeled_statement': 145,
     '_gen36': 146,
-    'declarator': 147,
-    '_gen11': 148,
-    'direct_declarator_modifier_list_opt': 149,
-    'direct_declarator_size': 150,
-    '_gen9': 151,
-    '_gen2': 152,
-    '_gen3': 153,
-    'enumeration_constant': 154,
-    'direct_declarator_modifier': 155,
-    '_gen32': 156,
-    'constant': 157,
-    'translation_unit': 158,
-    '_gen0': 159,
-    'terminals': 160,
-    'include_line': 161,
+    'selection_statement': 147,
+    'enumerator': 148,
+    '_gen22': 149,
+    '_direct_declarator': 150,
+    'enum_specifier': 151,
+    '_gen23': 152,
+    'declarator': 153,
+    'static_opt': 154,
+    'declaration_list': 155,
+    '_gen5': 156,
+    '_gen29': 157,
+    'declaration_specifier': 158,
+    'external_declaration_sub': 159,
+    'sizeof_body': 160,
+    'specifier_qualifier': 161,
     'external_declaration': 162,
-    '_gen7': 163,
-    'pp_tokens': 164,
-    'compound_statement': 165,
-    'defined_identifier': 166,
-    'for_cond': 167,
-    'for_incr': 168,
-    'pragma_line': 169,
-    '_gen18': 170,
-    'declaration': 171,
-    'error_line': 172,
-    'pp_directive': 173,
-    'type_name': 174,
-    'pp_nodes': 175,
-    '_gen8': 176,
-    'warning_line': 177,
-    '_gen41': 178,
-    'parameter_type_list_opt': 179,
-    'undef_line': 180,
-    '_gen33': 181,
-    '_gen34': 182,
-    'abstract_declarator': 183,
-    'external_declaration_sub': 184,
-    'union_specifier': 185,
-    'replacement_list': 186,
-    'external_function': 187,
-    'include_type': 188,
-    'enum_specifier_body': 189,
-    'va_args': 190,
-    '_gen40': 191,
-    'declaration_specifier': 192,
-    'sizeof_body': 193,
-    '_gen21': 194,
-    'pp': 195,
-    'line_line': 196,
-    'else_statement': 197,
-    '_gen10': 198,
-    'punctuator': 199,
-    'pointer': 200,
-    'storage_class_specifier': 201,
-    '_gen23': 202,
-    'jump_statement': 203,
-    'type_specifier': 204,
-    'struct_or_union_body': 205,
-    'define_line': 206,
-    'pointer_sub': 207,
-    '_gen29': 208,
-    'type_qualifier': 209,
-    'enumerator': 210,
-    'if_part': 211,
-    'specifier_qualifier': 212,
-    '_gen30': 213,
-    'for_init': 214,
-    'external_declarator': 215,
-    'struct_declaration': 216,
-    '_gen24': 217,
-    'type_qualifier_list_opt': 218,
-    'elipsis_opt': 219,
-    'init_declarator_list': 220,
-    'keyword': 221,
-    'struct_declarator': 222,
-    'block_item_list': 223,
-    '_gen26': 224,
-    'function_specifier': 225,
-    'designator': 226,
+    '_gen14': 163,
+    '_gen0': 164,
+    'direct_declarator_modifier': 165,
+    '_gen20': 166,
+    'compound_statement': 167,
+    'type_qualifier': 168,
+    'constant': 169,
+    'type_name': 170,
+    '_gen4': 171,
+    'enumeration_constant': 172,
+    '_gen28': 173,
+    'enumerator_assignment': 174,
+    'type_qualifier_list_opt': 175,
+    '_gen25': 176,
+    'init_declarator': 177,
+    'trailing_comma_opt': 178,
+    'expression_statement': 179,
+    'direct_abstract_declarator_expr': 180,
+    '_gen8': 181,
+    '_gen16': 182,
+    'expression_opt': 183,
+    'parameter_type_list_opt': 184,
+    'parameter_declaration_sub': 185,
+    '_gen19': 186,
+    'external_prototype': 187,
+    'block_item': 188,
+    'storage_class_specifier': 189,
+    'initializer': 190,
+    '_gen1': 191,
+    'initializer_list_item': 192,
+    '_gen38': 193,
+    '_gen2': 194,
+    'pointer': 195,
+    'declaration': 196,
+    'abstract_declarator': 197,
+    '_gen17': 198,
+    '_gen6': 199,
+    'block_item_list': 200,
+    'typedef_name': 201,
+    'translation_unit': 202,
+    'struct_specifier': 203,
+    'declarator_initializer': 204,
+    'parameter_declaration_sub_sub': 205,
+    'statement': 206,
+    'token': 207,
+    'punctuator': 208,
+    'direct_declarator_size': 209,
+    'else_if_statement': 210,
+    'for_incr': 211,
+    '_gen12': 212,
+    '_gen13': 213,
+    'external_function': 214,
+    'function_specifier': 215,
+    '_gen33': 216,
+    'init_declarator_list': 217,
+    '_gen7': 218,
+    'terminals': 219,
+    'parameter_declaration': 220,
+    'designation': 221,
+    '_gen26': 222,
+    '_gen9': 223,
+    'keyword': 224,
+    '_gen27': 225,
+    '_expr': 226,
     '_direct_abstract_declarator': 227,
-    'direct_abstract_declarator_opt': 228,
-    '_gen6': 229,
-    '_gen1': 230,
-    'declaration_list': 231,
-    '_gen12': 232,
-    'struct_specifier': 233,
-    'expression_statement': 234,
-    'direct_abstract_declarator_expr': 235,
-    'define_func_param': 236,
-    'expression_opt': 237,
-    '_gen38': 238,
-    'block_item': 239,
-    '_gen42': 240,
-    'static_opt': 241,
-    '_gen16': 242,
-    '_gen17': 243,
-    'pp_file': 244,
-    'enum_specifier': 245,
-    'init_declarator': 246,
-    'parameter_declaration': 247,
-    'typedef_name': 248,
-    'struct_declarator_body': 249,
-    'parameter_declaration_sub_sub': 250,
-    'parameter_declaration_sub': 251,
-    'direct_declarator_expr': 252,
-    'initializer': 253,
-    '_gen27': 254,
-    'iteration_statement': 255,
-    '_gen25': 256,
-    'statement': 257,
-    'struct_or_union_sub': 258,
-    '_gen13': 259,
-    'external_prototype': 260,
-    'if_section': 261,
-    'direct_declarator_parameter_list': 262,
-    'initializer_list_item': 263,
-    'else_if_statement_list': 264,
-    'token': 265,
-    '_gen19': 266,
-    'control_line': 267,
-    '_gen15': 268,
-    '_gen37': 269,
-    '_gen35': 270,
-    'designation': 271,
-    '_gen22': 272,
-    '_gen31': 273,
-    'pp_nodes_list': 274,
-    'elseif_part': 275,
-    'declarator_initializer': 276,
-    '_gen14': 277,
-    '_gen5': 278,
-    'trailing_comma_opt': 279,
-    'external_declaration_sub_sub': 280,
-    'identifier': 281,
-    'selection_statement': 282,
-    '_gen28': 283,
-    '_gen20': 284,
-    '_gen39': 285,
+    'struct_or_union_body': 228,
+    '_gen10': 229,
+    '_gen15': 230,
+    '_gen3': 231,
+    'else_if_statement_list': 232,
+    '_gen11': 233,
+    'else_statement': 234,
+    '_gen34': 235,
+    'identifier': 236,
+    'struct_or_union_sub': 237,
+    'enum_specifier_sub': 238,
+    '_gen31': 239,
+    'pointer_sub': 240,
+    '_expr_sans_comma': 241,
+    'va_args': 242,
+    '_gen24': 243,
+    'type_specifier': 244,
+    'struct_declarator': 245,
   }
-  terminal_count = 135
-  nonterminal_count = 151
+  terminal_count = 121
+  nonterminal_count = 125
   parse_table = [
-    [-1, -1, 428, -1, -1, -1, -1, -1, -1, -1, -1, -1, 428, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 428, -1, -1, 428, -1, 428, -1, -1, 428, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 428, -1, -1, -1, -1, 428, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 428, -1, -1, 428, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 428, -1, -1, -1, -1, -1, 428, -1, -1, -1, -1, 428, -1, -1, -1, -1, 428, 428, -1, -1, 428, -1, 428, -1, 428, -1, -1, 428, -1, -1, -1, -1, -1, -1, 428, -1, 428, 428, -1, -1, -1, 428, -1, -1, -1, 428, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 298, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 80, -1, -1, -1, 80, -1, -1, -1, -1, 7, 80, -1, -1, -1, -1, 80, -1, -1, 80, -1, 80, 80, -1, 80, -1, 80, 80, -1, -1, 80, -1, -1, 80, -1, 80, -1, -1, 80, -1, 80, 80, -1, 80, 80, -1, -1, 80, -1, -1, 80, 80, 80, -1, -1, -1, -1, 80, -1, 80, -1, -1, 80, 80, 80, -1, -1, -1, -1, 80, 80, -1, -1, 80, 80, -1, -1, -1, -1, -1, -1, -1, -1, -1, 80, 80, 80, -1, 80, 80, -1, 80, -1, -1, -1, -1, 80, 80, 80, -1, 80, 80, 80, 80, -1, 80, -1, 80, -1, 80, -1, -1, 80, 80, -1, -1, -1, -1, -1, 80, -1, 80, 80, -1, -1, -1, 80, -1, -1, -1, 80, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 136, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 226, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 211, -1, -1, -1, -1, 431, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 213, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, -1, -1, -1, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 147, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 161, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 161, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 365, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 142, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 63, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 120, -1, 120, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 120, -1, -1, -1, -1, -1, -1, 120, -1, -1, 120, -1, -1, -1, -1, -1, -1, 120, -1, -1, -1, -1, 120, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 120, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 120, -1, 120, 120, -1, -1, -1, -1, -1, -1, 120, -1, 120, -1, 120, -1, -1, 120, -1, -1, -1, 120, -1, -1, -1, -1, -1, 120, -1, -1, -1, -1, -1, 120, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 162, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 108, -1, -1, -1, -1, -1, -1, 162, -1, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 162, -1, 162, 162, -1, -1, -1, -1, -1, -1, -1, -1, 162, -1, 162, -1, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 65, -1, 86, -1, -1, -1, -1, -1, -1, -1, 65, -1, 86, 86, -1, 86, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 65, -1, -1, 65, -1, 65, 86, -1, 65, -1, 86, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 65, -1, -1, -1, -1, 65, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 65, -1, -1, 65, 86, -1, 86, -1, -1, -1, -1, -1, -1, -1, -1, 65, -1, -1, -1, -1, -1, 65, -1, 86, -1, -1, 65, -1, -1, -1, -1, 65, 65, -1, -1, 65, -1, 65, -1, 65, -1, -1, 65, 86, -1, -1, -1, 86, -1, 65, -1, 65, 65, -1, -1, -1, 65, -1, -1, -1, 65, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 262, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 173, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 72, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, 275, -1, -1, 275, -1, -1, -1, -1, -1, -1, 187, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, 275, 275, -1, -1, -1, -1, -1, -1, 187, -1, 275, -1, 275, -1, -1, 275, -1, -1, -1, 187, -1, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, 187, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 134, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 1, -1, -1, 190, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 43, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 179, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [373, 351, 191, 334, -1, 420, -1, -1, 195, 94, 212, -1, 450, -1, -1, -1, 35, 157, -1, 180, 326, 166, 395, 341, 19, 194, 422, 29, 456, 223, 228, -1, 32, 181, 297, 75, 13, 31, -1, -1, 70, -1, 333, -1, 130, 239, 41, -1, -1, 457, -1, -1, 434, 464, 83, -1, -1, 189, 221, 111, 448, -1, 201, 324, 361, 427, -1, 309, -1, 299, 306, 22, 414, 101, 359, 293, 357, -1, 294, -1, -1, -1, 123, -1, -1, 279, 56, -1, 219, -1, 396, 358, 27, -1, -1, 363, 30, 462, 150, 192, -1, 122, 371, -1, 461, -1, 143, 278, 127, 251, 24, -1, 117, 364, 402, 97, -1, -1, -1, 107, 459, 5, 250, 346, 332, 112, 103, 160, 295, -1, 96, 246, 155, -1, 412],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 23, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 375, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 348, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 292, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 93, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 406, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, 438, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, 438, -1, -1, -1, -1, -1, 438, 438, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, 438, 438, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, 438, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 151, -1, -1, -1, -1, -1, -1, -1, -1, -1, 151, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 151, -1, -1, 151, -1, 151, -1, -1, 151, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 151, -1, -1, -1, -1, 151, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 151, -1, -1, 151, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 151, -1, -1, -1, -1, -1, 151, -1, -1, -1, -1, 151, -1, -1, -1, -1, 151, 151, -1, -1, 151, -1, 151, -1, 151, -1, -1, 151, -1, -1, -1, -1, -1, -1, 151, -1, 151, 151, -1, -1, -1, 151, -1, -1, -1, 151, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 317, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 305, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 76, -1, -1, -1, -1, -1, -1, -1, -1, -1, 76, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 76, -1, -1, 76, -1, 76, -1, -1, 76, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 76, -1, -1, -1, -1, 76, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 76, -1, -1, 76, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 76, -1, -1, -1, -1, -1, 76, -1, -1, -1, -1, 76, -1, -1, -1, -1, 76, 76, -1, -1, 76, -1, 76, -1, 76, -1, -1, 76, -1, -1, -1, -1, -1, -1, 76, -1, 76, 76, -1, -1, -1, 76, -1, -1, -1, 76, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 320, -1, -1, -1, 320, -1, -1, -1, -1, 320, 320, -1, -1, -1, -1, 320, -1, -1, 320, -1, 320, 320, -1, 320, -1, 320, 320, -1, -1, 320, -1, -1, 320, -1, 320, -1, -1, 320, -1, 320, 320, -1, 320, 320, -1, -1, 320, -1, -1, 320, 320, 320, -1, -1, -1, -1, 320, -1, 320, -1, -1, 320, 320, 320, -1, -1, -1, -1, 320, 320, -1, -1, 320, 320, -1, -1, -1, -1, -1, -1, -1, -1, -1, 320, 320, 320, -1, 320, 320, -1, 320, -1, -1, -1, -1, 320, 320, 320, -1, 320, 320, 320, 320, -1, 320, -1, 320, -1, 320, -1, -1, 320, 320, -1, -1, -1, -1, -1, 320, -1, 320, 320, -1, -1, -1, 320, -1, -1, -1, 320, -1, -1, -1],
-    [-1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, 8, -1, 8, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, 8, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, -1, 8, -1, -1, -1, -1, 8, -1, -1, -1, -1, 8, 8, -1, -1, 8, -1, 8, -1, 8, -1, -1, 8, -1, -1, -1, -1, -1, -1, 8, -1, 8, 8, -1, -1, -1, 8, -1, -1, -1, 8, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 109, -1, -1, -1, -1, -1, -1, -1, -1, -1, 109, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 109, -1, -1, 109, -1, 109, -1, -1, 109, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 109, -1, -1, -1, -1, 109, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 109, -1, -1, 109, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 109, -1, -1, -1, -1, -1, 109, -1, -1, -1, -1, 109, -1, -1, -1, -1, 109, 109, -1, -1, 109, -1, 109, -1, 109, -1, -1, 109, -1, -1, -1, -1, -1, -1, 109, -1, 109, 109, -1, -1, -1, 109, -1, -1, -1, 109, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 314, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 149, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 84, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 84, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 84, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, 267, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 392, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 392, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 392, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 208, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 106, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 458, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 119, -1, -1, -1, -1, -1, -1, -1, -1, -1, 119, -1, -1, -1, -1, 119, -1, -1, 119, -1, -1, 119, -1, 119, -1, 119, 119, -1, -1, 119, -1, -1, 119, -1, 119, -1, -1, 119, -1, 119, 119, -1, 119, 404, -1, -1, 119, -1, -1, 119, 119, 119, -1, -1, -1, -1, 119, -1, 119, -1, -1, 119, 119, 119, -1, -1, -1, -1, 119, 119, -1, -1, 119, 119, -1, -1, -1, -1, -1, -1, -1, -1, -1, 119, 119, 119, -1, 119, 119, -1, 119, -1, -1, -1, -1, 119, 119, 119, -1, 119, 119, 119, 119, -1, 119, -1, 119, -1, 119, -1, -1, 119, 119, -1, -1, -1, -1, -1, 119, -1, 119, 119, -1, -1, -1, 119, -1, -1, -1, 119, -1, -1, -1],
-    [-1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, 337, -1, 337, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 453, -1, -1, -1, -1, 36, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 128, -1, -1, -1, -1, -1, 128, -1, -1, -1, -1, 128, -1, -1, -1, -1, 128, 337, -1, -1, 128, -1, 36, -1, 337, -1, -1, 337, -1, -1, -1, -1, -1, -1, 36, -1, 337, 337, -1, -1, -1, 337, -1, -1, -1, 337, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 463, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 12, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 132, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 126, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 126, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 325, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 268, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 216, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 328, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 444, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 444, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [214, -1, -1, 169, -1, -1, -1, -1, 274, -1, -1, -1, -1, -1, -1, -1, 290, 398, -1, -1, -1, 316, -1, -1, -1, -1, 258, -1, -1, 272, -1, -1, 197, 344, -1, -1, -1, 280, -1, -1, 415, -1, 439, -1, -1, 48, 342, -1, -1, 146, -1, -1, -1, -1, -1, -1, -1, -1, -1, 335, -1, -1, 449, -1, -1, -1, -1, 199, -1, 356, -1, -1, 185, 367, -1, -1, 421, -1, 385, -1, -1, -1, 220, -1, -1, -1, -1, -1, 168, -1, -1, 409, -1, 354, -1, 273, 393, -1, -1, 416, -1, -1, -1, -1, 403, -1, -1, 158, -1, 343, -1, -1, 282, -1, 312, 71, -1, -1, -1, 244, -1, 318, -1, -1, 236, 98, 129, -1, 270, -1, 67, -1, 46, -1, 207],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 370, -1, -1, -1, -1, -1, 153, -1, -1, -1, -1, 141, -1, -1, -1, -1, 300, -1, -1, -1, 202, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, 115, -1, 115, -1, -1, 115, -1, 115, -1, -1, -1, 291, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, 115, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, -1, -1, 115, -1, 115, -1, -1, 115, 115, -1, -1, -1, -1, -1, 115, -1, 115, 115, -1, -1, -1, 115, -1, -1, -1, 115, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 283, -1, -1, -1, -1, -1, -1, -1, 0, -1, -1, -1, 451, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 125, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 57, -1, -1, -1, -1, -1, -1, -1, -1, -1, 198, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 394, -1, -1, 138, -1, 240, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 242, -1, -1, 301, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 245, -1, -1, -1, -1, -1, -1, 329, -1, -1, 445, -1, -1, -1, -1, -1, -1, -1, -1, 338, 90, -1, -1, -1, 265, -1, -1, -1, 327, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 137, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 178, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 454, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 116, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 248, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 310, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 52, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 33, -1, -1, 33, -1, 33, -1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 177, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 33, -1, -1, 33, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 33, -1, -1, -1, -1, 177, -1, 33, -1, -1, 33, -1, -1, -1, -1, -1, -1, 177, -1, 33, 33, -1, -1, -1, 33, -1, -1, -1, 33, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 437, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 307, -1, -1, -1, -1, -1, -1, -1, -1, -1, 307, -1, -1, -1, -1, 231, -1, -1, -1, -1, -1, -1, -1, 237, -1, 237, -1, -1, -1, 307, -1, -1, 307, -1, 307, -1, -1, 307, -1, 237, -1, -1, -1, -1, -1, -1, 237, -1, -1, 237, -1, 307, -1, -1, -1, -1, 307, -1, -1, -1, -1, 237, -1, -1, -1, -1, -1, -1, -1, 307, -1, -1, 307, 237, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 307, 237, -1, 237, 237, -1, 307, -1, -1, -1, -1, 307, -1, 237, -1, 237, 307, 307, 237, -1, 307, -1, 307, -1, 307, -1, -1, 307, 237, -1, -1, -1, -1, -1, 307, -1, 307, 307, -1, -1, -1, 307, -1, -1, -1, 307, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 319, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 88, -1, -1, -1, -1, -1, -1, -1, -1, -1, 88, -1, -1, 88, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 88, -1, -1, 88, -1, 88, -1, -1, 88, -1, 88, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 88, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 88, -1, -1, 88, 88, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 88, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 88, -1, -1, -1, -1, 88, -1, 88, -1, -1, 88, 88, -1, -1, -1, -1, -1, 88, -1, 88, 88, -1, -1, -1, 88, -1, -1, -1, 88, -1, -1, -1],
-    [-1, -1, 368, -1, -1, -1, -1, -1, -1, -1, -1, -1, 368, -1, -1, 413, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 368, -1, -1, 368, -1, 368, -1, -1, 368, -1, 413, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 368, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 368, -1, -1, 368, 413, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 413, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 368, -1, -1, -1, -1, 368, -1, 368, -1, -1, 368, 413, -1, -1, -1, -1, -1, 368, -1, 368, 368, -1, -1, -1, 368, -1, -1, -1, 368, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 277, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 277, -1, -1, -1, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 277, -1, -1, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 277, -1, -1, -1, -1, -1, 277, -1, -1, -1, -1, -1, 277, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 424, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 424, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 424, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 424, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 281, -1, -1, -1, -1, -1, -1, -1, -1, -1, 54, -1, -1, -1, -1, -1, -1, -1, 256, -1, 15, 3, -1, 285, -1, -1, 102, -1, -1, 353, -1, -1, 443, -1, 9, -1, -1, 53, -1, -1, -1, -1, 425, -1, -1, -1, -1, -1, -1, -1, 87, 121, -1, -1, -1, -1, 233, -1, 366, -1, -1, -1, 184, 74, -1, -1, -1, -1, 397, 391, -1, -1, 210, -1, -1, -1, -1, 440, -1, -1, -1, -1, -1, 140, 51, -1, -1, -1, -1, -1, 38, -1, -1, -1, -1, 176, 61, -1, -1, -1, 28, -1, -1, -1, 349, -1, 419, -1, 264, -1, -1, 14, -1, -1, -1, -1, -1, -1, 401, -1, 196, 21, -1, -1, -1, 218, -1, -1, -1, 376, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 45, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 45, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 45, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 410, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 45, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 336, -1, -1, -1, -1, -1, -1, -1, -1, -1, 336, -1, -1, -1, -1, 336, -1, -1, 336, -1, -1, 336, -1, 336, -1, 336, 336, -1, -1, 336, -1, -1, 336, -1, 336, -1, -1, 336, -1, 336, 336, -1, 336, 336, -1, -1, 336, -1, -1, 336, 336, 336, -1, -1, -1, -1, 336, -1, 336, -1, -1, 336, 336, 336, -1, -1, -1, -1, 336, 336, -1, -1, 336, 336, -1, -1, -1, -1, -1, -1, -1, -1, -1, 336, 336, 336, -1, 336, 336, -1, 336, -1, -1, -1, -1, 336, 336, 336, -1, 336, 336, 336, 336, -1, 336, -1, 336, -1, 336, -1, -1, 336, 336, -1, -1, -1, -1, -1, 336, -1, 336, 336, -1, -1, -1, 336, -1, -1, -1, 336, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 156, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 217, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 407, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 92, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 340, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 249, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 133, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 133, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 249, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 308, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 154, -1, -1, -1, -1, -1, -1, -1, -1, -1, 154, -1, -1, -1, -1, 154, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 154, -1, -1, 154, -1, 154, 154, -1, 154, -1, -1, 154, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 154, -1, -1, -1, -1, 154, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 154, -1, -1, 154, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 154, -1, -1, -1, -1, -1, 154, -1, -1, -1, -1, 154, -1, -1, -1, -1, 154, 154, -1, -1, 154, -1, 154, -1, 154, -1, -1, 154, -1, -1, -1, -1, -1, -1, 154, -1, 154, 154, -1, -1, -1, 154, -1, -1, -1, 154, -1, -1, -1],
-    [-1, -1, 286, -1, -1, -1, -1, -1, -1, -1, -1, -1, 286, -1, -1, -1, -1, 77, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 286, -1, -1, 286, -1, 286, 77, -1, 286, -1, -1, 77, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 286, -1, -1, -1, -1, 286, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 286, -1, -1, 286, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 286, -1, -1, -1, -1, -1, 286, -1, -1, -1, -1, 286, -1, -1, -1, -1, 286, 286, -1, -1, 286, -1, 286, -1, 286, -1, -1, 286, -1, -1, -1, -1, -1, -1, 286, -1, 286, 286, -1, -1, -1, 286, -1, -1, -1, 286, -1, -1, -1],
-    [-1, -1, 302, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, 271, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, 271, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, 271, 271, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, 271, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 11, -1, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 11, -1, -1, -1, -1, -1, -1, 11, -1, -1, 11, -1, -1, -1, -1, -1, -1, 11, -1, -1, -1, -1, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 11, -1, 11, 11, -1, -1, -1, -1, -1, -1, 11, -1, 11, -1, 11, -1, -1, 11, -1, -1, -1, 11, -1, -1, -1, -1, -1, 11, -1, -1, -1, -1, -1, 11, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 225, -1, -1, -1, -1, -1, -1, -1, 288, -1, 288, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 288, -1, -1, -1, -1, -1, -1, 288, -1, -1, 288, -1, -1, -1, -1, -1, -1, -1, 225, -1, -1, -1, 288, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 288, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 288, -1, 288, 288, -1, -1, -1, -1, -1, -1, -1, -1, 288, -1, 288, -1, -1, 288, -1, -1, -1, -1, -1, -1, -1, -1, -1, 288, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 374, 374, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 374, -1, -1, -1, 352, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 374, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 374, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 374, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 254, -1, -1, -1, -1, -1, -1, -1, -1, -1, 254, -1, -1, -1, -1, 432, -1, -1, 432, -1, -1, 432, -1, 432, -1, 432, 432, -1, -1, 254, -1, -1, 254, -1, 254, -1, -1, 254, -1, 432, 432, -1, 432, -1, -1, -1, 432, -1, -1, 432, 432, 254, -1, -1, -1, -1, 254, -1, 432, -1, -1, 432, 432, 432, -1, -1, -1, -1, 432, 254, -1, -1, 254, 432, -1, -1, -1, -1, -1, -1, -1, -1, -1, 432, 254, 432, -1, 432, 432, -1, 254, -1, -1, -1, -1, 254, 432, 432, -1, 432, 254, 254, 432, -1, 254, -1, 254, -1, 254, -1, -1, 254, 432, -1, -1, -1, -1, -1, 254, -1, 254, 254, -1, -1, -1, 254, -1, -1, -1, 254, -1, -1, -1],
-    [-1, -1, 377, -1, -1, -1, 377, -1, -1, -1, -1, -1, 377, -1, -1, -1, -1, 377, -1, -1, 377, -1, 260, 377, -1, 377, -1, 377, 377, -1, -1, 377, -1, -1, 377, -1, 377, -1, -1, 377, -1, 377, 377, -1, 377, 377, -1, -1, 377, -1, -1, 377, 377, 377, -1, -1, -1, -1, 377, -1, 377, -1, -1, 377, 377, 377, -1, -1, -1, -1, 377, 377, -1, -1, 377, 377, -1, -1, -1, -1, -1, -1, -1, -1, -1, 377, 377, 377, -1, 377, 377, -1, 377, -1, -1, -1, -1, 377, 377, 377, -1, 377, 377, 377, 377, -1, 377, -1, 377, -1, 377, -1, -1, 377, 377, -1, -1, -1, -1, -1, 377, -1, 377, 377, -1, -1, -1, 377, -1, -1, -1, 377, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, 261, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, 261, 261, -1, -1, -1, -1, -1, -1, 68, -1, 261, -1, 261, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 44, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 382, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 152, -1, -1, -1, -1, -1, -1, -1, -1, 131, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 152, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 215, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 411, -1, -1, -1, -1, -1, -1, -1, -1, -1, 411, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 411, -1, -1, 411, -1, 411, -1, -1, 411, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 411, -1, -1, -1, -1, 411, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 411, -1, -1, 411, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 411, -1, -1, -1, -1, -1, 411, -1, -1, -1, -1, 411, -1, -1, -1, -1, 411, 411, -1, -1, 411, -1, 411, -1, 411, -1, -1, 411, -1, -1, -1, -1, -1, -1, 411, -1, 411, 411, -1, -1, -1, 411, -1, -1, -1, 411, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 188, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 99, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 465, 204, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 465, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 204, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 465, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 204, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, -1, -1, -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 303, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 423, -1, 423, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 423, -1, -1, -1, -1, -1, -1, 423, -1, -1, 423, -1, -1, -1, -1, -1, -1, 423, -1, -1, -1, -1, 423, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 423, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 423, -1, 423, 423, -1, -1, -1, -1, -1, -1, 423, -1, 423, -1, 423, -1, -1, 423, -1, -1, -1, 423, -1, -1, -1, -1, -1, 423, -1, -1, -1, -1, -1, 423, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, 296, -1, -1, -1, -1, -1, 145, -1, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, 145, 145, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, 145, -1, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 186, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 186, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 232, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 253, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 378, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 284, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 148, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 148, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 148, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 148, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 148, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 436, -1, -1, 408, -1, -1, 266, -1, 436, -1, 436, 408, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 436, 183, -1, 266, -1, -1, -1, 436, -1, -1, 436, 163, -1, -1, -1, -1, -1, -1, -1, 163, -1, -1, 436, 163, 266, -1, -1, -1, -1, 159, -1, -1, -1, -1, 159, -1, -1, -1, -1, -1, -1, -1, -1, -1, 163, -1, 436, -1, 436, 436, -1, -1, -1, -1, -1, -1, -1, 159, 436, -1, 436, -1, -1, 436, -1, -1, -1, -1, -1, -1, -1, -1, -1, 436, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 55, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 269, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, 430, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, 25, -1, 25, 430, -1, 25, -1, -1, 430, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, 25, -1, -1, -1, -1, 25, 25, -1, -1, 25, -1, 25, -1, 25, -1, -1, 25, -1, -1, -1, -1, -1, -1, 25, -1, 25, 25, -1, -1, -1, 25, -1, -1, -1, 25, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 174, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 276, -1, -1, -1, -1, -1, -1, -1, -1, -1, 276, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 276, -1, -1, 276, -1, 276, -1, -1, 276, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 276, -1, -1, -1, -1, 276, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 276, -1, -1, 276, 389, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 276, -1, -1, -1, -1, -1, 276, -1, -1, -1, -1, 276, -1, -1, -1, -1, 276, 276, -1, -1, 276, -1, 276, -1, 276, -1, -1, 276, -1, -1, -1, -1, -1, -1, 276, -1, 276, 276, -1, -1, -1, 276, -1, -1, -1, 276, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, 69, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, 69, -1, -1, -1, -1, -1, 69, 69, -1, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, -1, 69, 69, -1, -1, -1, -1, -1, -1, -1, -1, 69, -1, 69, -1, -1, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, 69, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 252, -1, -1, -1, 252, -1, -1, -1, -1, 252, 252, -1, -1, -1, -1, 252, -1, -1, 252, -1, 252, 252, -1, 252, -1, 252, 252, -1, -1, 252, -1, -1, 252, -1, 252, -1, -1, 252, -1, 252, 252, -1, 252, 252, -1, -1, 252, -1, -1, 252, 252, 252, -1, -1, -1, -1, 252, -1, 252, -1, -1, 252, 252, 252, -1, -1, -1, -1, 252, 252, -1, -1, 252, 252, -1, -1, -1, -1, -1, -1, -1, -1, -1, 252, 252, 252, -1, 252, 252, -1, 252, -1, -1, -1, -1, 252, 252, 252, -1, 252, 252, 252, 252, -1, 252, -1, 252, -1, 252, -1, -1, 252, 252, -1, -1, -1, -1, -1, 252, -1, 252, 252, -1, -1, -1, 252, -1, -1, -1, 252, -1, -1, -1],
-    [315, -1, 331, 315, -1, -1, -1, -1, 315, -1, -1, -1, 331, -1, -1, -1, 315, 315, -1, -1, 331, 315, 331, 331, -1, 331, 315, 203, 331, 315, -1, 331, 315, 315, 331, -1, 331, 315, -1, 331, 315, -1, 315, -1, 331, 315, 315, -1, 203, 315, -1, 203, 331, 331, -1, 350, -1, -1, 331, 315, 331, -1, 315, 429, 331, 331, -1, 315, -1, 315, 331, 331, 315, 315, 331, 58, 315, -1, 315, 331, -1, -1, 315, -1, -1, 331, 331, -1, 315, -1, 203, 315, 331, 315, -1, 315, 315, 331, 331, 315, -1, -1, 331, -1, 315, -1, 331, 315, 331, 315, 331, -1, 315, 331, 315, 315, -1, -1, -1, 315, 331, 315, 331, 331, 315, 315, 315, 331, 315, -1, 315, 331, 315, -1, 315],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 345, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 447, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 135, 135, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 73, -1, -1, -1, 135, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 135, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 73, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 135, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 362, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 82, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 82, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 82, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 452, -1, 452, -1, -1, -1, -1, -1, -1, -1, 452, -1, 452, 452, -1, 452, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 452, -1, -1, 452, -1, 452, 452, -1, 452, -1, 452, 50, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 452, -1, -1, -1, -1, 452, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 452, -1, -1, 452, 452, -1, 452, -1, -1, -1, -1, -1, -1, -1, -1, 452, -1, -1, -1, -1, 452, 452, -1, 452, -1, -1, 452, -1, -1, -1, -1, 452, 452, -1, -1, 452, -1, 452, -1, 452, -1, -1, 452, 452, -1, -1, -1, 452, -1, 452, -1, 452, 452, -1, -1, -1, 452, -1, -1, -1, 452, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 405, 405, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 405, -1, -1, -1, 405, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 205, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 405, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 405, -1, -1, 405, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 205, -1, -1, -1, -1, -1, 405, -1, -1, -1, -1, -1, 205, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 455, -1, 34, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 455, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 455, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 455, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, 383, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, -1, -1, -1, -1, -1, 383, -1, -1, 383, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, 383, 383, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, 383, -1, -1, 383, -1, -1, -1, -1, -1, -1, -1, -1, -1, 383, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 110, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 347, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 322, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 224, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 60, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 311, -1, -1, -1, -1, -1, -1, -1, 227, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 113, -1, 113, -1, -1, -1, -1, -1, -1, -1, 113, -1, 113, 113, -1, 113, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 113, -1, -1, 113, -1, 113, 113, -1, 113, -1, 113, 229, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 113, -1, -1, -1, -1, 113, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 113, -1, -1, 113, 113, -1, 113, -1, -1, -1, -1, -1, -1, -1, -1, 113, -1, -1, -1, -1, 113, 113, -1, 113, -1, -1, 113, -1, -1, -1, -1, 113, 113, -1, -1, 113, -1, 113, -1, 113, -1, -1, 113, 113, -1, -1, -1, 113, -1, 113, -1, 113, 113, -1, -1, -1, 113, -1, -1, -1, 113, -1, -1, -1],
-    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, 313, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, 435, -1, -1, -1, -1, -1, 435, 313, -1, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, -1, 435, 435, -1, -1, -1, -1, -1, -1, -1, -1, 435, -1, 435, -1, -1, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, 313, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
-    [-1, -1, 379, -1, -1, -1, -1, -1, -1, -1, -1, -1, 379, -1, -1, -1, -1, 379, -1, -1, 379, -1, -1, 379, -1, 379, -1, 379, 379, -1, -1, 379, -1, -1, 379, -1, 379, -1, -1, 379, -1, 379, 379, -1, 379, 105, -1, -1, 379, -1, -1, 379, 379, 379, -1, -1, -1, -1, 379, -1, 379, -1, -1, 379, 379, 379, -1, -1, -1, -1, 379, 379, -1, -1, 379, 379, -1, -1, -1, -1, -1, -1, -1, -1, -1, 379, 379, 379, -1, 379, 379, -1, 379, -1, -1, -1, -1, 379, 379, 379, -1, 379, 379, 379, 379, -1, 379, -1, 379, -1, 379, -1, -1, 379, 379, -1, -1, -1, -1, -1, 379, -1, 379, 379, -1, -1, -1, 379, -1, -1, -1, 379, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 107, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 392, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [65, -1, -1, -1, 65, 65, 65, -1, -1, -1, 65, -1, -1, -1, -1, -1, -1, -1, 65, 65, -1, 65, -1, -1, -1, -1, 65, -1, 65, -1, -1, -1, -1, 65, 65, -1, -1, -1, 65, 65, -1, -1, 65, -1, -1, -1, 65, 65, 65, -1, -1, -1, 65, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 65, -1, -1, -1, 65, 65, -1, 65, -1, -1, -1, 312, 65, -1, -1, -1, -1, 65, -1, -1, 65, -1, 65, -1, -1, -1, -1, 65, -1, 65, 65, -1, -1, -1, -1, 65, 65, 65, -1, -1, 65, -1, 65, -1, 65, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 376, 376, 376, -1, -1, 376, 376, -1, 376, -1, -1, -1, 376, -1, 376, 376, 376, -1, -1, 376, -1, 376, -1, 376, 376, -1, -1, -1, -1, 376, -1, 376, 376, -1, 376, 376, -1, -1, 376, -1, 376, -1, 376, 376, -1, 371, -1, -1, 376, -1, -1, -1, 376, -1, -1, -1, 376, -1, -1, -1, -1, 376, 376, -1, -1, 376, 376, 376, -1, -1, 376, -1, 376, 376, 376, -1, -1, -1, -1, 376, -1, -1, 376, -1, -1, -1, -1, 376, -1, 376, 376, 376, 376, -1, 376, -1, 376, 376, -1, 376, 376, -1, 376, -1, 376, -1, 376, -1, -1, 376, -1, 376, -1, 376, 376, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 417, -1, -1, -1, -1, 417, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 417, -1, -1, -1, -1, 417, -1, -1, -1, -1, -1, -1, -1, 417, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 211, -1, -1, 211, -1, -1, -1, 211, -1, -1, -1, 211, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 211, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 211, -1, -1, -1, 211, -1, -1, -1, -1, 211, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 211, -1, -1, -1, -1, 211, -1, -1, 211, -1, -1, -1, -1, 211, -1, 211, -1, -1, 211, -1, 211, -1, -1, 211, -1, -1, 211, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 211, -1, -1, -1],
+    [-1, -1, -1, -1, -1, 339, -1, -1, -1, -1, 339, -1, -1, -1, -1, -1, -1, -1, 339, 339, -1, -1, -1, -1, -1, -1, -1, -1, 339, -1, -1, -1, -1, -1, 339, -1, -1, -1, 339, 339, -1, -1, 339, -1, -1, -1, -1, 339, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 339, 339, -1, 339, -1, -1, -1, -1, 339, -1, -1, -1, -1, 339, -1, -1, 339, -1, -1, -1, -1, -1, -1, 339, -1, 339, -1, -1, -1, -1, -1, 339, -1, 339, -1, -1, 339, -1, 339, -1, 339, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [85, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 230, -1, -1, -1, -1, -1, -1, -1, -1, -1, 85, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 230, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 60, 60, -1, -1, -1, -1, 60, -1, -1, -1, -1, -1, -1, -1, 60, 60, -1, -1, -1, -1, -1, -1, -1, -1, 60, -1, -1, -1, -1, 60, -1, -1, -1, -1, 60, -1, -1, -1, 60, -1, -1, -1, 60, 60, -1, -1, -1, -1, 60, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 60, -1, -1, -1, 60, 60, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 60, -1, -1, -1, -1, -1, -1, -1, -1, -1, 60, -1, 60, 60, -1, -1, -1, -1, 60, -1, 60, -1, -1, 60, -1, 60, -1, 60, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 336, 336, 336, -1, -1, 336, 336, -1, 336, -1, -1, -1, 336, -1, 336, 336, 336, -1, -1, 336, -1, 336, -1, 336, 336, -1, -1, -1, -1, 336, -1, 336, 336, -1, 336, 336, -1, -1, 336, -1, 336, -1, 336, 336, -1, -1, -1, -1, 336, -1, -1, -1, 336, -1, -1, -1, 336, -1, -1, -1, -1, 336, 336, -1, -1, -1, 336, 336, -1, -1, 336, -1, 336, 336, 336, -1, -1, -1, -1, 336, -1, -1, 336, -1, -1, -1, -1, 336, -1, 336, 336, 336, 336, -1, 336, -1, 336, 336, -1, 336, 336, -1, 336, -1, 336, -1, 336, -1, -1, 336, -1, 336, -1, 336, 336, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 97, -1, 382, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 367, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 138, -1, -1, 138, -1, -1, -1, 138, -1, -1, -1, 138, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 138, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 138, -1, -1, -1, 138, -1, -1, -1, -1, 138, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 138, -1, -1, -1, -1, 352, -1, -1, 138, -1, -1, -1, -1, 138, -1, 352, -1, -1, 352, -1, 138, -1, -1, 352, -1, -1, 138, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 138, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 218, -1, -1, 218, -1, -1, -1, 218, -1, -1, -1, 218, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 218, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 218, -1, -1, -1, 218, -1, -1, -1, -1, 218, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 218, -1, -1, -1, -1, -1, 218, -1, 218, -1, -1, -1, -1, 218, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 218, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 218, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 396, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 59, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 378, 378, -1, -1, -1, -1, 378, -1, -1, -1, -1, -1, -1, -1, 378, 378, -1, -1, -1, -1, -1, -1, -1, -1, 378, -1, -1, -1, -1, 378, -1, -1, -1, -1, 378, 174, -1, -1, 378, -1, -1, -1, 378, 378, -1, -1, -1, -1, 378, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 378, -1, -1, -1, 378, 378, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 378, -1, -1, -1, -1, -1, -1, -1, -1, -1, 378, -1, 378, 378, -1, -1, -1, -1, 378, -1, 378, -1, -1, 378, -1, 378, -1, 378, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 279, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [202, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 300, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 300, -1, -1, -1, -1, 300, -1, -1, -1, -1, -1, -1, -1, 300, -1, 202, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 300, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 329, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 368, -1, 151, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 127, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 251, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 244, 244, 497, -1, -1, 475, 244, -1, 475, -1, -1, -1, 475, -1, 244, 244, 475, -1, -1, -1, -1, -1, -1, -1, 244, -1, -1, -1, -1, 244, -1, -1, -1, -1, 244, 475, -1, -1, 244, -1, -1, -1, 244, 244, -1, -1, -1, -1, 244, -1, -1, -1, 475, -1, -1, -1, 475, -1, -1, -1, -1, 475, 244, -1, -1, -1, 244, 244, -1, -1, -1, -1, -1, -1, 475, -1, -1, -1, -1, 244, -1, -1, 475, -1, -1, -1, -1, 475, -1, 244, -1, 244, 244, -1, 475, -1, -1, 244, -1, 244, 475, -1, 244, -1, 244, -1, 244, -1, -1, -1, -1, -1, -1, 475, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, 6, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 361, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 246, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 132, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 84, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [305, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 305, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 305, -1, -1, -1, -1, 305, -1, -1, -1, -1, -1, -1, -1, 313, -1, 305, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 305, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 17, 263, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 45, -1, -1],
+    [-1, -1, -1, -1, 402, 402, 402, -1, -1, 402, 402, -1, 402, -1, -1, -1, 402, -1, 402, 402, 402, -1, -1, 402, -1, 402, -1, 402, 402, -1, -1, -1, -1, 402, -1, 402, 402, 328, 402, 402, -1, -1, 402, -1, 402, -1, 402, 402, -1, 402, -1, -1, 402, -1, -1, -1, 402, -1, -1, -1, 402, -1, -1, -1, -1, 402, 402, -1, -1, 402, 402, 402, -1, -1, 402, -1, 402, 402, 402, -1, -1, -1, -1, 402, -1, -1, 402, -1, -1, -1, -1, 402, -1, 402, 402, 402, 402, -1, 402, -1, 402, 402, -1, 402, 402, -1, 402, -1, 402, -1, 402, -1, -1, 402, -1, 402, -1, 402, 402, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 241, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 385, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 209, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 198, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 182, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [38, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 41, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, 47, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 236, -1, -1, 236, -1, -1, -1, 236, -1, -1, -1, 236, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 236, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 236, -1, -1, -1, 236, -1, -1, -1, -1, 236, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 236, -1, -1, -1, -1, -1, -1, -1, 236, -1, -1, -1, -1, 236, -1, -1, -1, -1, 37, -1, 236, -1, -1, -1, -1, -1, 236, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 236, -1, -1, -1],
+    [403, -1, -1, -1, 403, 403, 403, -1, -1, -1, 403, -1, -1, -1, -1, -1, -1, -1, 403, 403, -1, -1, -1, -1, -1, -1, -1, -1, 403, -1, -1, -1, -1, 403, -1, -1, -1, -1, 403, -1, -1, -1, 403, -1, -1, -1, 403, 403, -1, -1, -1, -1, 403, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 403, -1, -1, -1, 403, 403, -1, -1, -1, -1, -1, 403, -1, -1, -1, -1, -1, 403, -1, -1, -1, -1, -1, -1, -1, -1, -1, 403, -1, 403, 403, -1, -1, -1, -1, 403, -1, 403, -1, -1, 403, -1, 403, -1, 403, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [284, -1, -1, -1, 284, 284, 284, -1, -1, -1, 284, -1, -1, -1, -1, -1, -1, -1, 284, 284, -1, -1, -1, -1, -1, -1, -1, -1, 284, -1, -1, -1, -1, 284, -1, -1, -1, -1, 284, -1, -1, -1, 284, -1, -1, -1, 284, 284, -1, -1, -1, -1, 284, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 284, -1, -1, -1, 284, 284, -1, -1, -1, -1, -1, 284, -1, -1, -1, -1, -1, 284, -1, -1, -1, -1, -1, -1, -1, -1, -1, 284, -1, 284, 284, -1, -1, -1, -1, 284, -1, 284, -1, -1, 284, -1, 284, -1, 284, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [20, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 264, 68, -1, -1, -1, -1, 68, -1, -1, -1, -1, -1, -1, -1, 68, 68, -1, -1, -1, -1, -1, -1, -1, -1, 68, -1, -1, -1, -1, 317, -1, -1, -1, -1, 68, -1, -1, -1, 68, -1, -1, -1, 264, 68, -1, -1, -1, -1, 264, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 264, -1, -1, -1, 68, 68, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 66, -1, -1, -1, -1, -1, -1, -1, -1, -1, 66, -1, 68, 264, -1, -1, -1, -1, 66, -1, 68, -1, -1, 68, -1, 68, -1, 68, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 70, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 70, -1, -1, -1, -1, 5, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 70, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 487, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 478, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, 337, -1, -1, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, 337, 337, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, -1, -1, -1, 337, -1, -1, -1, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 337, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 394, -1, -1, -1, -1, -1, -1, -1, -1, -1, 394, -1, 337, -1, -1, -1, -1, -1, 394, -1, 337, -1, -1, 337, -1, 337, -1, 337, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 502, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 23, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 18, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 281, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 369, -1, -1, -1, -1, -1, -1, -1, -1, -1, 369, -1, -1, 501, -1, -1, -1, -1, 369, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [473, -1, -1, -1, -1, -1, 473, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 258, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 307, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 294, -1, -1, -1, -1, -1, -1, -1, -1, -1, 160, -1, -1, -1, -1, -1, -1, -1, 162, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 29, -1, -1, 308, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 114, -1, -1, -1, -1, -1, -1, -1, -1, 121, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 3, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 333, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [359, -1, -1, -1, -1, -1, 229, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 43, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 399, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 462, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 271, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [86, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 86, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 86, -1, -1, -1, -1, 86, -1, -1, -1, -1, 111, -1, -1, 86, -1, 86, -1, -1, -1, -1, 111, -1, -1, 86, -1, -1, -1, -1, 111, 86, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, 438, -1, -1, -1, 438, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, 438, -1, -1, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1, -1, 314, -1, -1, 438, -1, -1, -1, -1, 438, -1, 314, -1, -1, 314, -1, 438, -1, -1, 314, -1, -1, 438, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 438, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 101, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 101, -1, -1, -1, -1, 101, -1, -1, -1, -1, -1, -1, -1, 101, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 332, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 320, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 2, -1, -1, 2, -1, -1, 2, -1, -1, -1, 2, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, 2, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, 2, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 2, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 381, -1, -1, 381, -1, -1, -1, 381, -1, -1, -1, 381, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 381, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 381, -1, -1, -1, 381, -1, -1, -1, -1, 381, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 381, -1, -1, -1, -1, 381, -1, -1, 381, -1, -1, -1, -1, 381, -1, 381, -1, -1, 381, -1, 381, -1, -1, 381, -1, -1, 381, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 381, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 249, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 249, -1, -1, -1, -1, 249, -1, -1, -1, -1, -1, -1, -1, 249, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, 228, -1, -1, -1, -1, 228, -1, -1, -1, -1, -1, -1, -1, 228, 228, -1, -1, -1, -1, -1, -1, -1, -1, 228, -1, -1, -1, -1, -1, 228, -1, -1, -1, 228, 228, -1, -1, 228, -1, -1, -1, -1, 228, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 228, 228, -1, 228, -1, -1, -1, -1, 228, -1, -1, -1, -1, 228, -1, -1, 228, -1, -1, -1, -1, -1, -1, 228, -1, 228, -1, -1, -1, -1, -1, 228, -1, 228, -1, -1, 228, -1, 228, -1, 228, -1, -1, -1, -1, 423, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 260, -1, -1, 449, -1, -1, 449, -1, -1, -1, 449, -1, -1, -1, 449, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 449, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 449, -1, -1, -1, 449, -1, -1, -1, -1, 449, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 449, -1, -1, -1, -1, -1, -1, -1, 449, -1, -1, -1, -1, 449, -1, -1, -1, -1, -1, -1, 449, -1, -1, -1, -1, -1, 449, 260, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 449, -1, -1, -1],
+    [-1, -1, -1, -1, 391, 391, -1, -1, -1, -1, 391, -1, -1, -1, -1, -1, -1, -1, 391, 391, -1, -1, -1, -1, -1, -1, -1, -1, 391, -1, -1, -1, -1, 391, -1, -1, -1, -1, 391, -1, -1, -1, 391, -1, -1, -1, 391, 391, -1, -1, -1, -1, 391, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 391, -1, -1, -1, 391, 391, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 391, -1, -1, -1, -1, -1, -1, -1, -1, -1, 391, -1, 391, 391, -1, -1, -1, -1, 391, -1, 391, -1, -1, 391, -1, 391, -1, 391, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13, -1, -1, -1, -1, 13, -1, -1, -1, -1, -1, -1, -1, 13, -1, 13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 13, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [191, -1, -1, -1, -1, -1, 428, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 446, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 196, 196, 311, -1, -1, 311, 196, -1, 311, -1, -1, -1, 311, -1, 196, 196, 311, -1, -1, 311, -1, 311, -1, 311, 196, -1, -1, -1, -1, 196, -1, 311, 311, -1, 196, 311, -1, -1, 196, -1, 311, -1, 196, 196, -1, -1, -1, -1, 196, -1, -1, -1, 311, -1, -1, -1, 311, -1, -1, -1, -1, 311, 196, -1, -1, -1, 196, 196, -1, -1, 311, -1, 311, 311, 311, -1, -1, -1, -1, 196, -1, -1, 311, -1, -1, -1, -1, 311, -1, 196, 311, 196, 196, -1, 311, -1, 311, 196, -1, 196, 311, -1, 196, -1, 196, -1, 196, -1, -1, 311, -1, -1, -1, 311, 311, -1, -1],
+    [-1, -1, -1, -1, 28, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 36, -1, -1, -1, -1, -1, 283, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 92, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 435, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 321, -1, -1, 321, -1, -1, -1, 321, -1, -1, -1, 321, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 321, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 321, -1, -1, -1, 321, -1, -1, -1, -1, 321, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 293, 321, -1, -1, -1, -1, -1, -1, -1, 321, -1, -1, -1, -1, 321, -1, -1, -1, -1, -1, -1, 321, -1, -1, -1, -1, -1, 321, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 321, -1, -1, -1],
+    [-1, -1, -1, -1, 309, 309, -1, -1, -1, -1, 309, -1, -1, -1, -1, -1, -1, -1, 309, 309, -1, -1, -1, -1, -1, -1, -1, -1, 309, -1, -1, -1, -1, 309, -1, -1, -1, -1, 309, -1, -1, -1, 309, -1, -1, -1, 309, 309, -1, -1, -1, -1, 309, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 309, -1, -1, -1, 309, 309, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 309, -1, -1, -1, -1, -1, -1, -1, -1, -1, 309, -1, 309, 309, -1, -1, -1, -1, 309, -1, 309, -1, -1, 309, -1, 309, -1, 309, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 363, -1, -1, 363, -1, -1, -1, 363, -1, -1, -1, 363, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 363, -1, -1, -1, -1, -1, -1, -1, 363, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 363, -1, -1, -1, 363, -1, -1, -1, -1, 295, -1, 363, -1, -1, -1, -1, -1, -1, -1, -1, -1, 363, 363, -1, -1, 363, -1, -1, -1, -1, 363, -1, -1, -1, -1, 363, -1, -1, -1, -1, -1, -1, 363, -1, -1, -1, -1, -1, 363, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 363, -1, -1, -1],
+    [137, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [297, -1, -1, -1, 489, 489, 297, -1, -1, -1, 489, -1, -1, -1, -1, -1, -1, -1, 489, 489, -1, 297, -1, -1, -1, -1, 297, -1, 489, -1, -1, -1, -1, 489, -1, -1, -1, -1, 489, 297, -1, -1, 489, -1, -1, -1, 489, 489, 297, -1, -1, -1, 489, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 489, -1, -1, -1, 489, 489, -1, 297, -1, -1, -1, -1, 297, -1, -1, -1, -1, 489, -1, -1, 297, -1, 297, -1, -1, -1, -1, 489, -1, 489, 489, -1, -1, -1, -1, 489, 297, 489, -1, -1, 489, -1, 489, -1, 489, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, -1, 275, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 275, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 247, 247, -1, -1, -1, -1, 247, -1, -1, -1, -1, -1, -1, -1, 247, 247, -1, -1, -1, -1, -1, -1, -1, -1, 247, -1, -1, -1, -1, 247, -1, -1, -1, -1, 247, -1, -1, -1, 247, -1, -1, -1, 247, 247, -1, -1, -1, -1, 247, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 247, -1, -1, -1, 247, 247, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 247, -1, -1, -1, -1, -1, -1, -1, -1, -1, 247, -1, 247, 247, -1, -1, -1, -1, 247, -1, 247, -1, -1, 247, -1, 247, -1, 247, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 287, -1, -1, -1, -1, -1, -1, -1, 287, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 287, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, 79, -1, -1, -1, -1, 79, -1, -1, -1, -1, -1, -1, -1, 79, 79, -1, -1, -1, -1, -1, -1, -1, -1, 79, -1, -1, -1, -1, -1, 405, -1, -1, -1, 79, 405, -1, -1, 79, -1, -1, -1, -1, 79, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 79, 79, -1, 405, -1, -1, -1, -1, 405, -1, -1, -1, -1, 79, -1, -1, 405, -1, -1, -1, -1, -1, -1, 79, -1, 79, -1, -1, -1, -1, -1, 79, -1, 79, -1, -1, 79, -1, 79, -1, 79, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [253, -1, -1, -1, 331, 331, 253, -1, -1, -1, 331, -1, -1, -1, -1, -1, -1, -1, 331, 331, -1, -1, -1, -1, -1, -1, -1, -1, 331, -1, -1, -1, -1, 331, -1, -1, -1, -1, 331, -1, -1, -1, 331, -1, -1, -1, 331, 331, -1, -1, -1, -1, 331, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 331, -1, -1, -1, 331, 331, -1, -1, -1, -1, -1, 253, -1, -1, -1, -1, -1, 331, -1, -1, -1, -1, -1, -1, -1, -1, -1, 331, -1, 331, 331, -1, -1, -1, -1, 331, -1, 331, -1, -1, 331, -1, 331, -1, 331, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 404, 404, 404, -1, -1, 404, 404, -1, 404, -1, -1, -1, 404, -1, 404, 404, 404, -1, -1, 404, -1, 404, -1, 404, 404, -1, -1, -1, -1, 404, -1, 404, 404, -1, 404, 404, -1, -1, 404, -1, 404, -1, 404, 404, -1, -1, -1, -1, 404, -1, -1, -1, 404, -1, -1, -1, 404, -1, -1, -1, -1, 404, 404, -1, -1, -1, 404, 404, -1, -1, 404, -1, 404, 404, 404, -1, -1, -1, -1, 404, -1, -1, 404, -1, -1, -1, -1, 404, -1, 404, 404, 404, 404, -1, 404, -1, 404, 404, -1, 404, 404, -1, 404, -1, 404, -1, 404, -1, -1, 404, -1, 404, -1, 404, 404, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 419, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 217, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 349, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 342, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 185, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 185, -1, -1, -1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 115, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 136, -1, -1, 136, -1, -1, 136, -1, -1, -1, 136, -1, -1, -1, 136, -1, -1, 353, -1, 31, -1, 31, -1, -1, -1, -1, -1, -1, -1, 348, 348, -1, -1, 136, -1, -1, -1, -1, 31, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 136, -1, -1, -1, 136, -1, -1, -1, -1, 136, -1, -1, -1, -1, -1, -1, -1, -1, 356, -1, 356, 318, 136, -1, -1, -1, -1, -1, -1, -1, 136, -1, -1, -1, -1, 136, -1, -1, 31, -1, -1, -1, 136, -1, 353, -1, -1, -1, 136, -1, -1, -1, -1, -1, -1, -1, -1, 356, -1, -1, -1, 136, 348, -1, -1],
+    [366, 366, 496, -1, 44, 44, 366, 366, -1, 420, 44, 366, 420, -1, 366, 366, -1, 366, 44, 44, 366, -1, 366, 44, 366, 44, -1, 44, 44, 366, -1, 366, 366, 44, 366, 44, 44, -1, 44, 296, 366, 366, 44, 366, 44, -1, 44, 44, -1, 44, -1, -1, 44, 366, -1, -1, 420, 366, 366, -1, 366, 366, 44, 366, 366, 420, 44, 366, 366, -1, -1, 44, 366, -1, 44, 366, 44, 366, 366, 366, -1, 366, -1, 44, -1, 366, -1, 366, -1, 366, -1, -1, 366, 44, 44, 44, 44, 366, -1, 366, 44, 44, -1, 44, 362, 366, 44, 366, 44, 366, 44, 366, 366, 44, -1, 366, -1, 44, -1, -1, 366],
+    [133, 63, -1, -1, -1, -1, 213, 9, -1, -1, -1, 102, -1, -1, 104, 453, -1, 464, -1, -1, 245, -1, 123, -1, 62, -1, -1, -1, -1, 200, -1, 187, 389, -1, 470, -1, -1, -1, -1, -1, 486, 256, -1, 165, -1, -1, -1, -1, -1, -1, -1, -1, -1, 319, -1, -1, -1, 465, 422, -1, 364, 505, -1, 383, 128, -1, -1, 483, 411, -1, -1, -1, 298, -1, -1, 379, -1, 7, 344, 430, -1, 0, -1, -1, -1, 341, -1, 161, -1, 324, -1, -1, 409, -1, -1, -1, -1, 488, -1, 255, -1, -1, -1, -1, -1, 153, -1, 195, -1, 224, -1, 177, 197, -1, -1, 105, -1, -1, -1, -1, 269],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, 257, -1, -1, -1, 257, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, 257, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, 257, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 257, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 290, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 144, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 345, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [338, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 442, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, 4, -1, -1, -1, 4, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 225, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, 4, -1, -1, -1, -1, 4, -1, 225, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, 4, -1, -1, 225, -1, -1, -1, -1, 4, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, 4, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 4, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 397, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 19, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 450, 450, 450, -1, -1, 450, 450, -1, 450, -1, -1, -1, 450, -1, 450, 450, 450, -1, -1, 450, -1, 450, -1, 450, 450, -1, -1, -1, -1, 450, -1, 450, 450, -1, 450, 450, -1, -1, 450, -1, 450, -1, 450, 450, -1, -1, -1, -1, 450, -1, -1, -1, 450, -1, -1, -1, 450, -1, -1, -1, -1, 450, 450, -1, -1, -1, 450, 450, -1, -1, 450, -1, 450, 450, 450, -1, -1, -1, -1, 450, -1, -1, 450, -1, -1, -1, -1, 450, -1, 450, 450, 450, 450, -1, 450, -1, 450, 450, -1, 450, 450, -1, 450, -1, 450, -1, 450, -1, -1, 450, -1, 448, -1, 450, 450, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, 261, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 343, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 340, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 340, -1, -1, -1, -1, 340, -1, -1, -1, -1, -1, -1, -1, 340, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [384, 408, -1, 15, 410, 154, 139, 418, -1, 188, 159, 83, -1, -1, 243, 221, 89, 67, 444, 458, 494, -1, 277, 231, 471, 147, -1, 95, -1, 477, -1, 108, 456, 206, 64, 116, 163, -1, 75, 157, 259, 122, 72, 155, 106, -1, 481, 99, -1, 30, 427, 248, 440, 21, 1, -1, -1, 374, 334, 170, 346, 80, -1, 459, 183, 239, 412, 288, 292, -1, -1, 117, 57, -1, 351, 238, 189, 212, 49, 180, 273, 434, 109, 414, -1, 204, -1, 474, -1, 323, 472, -1, 55, 425, 32, 495, 276, 433, -1, 51, 226, 240, -1, 77, 96, 61, 82, 499, -1, 306, 219, 429, 232, 289, 69, 10, -1, 491, -1, 181, -1],
+    [-1, -1, -1, -1, 441, 441, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, 441, 441, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, -1, 441, -1, -1, -1, -1, 441, -1, -1, -1, 441, -1, -1, -1, 441, 441, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, 441, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, 441, -1, 441, 441, -1, -1, -1, -1, 441, -1, 441, -1, -1, 441, -1, 441, -1, 441, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 172, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 143, 143, -1, -1, -1, -1, 143, -1, -1, -1, -1, -1, -1, -1, 143, 143, -1, -1, -1, -1, -1, -1, -1, -1, 143, -1, -1, -1, -1, 143, -1, -1, -1, -1, 143, -1, -1, -1, 143, -1, -1, -1, 143, 143, -1, -1, -1, -1, 143, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 143, -1, -1, -1, 143, 143, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 143, -1, -1, -1, -1, -1, -1, -1, -1, -1, 143, -1, 143, 143, -1, -1, -1, -1, 143, -1, 143, -1, -1, 143, -1, 143, -1, 143, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [377, -1, -1, -1, -1, -1, 149, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 347, 88, -1, -1, -1, -1, 439, -1, -1, -1, -1, -1, -1, -1, 184, 395, -1, -1, -1, 302, -1, 167, -1, 12, 350, -1, -1, -1, -1, 388, -1, 216, 254, -1, 237, -1, -1, -1, 432, -1, 150, -1, 141, 90, -1, 54, -1, -1, 40, -1, -1, -1, -1, -1, -1, -1, -1, -1, 504, -1, -1, -1, 14, -1, -1, -1, -1, 173, -1, -1, 503, -1, 34, -1, -1, -1, -1, -1, -1, 25, -1, -1, -1, -1, -1, -1, -1, -1, -1, 285, 120, 58, 291, -1, -1, -1, 52, 299, -1, 262, -1, -1, 222, -1, 335, -1, 126, -1, -1, 118, -1, -1, -1, 42, -1, -1, -1],
+    [168, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 190, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [74, -1, -1, -1, -1, -1, 74, -1, -1, 131, -1, -1, 131, -1, -1, -1, 131, -1, -1, -1, 74, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 164, -1, -1, 74, -1, -1, -1, -1, 131, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 74, 131, -1, -1, -1, 74, -1, -1, -1, -1, 131, -1, 164, -1, -1, -1, -1, -1, -1, -1, -1, -1, 164, 131, 74, -1, 74, -1, -1, 131, -1, 131, -1, -1, -1, -1, 131, 74, -1, -1, -1, -1, -1, 164, 74, -1, -1, -1, -1, 131, 74, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 131, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 437, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [169, -1, -1, -1, -1, -1, 169, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 71, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [460, -1, -1, -1, 460, 460, 460, -1, -1, -1, 460, -1, -1, -1, -1, -1, -1, -1, 460, 460, -1, 460, -1, -1, -1, -1, 460, -1, 460, -1, -1, -1, -1, 460, 460, -1, -1, -1, 460, 460, -1, -1, 460, -1, -1, -1, 460, 460, 460, -1, -1, -1, 460, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 460, -1, -1, -1, 460, 460, -1, 460, -1, -1, -1, 178, 460, -1, -1, -1, -1, 460, -1, -1, 460, -1, 460, -1, -1, -1, -1, 460, -1, 460, 460, -1, -1, -1, -1, 460, 460, 460, -1, -1, 460, -1, 460, -1, 460, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, 233, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 355, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 266, 266, 266, -1, -1, 266, 266, -1, 266, -1, -1, -1, 266, -1, 266, 266, 266, -1, -1, 266, -1, 266, -1, 266, 266, -1, -1, -1, -1, 266, -1, 266, 266, 266, 266, 266, -1, -1, 266, -1, 266, -1, 266, 266, -1, 266, -1, -1, 266, -1, -1, -1, 266, -1, -1, -1, 266, -1, -1, -1, -1, 266, 266, -1, -1, 266, 266, 266, -1, -1, 266, -1, 266, 266, 266, -1, -1, -1, -1, 266, -1, -1, 266, -1, -1, -1, -1, 266, -1, 266, 266, 266, 266, -1, 266, -1, 266, 266, -1, 266, 266, -1, 266, -1, 266, -1, 266, -1, -1, 266, -1, 266, -1, 266, 266, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, 310, -1, -1, 310, -1, -1, -1, 310, -1, -1, -1, 310, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 310, -1, -1, -1, -1, -1, -1, -1, 310, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 310, -1, -1, -1, 310, -1, -1, -1, -1, 310, -1, 310, -1, -1, -1, -1, -1, -1, -1, -1, -1, 310, 310, -1, -1, 310, -1, -1, -1, -1, 310, -1, -1, -1, -1, 310, -1, -1, -1, -1, -1, -1, 310, -1, -1, -1, -1, -1, 310, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 310, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 316, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, 110, 110, 110, -1, -1, 110, 110, -1, 110, -1, -1, -1, 110, -1, 110, 110, 110, -1, -1, 110, -1, 110, -1, 110, 110, -1, -1, -1, -1, 110, -1, 110, 110, 201, 110, 110, -1, -1, 110, -1, 110, -1, 110, 110, -1, 110, -1, -1, 110, -1, -1, -1, 110, -1, -1, -1, 110, -1, -1, -1, -1, 110, 110, -1, -1, 110, 110, 110, -1, -1, 110, -1, 110, 110, 110, -1, -1, -1, -1, 110, -1, -1, 110, -1, -1, -1, -1, 110, -1, 110, 110, 110, 110, -1, 110, -1, 110, 110, -1, 110, 110, -1, 110, -1, 110, -1, 110, -1, -1, 110, -1, 110, -1, 110, 110, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 192, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 235, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 272, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 16, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 78, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [406, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 406, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 406, -1, -1, -1, -1, 406, -1, -1, -1, -1, -1, -1, -1, 401, -1, 406, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 406, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 214, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 145, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [210, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 210, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 210, -1, -1, -1, -1, 210, -1, -1, -1, -1, 100, -1, -1, 210, -1, 210, -1, -1, -1, -1, 100, -1, -1, 210, -1, -1, -1, -1, 100, 210, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, 301, -1, -1, -1, -1, 325, -1, -1, -1, -1, -1, -1, -1, 360, 26, -1, -1, -1, -1, -1, -1, -1, -1, 304, -1, -1, -1, -1, -1, -1, -1, -1, -1, 94, -1, -1, -1, 278, -1, -1, -1, -1, 463, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 81, 208, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 46, -1, -1, -1, -1, -1, -1, -1, 484, -1, -1, 443, -1, 250, -1, 354, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
+    [-1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 370, -1, -1, -1, -1, 91, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 91, -1, -1, -1, -1, 91, -1, -1, -1, -1, -1, -1, -1, 91, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1],
   ]
   def terminal(self, str):
     return self.str_terminal[str]
   def terminalNames(self):
     return list(self.str_terminal.keys())
   def isTerminal(self, id):
-    return 0 <= id <= 134
+    return 0 <= id <= 120
   def isNonTerminal(self, id):
-    return 135 <= id <= 285
+    return 121 <= id <= 245
   def binding_power(self, sym, bp):
     try:
       return bp[sym.getId()]
@@ -1104,18 +985,199 @@ class Parser:
       raise SyntaxError('Unexpected symbol when parsing %s.  Expected %s, got %s.' %(whosdaddy(), self.terminal_str[s], self.sym if self.sym else 'None'), tracer)
   def rule(self, n):
     if self.sym == None: return -1
-    return self.parse_table[n - 135][self.sym.getId()]
+    return self.parse_table[n - 121][self.sym.getId()]
   def call(self, nt_str):
     return getattr(self, nt_str)()
-  def _PARAMETER_TYPE_LIST(self, depth=0, tracer=None):
-    rule = self.rule(135)
-    tree = ParseTree( NonTerminal(135, self.getAtomString(135)), tracer )
+  def _ENUM_SPECIFIER_BODY(self, depth=0, tracer=None):
+    rule = self.rule(121)
+    tree = ParseTree( NonTerminal(121, self.getAtomString(121)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 428:
+    if rule == 107:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(77, tracer) # lbrace
+      tree.add(t)
+      subtree = self.__GEN22(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._TRAILING_COMMA_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(115, tracer) # rbrace
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _UNION_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(122)
+    tree = ParseTree( NonTerminal(122, self.getAtomString(122)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 392:
+      tree.astTransform = AstTransformNodeCreator('Union', {'definition': 1})
+      t = self.expect(38, tracer) # union
+      tree.add(t)
+      subtree = self._STRUCT_OR_UNION_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN21(self, depth=0, tracer=None):
+    rule = self.rule(123)
+    tree = ParseTree( NonTerminal(123, self.getAtomString(123)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [26, 88, 96, 46, 5, 102, 66, 28, 33, 70, 4, 78, 18, 19, 71, 21, 83, 86, 103, 38, 10, 93, 95, 52, 108, 34, 101, 39, 73, 106, 110, 47, 48, 0, 42, 6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 312:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ENUM_SPECIFIER_BODY(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN35(self, depth=0, tracer=None):
+    rule = self.rule(124)
+    tree = ParseTree( NonTerminal(124, self.getAtomString(124)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [74, 44, 23, 9, 33, 12, 16, 78, 18, 118, 25, 103, 27, 36, 108, 35, 39, 69, 28, 5, 46, 86, 100, 52, 56, 113, 96, 60, 76, 70, 4, 66, 77, 71, 83, 47, 38, 91, 10, 93, 94, 95, 65, 6, 101, 19, 104, 115, 106, 110, 20, 117, 42, 98]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 371:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ELSE_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN18(self, depth=0, tracer=None):
+    rule = self.rule(125)
+    tree = ParseTree( NonTerminal(125, self.getAtomString(125)), tracer )
+    tree.list = 'slist'
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 417:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN19(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN19(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _DIRECT_DECLARATOR_EXPR(self, depth=0, tracer=None):
+    rule = self.rule(126)
+    tree = ParseTree( NonTerminal(126, self.getAtomString(126)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 211:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DIRECT_DECLARATOR_MODIFIER_LIST_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._DIRECT_DECLARATOR_SIZE(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DIRECT_DECLARATOR_MODIFIER_LIST_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._DIRECT_DECLARATOR_SIZE(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def _STRUCT_DECLARATION(self, depth=0, tracer=None):
+    rule = self.rule(127)
+    tree = ParseTree( NonTerminal(127, self.getAtomString(127)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 339:
+      tree.astTransform = AstTransformNodeCreator('StructOrUnionDeclaration', {'specifier_qualifiers': 0, 'declarators': 1})
+      subtree = self.__GEN17(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN18(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformNodeCreator('StructOrUnionDeclaration', {'specifier_qualifiers': 0, 'declarators': 1})
+      subtree = self.__GEN17(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN18(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      tree.add( self.expect(6, tracer) ) # semi
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _DIRECT_ABSTRACT_DECLARATOR_OPT(self, depth=0, tracer=None):
+    rule = self.rule(128)
+    tree = ParseTree( NonTerminal(128, self.getAtomString(128)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [0, 88]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 230:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__DIRECT_ABSTRACT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [-1, 102, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__DIRECT_ABSTRACT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def _PARAMETER_TYPE_LIST(self, depth=0, tracer=None):
+    rule = self.rule(129)
+    tree = ParseTree( NonTerminal(129, self.getAtomString(129)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 60:
       tree.astTransform = AstTransformNodeCreator('ParameterTypeList', {'parameter_declarations': 0, 'va_args': 1})
-      subtree = self.__GEN33(depth)
+      subtree = self.__GEN26(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
@@ -1125,2932 +1187,40 @@ class Parser:
         tracer.add( subtree.tracer )
       return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ELSE_PART(self, depth=0, tracer=None):
-    rule = self.rule(136)
-    tree = ParseTree( NonTerminal(136, self.getAtomString(136)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ELSE_IF_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(137)
-    tree = ParseTree( NonTerminal(137, self.getAtomString(137)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 298:
-      tree.astTransform = AstTransformNodeCreator('ElseIf', {'statement': 4, 'condition': 2})
-      tree.add( self.expect(11, tracer) ) # else_if
-      tree.add( self.expect(114, tracer) ) # lparen
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(6, tracer) ) # endif
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN4(self, depth=0, tracer=None):
-    rule = self.rule(138)
-    tree = ParseTree( NonTerminal(138, self.getAtomString(138)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 20:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PP_TOKENS(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN4(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def __GEN43(self, depth=0, tracer=None):
-    rule = self.rule(139)
-    tree = ParseTree( NonTerminal(139, self.getAtomString(139)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [6, 12, 60, 2, 28, 22, 34, 64, 97, 74, 70, 90, 71, 110, 98, 23, 39, 20, 89, 31, 75, 104, 17, 114, 86, 87, 113, 44, 27, 53, 65, 92, 99, 101, 102, 63, 103, 36, 106, 127, 108, 41, 42, 58, 85, 45, 120, 48, 122, 123, 51, 52, 131, 25]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 7:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ELSE_IF_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN43(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _ENUM_SPECIFIER_SUB(self, depth=0, tracer=None):
-    rule = self.rule(141)
-    tree = ParseTree( NonTerminal(141, self.getAtomString(141)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 136:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ENUM_SPECIFIER_BODY(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 226:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._IDENTIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN28(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _LABELED_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(142)
-    tree = ParseTree( NonTerminal(142, self.getAtomString(142)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 211:
-      tree.astTransform = AstTransformNodeCreator('Case', {'expr': 1, 'statement': 3})
-      tree.add( self.expect(70, tracer) ) # case
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(91, tracer) ) # colon
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 213:
-      tree.astTransform = AstTransformNodeCreator('DefaultCase', {'statement': 2})
-      tree.add( self.expect(98, tracer) ) # default
-      tree.add( self.expect(91, tracer) ) # colon
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 431:
-      tree.astTransform = AstTransformNodeCreator('Label', {'name': 0, 'statement': 1})
-      tree.add( self.expect(75, tracer) ) # identifier
-      tree.add( self.expect(91, tracer) ) # colon
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _POINTER_OPT(self, depth=0, tracer=None):
-    rule = self.rule(143)
-    tree = ParseTree( NonTerminal(143, self.getAtomString(143)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [15, 14, 75, 37, 94, 114]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 17:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._POINTER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _ENUMERATOR_ASSIGNMENT(self, depth=0, tracer=None):
-    rule = self.rule(144)
-    tree = ParseTree( NonTerminal(144, self.getAtomString(144)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [117, 37]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 147:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(26, tracer) ) # assign
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def __GEN36(self, depth=0, tracer=None):
-    rule = self.rule(146)
-    tree = ParseTree( NonTerminal(146, self.getAtomString(146)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 365:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._IDENTIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN36(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _DECLARATOR(self, depth=0, tracer=None):
-    rule = self.rule(147)
-    tree = ParseTree( NonTerminal(147, self.getAtomString(147)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 441:
-      tree.astTransform = AstTransformNodeCreator('Declarator', {'direct_declarator': 1, 'pointer': 0})
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__DIRECT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformNodeCreator('Declarator', {'direct_declarator': 1, 'pointer': 0})
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__DIRECT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN11(self, depth=0, tracer=None):
-    rule = self.rule(148)
-    tree = ParseTree( NonTerminal(148, self.getAtomString(148)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [17]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 63:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._EXTERNAL_DECLARATION_SUB_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN11(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _DIRECT_DECLARATOR_MODIFIER_LIST_OPT(self, depth=0, tracer=None):
-    rule = self.rule(149)
-    tree = ParseTree( NonTerminal(149, self.getAtomString(149)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [101, 51, 75, 48, 99, 63, 41, 114, 89, 87, 104, 25, 27, 90]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 120:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN32(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _DIRECT_DECLARATOR_SIZE(self, depth=0, tracer=None):
-    rule = self.rule(150)
-    tree = ParseTree( NonTerminal(150, self.getAtomString(150)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 108:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(41, tracer) ) # asterisk
-      return tree
-    elif rule == 162:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN9(self, depth=0, tracer=None):
-    rule = self.rule(151)
-    tree = ParseTree( NonTerminal(151, self.getAtomString(151)), tracer )
-    tree.list = 'mlist'
-    if self.sym != None and (self.sym.getId() in [15, 17, 77, 4, 75, 118, 37, 14, 41, 114, 94]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 65:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATION_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN9(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def __GEN2(self, depth=0, tracer=None):
-    rule = self.rule(152)
-    tree = ParseTree( NonTerminal(152, self.getAtomString(152)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 247:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DEFINE_FUNC_PARAM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN3(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def __GEN3(self, depth=0, tracer=None):
-    rule = self.rule(153)
-    tree = ParseTree( NonTerminal(153, self.getAtomString(153)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 262:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._DEFINE_FUNC_PARAM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN3(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _ENUMERATION_CONSTANT(self, depth=0, tracer=None):
-    rule = self.rule(154)
-    tree = ParseTree( NonTerminal(154, self.getAtomString(154)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 173:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(75, tracer) ) # identifier
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DIRECT_DECLARATOR_MODIFIER(self, depth=0, tracer=None):
-    rule = self.rule(155)
-    tree = ParseTree( NonTerminal(155, self.getAtomString(155)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 47:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_QUALIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 72:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(97, tracer) ) # static
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
   def __GEN32(self, depth=0, tracer=None):
-    rule = self.rule(156)
-    tree = ParseTree( NonTerminal(156, self.getAtomString(156)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [104, 51, 75, 101, 99, 90, 41, 114, 89, 87, 63, 48, 25, 27]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 187:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DIRECT_DECLARATOR_MODIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN32(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _CONSTANT(self, depth=0, tracer=None):
-    rule = self.rule(157)
-    tree = ParseTree( NonTerminal(157, self.getAtomString(157)), tracer )
+    rule = self.rule(130)
+    tree = ParseTree( NonTerminal(130, self.getAtomString(130)), tracer )
     tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 1:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(48, tracer) ) # floating_constant
+    if self.sym != None and (self.sym.getId() in [115]):
       return tree
-    elif rule == 43:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(90, tracer) ) # character_constant
-      return tree
-    elif rule == 134:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(27, tracer) ) # integer_constant
-      return tree
-    elif rule == 190:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(51, tracer) ) # enumeration_constant
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _TRANSLATION_UNIT(self, depth=0, tracer=None):
-    rule = self.rule(158)
-    tree = ParseTree( NonTerminal(158, self.getAtomString(158)), tracer )
-    tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 179:
-      tree.astTransform = AstTransformNodeCreator('TranslationUnit', {'external_declarations': 0})
-      subtree = self.__GEN7(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN0(self, depth=0, tracer=None):
-    rule = self.rule(159)
-    tree = ParseTree( NonTerminal(159, self.getAtomString(159)), tracer )
-    tree.list = 'tlist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 426:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PP_NODES(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(133, tracer) ) # separator
-      subtree = self.__GEN0(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _TERMINALS(self, depth=0, tracer=None):
-    rule = self.rule(160)
-    tree = ParseTree( NonTerminal(160, self.getAtomString(160)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 5:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(121, tracer) ) # bitoreq
-      return tree
-    elif rule == 13:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(36, tracer) ) # char
-      return tree
-    elif rule == 19:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(24, tracer) ) # diveq
-      return tree
-    elif rule == 22:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(71, tracer) ) # unsigned
-      return tree
-    elif rule == 24:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(110, tracer) ) # void
-      return tree
-    elif rule == 27:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(92, tracer) ) # extern
-      return tree
-    elif rule == 29:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(27, tracer) ) # integer_constant
-      return tree
-    elif rule == 30:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(96, tracer) ) # rsquare
-      return tree
-    elif rule == 31:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      return tree
-    elif rule == 32:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(32, tracer) ) # arrow
-      return tree
-    elif rule == 35:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(16, tracer) ) # modeq
-      return tree
-    elif rule == 41:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(46, tracer) ) # lshift
-      return tree
-    elif rule == 56:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(86, tracer) ) # typedef
-      return tree
-    elif rule == 70:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(40, tracer) ) # gt
-      return tree
-    elif rule == 75:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(35, tracer) ) # decimal_floating_constant
-      return tree
-    elif rule == 83:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(54, tracer) ) # not
-      return tree
-    elif rule == 94:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(9, tracer) ) # hexadecimal_floating_constant
-      return tree
-    elif rule == 96:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(130, tracer) ) # bitandeq
-      return tree
-    elif rule == 97:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(115, tracer) ) # bitxor
-      return tree
-    elif rule == 101:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(73, tracer) ) # mod
-      return tree
-    elif rule == 103:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(126, tracer) ) # lt
-      return tree
-    elif rule == 107:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(119, tracer) ) # neq
-      return tree
-    elif rule == 111:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(59, tracer) ) # rparen
-      return tree
-    elif rule == 112:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(125, tracer) ) # bitxoreq
-      return tree
-    elif rule == 117:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(112, tracer) ) # and
-      return tree
-    elif rule == 122:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(101, tracer) ) # bitand
-      return tree
-    elif rule == 123:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(82, tracer) ) # exclamation_point
-      return tree
-    elif rule == 127:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(108, tracer) ) # const
-      return tree
-    elif rule == 130:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(44, tracer) ) # do
-      return tree
-    elif rule == 143:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(106, tracer) ) # register
-      return tree
-    elif rule == 150:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(98, tracer) ) # default
-      return tree
-    elif rule == 155:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(132, tracer) ) # or
-      return tree
-    elif rule == 157:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    elif rule == 160:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(127, tracer) ) # int
-      return tree
-    elif rule == 166:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(21, tracer) ) # muleq
-      return tree
-    elif rule == 180:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(19, tracer) ) # bool
-      return tree
-    elif rule == 181:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(33, tracer) ) # pound
-      return tree
-    elif rule == 189:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(57, tracer) ) # universal_character_name
-      return tree
-    elif rule == 191:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(2, tracer) ) # struct
-      return tree
-    elif rule == 192:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(99, tracer) ) # decr
-      return tree
-    elif rule == 194:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(25, tracer) ) # sizeof
-      return tree
-    elif rule == 195:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(8, tracer) ) # subeq
-      return tree
-    elif rule == 201:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(62, tracer) ) # eq
-      return tree
-    elif rule == 212:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(10, tracer) ) # number
-      return tree
-    elif rule == 219:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(88, tracer) ) # div
-      return tree
-    elif rule == 221:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(58, tracer) ) # restrict
-      return tree
-    elif rule == 223:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(29, tracer) ) # poundpound
-      return tree
-    elif rule == 228:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(30, tracer) ) # header_name
-      return tree
-    elif rule == 239:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(45, tracer) ) # rbrace
-      return tree
-    elif rule == 246:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(131, tracer) ) # long
-      return tree
-    elif rule == 250:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(122, tracer) ) # short
-      return tree
-    elif rule == 251:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(109, tracer) ) # bitor
-      return tree
-    elif rule == 278:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(107, tracer) ) # sub
-      return tree
-    elif rule == 279:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(85, tracer) ) # continue
-      return tree
-    elif rule == 293:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(75, tracer) ) # identifier
-      return tree
-    elif rule == 294:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(78, tracer) ) # elipsis
-      return tree
-    elif rule == 295:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(128, tracer) ) # lteq
-      return tree
-    elif rule == 297:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(34, tracer) ) # double
-      return tree
-    elif rule == 299:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(69, tracer) ) # rshift
-      return tree
-    elif rule == 306:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(70, tracer) ) # case
-      return tree
-    elif rule == 309:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(67, tracer) ) # tilde
-      return tree
-    elif rule == 324:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(63, tracer) ) # string_literal
-      return tree
-    elif rule == 326:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(20, tracer) ) # switch
-      return tree
-    elif rule == 332:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(124, tracer) ) # dot
-      return tree
-    elif rule == 333:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(42, tracer) ) # lbrace
-      return tree
-    elif rule == 334:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(3, tracer) ) # rshifteq
-      return tree
-    elif rule == 341:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(23, tracer) ) # while
-      return tree
-    elif rule == 346:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(123, tracer) ) # enum
-      return tree
-    elif rule == 351:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(1, tracer) ) # imaginary
-      return tree
-    elif rule == 357:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(76, tracer) ) # add
-      return tree
-    elif rule == 358:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(91, tracer) ) # colon
-      return tree
-    elif rule == 359:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(74, tracer) ) # signed
-      return tree
-    elif rule == 361:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(64, tracer) ) # return
-      return tree
-    elif rule == 363:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(95, tracer) ) # questionmark
-      return tree
-    elif rule == 364:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(113, tracer) ) # union
-      return tree
-    elif rule == 371:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(102, tracer) ) # auto
-      return tree
-    elif rule == 373:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(0, tracer) ) # lshifteq
-      return tree
-    elif rule == 395:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(22, tracer) ) # else
-      return tree
-    elif rule == 396:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(90, tracer) ) # character_constant
-      return tree
-    elif rule == 402:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(114, tracer) ) # lparen
-      return tree
-    elif rule == 412:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(134, tracer) ) # gteq
-      return tree
-    elif rule == 414:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(72, tracer) ) # addeq
-      return tree
-    elif rule == 420:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(5, tracer) ) # complex
-      return tree
-    elif rule == 422:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(26, tracer) ) # assign
-      return tree
-    elif rule == 427:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(65, tracer) ) # for
-      return tree
-    elif rule == 434:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(52, tracer) ) # goto
-      return tree
-    elif rule == 448:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(60, tracer) ) # break
-      return tree
-    elif rule == 450:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(12, tracer) ) # float
-      return tree
-    elif rule == 456:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(28, tracer) ) # if
-      return tree
-    elif rule == 457:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(49, tracer) ) # lsquare
-      return tree
-    elif rule == 459:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(120, tracer) ) # volatile
-      return tree
-    elif rule == 461:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(104, tracer) ) # incr
-      return tree
-    elif rule == 462:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(97, tracer) ) # static
-      return tree
-    elif rule == 464:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(53, tracer) ) # inline
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _INCLUDE_LINE(self, depth=0, tracer=None):
-    rule = self.rule(161)
-    tree = ParseTree( NonTerminal(161, self.getAtomString(161)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _EXTERNAL_DECLARATION(self, depth=0, tracer=None):
-    rule = self.rule(162)
-    tree = ParseTree( NonTerminal(162, self.getAtomString(162)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 23:
-      tree.astTransform = AstTransformNodeCreator('ExternalDeclaration', {'declarations': 2, 'declaration_specifiers': 1})
-      tree.add( self.expect(38, tracer) ) # external_declaration_hint
-      subtree = self.__GEN8(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._EXTERNAL_DECLARATION_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN7(self, depth=0, tracer=None):
-    rule = self.rule(163)
-    tree = ParseTree( NonTerminal(163, self.getAtomString(163)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [-1]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 375:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXTERNAL_DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN7(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _PP_TOKENS(self, depth=0, tracer=None):
-    rule = self.rule(164)
-    tree = ParseTree( NonTerminal(164, self.getAtomString(164)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _COMPOUND_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(165)
-    tree = ParseTree( NonTerminal(165, self.getAtomString(165)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 348:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(42, tracer) ) # lbrace
-      subtree = self.__GEN39(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(45, tracer) ) # rbrace
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DEFINED_IDENTIFIER(self, depth=0, tracer=None):
-    rule = self.rule(166)
-    tree = ParseTree( NonTerminal(166, self.getAtomString(166)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _FOR_COND(self, depth=0, tracer=None):
-    rule = self.rule(167)
-    tree = ParseTree( NonTerminal(167, self.getAtomString(167)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 292:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(17, tracer) ) # semi
-      subtree = self._EXPRESSION_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _FOR_INCR(self, depth=0, tracer=None):
-    rule = self.rule(168)
-    tree = ParseTree( NonTerminal(168, self.getAtomString(168)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [59]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 93:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(17, tracer) ) # semi
-      subtree = self._EXPRESSION_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _PRAGMA_LINE(self, depth=0, tracer=None):
-    rule = self.rule(169)
-    tree = ParseTree( NonTerminal(169, self.getAtomString(169)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN18(self, depth=0, tracer=None):
-    rule = self.rule(170)
-    tree = ParseTree( NonTerminal(170, self.getAtomString(170)), tracer )
-    tree.list = 'slist'
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 438:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._INITIALIZER_LIST_ITEM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN19(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._INITIALIZER_LIST_ITEM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN19(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DECLARATION(self, depth=0, tracer=None):
-    rule = self.rule(171)
-    tree = ParseTree( NonTerminal(171, self.getAtomString(171)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 151:
-      tree.astTransform = AstTransformNodeCreator('Declaration', {'init_declarators': 1, 'declaration_specifiers': 0})
-      subtree = self.__GEN8(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN14(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ERROR_LINE(self, depth=0, tracer=None):
-    rule = self.rule(172)
-    tree = ParseTree( NonTerminal(172, self.getAtomString(172)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _PP_DIRECTIVE(self, depth=0, tracer=None):
-    rule = self.rule(173)
-    tree = ParseTree( NonTerminal(173, self.getAtomString(173)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _TYPE_NAME(self, depth=0, tracer=None):
-    rule = self.rule(174)
-    tree = ParseTree( NonTerminal(174, self.getAtomString(174)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 305:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(127, tracer) ) # int
-      return tree
-    elif rule == 317:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(36, tracer) ) # char
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _PP_NODES(self, depth=0, tracer=None):
-    rule = self.rule(175)
-    tree = ParseTree( NonTerminal(175, self.getAtomString(175)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN8(self, depth=0, tracer=None):
-    rule = self.rule(176)
-    tree = ParseTree( NonTerminal(176, self.getAtomString(176)), tracer )
-    tree.list = 'mlist'
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 76:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATION_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN9(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _WARNING_LINE(self, depth=0, tracer=None):
-    rule = self.rule(177)
-    tree = ParseTree( NonTerminal(177, self.getAtomString(177)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN41(self, depth=0, tracer=None):
-    rule = self.rule(178)
-    tree = ParseTree( NonTerminal(178, self.getAtomString(178)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [6, 12, 60, 2, 28, 22, 34, 64, 97, 74, 70, 90, 71, 110, 98, 23, 39, 20, 89, 31, 75, 104, 17, 114, 86, 87, 113, 44, 27, 53, 65, 92, 99, 101, 102, 63, 103, 36, 106, 127, 108, 41, 42, 58, 85, 45, 120, 48, 122, 123, 51, 52, 131, 25]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 320:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ELSE_IF_STATEMENT_LIST(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _PARAMETER_TYPE_LIST_OPT(self, depth=0, tracer=None):
-    rule = self.rule(179)
-    tree = ParseTree( NonTerminal(179, self.getAtomString(179)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 8:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PARAMETER_TYPE_LIST(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _UNDEF_LINE(self, depth=0, tracer=None):
-    rule = self.rule(180)
-    tree = ParseTree( NonTerminal(180, self.getAtomString(180)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN33(self, depth=0, tracer=None):
-    rule = self.rule(181)
-    tree = ParseTree( NonTerminal(181, self.getAtomString(181)), tracer )
-    tree.list = 'slist'
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 109:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PARAMETER_DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN34(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN34(self, depth=0, tracer=None):
-    rule = self.rule(182)
-    tree = ParseTree( NonTerminal(182, self.getAtomString(182)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [94]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 314:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._PARAMETER_DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN34(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _ABSTRACT_DECLARATOR(self, depth=0, tracer=None):
-    rule = self.rule(183)
-    tree = ParseTree( NonTerminal(183, self.getAtomString(183)), tracer )
-    tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 84:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [-1, 14, 114]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _EXTERNAL_DECLARATION_SUB(self, depth=0, tracer=None):
-    rule = self.rule(184)
-    tree = ParseTree( NonTerminal(184, self.getAtomString(184)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 267:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXTERNAL_FUNCTION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 392:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN10(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _UNION_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(185)
-    tree = ParseTree( NonTerminal(185, self.getAtomString(185)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 208:
-      tree.astTransform = AstTransformNodeCreator('Union', {'definition': 1})
-      tree.add( self.expect(113, tracer) ) # union
-      subtree = self._STRUCT_OR_UNION_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _REPLACEMENT_LIST(self, depth=0, tracer=None):
-    rule = self.rule(186)
-    tree = ParseTree( NonTerminal(186, self.getAtomString(186)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _EXTERNAL_FUNCTION(self, depth=0, tracer=None):
-    rule = self.rule(187)
-    tree = ParseTree( NonTerminal(187, self.getAtomString(187)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 2:
-      tree.astTransform = AstTransformNodeCreator('FunctionDefinition', {'body': 3, 'declaration_list': 2, 'signature': 1})
-      tree.add( self.expect(4, tracer) ) # function_definition_hint
-      subtree = self._DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN12(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._COMPOUND_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _INCLUDE_TYPE(self, depth=0, tracer=None):
-    rule = self.rule(188)
-    tree = ParseTree( NonTerminal(188, self.getAtomString(188)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ENUM_SPECIFIER_BODY(self, depth=0, tracer=None):
-    rule = self.rule(189)
-    tree = ParseTree( NonTerminal(189, self.getAtomString(189)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 106:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(42, tracer) ) # lbrace
-      subtree = self.__GEN29(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._TRAILING_COMMA_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(45, tracer) ) # rbrace
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _VA_ARGS(self, depth=0, tracer=None):
-    rule = self.rule(190)
-    tree = ParseTree( NonTerminal(190, self.getAtomString(190)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 458:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(94, tracer) ) # comma_va_args
-      tree.add( self.expect(78, tracer) ) # elipsis
-      return tree
-    return tree
-  def __GEN40(self, depth=0, tracer=None):
-    rule = self.rule(191)
-    tree = ParseTree( NonTerminal(191, self.getAtomString(191)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [45]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 119:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._BLOCK_ITEM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN40(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._BLOCK_ITEM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN40(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def _DECLARATION_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(192)
-    tree = ParseTree( NonTerminal(192, self.getAtomString(192)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 36:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_QUALIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 128:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STORAGE_CLASS_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 337:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 453:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._FUNCTION_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _SIZEOF_BODY(self, depth=0, tracer=None):
-    rule = self.rule(193)
-    tree = ParseTree( NonTerminal(193, self.getAtomString(193)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 12:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(114, tracer) ) # lparen
-      subtree = self._TYPE_NAME(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
-      return tree
-    elif rule == 463:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(75, tracer) ) # identifier
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN21(self, depth=0, tracer=None):
-    rule = self.rule(194)
-    tree = ParseTree( NonTerminal(194, self.getAtomString(194)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [26]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 126:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DESIGNATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN21(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _PP(self, depth=0, tracer=None):
-    rule = self.rule(195)
-    tree = ParseTree( NonTerminal(195, self.getAtomString(195)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 268:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(116, tracer) ) # defined_separator
-      return tree
-    elif rule == 325:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(68, tracer) ) # defined
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _LINE_LINE(self, depth=0, tracer=None):
-    rule = self.rule(196)
-    tree = ParseTree( NonTerminal(196, self.getAtomString(196)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ELSE_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(197)
-    tree = ParseTree( NonTerminal(197, self.getAtomString(197)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 216:
-      tree.astTransform = AstTransformNodeCreator('Else', {'statement': 1})
-      tree.add( self.expect(22, tracer) ) # else
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(6, tracer) ) # endif
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN10(self, depth=0, tracer=None):
-    rule = self.rule(198)
-    tree = ParseTree( NonTerminal(198, self.getAtomString(198)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [17]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 444:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXTERNAL_DECLARATION_SUB_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN11(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _PUNCTUATOR(self, depth=0, tracer=None):
-    rule = self.rule(199)
-    tree = ParseTree( NonTerminal(199, self.getAtomString(199)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 46:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(132, tracer) ) # or
-      return tree
-    elif rule == 48:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(45, tracer) ) # rbrace
-      return tree
-    elif rule == 67:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(130, tracer) ) # bitandeq
-      return tree
-    elif rule == 71:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(115, tracer) ) # bitxor
-      return tree
-    elif rule == 98:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(125, tracer) ) # bitxoreq
-      return tree
-    elif rule == 129:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(126, tracer) ) # lt
-      return tree
-    elif rule == 146:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(49, tracer) ) # lsquare
-      return tree
-    elif rule == 158:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(107, tracer) ) # sub
-      return tree
-    elif rule == 168:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(88, tracer) ) # div
-      return tree
-    elif rule == 169:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(3, tracer) ) # rshifteq
-      return tree
-    elif rule == 185:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(72, tracer) ) # addeq
-      return tree
-    elif rule == 197:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(32, tracer) ) # arrow
-      return tree
-    elif rule == 199:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(67, tracer) ) # tilde
-      return tree
-    elif rule == 207:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(134, tracer) ) # gteq
-      return tree
-    elif rule == 214:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(0, tracer) ) # lshifteq
-      return tree
-    elif rule == 220:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(82, tracer) ) # exclamation_point
-      return tree
-    elif rule == 236:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(124, tracer) ) # dot
-      return tree
-    elif rule == 244:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(119, tracer) ) # neq
-      return tree
-    elif rule == 258:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(26, tracer) ) # assign
-      return tree
-    elif rule == 270:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(128, tracer) ) # lteq
-      return tree
-    elif rule == 272:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(29, tracer) ) # poundpound
-      return tree
-    elif rule == 273:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(95, tracer) ) # questionmark
-      return tree
-    elif rule == 274:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(8, tracer) ) # subeq
-      return tree
-    elif rule == 280:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      return tree
-    elif rule == 282:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(112, tracer) ) # and
-      return tree
-    elif rule == 290:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(16, tracer) ) # modeq
-      return tree
-    elif rule == 312:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(114, tracer) ) # lparen
-      return tree
-    elif rule == 316:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(21, tracer) ) # muleq
-      return tree
-    elif rule == 318:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(121, tracer) ) # bitoreq
-      return tree
-    elif rule == 335:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(59, tracer) ) # rparen
-      return tree
-    elif rule == 342:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(46, tracer) ) # lshift
-      return tree
-    elif rule == 343:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(109, tracer) ) # bitor
-      return tree
-    elif rule == 344:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(33, tracer) ) # pound
-      return tree
-    elif rule == 354:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(93, tracer) ) # ampersand
-      return tree
-    elif rule == 356:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(69, tracer) ) # rshift
-      return tree
-    elif rule == 367:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(73, tracer) ) # mod
-      return tree
-    elif rule == 385:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(78, tracer) ) # elipsis
-      return tree
-    elif rule == 393:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(96, tracer) ) # rsquare
-      return tree
-    elif rule == 398:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    elif rule == 403:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(104, tracer) ) # incr
-      return tree
-    elif rule == 409:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(91, tracer) ) # colon
-      return tree
-    elif rule == 415:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(40, tracer) ) # gt
-      return tree
-    elif rule == 416:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(99, tracer) ) # decr
-      return tree
-    elif rule == 421:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(76, tracer) ) # add
-      return tree
-    elif rule == 439:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(42, tracer) ) # lbrace
-      return tree
-    elif rule == 449:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(62, tracer) ) # eq
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _POINTER(self, depth=0, tracer=None):
-    rule = self.rule(200)
-    tree = ParseTree( NonTerminal(200, self.getAtomString(200)), tracer )
-    tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 4:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN38(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STORAGE_CLASS_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(201)
-    tree = ParseTree( NonTerminal(201, self.getAtomString(201)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 141:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(97, tracer) ) # static
-      return tree
-    elif rule == 153:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(92, tracer) ) # extern
-      return tree
-    elif rule == 202:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(106, tracer) ) # register
-      return tree
-    elif rule == 300:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(102, tracer) ) # auto
-      return tree
-    elif rule == 370:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(86, tracer) ) # typedef
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN23(self, depth=0, tracer=None):
-    rule = self.rule(202)
-    tree = ParseTree( NonTerminal(202, self.getAtomString(202)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [45]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 115:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN23(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN23(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def _JUMP_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(203)
-    tree = ParseTree( NonTerminal(203, self.getAtomString(203)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 0:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(60, tracer) ) # break
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    elif rule == 125:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(85, tracer) ) # continue
-      return tree
-    elif rule == 283:
-      tree.astTransform = AstTransformNodeCreator('Goto', {'name': 1})
-      tree.add( self.expect(52, tracer) ) # goto
-      tree.add( self.expect(75, tracer) ) # identifier
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    elif rule == 451:
-      tree.astTransform = AstTransformNodeCreator('Return', {'expr': 1})
-      tree.add( self.expect(64, tracer) ) # return
-      subtree = self._EXPRESSION_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _TYPE_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(204)
-    tree = ParseTree( NonTerminal(204, self.getAtomString(204)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 57:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 90:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ENUM_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 138:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(34, tracer) ) # double
-      return tree
-    elif rule == 172:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(39, tracer) ) # _bool
-      return tree
-    elif rule == 198:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(12, tracer) ) # float
-      return tree
-    elif rule == 240:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(36, tracer) ) # char
-      return tree
-    elif rule == 242:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(71, tracer) ) # unsigned
-      return tree
-    elif rule == 245:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPEDEF_NAME(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 265:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(127, tracer) ) # int
-      return tree
-    elif rule == 301:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(74, tracer) ) # signed
-      return tree
-    elif rule == 327:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(131, tracer) ) # long
-      return tree
-    elif rule == 329:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(110, tracer) ) # void
-      return tree
-    elif rule == 338:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(122, tracer) ) # short
-      return tree
-    elif rule == 394:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(31, tracer) ) # _complex
-      return tree
-    elif rule == 445:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._UNION_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STRUCT_OR_UNION_BODY(self, depth=0, tracer=None):
-    rule = self.rule(205)
-    tree = ParseTree( NonTerminal(205, self.getAtomString(205)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 137:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(42, tracer) ) # lbrace
-      subtree = self.__GEN23(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(45, tracer) ) # rbrace
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DEFINE_LINE(self, depth=0, tracer=None):
-    rule = self.rule(206)
-    tree = ParseTree( NonTerminal(206, self.getAtomString(206)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _POINTER_SUB(self, depth=0, tracer=None):
-    rule = self.rule(207)
-    tree = ParseTree( NonTerminal(207, self.getAtomString(207)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 178:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(41, tracer) ) # asterisk
-      subtree = self._TYPE_QUALIFIER_LIST_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN29(self, depth=0, tracer=None):
-    rule = self.rule(208)
-    tree = ParseTree( NonTerminal(208, self.getAtomString(208)), tracer )
-    tree.list = 'slist'
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 454:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ENUMERATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN30(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _TYPE_QUALIFIER(self, depth=0, tracer=None):
-    rule = self.rule(209)
-    tree = ParseTree( NonTerminal(209, self.getAtomString(209)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 116:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(58, tracer) ) # restrict
-      return tree
-    elif rule == 248:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(108, tracer) ) # const
-      return tree
-    elif rule == 310:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(120, tracer) ) # volatile
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ENUMERATOR(self, depth=0, tracer=None):
-    rule = self.rule(210)
-    tree = ParseTree( NonTerminal(210, self.getAtomString(210)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 52:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ENUMERATION_CONSTANT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._ENUMERATOR_ASSIGNMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _IF_PART(self, depth=0, tracer=None):
-    rule = self.rule(211)
-    tree = ParseTree( NonTerminal(211, self.getAtomString(211)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _SPECIFIER_QUALIFIER(self, depth=0, tracer=None):
-    rule = self.rule(212)
-    tree = ParseTree( NonTerminal(212, self.getAtomString(212)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 33:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_SPECIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 177:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_QUALIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN30(self, depth=0, tracer=None):
-    rule = self.rule(213)
-    tree = ParseTree( NonTerminal(213, self.getAtomString(213)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [117]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 257:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._ENUMERATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN30(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _FOR_INIT(self, depth=0, tracer=None):
-    rule = self.rule(214)
-    tree = ParseTree( NonTerminal(214, self.getAtomString(214)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [17]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 237:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 307:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._EXPRESSION_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def _EXTERNAL_DECLARATOR(self, depth=0, tracer=None):
-    rule = self.rule(215)
-    tree = ParseTree( NonTerminal(215, self.getAtomString(215)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 319:
-      tree.astTransform = AstTransformNodeCreator('ExternalDeclarator', {'init_declarator': 1})
-      tree.add( self.expect(77, tracer) ) # declarator_hint
-      subtree = self._INIT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STRUCT_DECLARATION(self, depth=0, tracer=None):
-    rule = self.rule(216)
-    tree = ParseTree( NonTerminal(216, self.getAtomString(216)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 88:
-      tree.astTransform = AstTransformNodeCreator('StructOrUnionDeclaration', {'specifier_qualifiers': 0, 'declarators': 1})
-      subtree = self.__GEN24(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN25(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformNodeCreator('StructOrUnionDeclaration', {'specifier_qualifiers': 0, 'declarators': 1})
-      subtree = self.__GEN24(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN25(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN24(self, depth=0, tracer=None):
-    rule = self.rule(217)
-    tree = ParseTree( NonTerminal(217, self.getAtomString(217)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [91, 75, 15, 41, 114]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 368:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._SPECIFIER_QUALIFIER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN24(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _TYPE_QUALIFIER_LIST_OPT(self, depth=0, tracer=None):
-    rule = self.rule(218)
-    tree = ParseTree( NonTerminal(218, self.getAtomString(218)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [15, 75, 37, 14, 41, 114, 94, 97]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 277:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN31(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _ELIPSIS_OPT(self, depth=0, tracer=None):
-    rule = self.rule(219)
-    tree = ParseTree( NonTerminal(219, self.getAtomString(219)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _INIT_DECLARATOR_LIST(self, depth=0, tracer=None):
-    rule = self.rule(220)
-    tree = ParseTree( NonTerminal(220, self.getAtomString(220)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 424:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN15(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN15(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _KEYWORD(self, depth=0, tracer=None):
-    rule = self.rule(221)
-    tree = ParseTree( NonTerminal(221, self.getAtomString(221)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 3:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(23, tracer) ) # while
-      return tree
-    elif rule == 9:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(36, tracer) ) # char
-      return tree
-    elif rule == 14:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(113, tracer) ) # union
-      return tree
-    elif rule == 15:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(22, tracer) ) # else
-      return tree
-    elif rule == 21:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(123, tracer) ) # enum
-      return tree
-    elif rule == 28:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(102, tracer) ) # auto
-      return tree
-    elif rule == 38:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(92, tracer) ) # extern
-      return tree
-    elif rule == 51:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(86, tracer) ) # typedef
-      return tree
-    elif rule == 53:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(39, tracer) ) # _bool
-      return tree
-    elif rule == 54:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(12, tracer) ) # float
-      return tree
-    elif rule == 61:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(98, tracer) ) # default
-      return tree
-    elif rule == 74:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(65, tracer) ) # for
-      return tree
-    elif rule == 87:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(52, tracer) ) # goto
-      return tree
-    elif rule == 102:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(28, tracer) ) # if
-      return tree
-    elif rule == 121:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(53, tracer) ) # inline
-      return tree
-    elif rule == 140:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(85, tracer) ) # continue
-      return tree
-    elif rule == 176:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(97, tracer) ) # static
-      return tree
-    elif rule == 184:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(64, tracer) ) # return
-      return tree
-    elif rule == 196:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(122, tracer) ) # short
-      return tree
-    elif rule == 210:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(74, tracer) ) # signed
-      return tree
-    elif rule == 218:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(127, tracer) ) # int
-      return tree
-    elif rule == 233:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(58, tracer) ) # restrict
-      return tree
-    elif rule == 256:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(20, tracer) ) # switch
-      return tree
-    elif rule == 264:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(110, tracer) ) # void
-      return tree
-    elif rule == 281:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(2, tracer) ) # struct
-      return tree
-    elif rule == 285:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(25, tracer) ) # sizeof
-      return tree
-    elif rule == 349:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(106, tracer) ) # register
-      return tree
-    elif rule == 353:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(31, tracer) ) # _complex
-      return tree
-    elif rule == 366:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(60, tracer) ) # break
-      return tree
-    elif rule == 376:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(131, tracer) ) # long
-      return tree
-    elif rule == 391:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(71, tracer) ) # unsigned
-      return tree
-    elif rule == 397:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(70, tracer) ) # case
-      return tree
-    elif rule == 401:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(120, tracer) ) # volatile
-      return tree
-    elif rule == 419:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(108, tracer) ) # const
-      return tree
-    elif rule == 425:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(44, tracer) ) # do
-      return tree
-    elif rule == 440:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(79, tracer) ) # _imaginary
-      return tree
-    elif rule == 443:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(34, tracer) ) # double
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STRUCT_DECLARATOR(self, depth=0, tracer=None):
-    rule = self.rule(222)
-    tree = ParseTree( NonTerminal(222, self.getAtomString(222)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 45:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN27(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 410:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_DECLARATOR_BODY(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN27(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _BLOCK_ITEM_LIST(self, depth=0, tracer=None):
-    rule = self.rule(223)
-    tree = ParseTree( NonTerminal(223, self.getAtomString(223)), tracer )
-    tree.list = False
     if self.sym == None:
       return tree
     if rule == 336:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN40(depth)
+      subtree = self._BLOCK_ITEM_LIST(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN40(depth)
+      subtree = self._BLOCK_ITEM_LIST(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN26(self, depth=0, tracer=None):
-    rule = self.rule(224)
-    tree = ParseTree( NonTerminal(224, self.getAtomString(224)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [17]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 217:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._STRUCT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN26(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _FUNCTION_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(225)
-    tree = ParseTree( NonTerminal(225, self.getAtomString(225)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 407:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(53, tracer) ) # inline
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DESIGNATOR(self, depth=0, tracer=None):
-    rule = self.rule(226)
-    tree = ParseTree( NonTerminal(226, self.getAtomString(226)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 92:
-      tree.astTransform = AstTransformNodeCreator('ArrayAccess', {'index': 1})
-      tree.add( self.expect(49, tracer) ) # lsquare
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(96, tracer) ) # rsquare
-      return tree
-    elif rule == 340:
-      tree.astTransform = AstTransformNodeCreator('MemberAccess', {'name': 1})
-      tree.add( self.expect(124, tracer) ) # dot
-      tree.add( self.expect(75, tracer) ) # identifier
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DIRECT_ABSTRACT_DECLARATOR_OPT(self, depth=0, tracer=None):
-    rule = self.rule(228)
-    tree = ParseTree( NonTerminal(228, self.getAtomString(228)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [37, 94]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 249:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__DIRECT_ABSTRACT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [-1, 14, 114]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__DIRECT_ABSTRACT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def __GEN6(self, depth=0, tracer=None):
-    rule = self.rule(229)
-    tree = ParseTree( NonTerminal(229, self.getAtomString(229)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 308:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN6(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def __GEN1(self, depth=0, tracer=None):
-    rule = self.rule(230)
-    tree = ParseTree( NonTerminal(230, self.getAtomString(230)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 235:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ELSEIF_PART(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN1(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _DECLARATION_LIST(self, depth=0, tracer=None):
-    rule = self.rule(231)
-    tree = ParseTree( NonTerminal(231, self.getAtomString(231)), tracer )
-    tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 154:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN13(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN12(self, depth=0, tracer=None):
-    rule = self.rule(232)
-    tree = ParseTree( NonTerminal(232, self.getAtomString(232)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [17, 42, 37]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 286:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATION_LIST(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _STRUCT_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(233)
-    tree = ParseTree( NonTerminal(233, self.getAtomString(233)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 302:
-      tree.astTransform = AstTransformNodeCreator('Struct', {'definition': 1})
-      tree.add( self.expect(2, tracer) ) # struct
-      subtree = self._STRUCT_OR_UNION_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _EXPRESSION_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(234)
-    tree = ParseTree( NonTerminal(234, self.getAtomString(234)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 271:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXPRESSION_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXPRESSION_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(17, tracer) ) # semi
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DIRECT_ABSTRACT_DECLARATOR_EXPR(self, depth=0, tracer=None):
-    rule = self.rule(235)
-    tree = ParseTree( NonTerminal(235, self.getAtomString(235)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 11:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_QUALIFIER_LIST_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._STATIC_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 100:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(41, tracer) ) # asterisk
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._TYPE_QUALIFIER_LIST_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._STATIC_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def _DEFINE_FUNC_PARAM(self, depth=0, tracer=None):
-    rule = self.rule(236)
-    tree = ParseTree( NonTerminal(236, self.getAtomString(236)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _EXPRESSION_OPT(self, depth=0, tracer=None):
-    rule = self.rule(237)
-    tree = ParseTree( NonTerminal(237, self.getAtomString(237)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [17, 59]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 288:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def __GEN38(self, depth=0, tracer=None):
-    rule = self.rule(238)
-    tree = ParseTree( NonTerminal(238, self.getAtomString(238)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [15, 37, 14, 114, 94, 75]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 352:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._POINTER_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN38(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _BLOCK_ITEM(self, depth=0, tracer=None):
-    rule = self.rule(239)
-    tree = ParseTree( NonTerminal(239, self.getAtomString(239)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 254:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 432:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN42(self, depth=0, tracer=None):
-    rule = self.rule(240)
-    tree = ParseTree( NonTerminal(240, self.getAtomString(240)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [6, 12, 60, 2, 28, 34, 64, 97, 74, 70, 90, 71, 110, 98, 23, 39, 20, 89, 31, 75, 104, 17, 114, 86, 87, 113, 44, 27, 53, 65, 92, 99, 101, 102, 63, 103, 36, 106, 127, 108, 41, 42, 58, 85, 45, 120, 48, 122, 123, 51, 52, 131, 25]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 260:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ELSE_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _STATIC_OPT(self, depth=0, tracer=None):
-    rule = self.rule(241)
-    tree = ParseTree( NonTerminal(241, self.getAtomString(241)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [101, 51, 75, 41, 99, 90, 48, 114, 89, 87, 104, 25, 27, 63]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 68:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(97, tracer) ) # static
-      return tree
-    return tree
-  def __GEN16(self, depth=0, tracer=None):
-    rule = self.rule(242)
-    tree = ParseTree( NonTerminal(242, self.getAtomString(242)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [17]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 382:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._INIT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN16(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def __GEN17(self, depth=0, tracer=None):
-    rule = self.rule(243)
-    tree = ParseTree( NonTerminal(243, self.getAtomString(243)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [17, 37]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 131:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATOR_INITIALIZER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    return tree
-  def _PP_FILE(self, depth=0, tracer=None):
-    rule = self.rule(244)
-    tree = ParseTree( NonTerminal(244, self.getAtomString(244)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ENUM_SPECIFIER(self, depth=0, tracer=None):
-    rule = self.rule(245)
-    tree = ParseTree( NonTerminal(245, self.getAtomString(245)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 215:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(123, tracer) ) # enum
-      subtree = self._ENUM_SPECIFIER_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _INIT_DECLARATOR(self, depth=0, tracer=None):
-    rule = self.rule(246)
-    tree = ParseTree( NonTerminal(246, self.getAtomString(246)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 355:
-      tree.astTransform = AstTransformNodeCreator('InitDeclarator', {'initializer': 1, 'declarator': 0})
-      subtree = self._DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN17(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformNodeCreator('InitDeclarator', {'initializer': 1, 'declarator': 0})
-      subtree = self._DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN17(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _PARAMETER_DECLARATION(self, depth=0, tracer=None):
-    rule = self.rule(247)
-    tree = ParseTree( NonTerminal(247, self.getAtomString(247)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 411:
-      tree.astTransform = AstTransformNodeCreator('ParameterDeclaration', {'sub': 1, 'declaration_specifiers': 0})
-      subtree = self.__GEN8(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN37(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _TYPEDEF_NAME(self, depth=0, tracer=None):
-    rule = self.rule(248)
-    tree = ParseTree( NonTerminal(248, self.getAtomString(248)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 188:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(103, tracer) ) # typedef_identifier
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STRUCT_DECLARATOR_BODY(self, depth=0, tracer=None):
-    rule = self.rule(249)
-    tree = ParseTree( NonTerminal(249, self.getAtomString(249)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 99:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(91, tracer) ) # colon
-      subtree = self._DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _PARAMETER_DECLARATION_SUB_SUB(self, depth=0, tracer=None):
-    rule = self.rule(250)
-    tree = ParseTree( NonTerminal(250, self.getAtomString(250)), tracer )
-    tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 204:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__DIRECT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 465:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [-1, 14, 114]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__DIRECT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _PARAMETER_DECLARATION_SUB(self, depth=0, tracer=None):
-    rule = self.rule(251)
-    tree = ParseTree( NonTerminal(251, self.getAtomString(251)), tracer )
-    tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 303:
-      tree.astTransform = AstTransformNodeCreator('ParameterSub', {'name_and_size': 1, 'pointer': 0})
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._PARAMETER_DECLARATION_SUB_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [-1, 14, 114]:
-      tree.astTransform = AstTransformNodeCreator('ParameterSub', {'name_and_size': 1, 'pointer': 0})
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._PARAMETER_DECLARATION_SUB_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformNodeCreator('ParameterSub', {'name_and_size': 1, 'pointer': 0})
-      subtree = self._POINTER_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._PARAMETER_DECLARATION_SUB_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DIRECT_DECLARATOR_EXPR(self, depth=0, tracer=None):
-    rule = self.rule(252)
-    tree = ParseTree( NonTerminal(252, self.getAtomString(252)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in []):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 423:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DIRECT_DECLARATOR_MODIFIER_LIST_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._DIRECT_DECLARATOR_SIZE(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DIRECT_DECLARATOR_MODIFIER_LIST_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._DIRECT_DECLARATOR_SIZE(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    return tree
-  def _INITIALIZER(self, depth=0, tracer=None):
-    rule = self.rule(253)
-    tree = ParseTree( NonTerminal(253, self.getAtomString(253)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 145:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 296:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(42, tracer) ) # lbrace
-      subtree = self.__GEN18(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._TRAILING_COMMA_OPT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(45, tracer) ) # rbrace
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN27(self, depth=0, tracer=None):
-    rule = self.rule(254)
-    tree = ParseTree( NonTerminal(254, self.getAtomString(254)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [17, 37]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 232:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_DECLARATOR_BODY(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
     return tree
   def _ITERATION_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(255)
-    tree = ParseTree( NonTerminal(255, self.getAtomString(255)), tracer )
+    rule = self.rule(131)
+    tree = ParseTree( NonTerminal(131, self.getAtomString(131)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 253:
-      tree.astTransform = AstTransformNodeCreator('While', {'expr': 2, 'statement': 4})
-      tree.add( self.expect(23, tracer) ) # while
-      tree.add( self.expect(114, tracer) ) # lparen
-      subtree = self.__EXPR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 284:
+    if rule == 97:
       tree.astTransform = AstTransformNodeCreator('For', {'init': 2, 'cond': 3, 'incr': 4})
-      tree.add( self.expect(65, tracer) ) # for
-      tree.add( self.expect(114, tracer) ) # lparen
+      t = self.expect(74, tracer) # for
+      tree.add(t)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
       subtree = self._FOR_INIT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
@@ -4063,384 +1233,395 @@ class Parser:
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
       subtree = self._STATEMENT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif rule == 378:
-      tree.astTransform = AstTransformNodeCreator('DoWhile', {'expr': 4, 'statement': 1})
-      tree.add( self.expect(44, tracer) ) # do
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(23, tracer) ) # while
-      tree.add( self.expect(114, tracer) ) # lparen
+    elif rule == 367:
+      tree.astTransform = AstTransformNodeCreator('While', {'expr': 2, 'statement': 4})
+      t = self.expect(113, tracer) # while
+      tree.add(t)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
       subtree = self.__EXPR(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
-      tree.add( self.expect(17, tracer) ) # semi
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN25(self, depth=0, tracer=None):
-    rule = self.rule(256)
-    tree = ParseTree( NonTerminal(256, self.getAtomString(256)), tracer )
-    tree.list = 'slist'
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 148:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN26(depth)
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_DECLARATOR(depth)
+    elif rule == 382:
+      tree.astTransform = AstTransformNodeCreator('DoWhile', {'expr': 4, 'statement': 1})
+      t = self.expect(76, tracer) # do
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      subtree = self.__GEN26(depth)
+      t = self.expect(113, tracer) # while
+      tree.add(t)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      subtree = self.__EXPR(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(257)
-    tree = ParseTree( NonTerminal(257, self.getAtomString(257)), tracer )
+  def _DIRECT_DECLARATOR_MODIFIER_LIST_OPT(self, depth=0, tracer=None):
+    rule = self.rule(132)
+    tree = ParseTree( NonTerminal(132, self.getAtomString(132)), tracer )
     tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 159:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._LABELED_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 163:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._JUMP_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 183:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._COMPOUND_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 266:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ITERATION_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 408:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._SELECTION_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 436:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXPRESSION_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXPRESSION_STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _STRUCT_OR_UNION_SUB(self, depth=0, tracer=None):
-    rule = self.rule(258)
-    tree = ParseTree( NonTerminal(258, self.getAtomString(258)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 55:
-      tree.astTransform = AstTransformNodeCreator('StructOrUnion', {'body': 0})
-      subtree = self._STRUCT_OR_UNION_BODY(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 269:
-      tree.astTransform = AstTransformNodeCreator('StructOrUnion', {'body': 1, 'name': 0})
-      tree.add( self.expect(75, tracer) ) # identifier
-      subtree = self.__GEN22(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN13(self, depth=0, tracer=None):
-    rule = self.rule(259)
-    tree = ParseTree( NonTerminal(259, self.getAtomString(259)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [17, 42, 37]):
+    if self.sym != None and (self.sym.getId() in [91, 104, 56, 16, 39, 60, 65, 78, 98, 9, 12, 117, 86, 20]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 25:
+    if rule == 352:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._DECLARATION(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN13(depth)
+      subtree = self.__GEN25(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
     return tree
-  def _EXTERNAL_PROTOTYPE(self, depth=0, tracer=None):
-    rule = self.rule(260)
-    tree = ParseTree( NonTerminal(260, self.getAtomString(260)), tracer )
-    tree.list = False
+  def __GEN37(self, depth=0, tracer=None):
+    rule = self.rule(133)
+    tree = ParseTree( NonTerminal(133, self.getAtomString(133)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
     if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 174:
-      tree.astTransform = AstTransformNodeCreator('FunctionPrototype', {'declaration_list': 2, 'declarator': 1})
-      tree.add( self.expect(118, tracer) ) # function_prototype_hint
-      subtree = self._DECLARATOR(depth)
+      return tree
+    if rule == 218:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__EXPR_SANS_COMMA(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      subtree = self.__GEN12(depth)
+      subtree = self.__GEN38(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _IF_SECTION(self, depth=0, tracer=None):
-    rule = self.rule(261)
-    tree = ParseTree( NonTerminal(261, self.getAtomString(261)), tracer )
+    return tree
+  def _DESIGNATOR(self, depth=0, tracer=None):
+    rule = self.rule(134)
+    tree = ParseTree( NonTerminal(134, self.getAtomString(134)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 59:
+      tree.astTransform = AstTransformNodeCreator('MemberAccess', {'name': 1})
+      t = self.expect(81, tracer) # dot
+      tree.add(t)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      return tree
+    elif rule == 396:
+      tree.astTransform = AstTransformNodeCreator('ArrayAccess', {'index': 1})
+      t = self.expect(67, tracer) # lsquare
+      tree.add(t)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(99, tracer) # rsquare
+      tree.add(t)
+      return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
   def _DIRECT_DECLARATOR_PARAMETER_LIST(self, depth=0, tracer=None):
-    rule = self.rule(262)
-    tree = ParseTree( NonTerminal(262, self.getAtomString(262)), tracer )
+    rule = self.rule(135)
+    tree = ParseTree( NonTerminal(135, self.getAtomString(135)), tracer )
     tree.list = False
     if self.sym != None and (self.sym.getId() in []):
       return tree
     if self.sym == None:
       return tree
-    if rule == 276:
+    if rule == 174:
+      tree.astTransform = AstTransformNodeCreator('ParameterList', {'identifiers': 0})
+      subtree = self.__GEN28(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 378:
       tree.astTransform = AstTransformSubstitution(0)
       subtree = self._PARAMETER_TYPE_LIST(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif rule == 389:
-      tree.astTransform = AstTransformNodeCreator('ParameterList', {'identifiers': 0})
-      subtree = self.__GEN35(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
     return tree
-  def _INITIALIZER_LIST_ITEM(self, depth=0, tracer=None):
-    rule = self.rule(263)
-    tree = ParseTree( NonTerminal(263, self.getAtomString(263)), tracer )
+  def _EXTERNAL_DECLARATOR(self, depth=0, tracer=None):
+    rule = self.rule(136)
+    tree = ParseTree( NonTerminal(136, self.getAtomString(136)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 69:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN20(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._INITIALIZER(depth)
+    if rule == 279:
+      tree.astTransform = AstTransformNodeCreator('ExternalDeclarator', {'init_declarator': 1})
+      t = self.expect(48, tracer) # declarator_hint
+      tree.add(t)
+      subtree = self._INIT_DECLARATOR(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif rule == 360:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(27, tracer) ) # integer_constant
-      return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN20(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self._INITIALIZER(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ELSE_IF_STATEMENT_LIST(self, depth=0, tracer=None):
-    rule = self.rule(264)
-    tree = ParseTree( NonTerminal(264, self.getAtomString(264)), tracer )
+  def __GEN30(self, depth=0, tracer=None):
+    rule = self.rule(137)
+    tree = ParseTree( NonTerminal(137, self.getAtomString(137)), tracer )
     tree.list = False
-    if self.sym == None:
-      return tree
-    if rule == 252:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN43(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _TOKEN(self, depth=0, tracer=None):
-    rule = self.rule(265)
-    tree = ParseTree( NonTerminal(265, self.getAtomString(265)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 58:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(75, tracer) ) # identifier
-      return tree
-    elif rule == 203:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._CONSTANT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 315:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PUNCTUATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 331:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._KEYWORD(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      return tree
-    elif rule == 350:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(55, tracer) ) # pp_number
-      return tree
-    elif rule == 429:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(63, tracer) ) # string_literal
-      return tree
-    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN19(self, depth=0, tracer=None):
-    rule = self.rule(266)
-    tree = ParseTree( NonTerminal(266, self.getAtomString(266)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in [117]):
+    if self.sym != None and (self.sym.getId() in [0, 88]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 345:
+    if rule == 300:
       tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(37, tracer) ) # comma
-      subtree = self._INITIALIZER_LIST_ITEM(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN19(depth)
+      subtree = self._PARAMETER_DECLARATION_SUB(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
+    elif self.sym.getId() in [-1, 102, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._PARAMETER_DECLARATION_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._PARAMETER_DECLARATION_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
     return tree
-  def _CONTROL_LINE(self, depth=0, tracer=None):
-    rule = self.rule(267)
-    tree = ParseTree( NonTerminal(267, self.getAtomString(267)), tracer )
+  def _FOR_COND(self, depth=0, tracer=None):
+    rule = self.rule(138)
+    tree = ParseTree( NonTerminal(138, self.getAtomString(138)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 329:
+      tree.astTransform = AstTransformSubstitution(1)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      subtree = self._EXPRESSION_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN15(self, depth=0, tracer=None):
-    rule = self.rule(268)
-    tree = ParseTree( NonTerminal(268, self.getAtomString(268)), tracer )
-    tree.list = 'slist'
+  def _JUMP_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(139)
+    tree = ParseTree( NonTerminal(139, self.getAtomString(139)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 127:
+      tree.astTransform = AstTransformNodeCreator('Goto', {'name': 1})
+      t = self.expect(44, tracer) # goto
+      tree.add(t)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    elif rule == 151:
+      tree.astTransform = AstTransformNodeCreator('Return', {'expr': 1})
+      t = self.expect(27, tracer) # return
+      tree.add(t)
+      subtree = self._EXPRESSION_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    elif rule == 251:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(94, tracer) # continue
+      tree.add(t)
+      return tree
+    elif rule == 368:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(25, tracer) # break
+      tree.add(t)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _FOR_INIT(self, depth=0, tracer=None):
+    rule = self.rule(140)
+    tree = ParseTree( NonTerminal(140, self.getAtomString(140)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 244:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._EXPRESSION_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 475:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def _PP(self, depth=0, tracer=None):
+    rule = self.rule(141)
+    tree = ParseTree( NonTerminal(141, self.getAtomString(141)), tracer )
+    tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
     if rule == 6:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._INIT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN16(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
+      t = self.expect(8, tracer) # defined
+      tree.add(t)
       return tree
-    elif self.sym.getId() in [15, 114, 75]:
+    elif rule == 361:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._INIT_DECLARATOR(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN16(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
+      t = self.expect(45, tracer) # defined_separator
+      tree.add(t)
+      return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN37(self, depth=0, tracer=None):
-    rule = self.rule(269)
-    tree = ParseTree( NonTerminal(269, self.getAtomString(269)), tracer )
+  def _STRUCT_DECLARATOR_BODY(self, depth=0, tracer=None):
+    rule = self.rule(142)
+    tree = ParseTree( NonTerminal(142, self.getAtomString(142)), tracer )
     tree.list = False
-    if self.sym != None and (self.sym.getId() in [37, 94]):
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 246:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(34, tracer) # colon
+      tree.add(t)
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _EXTERNAL_DECLARATION_SUB_SUB(self, depth=0, tracer=None):
+    rule = self.rule(143)
+    tree = ParseTree( NonTerminal(143, self.getAtomString(143)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 84:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXTERNAL_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 132:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXTERNAL_PROTOTYPE(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _POINTER_OPT(self, depth=0, tracer=None):
+    rule = self.rule(144)
+    tree = ParseTree( NonTerminal(144, self.getAtomString(144)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [0, 73, 88, 78, 39, 102]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 135:
+    if rule == 313:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PARAMETER_DECLARATION_SUB(depth)
+      subtree = self._POINTER(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif self.sym.getId() in [-1, 14, 114]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PARAMETER_DECLARATION_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-    elif self.sym.getId() in [15, 114, 75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._PARAMETER_DECLARATION_SUB(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
     return tree
-  def __GEN35(self, depth=0, tracer=None):
-    rule = self.rule(270)
-    tree = ParseTree( NonTerminal(270, self.getAtomString(270)), tracer )
-    tree.list = 'slist'
-    if self.sym != None and (self.sym.getId() in []):
+  def _LABELED_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(145)
+    tree = ParseTree( NonTerminal(145, self.getAtomString(145)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 17:
+      tree.astTransform = AstTransformNodeCreator('DefaultCase', {'statement': 2})
+      t = self.expect(35, tracer) # default
+      tree.add(t)
+      t = self.expect(34, tracer) # colon
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 45:
+      tree.astTransform = AstTransformNodeCreator('Label', {'name': 0, 'statement': 1})
+      t = self.expect(118, tracer) # label_hint
+      tree.add(t)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      t = self.expect(34, tracer) # colon
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 263:
+      tree.astTransform = AstTransformNodeCreator('Case', {'expr': 1, 'statement': 3})
+      t = self.expect(36, tracer) # case
+      tree.add(t)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(34, tracer) # colon
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN36(self, depth=0, tracer=None):
+    rule = self.rule(146)
+    tree = ParseTree( NonTerminal(146, self.getAtomString(146)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [74, 44, 23, 9, 33, 12, 16, 78, 18, 118, 25, 103, 27, 36, 108, 35, 39, 69, 28, 5, 49, 46, 86, 100, 52, 56, 113, 96, 60, 76, 70, 4, 66, 77, 71, 83, 47, 38, 91, 10, 93, 94, 95, 65, 6, 101, 19, 104, 115, 106, 110, 20, 117, 42, 98]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 362:
+    if rule == 328:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._IDENTIFIER(depth)
+      subtree = self._ELSE_IF_STATEMENT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
@@ -4450,119 +1631,1183 @@ class Parser:
         tracer.add( subtree.tracer )
       return tree
     return tree
-  def _DESIGNATION(self, depth=0, tracer=None):
-    rule = self.rule(271)
-    tree = ParseTree( NonTerminal(271, self.getAtomString(271)), tracer )
+  def _SELECTION_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(147)
+    tree = ParseTree( NonTerminal(147, self.getAtomString(147)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 82:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self.__GEN21(depth)
+    if rule == 241:
+      tree.astTransform = AstTransformNodeCreator('If', {'elseif': 6, 'statement': 4, 'condition': 2, 'else': 7})
+      t = self.expect(23, tracer) # if
+      tree.add(t)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      subtree = self.__EXPR(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      tree.add( self.expect(26, tracer) ) # assign
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(69, tracer) # endif
+      tree.add(t)
+      subtree = self.__GEN34(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN35(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 385:
+      tree.astTransform = AstTransformNodeCreator('Switch', {'expr': 2, 'statment': 4})
+      t = self.expect(100, tracer) # switch
+      tree.add(t)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _ENUMERATOR(self, depth=0, tracer=None):
+    rule = self.rule(148)
+    tree = ParseTree( NonTerminal(148, self.getAtomString(148)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 209:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ENUMERATION_CONSTANT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._ENUMERATOR_ASSIGNMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
       return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
   def __GEN22(self, depth=0, tracer=None):
-    rule = self.rule(272)
-    tree = ParseTree( NonTerminal(272, self.getAtomString(272)), tracer )
+    rule = self.rule(149)
+    tree = ParseTree( NonTerminal(149, self.getAtomString(149)), tracer )
+    tree.list = 'slist'
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 198:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ENUMERATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN23(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _ENUM_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(151)
+    tree = ParseTree( NonTerminal(151, self.getAtomString(151)), tracer )
     tree.list = False
-    if self.sym != None and (self.sym.getId() in [97, 12, 77, 108, 102, 34, 103, 118, 123, 37, 86, 74, 2, 41, 110, 71, 113, 92, 15, 14, 75, 36, 39, 120, 4, 122, 31, 106, 17, 114, 127, 58, 91, 131, 94, 53]):
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 182:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(106, tracer) # enum
+      tree.add(t)
+      subtree = self._ENUM_SPECIFIER_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN23(self, depth=0, tracer=None):
+    rule = self.rule(152)
+    tree = ParseTree( NonTerminal(152, self.getAtomString(152)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [55]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 50:
+    if rule == 38:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._STRUCT_OR_UNION_BODY(depth)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._ENUMERATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN23(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
     return tree
-  def __GEN31(self, depth=0, tracer=None):
-    rule = self.rule(273)
-    tree = ParseTree( NonTerminal(273, self.getAtomString(273)), tracer )
-    tree.list = 'nlist'
-    if self.sym != None and (self.sym.getId() in [15, 75, 37, 14, 41, 114, 94, 97]):
+  def _DECLARATOR(self, depth=0, tracer=None):
+    rule = self.rule(153)
+    tree = ParseTree( NonTerminal(153, self.getAtomString(153)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 47:
+      tree.astTransform = AstTransformNodeCreator('Declarator', {'direct_declarator': 1, 'pointer': 0})
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__DIRECT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformNodeCreator('Declarator', {'direct_declarator': 1, 'pointer': 0})
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__DIRECT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _STATIC_OPT(self, depth=0, tracer=None):
+    rule = self.rule(154)
+    tree = ParseTree( NonTerminal(154, self.getAtomString(154)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [91, 104, 56, 16, 39, 60, 65, 78, 98, 9, 12, 117, 86, 20]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 205:
+    if rule == 37:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(96, tracer) # static
+      tree.add(t)
+      return tree
+    return tree
+  def _DECLARATION_LIST(self, depth=0, tracer=None):
+    rule = self.rule(155)
+    tree = ParseTree( NonTerminal(155, self.getAtomString(155)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 403:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN6(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN5(self, depth=0, tracer=None):
+    rule = self.rule(156)
+    tree = ParseTree( NonTerminal(156, self.getAtomString(156)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [77, 6, 0]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 284:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATION_LIST(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN29(self, depth=0, tracer=None):
+    rule = self.rule(157)
+    tree = ParseTree( NonTerminal(157, self.getAtomString(157)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 20:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._IDENTIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN29(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _DECLARATION_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(158)
+    tree = ParseTree( NonTerminal(158, self.getAtomString(158)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 66:
       tree.astTransform = AstTransformSubstitution(0)
       subtree = self._TYPE_QUALIFIER(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      subtree = self.__GEN31(depth)
+      return tree
+    elif rule == 68:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_SPECIFIER(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    return tree
-  def _PP_NODES_LIST(self, depth=0, tracer=None):
-    rule = self.rule(274)
-    tree = ParseTree( NonTerminal(274, self.getAtomString(274)), tracer )
-    tree.list = False
-    if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
+    elif rule == 264:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STORAGE_CLASS_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 317:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._FUNCTION_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _ELSEIF_PART(self, depth=0, tracer=None):
-    rule = self.rule(275)
-    tree = ParseTree( NonTerminal(275, self.getAtomString(275)), tracer )
+  def _EXTERNAL_DECLARATION_SUB(self, depth=0, tracer=None):
+    rule = self.rule(159)
+    tree = ParseTree( NonTerminal(159, self.getAtomString(159)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 5:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXTERNAL_FUNCTION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 70:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN3(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _DECLARATOR_INITIALIZER(self, depth=0, tracer=None):
-    rule = self.rule(276)
-    tree = ParseTree( NonTerminal(276, self.getAtomString(276)), tracer )
+  def _SIZEOF_BODY(self, depth=0, tracer=None):
+    rule = self.rule(160)
+    tree = ParseTree( NonTerminal(160, self.getAtomString(160)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 62:
+    if rule == 478:
       tree.astTransform = AstTransformSubstitution(1)
-      tree.add( self.expect(26, tracer) ) # assign
-      subtree = self._INITIALIZER(depth)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      subtree = self._TYPE_NAME(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      return tree
+    elif rule == 487:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _SPECIFIER_QUALIFIER(self, depth=0, tracer=None):
+    rule = self.rule(161)
+    tree = ParseTree( NonTerminal(161, self.getAtomString(161)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 337:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 394:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_QUALIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _EXTERNAL_DECLARATION(self, depth=0, tracer=None):
+    rule = self.rule(162)
+    tree = ParseTree( NonTerminal(162, self.getAtomString(162)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 502:
+      tree.astTransform = AstTransformNodeCreator('ExternalDeclaration', {'declarations': 2, 'declaration_specifiers': 1})
+      t = self.expect(13, tracer) # external_declaration_hint
+      tree.add(t)
+      subtree = self.__GEN1(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._EXTERNAL_DECLARATION_SUB(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
   def __GEN14(self, depth=0, tracer=None):
-    rule = self.rule(277)
-    tree = ParseTree( NonTerminal(277, self.getAtomString(277)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [17]):
+    rule = self.rule(163)
+    tree = ParseTree( NonTerminal(163, self.getAtomString(163)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [31]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 455:
+    if rule == 18:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._INIT_DECLARATOR_LIST(depth)
+      subtree = self._DESIGNATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN14(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif self.sym.getId() in [15, 114, 75]:
+    return tree
+  def __GEN0(self, depth=0, tracer=None):
+    rule = self.rule(164)
+    tree = ParseTree( NonTerminal(164, self.getAtomString(164)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [-1]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 281:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._INIT_DECLARATOR_LIST(depth)
+      subtree = self._EXTERNAL_DECLARATION(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
+      subtree = self.__GEN0(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
     return tree
-  def __GEN5(self, depth=0, tracer=None):
-    rule = self.rule(278)
-    tree = ParseTree( NonTerminal(278, self.getAtomString(278)), tracer )
+  def _DIRECT_DECLARATOR_MODIFIER(self, depth=0, tracer=None):
+    rule = self.rule(165)
+    tree = ParseTree( NonTerminal(165, self.getAtomString(165)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 369:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_QUALIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 501:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(96, tracer) # static
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN20(self, depth=0, tracer=None):
+    rule = self.rule(166)
+    tree = ParseTree( NonTerminal(166, self.getAtomString(166)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [0, 6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 258:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_DECLARATOR_BODY(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _COMPOUND_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(167)
+    tree = ParseTree( NonTerminal(167, self.getAtomString(167)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 307:
+      tree.astTransform = AstTransformSubstitution(1)
+      t = self.expect(77, tracer) # lbrace
+      tree.add(t)
+      subtree = self.__GEN32(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(115, tracer) # rbrace
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _TYPE_QUALIFIER(self, depth=0, tracer=None):
+    rule = self.rule(168)
+    tree = ParseTree( NonTerminal(168, self.getAtomString(168)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 160:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(93, tracer) # restrict
+      tree.add(t)
+      return tree
+    elif rule == 162:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(101, tracer) # volatile
+      tree.add(t)
+      return tree
+    elif rule == 294:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(83, tracer) # const
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _CONSTANT(self, depth=0, tracer=None):
+    rule = self.rule(169)
+    tree = ParseTree( NonTerminal(169, self.getAtomString(169)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 29:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(9, tracer) # character_constant
+      tree.add(t)
+      return tree
+    elif rule == 114:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(56, tracer) # enumeration_constant
+      tree.add(t)
+      return tree
+    elif rule == 121:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(65, tracer) # integer_constant
+      tree.add(t)
+      return tree
+    elif rule == 308:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(12, tracer) # floating_constant
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _TYPE_NAME(self, depth=0, tracer=None):
+    rule = self.rule(170)
+    tree = ParseTree( NonTerminal(170, self.getAtomString(170)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 3:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(95, tracer) # char
+      tree.add(t)
+      return tree
+    elif rule == 333:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(110, tracer) # int
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN4(self, depth=0, tracer=None):
+    rule = self.rule(171)
+    tree = ParseTree( NonTerminal(171, self.getAtomString(171)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 359:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._EXTERNAL_DECLARATION_SUB_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN4(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _ENUMERATION_CONSTANT(self, depth=0, tracer=None):
+    rule = self.rule(172)
+    tree = ParseTree( NonTerminal(172, self.getAtomString(172)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 43:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN28(self, depth=0, tracer=None):
+    rule = self.rule(173)
+    tree = ParseTree( NonTerminal(173, self.getAtomString(173)), tracer )
     tree.list = 'slist'
     if self.sym != None and (self.sym.getId() in []):
       return tree
     if self.sym == None:
       return tree
-    if rule == 383:
+    if rule == 399:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._IDENTIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN29(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _ENUMERATOR_ASSIGNMENT(self, depth=0, tracer=None):
+    rule = self.rule(174)
+    tree = ParseTree( NonTerminal(174, self.getAtomString(174)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [0, 55]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 462:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(31, tracer) # assign
+      tree.add(t)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _TYPE_QUALIFIER_LIST_OPT(self, depth=0, tracer=None):
+    rule = self.rule(175)
+    tree = ParseTree( NonTerminal(175, self.getAtomString(175)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [0, 73, 88, 78, 96, 39, 102, 86]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 111:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN24(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN25(self, depth=0, tracer=None):
+    rule = self.rule(176)
+    tree = ParseTree( NonTerminal(176, self.getAtomString(176)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [91, 104, 56, 16, 39, 65, 78, 98, 9, 12, 60, 117, 86, 20]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 314:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DIRECT_DECLARATOR_MODIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN25(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _INIT_DECLARATOR(self, depth=0, tracer=None):
+    rule = self.rule(177)
+    tree = ParseTree( NonTerminal(177, self.getAtomString(177)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 101:
+      tree.astTransform = AstTransformNodeCreator('InitDeclarator', {'initializer': 1, 'declarator': 0})
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN10(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformNodeCreator('InitDeclarator', {'initializer': 1, 'declarator': 0})
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN10(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _TRAILING_COMMA_OPT(self, depth=0, tracer=None):
+    rule = self.rule(178)
+    tree = ParseTree( NonTerminal(178, self.getAtomString(178)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [115]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 332:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(55, tracer) # trailing_comma
+      tree.add(t)
+      return tree
+    return tree
+  def _EXPRESSION_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(179)
+    tree = ParseTree( NonTerminal(179, self.getAtomString(179)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 2:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXPRESSION_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXPRESSION_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      tree.add( self.expect(6, tracer) ) # semi
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _DIRECT_ABSTRACT_DECLARATOR_EXPR(self, depth=0, tracer=None):
+    rule = self.rule(180)
+    tree = ParseTree( NonTerminal(180, self.getAtomString(180)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 381:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_QUALIFIER_LIST_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._STATIC_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 424:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(86, tracer) # asterisk
+      tree.add(t)
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_QUALIFIER_LIST_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._STATIC_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def __GEN8(self, depth=0, tracer=None):
+    rule = self.rule(181)
+    tree = ParseTree( NonTerminal(181, self.getAtomString(181)), tracer )
+    tree.list = 'slist'
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 249:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._INIT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN9(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._INIT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN9(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN16(self, depth=0, tracer=None):
+    rule = self.rule(182)
+    tree = ParseTree( NonTerminal(182, self.getAtomString(182)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [115]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 228:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_DECLARATION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN16(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_DECLARATION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN16(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def _EXPRESSION_OPT(self, depth=0, tracer=None):
+    rule = self.rule(183)
+    tree = ParseTree( NonTerminal(183, self.getAtomString(183)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [105, 6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 449:
       tree.astTransform = AstTransformSubstitution(0)
       subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def _PARAMETER_TYPE_LIST_OPT(self, depth=0, tracer=None):
+    rule = self.rule(184)
+    tree = ParseTree( NonTerminal(184, self.getAtomString(184)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 391:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._PARAMETER_TYPE_LIST(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _PARAMETER_DECLARATION_SUB(self, depth=0, tracer=None):
+    rule = self.rule(185)
+    tree = ParseTree( NonTerminal(185, self.getAtomString(185)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 13:
+      tree.astTransform = AstTransformNodeCreator('ParameterSub', {'name_and_size': 1, 'pointer': 0})
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._PARAMETER_DECLARATION_SUB_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [-1, 102, 78]:
+      tree.astTransform = AstTransformNodeCreator('ParameterSub', {'name_and_size': 1, 'pointer': 0})
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._PARAMETER_DECLARATION_SUB_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformNodeCreator('ParameterSub', {'name_and_size': 1, 'pointer': 0})
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._PARAMETER_DECLARATION_SUB_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN19(self, depth=0, tracer=None):
+    rule = self.rule(186)
+    tree = ParseTree( NonTerminal(186, self.getAtomString(186)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 191:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._STRUCT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN19(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _EXTERNAL_PROTOTYPE(self, depth=0, tracer=None):
+    rule = self.rule(187)
+    tree = ParseTree( NonTerminal(187, self.getAtomString(187)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 446:
+      tree.astTransform = AstTransformNodeCreator('FunctionPrototype', {'declaration_list': 2, 'declarator': 1})
+      t = self.expect(21, tracer) # function_prototype_hint
+      tree.add(t)
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN5(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _BLOCK_ITEM(self, depth=0, tracer=None):
+    rule = self.rule(188)
+    tree = ParseTree( NonTerminal(188, self.getAtomString(188)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 196:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 311:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _STORAGE_CLASS_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(189)
+    tree = ParseTree( NonTerminal(189, self.getAtomString(189)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 28:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(4, tracer) # register
+      tree.add(t)
+      return tree
+    elif rule == 36:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(46, tracer) # typedef
+      tree.add(t)
+      return tree
+    elif rule == 92:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(66, tracer) # auto
+      tree.add(t)
+      return tree
+    elif rule == 283:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(52, tracer) # extern
+      tree.add(t)
+      return tree
+    elif rule == 435:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(96, tracer) # static
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _INITIALIZER(self, depth=0, tracer=None):
+    rule = self.rule(190)
+    tree = ParseTree( NonTerminal(190, self.getAtomString(190)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 293:
+      tree.astTransform = AstTransformSubstitution(1)
+      t = self.expect(77, tracer) # lbrace
+      tree.add(t)
+      subtree = self.__GEN11(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._TRAILING_COMMA_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(115, tracer) # rbrace
+      tree.add(t)
+      return tree
+    elif rule == 321:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN1(self, depth=0, tracer=None):
+    rule = self.rule(191)
+    tree = ParseTree( NonTerminal(191, self.getAtomString(191)), tracer )
+    tree.list = 'mlist'
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 309:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATION_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN2(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _INITIALIZER_LIST_ITEM(self, depth=0, tracer=None):
+    rule = self.rule(192)
+    tree = ParseTree( NonTerminal(192, self.getAtomString(192)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 295:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(65, tracer) # integer_constant
+      tree.add(t)
+      return tree
+    elif rule == 363:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN13(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._INITIALIZER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN13(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._INITIALIZER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN38(self, depth=0, tracer=None):
+    rule = self.rule(193)
+    tree = ParseTree( NonTerminal(193, self.getAtomString(193)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 137:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self.__EXPR_SANS_COMMA(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN38(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN2(self, depth=0, tracer=None):
+    rule = self.rule(194)
+    tree = ParseTree( NonTerminal(194, self.getAtomString(194)), tracer )
+    tree.list = 'mlist'
+    if self.sym != None and (self.sym.getId() in [26, 73, 88, 78, 86, 102, 6, 21, 0, 39, 48]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 489:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATION_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN2(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _POINTER(self, depth=0, tracer=None):
+    rule = self.rule(195)
+    tree = ParseTree( NonTerminal(195, self.getAtomString(195)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 275:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN31(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _DECLARATION(self, depth=0, tracer=None):
+    rule = self.rule(196)
+    tree = ParseTree( NonTerminal(196, self.getAtomString(196)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 247:
+      tree.astTransform = AstTransformNodeCreator('Declaration', {'init_declarators': 1, 'declaration_specifiers': 0})
+      subtree = self.__GEN1(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN7(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _ABSTRACT_DECLARATOR(self, depth=0, tracer=None):
+    rule = self.rule(197)
+    tree = ParseTree( NonTerminal(197, self.getAtomString(197)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 287:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [-1, 102, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._POINTER_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN17(self, depth=0, tracer=None):
+    rule = self.rule(198)
+    tree = ParseTree( NonTerminal(198, self.getAtomString(198)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [73, 34, 86, 39, 78]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 79:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._SPECIFIER_QUALIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN17(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN6(self, depth=0, tracer=None):
+    rule = self.rule(199)
+    tree = ParseTree( NonTerminal(199, self.getAtomString(199)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [77, 6, 0]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 331:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATION(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
@@ -4572,120 +2817,553 @@ class Parser:
         tracer.add( subtree.tracer )
       return tree
     return tree
-  def _TRAILING_COMMA_OPT(self, depth=0, tracer=None):
-    rule = self.rule(279)
-    tree = ParseTree( NonTerminal(279, self.getAtomString(279)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [45]):
-      return tree
-    if self.sym == None:
-      return tree
-    if rule == 347:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(117, tracer) ) # trailing_comma
-      return tree
-    return tree
-  def _EXTERNAL_DECLARATION_SUB_SUB(self, depth=0, tracer=None):
-    rule = self.rule(280)
-    tree = ParseTree( NonTerminal(280, self.getAtomString(280)), tracer )
+  def _BLOCK_ITEM_LIST(self, depth=0, tracer=None):
+    rule = self.rule(200)
+    tree = ParseTree( NonTerminal(200, self.getAtomString(200)), tracer )
     tree.list = False
     if self.sym == None:
-      raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 224:
+      return tree
+    if rule == 404:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXTERNAL_PROTOTYPE(depth)
+      subtree = self.__GEN33(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif rule == 322:
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._EXTERNAL_DECLARATOR(depth)
+      subtree = self.__GEN33(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _TYPEDEF_NAME(self, depth=0, tracer=None):
+    rule = self.rule(201)
+    tree = ParseTree( NonTerminal(201, self.getAtomString(201)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 419:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(70, tracer) # typedef_identifier
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _TRANSLATION_UNIT(self, depth=0, tracer=None):
+    rule = self.rule(202)
+    tree = ParseTree( NonTerminal(202, self.getAtomString(202)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 217:
+      tree.astTransform = AstTransformNodeCreator('TranslationUnit', {'external_declarations': 0})
+      subtree = self.__GEN0(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _IDENTIFIER(self, depth=0, tracer=None):
-    rule = self.rule(281)
-    tree = ParseTree( NonTerminal(281, self.getAtomString(281)), tracer )
+  def _STRUCT_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(203)
+    tree = ParseTree( NonTerminal(203, self.getAtomString(203)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 60:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.add( self.expect(75, tracer) ) # identifier
+    if rule == 349:
+      tree.astTransform = AstTransformNodeCreator('Struct', {'definition': 1})
+      t = self.expect(71, tracer) # struct
+      tree.add(t)
+      subtree = self._STRUCT_OR_UNION_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
       return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def _SELECTION_STATEMENT(self, depth=0, tracer=None):
-    rule = self.rule(282)
-    tree = ParseTree( NonTerminal(282, self.getAtomString(282)), tracer )
+  def _DECLARATOR_INITIALIZER(self, depth=0, tracer=None):
+    rule = self.rule(204)
+    tree = ParseTree( NonTerminal(204, self.getAtomString(204)), tracer )
     tree.list = False
     if self.sym == None:
       raise SyntaxError('Error: unexpected end of file', tracer)
-    if rule == 227:
-      tree.astTransform = AstTransformNodeCreator('If', {'elseif': 6, 'statement': 4, 'condition': 2, 'else': 7})
-      tree.add( self.expect(28, tracer) ) # if
-      tree.add( self.expect(114, tracer) ) # lparen
+    if rule == 342:
+      tree.astTransform = AstTransformSubstitution(1)
+      t = self.expect(31, tracer) # assign
+      tree.add(t)
+      subtree = self._INITIALIZER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _PARAMETER_DECLARATION_SUB_SUB(self, depth=0, tracer=None):
+    rule = self.rule(205)
+    tree = ParseTree( NonTerminal(205, self.getAtomString(205)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 115:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 185:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__DIRECT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [-1, 102, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DIRECT_ABSTRACT_DECLARATOR_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__DIRECT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(206)
+    tree = ParseTree( NonTerminal(206, self.getAtomString(206)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 31:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._JUMP_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 136:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXPRESSION_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 318:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._COMPOUND_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 348:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._LABELED_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 353:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._SELECTION_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 356:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ITERATION_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXPRESSION_STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _TOKEN(self, depth=0, tracer=None):
+    rule = self.rule(207)
+    tree = ParseTree( NonTerminal(207, self.getAtomString(207)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 44:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._KEYWORD(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 296:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      return tree
+    elif rule == 362:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(104, tracer) # string_literal
+      tree.add(t)
+      return tree
+    elif rule == 366:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._PUNCTUATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 420:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._CONSTANT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 496:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(2, tracer) # pp_number
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _PUNCTUATOR(self, depth=0, tracer=None):
+    rule = self.rule(208)
+    tree = ParseTree( NonTerminal(208, self.getAtomString(208)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 0:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(81, tracer) # dot
+      tree.add(t)
+      return tree
+    elif rule == 7:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(77, tracer) # lbrace
+      tree.add(t)
+      return tree
+    elif rule == 9:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(7, tracer) # modeq
+      tree.add(t)
+      return tree
+    elif rule == 62:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(24, tracer) # bitor
+      tree.add(t)
+      return tree
+    elif rule == 63:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(1, tracer) # exclamation_point
+      tree.add(t)
+      return tree
+    elif rule == 102:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(11, tracer) # tilde
+      tree.add(t)
+      return tree
+    elif rule == 104:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(14, tracer) # rshifteq
+      tree.add(t)
+      return tree
+    elif rule == 105:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(115, tracer) # rbrace
+      tree.add(t)
+      return tree
+    elif rule == 123:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(22, tracer) # lshifteq
+      tree.add(t)
+      return tree
+    elif rule == 128:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(64, tracer) # subeq
+      tree.add(t)
+      return tree
+    elif rule == 133:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      return tree
+    elif rule == 153:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      return tree
+    elif rule == 161:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(87, tracer) # bitxoreq
+      tree.add(t)
+      return tree
+    elif rule == 165:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(43, tracer) # add
+      tree.add(t)
+      return tree
+    elif rule == 177:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(111, tracer) # lt
+      tree.add(t)
+      return tree
+    elif rule == 187:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(31, tracer) # assign
+      tree.add(t)
+      return tree
+    elif rule == 195:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(107, tracer) # poundpound
+      tree.add(t)
+      return tree
+    elif rule == 197:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(112, tracer) # bitoreq
+      tree.add(t)
+      return tree
+    elif rule == 200:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(29, tracer) # bitandeq
+      tree.add(t)
+      return tree
+    elif rule == 213:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    elif rule == 224:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(109, tracer) # gt
+      tree.add(t)
+      return tree
+    elif rule == 245:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(20, tracer) # decr
+      tree.add(t)
+      return tree
+    elif rule == 255:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(99, tracer) # rsquare
+      tree.add(t)
+      return tree
+    elif rule == 256:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(41, tracer) # eq
+      tree.add(t)
+      return tree
+    elif rule == 269:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(120, tracer) # ampersand
+      tree.add(t)
+      return tree
+    elif rule == 298:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(72, tracer) # div
+      tree.add(t)
+      return tree
+    elif rule == 319:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(53, tracer) # neq
+      tree.add(t)
+      return tree
+    elif rule == 324:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(89, tracer) # gteq
+      tree.add(t)
+      return tree
+    elif rule == 341:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(85, tracer) # muleq
+      tree.add(t)
+      return tree
+    elif rule == 344:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      return tree
+    elif rule == 364:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(60, tracer) # incr
+      tree.add(t)
+      return tree
+    elif rule == 379:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(75, tracer) # sub
+      tree.add(t)
+      return tree
+    elif rule == 383:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(63, tracer) # addeq
+      tree.add(t)
+      return tree
+    elif rule == 389:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(32, tracer) # pound
+      tree.add(t)
+      return tree
+    elif rule == 409:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(92, tracer) # arrow
+      tree.add(t)
+      return tree
+    elif rule == 411:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(68, tracer) # and
+      tree.add(t)
+      return tree
+    elif rule == 422:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(58, tracer) # elipsis
+      tree.add(t)
+      return tree
+    elif rule == 430:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(79, tracer) # questionmark
+      tree.add(t)
+      return tree
+    elif rule == 453:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(15, tracer) # lteq
+      tree.add(t)
+      return tree
+    elif rule == 464:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(17, tracer) # mod
+      tree.add(t)
+      return tree
+    elif rule == 465:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(57, tracer) # bitxor
+      tree.add(t)
+      return tree
+    elif rule == 470:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(34, tracer) # colon
+      tree.add(t)
+      return tree
+    elif rule == 483:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(67, tracer) # lsquare
+      tree.add(t)
+      return tree
+    elif rule == 486:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(40, tracer) # lshift
+      tree.add(t)
+      return tree
+    elif rule == 488:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(97, tracer) # rshift
+      tree.add(t)
+      return tree
+    elif rule == 505:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(61, tracer) # or
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _DIRECT_DECLARATOR_SIZE(self, depth=0, tracer=None):
+    rule = self.rule(209)
+    tree = ParseTree( NonTerminal(209, self.getAtomString(209)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 257:
+      tree.astTransform = AstTransformSubstitution(0)
       subtree = self.__EXPR(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
-      subtree = self._STATEMENT(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      tree.add( self.expect(6, tracer) ) # endif
-      subtree = self.__GEN41(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
-      subtree = self.__GEN42(depth)
-      tree.add( subtree )
-      if tracer and isinstance(subtree, ParseTree):
-        tracer.add( subtree.tracer )
       return tree
-    elif rule == 311:
-      tree.astTransform = AstTransformNodeCreator('Switch', {'expr': 2, 'statment': 4})
-      tree.add( self.expect(20, tracer) ) # switch
-      tree.add( self.expect(114, tracer) ) # lparen
+    elif rule == 426:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(86, tracer) # asterisk
+      tree.add(t)
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
       subtree = self.__EXPR(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
-      tree.add( self.expect(59, tracer) ) # rparen
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _ELSE_IF_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(210)
+    tree = ParseTree( NonTerminal(210, self.getAtomString(210)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 290:
+      tree.astTransform = AstTransformNodeCreator('ElseIf', {'statement': 4, 'condition': 2})
+      t = self.expect(37, tracer) # else_if
+      tree.add(t)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      subtree = self.__EXPR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
       subtree = self._STATEMENT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
+      t = self.expect(69, tracer) # endif
+      tree.add(t)
       return tree
     raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
-  def __GEN28(self, depth=0, tracer=None):
-    rule = self.rule(283)
-    tree = ParseTree( NonTerminal(283, self.getAtomString(283)), tracer )
+  def _FOR_INCR(self, depth=0, tracer=None):
+    rule = self.rule(211)
+    tree = ParseTree( NonTerminal(211, self.getAtomString(211)), tracer )
     tree.list = False
-    if self.sym != None and (self.sym.getId() in [97, 12, 77, 108, 102, 34, 103, 118, 123, 37, 86, 74, 2, 41, 110, 71, 113, 92, 15, 14, 75, 36, 39, 120, 4, 122, 31, 106, 17, 114, 127, 58, 91, 131, 94, 53]):
+    if self.sym != None and (self.sym.getId() in [105]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 229:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._ENUM_SPECIFIER_BODY(depth)
+    if rule == 144:
+      tree.astTransform = AstTransformSubstitution(1)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      subtree = self._EXPRESSION_OPT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
     return tree
-  def __GEN20(self, depth=0, tracer=None):
-    rule = self.rule(284)
-    tree = ParseTree( NonTerminal(284, self.getAtomString(284)), tracer )
-    tree.list = False
-    if self.sym != None and (self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 42, 90, 89, 25, 114]):
+  def __GEN12(self, depth=0, tracer=None):
+    rule = self.rule(212)
+    tree = ParseTree( NonTerminal(212, self.getAtomString(212)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [55]):
       return tree
     if self.sym == None:
       return tree
-    if rule == 313:
+    if rule == 338:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._INITIALIZER_LIST_ITEM(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN12(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN13(self, depth=0, tracer=None):
+    rule = self.rule(213)
+    tree = ParseTree( NonTerminal(213, self.getAtomString(213)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [91, 56, 60, 65, 98, 9, 78, 104, 12, 16, 39, 77, 20, 117, 86]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 225:
       tree.astTransform = AstTransformSubstitution(0)
       subtree = self._DESIGNATION(depth)
       tree.add( subtree )
@@ -4693,76 +3371,1332 @@ class Parser:
         tracer.add( subtree.tracer )
       return tree
     return tree
-  def __GEN39(self, depth=0, tracer=None):
-    rule = self.rule(285)
-    tree = ParseTree( NonTerminal(285, self.getAtomString(285)), tracer )
+  def _EXTERNAL_FUNCTION(self, depth=0, tracer=None):
+    rule = self.rule(214)
+    tree = ParseTree( NonTerminal(214, self.getAtomString(214)), tracer )
     tree.list = False
-    if self.sym != None and (self.sym.getId() in [45]):
-      return tree
     if self.sym == None:
-      return tree
-    if rule == 379:
-      tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._BLOCK_ITEM_LIST(depth)
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 397:
+      tree.astTransform = AstTransformNodeCreator('FunctionDefinition', {'body': 3, 'declaration_list': 2, 'signature': 1})
+      t = self.expect(26, tracer) # function_definition_hint
+      tree.add(t)
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN5(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self._COMPOUND_STATEMENT(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
       return tree
-    elif self.sym.getId() in [27, 99, 101, 63, 104, 48, 51, 75, 87, 41, 114, 90, 89, 25]:
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _FUNCTION_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(215)
+    tree = ParseTree( NonTerminal(215, self.getAtomString(215)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 19:
       tree.astTransform = AstTransformSubstitution(0)
-      subtree = self._BLOCK_ITEM_LIST(depth)
+      t = self.expect(33, tracer) # inline
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN33(self, depth=0, tracer=None):
+    rule = self.rule(216)
+    tree = ParseTree( NonTerminal(216, self.getAtomString(216)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [115]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 450:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._BLOCK_ITEM(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN33(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._BLOCK_ITEM(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN33(depth)
       tree.add( subtree )
       if tracer and isinstance(subtree, ParseTree):
         tracer.add( subtree.tracer )
     return tree
+  def _INIT_DECLARATOR_LIST(self, depth=0, tracer=None):
+    rule = self.rule(217)
+    tree = ParseTree( NonTerminal(217, self.getAtomString(217)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 261:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN8(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN8(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN7(self, depth=0, tracer=None):
+    rule = self.rule(218)
+    tree = ParseTree( NonTerminal(218, self.getAtomString(218)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 340:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._INIT_DECLARATOR_LIST(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._INIT_DECLARATOR_LIST(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    return tree
+  def _TERMINALS(self, depth=0, tracer=None):
+    rule = self.rule(219)
+    tree = ParseTree( NonTerminal(219, self.getAtomString(219)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 1:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(54, tracer) # bool
+      tree.add(t)
+      return tree
+    elif rule == 10:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(115, tracer) # rbrace
+      tree.add(t)
+      return tree
+    elif rule == 15:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(3, tracer) # hexadecimal_floating_constant
+      tree.add(t)
+      return tree
+    elif rule == 21:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(53, tracer) # neq
+      tree.add(t)
+      return tree
+    elif rule == 30:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(49, tracer) # else
+      tree.add(t)
+      return tree
+    elif rule == 32:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(94, tracer) # continue
+      tree.add(t)
+      return tree
+    elif rule == 49:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(78, tracer) # lparen
+      tree.add(t)
+      return tree
+    elif rule == 51:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(99, tracer) # rsquare
+      tree.add(t)
+      return tree
+    elif rule == 55:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(92, tracer) # arrow
+      tree.add(t)
+      return tree
+    elif rule == 57:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(72, tracer) # div
+      tree.add(t)
+      return tree
+    elif rule == 61:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(105, tracer) # rparen
+      tree.add(t)
+      return tree
+    elif rule == 64:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(34, tracer) # colon
+      tree.add(t)
+      return tree
+    elif rule == 67:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(17, tracer) # mod
+      tree.add(t)
+      return tree
+    elif rule == 69:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(114, tracer) # decimal_floating_constant
+      tree.add(t)
+      return tree
+    elif rule == 72:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(42, tracer) # long
+      tree.add(t)
+      return tree
+    elif rule == 75:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(38, tracer) # union
+      tree.add(t)
+      return tree
+    elif rule == 77:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(103, tracer) # unsigned
+      tree.add(t)
+      return tree
+    elif rule == 80:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(61, tracer) # or
+      tree.add(t)
+      return tree
+    elif rule == 82:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(106, tracer) # enum
+      tree.add(t)
+      return tree
+    elif rule == 83:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(11, tracer) # tilde
+      tree.add(t)
+      return tree
+    elif rule == 89:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(16, tracer) # bitand
+      tree.add(t)
+      return tree
+    elif rule == 95:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(27, tracer) # return
+      tree.add(t)
+      return tree
+    elif rule == 96:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(104, tracer) # string_literal
+      tree.add(t)
+      return tree
+    elif rule == 99:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(47, tracer) # void
+      tree.add(t)
+      return tree
+    elif rule == 106:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(44, tracer) # goto
+      tree.add(t)
+      return tree
+    elif rule == 108:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(31, tracer) # assign
+      tree.add(t)
+      return tree
+    elif rule == 109:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(82, tracer) # not
+      tree.add(t)
+      return tree
+    elif rule == 116:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(35, tracer) # default
+      tree.add(t)
+      return tree
+    elif rule == 117:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(71, tracer) # struct
+      tree.add(t)
+      return tree
+    elif rule == 122:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(41, tracer) # eq
+      tree.add(t)
+      return tree
+    elif rule == 139:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(6, tracer) # semi
+      tree.add(t)
+      return tree
+    elif rule == 147:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(25, tracer) # break
+      tree.add(t)
+      return tree
+    elif rule == 154:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(5, tracer) # float
+      tree.add(t)
+      return tree
+    elif rule == 155:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(43, tracer) # add
+      tree.add(t)
+      return tree
+    elif rule == 157:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      return tree
+    elif rule == 159:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(10, tracer) # double
+      tree.add(t)
+      return tree
+    elif rule == 163:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(36, tracer) # case
+      tree.add(t)
+      return tree
+    elif rule == 170:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(59, tracer) # universal_character_name
+      tree.add(t)
+      return tree
+    elif rule == 180:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(79, tracer) # questionmark
+      tree.add(t)
+      return tree
+    elif rule == 181:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(119, tracer) # imaginary
+      tree.add(t)
+      return tree
+    elif rule == 183:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(64, tracer) # subeq
+      tree.add(t)
+      return tree
+    elif rule == 188:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(9, tracer) # character_constant
+      tree.add(t)
+      return tree
+    elif rule == 189:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(76, tracer) # do
+      tree.add(t)
+      return tree
+    elif rule == 204:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(85, tracer) # muleq
+      tree.add(t)
+      return tree
+    elif rule == 206:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(33, tracer) # inline
+      tree.add(t)
+      return tree
+    elif rule == 212:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(77, tracer) # lbrace
+      tree.add(t)
+      return tree
+    elif rule == 219:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(110, tracer) # int
+      tree.add(t)
+      return tree
+    elif rule == 221:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(15, tracer) # lteq
+      tree.add(t)
+      return tree
+    elif rule == 226:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(100, tracer) # switch
+      tree.add(t)
+      return tree
+    elif rule == 231:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(23, tracer) # if
+      tree.add(t)
+      return tree
+    elif rule == 232:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(112, tracer) # bitoreq
+      tree.add(t)
+      return tree
+    elif rule == 238:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(75, tracer) # sub
+      tree.add(t)
+      return tree
+    elif rule == 239:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(65, tracer) # integer_constant
+      tree.add(t)
+      return tree
+    elif rule == 240:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(101, tracer) # volatile
+      tree.add(t)
+      return tree
+    elif rule == 243:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(14, tracer) # rshifteq
+      tree.add(t)
+      return tree
+    elif rule == 248:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(51, tracer) # header_name
+      tree.add(t)
+      return tree
+    elif rule == 259:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(40, tracer) # lshift
+      tree.add(t)
+      return tree
+    elif rule == 273:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(80, tracer) # complex
+      tree.add(t)
+      return tree
+    elif rule == 276:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(96, tracer) # static
+      tree.add(t)
+      return tree
+    elif rule == 277:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(22, tracer) # lshifteq
+      tree.add(t)
+      return tree
+    elif rule == 288:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(67, tracer) # lsquare
+      tree.add(t)
+      return tree
+    elif rule == 289:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(113, tracer) # while
+      tree.add(t)
+      return tree
+    elif rule == 292:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(68, tracer) # and
+      tree.add(t)
+      return tree
+    elif rule == 306:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(109, tracer) # gt
+      tree.add(t)
+      return tree
+    elif rule == 323:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(89, tracer) # gteq
+      tree.add(t)
+      return tree
+    elif rule == 334:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(58, tracer) # elipsis
+      tree.add(t)
+      return tree
+    elif rule == 346:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(60, tracer) # incr
+      tree.add(t)
+      return tree
+    elif rule == 351:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(74, tracer) # for
+      tree.add(t)
+      return tree
+    elif rule == 374:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(57, tracer) # bitxor
+      tree.add(t)
+      return tree
+    elif rule == 384:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      return tree
+    elif rule == 408:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(1, tracer) # exclamation_point
+      tree.add(t)
+      return tree
+    elif rule == 410:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(4, tracer) # register
+      tree.add(t)
+      return tree
+    elif rule == 412:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(66, tracer) # auto
+      tree.add(t)
+      return tree
+    elif rule == 414:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(83, tracer) # const
+      tree.add(t)
+      return tree
+    elif rule == 418:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(7, tracer) # modeq
+      tree.add(t)
+      return tree
+    elif rule == 425:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(93, tracer) # restrict
+      tree.add(t)
+      return tree
+    elif rule == 427:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(50, tracer) # number
+      tree.add(t)
+      return tree
+    elif rule == 429:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(111, tracer) # lt
+      tree.add(t)
+      return tree
+    elif rule == 433:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(97, tracer) # rshift
+      tree.add(t)
+      return tree
+    elif rule == 434:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(81, tracer) # dot
+      tree.add(t)
+      return tree
+    elif rule == 440:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(52, tracer) # extern
+      tree.add(t)
+      return tree
+    elif rule == 444:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(18, tracer) # signed
+      tree.add(t)
+      return tree
+    elif rule == 456:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(32, tracer) # pound
+      tree.add(t)
+      return tree
+    elif rule == 458:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(19, tracer) # short
+      tree.add(t)
+      return tree
+    elif rule == 459:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(63, tracer) # addeq
+      tree.add(t)
+      return tree
+    elif rule == 471:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(24, tracer) # bitor
+      tree.add(t)
+      return tree
+    elif rule == 472:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(90, tracer) # diveq
+      tree.add(t)
+      return tree
+    elif rule == 474:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(87, tracer) # bitxoreq
+      tree.add(t)
+      return tree
+    elif rule == 477:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(29, tracer) # bitandeq
+      tree.add(t)
+      return tree
+    elif rule == 481:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(46, tracer) # typedef
+      tree.add(t)
+      return tree
+    elif rule == 491:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(117, tracer) # sizeof
+      tree.add(t)
+      return tree
+    elif rule == 494:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(20, tracer) # decr
+      tree.add(t)
+      return tree
+    elif rule == 495:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(95, tracer) # char
+      tree.add(t)
+      return tree
+    elif rule == 499:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(107, tracer) # poundpound
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _PARAMETER_DECLARATION(self, depth=0, tracer=None):
+    rule = self.rule(220)
+    tree = ParseTree( NonTerminal(220, self.getAtomString(220)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 441:
+      tree.astTransform = AstTransformNodeCreator('ParameterDeclaration', {'sub': 1, 'declaration_specifiers': 0})
+      subtree = self.__GEN1(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN30(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _DESIGNATION(self, depth=0, tracer=None):
+    rule = self.rule(221)
+    tree = ParseTree( NonTerminal(221, self.getAtomString(221)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 172:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN14(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(31, tracer) # assign
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN26(self, depth=0, tracer=None):
+    rule = self.rule(222)
+    tree = ParseTree( NonTerminal(222, self.getAtomString(222)), tracer )
+    tree.list = 'slist'
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 143:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._PARAMETER_DECLARATION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN27(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN9(self, depth=0, tracer=None):
+    rule = self.rule(223)
+    tree = ParseTree( NonTerminal(223, self.getAtomString(223)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 377:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._INIT_DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN9(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _KEYWORD(self, depth=0, tracer=None):
+    rule = self.rule(224)
+    tree = ParseTree( NonTerminal(224, self.getAtomString(224)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 12:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(27, tracer) # return
+      tree.add(t)
+      return tree
+    elif rule == 14:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(66, tracer) # auto
+      tree.add(t)
+      return tree
+    elif rule == 25:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(83, tracer) # const
+      tree.add(t)
+      return tree
+    elif rule == 34:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(76, tracer) # do
+      tree.add(t)
+      return tree
+    elif rule == 40:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(52, tracer) # extern
+      tree.add(t)
+      return tree
+    elif rule == 42:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(117, tracer) # sizeof
+      tree.add(t)
+      return tree
+    elif rule == 52:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(100, tracer) # switch
+      tree.add(t)
+      return tree
+    elif rule == 54:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(49, tracer) # else
+      tree.add(t)
+      return tree
+    elif rule == 58:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(95, tracer) # char
+      tree.add(t)
+      return tree
+    elif rule == 88:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(5, tracer) # float
+      tree.add(t)
+      return tree
+    elif rule == 90:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(47, tracer) # void
+      tree.add(t)
+      return tree
+    elif rule == 118:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(113, tracer) # while
+      tree.add(t)
+      return tree
+    elif rule == 120:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(94, tracer) # continue
+      tree.add(t)
+      return tree
+    elif rule == 126:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(110, tracer) # int
+      tree.add(t)
+      return tree
+    elif rule == 141:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(46, tracer) # typedef
+      tree.add(t)
+      return tree
+    elif rule == 150:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(44, tracer) # goto
+      tree.add(t)
+      return tree
+    elif rule == 167:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(25, tracer) # break
+      tree.add(t)
+      return tree
+    elif rule == 173:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(71, tracer) # struct
+      tree.add(t)
+      return tree
+    elif rule == 184:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(18, tracer) # signed
+      tree.add(t)
+      return tree
+    elif rule == 216:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(35, tracer) # default
+      tree.add(t)
+      return tree
+    elif rule == 222:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(106, tracer) # enum
+      tree.add(t)
+      return tree
+    elif rule == 237:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(38, tracer) # union
+      tree.add(t)
+      return tree
+    elif rule == 254:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(36, tracer) # case
+      tree.add(t)
+      return tree
+    elif rule == 262:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(103, tracer) # unsigned
+      tree.add(t)
+      return tree
+    elif rule == 285:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(93, tracer) # restrict
+      tree.add(t)
+      return tree
+    elif rule == 291:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(96, tracer) # static
+      tree.add(t)
+      return tree
+    elif rule == 299:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(101, tracer) # volatile
+      tree.add(t)
+      return tree
+    elif rule == 302:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(23, tracer) # if
+      tree.add(t)
+      return tree
+    elif rule == 335:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(108, tracer) # _bool
+      tree.add(t)
+      return tree
+    elif rule == 347:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(4, tracer) # register
+      tree.add(t)
+      return tree
+    elif rule == 350:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(28, tracer) # _complex
+      tree.add(t)
+      return tree
+    elif rule == 388:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(33, tracer) # inline
+      tree.add(t)
+      return tree
+    elif rule == 395:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(19, tracer) # short
+      tree.add(t)
+      return tree
+    elif rule == 432:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(42, tracer) # long
+      tree.add(t)
+      return tree
+    elif rule == 439:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(10, tracer) # double
+      tree.add(t)
+      return tree
+    elif rule == 503:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(74, tracer) # for
+      tree.add(t)
+      return tree
+    elif rule == 504:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(62, tracer) # _imaginary
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN27(self, depth=0, tracer=None):
+    rule = self.rule(225)
+    tree = ParseTree( NonTerminal(225, self.getAtomString(225)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [88]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 168:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(0, tracer) # comma
+      tree.add(t)
+      tree.listSeparator = t
+      subtree = self._PARAMETER_DECLARATION(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN27(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _STRUCT_OR_UNION_BODY(self, depth=0, tracer=None):
+    rule = self.rule(228)
+    tree = ParseTree( NonTerminal(228, self.getAtomString(228)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 437:
+      tree.astTransform = AstTransformSubstitution(1)
+      t = self.expect(77, tracer) # lbrace
+      tree.add(t)
+      subtree = self.__GEN16(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(115, tracer) # rbrace
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN10(self, depth=0, tracer=None):
+    rule = self.rule(229)
+    tree = ParseTree( NonTerminal(229, self.getAtomString(229)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [0, 6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 71:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATOR_INITIALIZER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN15(self, depth=0, tracer=None):
+    rule = self.rule(230)
+    tree = ParseTree( NonTerminal(230, self.getAtomString(230)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [26, 88, 96, 46, 5, 102, 66, 28, 33, 70, 4, 78, 18, 19, 71, 21, 83, 47, 103, 38, 10, 93, 95, 108, 34, 101, 39, 73, 106, 110, 86, 42, 48, 0, 52, 6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 178:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_OR_UNION_BODY(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def __GEN3(self, depth=0, tracer=None):
+    rule = self.rule(231)
+    tree = ParseTree( NonTerminal(231, self.getAtomString(231)), tracer )
+    tree.list = 'slist'
+    if self.sym != None and (self.sym.getId() in [6]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 355:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._EXTERNAL_DECLARATION_SUB_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN4(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _ELSE_IF_STATEMENT_LIST(self, depth=0, tracer=None):
+    rule = self.rule(232)
+    tree = ParseTree( NonTerminal(232, self.getAtomString(232)), tracer )
+    tree.list = False
+    if self.sym == None:
+      return tree
+    if rule == 266:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self.__GEN36(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN11(self, depth=0, tracer=None):
+    rule = self.rule(233)
+    tree = ParseTree( NonTerminal(233, self.getAtomString(233)), tracer )
+    tree.list = 'slist'
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 310:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._INITIALIZER_LIST_ITEM(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN12(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [91, 56, 16, 65, 98, 9, 39, 104, 60, 78, 12, 20, 117, 86]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._INITIALIZER_LIST_ITEM(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN12(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _ELSE_STATEMENT(self, depth=0, tracer=None):
+    rule = self.rule(234)
+    tree = ParseTree( NonTerminal(234, self.getAtomString(234)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 316:
+      tree.astTransform = AstTransformNodeCreator('Else', {'statement': 1})
+      t = self.expect(49, tracer) # else
+      tree.add(t)
+      subtree = self._STATEMENT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      t = self.expect(69, tracer) # endif
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN34(self, depth=0, tracer=None):
+    rule = self.rule(235)
+    tree = ParseTree( NonTerminal(235, self.getAtomString(235)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in [74, 44, 23, 9, 33, 12, 16, 78, 18, 118, 25, 103, 27, 36, 108, 35, 39, 69, 28, 5, 49, 46, 86, 100, 52, 56, 113, 96, 60, 76, 70, 4, 66, 77, 71, 83, 47, 38, 91, 10, 93, 94, 95, 65, 6, 101, 19, 104, 115, 106, 110, 20, 117, 42, 98]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 201:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ELSE_IF_STATEMENT_LIST(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _IDENTIFIER(self, depth=0, tracer=None):
+    rule = self.rule(236)
+    tree = ParseTree( NonTerminal(236, self.getAtomString(236)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 192:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _STRUCT_OR_UNION_SUB(self, depth=0, tracer=None):
+    rule = self.rule(237)
+    tree = ParseTree( NonTerminal(237, self.getAtomString(237)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 235:
+      tree.astTransform = AstTransformNodeCreator('StructOrUnion', {'body': 1, 'name': 0})
+      t = self.expect(39, tracer) # identifier
+      tree.add(t)
+      subtree = self.__GEN15(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 272:
+      tree.astTransform = AstTransformNodeCreator('StructOrUnion', {'body': 0})
+      subtree = self._STRUCT_OR_UNION_BODY(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _ENUM_SPECIFIER_SUB(self, depth=0, tracer=None):
+    rule = self.rule(238)
+    tree = ParseTree( NonTerminal(238, self.getAtomString(238)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 16:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._IDENTIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN21(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 78:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ENUM_SPECIFIER_BODY(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def __GEN31(self, depth=0, tracer=None):
+    rule = self.rule(239)
+    tree = ParseTree( NonTerminal(239, self.getAtomString(239)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [0, 73, 88, 102, 78, 39]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 401:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._POINTER_SUB(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN31(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _POINTER_SUB(self, depth=0, tracer=None):
+    rule = self.rule(240)
+    tree = ParseTree( NonTerminal(240, self.getAtomString(240)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 214:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(86, tracer) # asterisk
+      tree.add(t)
+      subtree = self._TYPE_QUALIFIER_LIST_OPT(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _VA_ARGS(self, depth=0, tracer=None):
+    rule = self.rule(242)
+    tree = ParseTree( NonTerminal(242, self.getAtomString(242)), tracer )
+    tree.list = False
+    if self.sym != None and (self.sym.getId() in []):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 145:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(88, tracer) # comma_va_args
+      tree.add(t)
+      t = self.expect(58, tracer) # elipsis
+      tree.add(t)
+      return tree
+    return tree
+  def __GEN24(self, depth=0, tracer=None):
+    rule = self.rule(243)
+    tree = ParseTree( NonTerminal(243, self.getAtomString(243)), tracer )
+    tree.list = 'nlist'
+    if self.sym != None and (self.sym.getId() in [0, 73, 88, 96, 39, 78, 102, 86]):
+      return tree
+    if self.sym == None:
+      return tree
+    if rule == 100:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPE_QUALIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN24(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    return tree
+  def _TYPE_SPECIFIER(self, depth=0, tracer=None):
+    rule = self.rule(244)
+    tree = ParseTree( NonTerminal(244, self.getAtomString(244)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 26:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(19, tracer) # short
+      tree.add(t)
+      return tree
+    elif rule == 46:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(95, tracer) # char
+      tree.add(t)
+      return tree
+    elif rule == 81:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._TYPEDEF_NAME(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 94:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._UNION_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 208:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 250:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(108, tracer) # _bool
+      tree.add(t)
+      return tree
+    elif rule == 278:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(42, tracer) # long
+      tree.add(t)
+      return tree
+    elif rule == 301:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(5, tracer) # float
+      tree.add(t)
+      return tree
+    elif rule == 304:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(28, tracer) # _complex
+      tree.add(t)
+      return tree
+    elif rule == 325:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(10, tracer) # double
+      tree.add(t)
+      return tree
+    elif rule == 354:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(110, tracer) # int
+      tree.add(t)
+      return tree
+    elif rule == 360:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(18, tracer) # signed
+      tree.add(t)
+      return tree
+    elif rule == 443:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._ENUM_SPECIFIER(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 463:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(47, tracer) # void
+      tree.add(t)
+      return tree
+    elif rule == 484:
+      tree.astTransform = AstTransformSubstitution(0)
+      t = self.expect(103, tracer) # unsigned
+      tree.add(t)
+      return tree
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
+  def _STRUCT_DECLARATOR(self, depth=0, tracer=None):
+    rule = self.rule(245)
+    tree = ParseTree( NonTerminal(245, self.getAtomString(245)), tracer )
+    tree.list = False
+    if self.sym == None:
+      raise SyntaxError('Error: unexpected end of file', tracer)
+    if rule == 91:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN20(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif rule == 370:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._STRUCT_DECLARATOR_BODY(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      return tree
+    elif self.sym.getId() in [73, 39, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      subtree = self._DECLARATOR(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+      subtree = self.__GEN20(depth)
+      tree.add( subtree )
+      if tracer and isinstance(subtree, ParseTree):
+        tracer.add( subtree.tracer )
+    raise SyntaxError('Error: Unexpected symbol (%s) when parsing %s' % (self.sym, whoami()), tracer)
   infixBp0 = {
-    0: 2000,
-    3: 2000,
-    8: 2000,
-    16: 2000,
-    21: 2000,
-    24: 2000,
-    26: 2000,
-    32: 16000,
-    37: 1000,
+    0: 16000,
+    7: 1000,
+    14: 1000,
+    15: 9000,
+    16: 5000,
+    17: 12000,
+    20: 15000,
+    22: 1000,
+    24: 7000,
+    29: 1000,
+    31: 1000,
     40: 10000,
-    41: 13000,
-    42: 15000,
-    46: 11000,
-    49: 16000,
-    62: 9000,
-    69: 11000,
-    72: 2000,
-    73: 13000,
-    76: 12000,
-    88: 13000,
-    95: 3000,
-    99: 16000,
-    101: 6000,
-    104: 16000,
-    107: 12000,
-    109: 8000,
-    112: 5000,
-    114: 16000,
-    115: 7000,
-    119: 9000,
-    121: 2000,
-    124: 16000,
-    125: 2000,
-    126: 10000,
-    128: 10000,
-    130: 2000,
-    132: 4000,
-    134: 10000,
+    41: 8000,
+    43: 11000,
+    53: 8000,
+    57: 6000,
+    60: 15000,
+    61: 3000,
+    63: 1000,
+    64: 1000,
+    67: 15000,
+    68: 4000,
+    72: 12000,
+    75: 11000,
+    77: 14000,
+    78: 15000,
+    79: 2000,
+    81: 15000,
+    85: 1000,
+    86: 12000,
+    87: 1000,
+    89: 9000,
+    90: 1000,
+    92: 15000,
+    97: 10000,
+    109: 9000,
+    111: 9000,
+    112: 1000,
   }
   prefixBp0 = {
-    41: 14000,
-    54: 14000,
-    99: 14000,
-    101: 14000,
-    104: 14000,
-    105: 14000,
-    107: 14000,
+    16: 13000,
+    20: 13000,
+    30: 13000,
+    60: 13000,
+    75: 13000,
+    82: 13000,
+    86: 13000,
   }
   def expr(self):
     return self.__EXPR()
@@ -4787,337 +4721,379 @@ class Parser:
       left.tracer = tracer
     return left
   def nud0(self, tracer):
-    tree = ParseTree( NonTerminal(140, '_expr') )
+    tree = ParseTree( NonTerminal(226, '_expr') )
     if not self.sym:
       return tree
-    elif self.sym.getId() in [75]:
-      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
+    elif self.sym.getId() in [104]:
+      tree.astTransform = AstTransformSubstitution(0)
       tree.nudMorphemeCount = 1
-      return self.expect( 75, tracer )
-    elif self.sym.getId() in [75]:
+      return self.expect( 104, tracer )
+    elif self.sym.getId() in [60]:
+      tree.astTransform = AstTransformNodeCreator('PreIncr', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(60, tracer) )
+      tree.add( self.__EXPR( self.prefixBp0[60] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [78]:
+      tree.astTransform = AstTransformSubstitution(2)
+      tree.nudMorphemeCount = 3
+      tree.add( self.expect(78, tracer) )
+      tree.add( self.__EXPR() )
+      tree.add( self.expect(105, tracer) )
+    elif self.sym.getId() in [86]:
+      tree.astTransform = AstTransformNodeCreator('Dereference', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(86, tracer) )
+      tree.add( self.__EXPR( self.prefixBp0[86] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [16]:
+      tree.astTransform = AstTransformNodeCreator('AddressOf', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(16, tracer) )
+      tree.add( self.__EXPR( self.prefixBp0[16] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [39]:
       tree.astTransform = AstTransformNodeCreator('FuncCall', {'params': 2, 'name': 0})
       tree.nudMorphemeCount = 1
-      return self.expect( 75, tracer )
-    elif self.sym.getId() in [87]:
-      tree.astTransform = AstTransformNodeCreator('TypeInitializion', {'type': 1, 'initializer': 4})
-      tree.nudMorphemeCount = 3
-      tree.add( self.expect(87, tracer) )
-      tree.add( self._TYPE_NAME() )
-      tree.add( self.expect(59, tracer) )
-    elif self.sym.getId() in [99]:
-      tree.astTransform = AstTransformNodeCreator('PreDecr', {'var': 1})
-      tree.nudMorphemeCount = 2
-      tree.add( self.expect(99, tracer) )
-      tree.add( self.__EXPR( self.prefixBp0[99] ) )
-      tree.isPrefix = True
-    elif self.sym.getId() in [51, 90, 27, 48]:
+      return self.expect( 39, tracer )
+    elif self.sym.getId() in [117]:
+      tree.astTransform = AstTransformNodeCreator('SizeOf', {'var': 1})
+      tree.nudMorphemeCount = 1
+      return self.expect( 117, tracer )
+    elif self.sym.getId() in [39]:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 1
+      return self.expect( 39, tracer )
+    elif self.sym.getId() in [39]:
+      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
+      tree.nudMorphemeCount = 1
+      return self.expect( 39, tracer )
+    elif self.sym.getId() in [9, 12, 56, 65]:
       tree.astTransform = AstTransformSubstitution(0)
       tree.nudMorphemeCount = 1
       tree.add( self._CONSTANT() )
-    elif self.sym.getId() in [101]:
-      tree.astTransform = AstTransformNodeCreator('AddressOf', {'var': 1})
+    elif self.sym.getId() in [20]:
+      tree.astTransform = AstTransformNodeCreator('PreDecr', {'var': 1})
       tree.nudMorphemeCount = 2
-      tree.add( self.expect(101, tracer) )
-      tree.add( self.__EXPR( self.prefixBp0[101] ) )
+      tree.add( self.expect(20, tracer) )
+      tree.add( self.__EXPR( self.prefixBp0[20] ) )
       tree.isPrefix = True
-    elif self.sym.getId() in [114]:
-      tree.astTransform = AstTransformSubstitution(2)
+    elif self.sym.getId() in [91]:
+      tree.astTransform = AstTransformNodeCreator('TypeInitializion', {'type': 1, 'initializer': 4})
       tree.nudMorphemeCount = 3
-      tree.add( self.expect(114, tracer) )
-      tree.add( self.__EXPR() )
-      tree.add( self.expect(59, tracer) )
-    elif self.sym.getId() in [25]:
-      tree.astTransform = AstTransformNodeCreator('SizeOf', {'var': 1})
-      tree.nudMorphemeCount = 1
-      return self.expect( 25, tracer )
-    elif self.sym.getId() in [104]:
-      tree.astTransform = AstTransformNodeCreator('PreIncr', {'var': 1})
-      tree.nudMorphemeCount = 2
-      tree.add( self.expect(104, tracer) )
-      tree.add( self.__EXPR( self.prefixBp0[104] ) )
-      tree.isPrefix = True
-    elif self.sym.getId() in [41]:
-      tree.astTransform = AstTransformNodeCreator('Dereference', {'var': 1})
-      tree.nudMorphemeCount = 2
-      tree.add( self.expect(41, tracer) )
-      tree.add( self.__EXPR( self.prefixBp0[41] ) )
-      tree.isPrefix = True
-    elif self.sym.getId() in [75]:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.nudMorphemeCount = 1
-      return self.expect( 75, tracer )
-    elif self.sym.getId() in [63]:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.nudMorphemeCount = 1
-      return self.expect( 63, tracer )
+      tree.add( self.expect(91, tracer) )
+      tree.add( self._TYPE_NAME() )
+      tree.add( self.expect(105, tracer) )
     return tree
   def led0(self, left, tracer):
-    tree = ParseTree( NonTerminal(140, '_expr') )
-    if  self.sym.getId() == 8: # 'subeq'
-      tree.astTransform = AstTransformNodeCreator('SubtractAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(8, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[8] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 104: # 'incr'
-      tree.astTransform = AstTransformNodeCreator('PostIncr', {'var': 0})
-      tree.isExprNud = True
-      if left:
-        tree.add(left)
-      return self.expect( 104, tracer )
-    elif  self.sym.getId() == 101: # 'bitand'
+    tree = ParseTree( NonTerminal(226, '_expr') )
+    if  self.sym.getId() == 16: # 'bitand'
       tree.astTransform = AstTransformNodeCreator('BitAND', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(101, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[101] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 95: # 'questionmark'
-      tree.astTransform = AstTransformNodeCreator('TernaryOperator', {'true': 2, 'false': 4, 'cond': 0})
-      tree.isExprNud = True
-      if left:
-        tree.add(left)
-      tree.add( self.expect(95, tracer) )
-      tree.add( self.__EXPR() )
-      tree.add( self.expect(91, tracer) )
-      tree.add( self.__EXPR() )
-    elif  self.sym.getId() == 62: # 'eq'
-      tree.astTransform = AstTransformNodeCreator('Equals', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(62, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[62] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 115: # 'bitxor'
-      tree.astTransform = AstTransformNodeCreator('BitXOR', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(115, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[115] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 109: # 'bitor'
-      tree.astTransform = AstTransformNodeCreator('BitOR', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(109, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[109] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 46: # 'lshift'
-      tree.astTransform = AstTransformNodeCreator('LeftShift', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(46, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[46] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 128: # 'lteq'
-      tree.astTransform = AstTransformNodeCreator('LessThanEq', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(128, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[128] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 121: # 'bitoreq'
-      tree.astTransform = AstTransformNodeCreator('ORAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(121, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[121] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 49: # 'lsquare'
-      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(49, tracer) )
-      tree.add( self.__GEN5() )
-      tree.add( self.expect(96, tracer) )
-    elif  self.sym.getId() == 42: # 'lbrace'
-      tree.astTransform = AstTransformNodeCreator('TypeInitializion', {'type': 1, 'initializer': 4})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(42, tracer) )
-      tree.add( self.__GEN18() )
-      tree.add( self._TRAILING_COMMA_OPT() )
-      tree.add( self.expect(45, tracer) )
-    elif  self.sym.getId() == 3: # 'rshifteq'
-      tree.astTransform = AstTransformNodeCreator('RightShiftAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(3, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[3] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 26: # 'assign'
-      tree.astTransform = AstTransformNodeCreator('Assign', {'var': 0, 'value': 2})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(26, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[26] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 24: # 'diveq'
-      tree.astTransform = AstTransformNodeCreator('DivideAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(24, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[24] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 134: # 'gteq'
-      tree.astTransform = AstTransformNodeCreator('GreaterThanEq', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(134, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[134] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 76: # 'add'
-      tree.astTransform = AstTransformNodeCreator('Add', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(76, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[76] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 72: # 'addeq'
-      tree.astTransform = AstTransformNodeCreator('AddAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(72, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[72] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 16: # 'modeq'
-      tree.astTransform = AstTransformNodeCreator('ModAssign', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
       tree.add( self.expect(16, tracer) )
       tree.add( self.__EXPR( self.infixBp0[16] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 37: # 'comma'
-      tree.astTransform = AstTransformNodeCreator('Comma', {'right': 2, 'left': 0})
+    elif  self.sym.getId() == 22: # 'lshifteq'
+      tree.astTransform = AstTransformNodeCreator('LeftShiftAssign', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
-      tree.add( self.expect(37, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[37] ) )
+      tree.add( self.expect(22, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[22] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 41: # 'asterisk'
-      tree.astTransform = AstTransformNodeCreator('Mul', {'right': 2, 'left': 0})
+    elif  self.sym.getId() == 63: # 'addeq'
+      tree.astTransform = AstTransformNodeCreator('AddAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(63, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[63] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 79: # 'questionmark'
+      tree.astTransform = AstTransformNodeCreator('TernaryOperator', {'true': 2, 'false': 4, 'cond': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      tree.add( self.expect(79, tracer) )
+      tree.add( self.__EXPR() )
+      tree.add( self.expect(34, tracer) )
+      tree.add( self.__EXPR() )
+    elif  self.sym.getId() == 64: # 'subeq'
+      tree.astTransform = AstTransformNodeCreator('SubtractAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(64, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[64] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 85: # 'muleq'
+      tree.astTransform = AstTransformNodeCreator('MultiplyAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(85, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[85] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 78: # 'lparen'
+      tree.astTransform = AstTransformNodeCreator('FuncCall', {'params': 2, 'name': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(78, tracer) )
+      tree.add( self.__GEN37() )
+      tree.add( self.expect(105, tracer) )
+    elif  self.sym.getId() == 20: # 'decr'
+      tree.astTransform = AstTransformNodeCreator('PostDecr', {'var': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      return self.expect( 20, tracer )
+    elif  self.sym.getId() == 31: # 'assign'
+      tree.astTransform = AstTransformNodeCreator('Assign', {'var': 0, 'value': 2})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(31, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[31] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 41: # 'eq'
+      tree.astTransform = AstTransformNodeCreator('Equals', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
       tree.add( self.expect(41, tracer) )
       tree.add( self.__EXPR( self.infixBp0[41] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 107: # 'sub'
-      tree.astTransform = AstTransformNodeCreator('Sub', {'right': 2, 'left': 0})
+    elif  self.sym.getId() == 90: # 'diveq'
+      tree.astTransform = AstTransformNodeCreator('DivideAssign', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
-      tree.add( self.expect(107, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[107] ) )
+      tree.add( self.expect(90, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[90] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 130: # 'bitandeq'
-      tree.astTransform = AstTransformNodeCreator('ANDAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(130, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[130] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 32: # 'arrow'
-      tree.astTransform = AstTransformNodeCreator('DerefMemberSelect', {'member': 2, 'object': 0})
-      tree.isExprNud = True
-      if left:
-        tree.add(left)
-      tree.add( self.expect(32, tracer) )
-      tree.add( self.__EXPR() )
-    elif  self.sym.getId() == 21: # 'muleq'
-      tree.astTransform = AstTransformNodeCreator('MultiplyAssign', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(21, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[21] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 111: # 'sizeof_separator'
-      tree.astTransform = AstTransformNodeCreator('SizeOf', {'var': 1})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(111, tracer) )
-      tree.add( self._SIZEOF_BODY() )
-    elif  self.sym.getId() == 88: # 'div'
-      tree.astTransform = AstTransformNodeCreator('Div', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(88, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[88] ) )
-      tree.isInfix = True
-    elif  self.sym.getId() == 126: # 'lt'
+    elif  self.sym.getId() == 111: # 'lt'
       tree.astTransform = AstTransformNodeCreator('LessThan', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
-      tree.add( self.expect(126, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[126] ) )
+      tree.add( self.expect(111, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[111] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 125: # 'bitxoreq'
-      tree.astTransform = AstTransformNodeCreator('XORAssign', {'right': 2, 'left': 0})
+    elif  self.sym.getId() == 29: # 'bitandeq'
+      tree.astTransform = AstTransformNodeCreator('ANDAssign', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
-      tree.add( self.expect(125, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[125] ) )
+      tree.add( self.expect(29, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[29] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 99: # 'decr'
-      tree.astTransform = AstTransformNodeCreator('PostDecr', {'var': 0})
-      tree.isExprNud = True
+    elif  self.sym.getId() == 43: # 'add'
+      tree.astTransform = AstTransformNodeCreator('Add', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
-      return self.expect( 99, tracer )
-    elif  self.sym.getId() == 124: # 'dot'
-      tree.astTransform = AstTransformNodeCreator('MemberSelect', {'member': 2, 'object': 0})
-      tree.isExprNud = True
-      if left:
-        tree.add(left)
-      tree.add( self.expect(124, tracer) )
-      tree.add( self.__EXPR() )
-    elif  self.sym.getId() == 69: # 'rshift'
-      tree.astTransform = AstTransformNodeCreator('RightShift', {'right': 2, 'left': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(69, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[69] ) )
+      tree.add( self.expect(43, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[43] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 0: # 'lshifteq'
-      tree.astTransform = AstTransformNodeCreator('LeftShiftAssign', {'right': 2, 'left': 0})
+    elif  self.sym.getId() == 0: # 'comma'
+      tree.astTransform = AstTransformNodeCreator('Comma', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
       tree.add( self.expect(0, tracer) )
       tree.add( self.__EXPR( self.infixBp0[0] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 73: # 'mod'
+    elif  self.sym.getId() == 17: # 'mod'
       tree.astTransform = AstTransformNodeCreator('Mod', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
-      tree.add( self.expect(73, tracer) )
-      tree.add( self.__EXPR( self.infixBp0[73] ) )
+      tree.add( self.expect(17, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[17] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 40: # 'gt'
+    elif  self.sym.getId() == 15: # 'lteq'
+      tree.astTransform = AstTransformNodeCreator('LessThanEq', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(15, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[15] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 72: # 'div'
+      tree.astTransform = AstTransformNodeCreator('Div', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(72, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[72] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 109: # 'gt'
       tree.astTransform = AstTransformNodeCreator('GreaterThan', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(109, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[109] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 97: # 'rshift'
+      tree.astTransform = AstTransformNodeCreator('RightShift', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(97, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[97] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 92: # 'arrow'
+      tree.astTransform = AstTransformNodeCreator('DerefMemberSelect', {'member': 2, 'object': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      tree.add( self.expect(92, tracer) )
+      tree.add( self.__EXPR() )
+    elif  self.sym.getId() == 14: # 'rshifteq'
+      tree.astTransform = AstTransformNodeCreator('RightShiftAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(14, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[14] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 86: # 'asterisk'
+      tree.astTransform = AstTransformNodeCreator('Mul', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(86, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[86] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 67: # 'lsquare'
+      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(67, tracer) )
+      tree.add( self.__GEN37() )
+      tree.add( self.expect(99, tracer) )
+    elif  self.sym.getId() == 87: # 'bitxoreq'
+      tree.astTransform = AstTransformNodeCreator('XORAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(87, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[87] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 60: # 'incr'
+      tree.astTransform = AstTransformNodeCreator('PostIncr', {'var': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      return self.expect( 60, tracer )
+    elif  self.sym.getId() == 57: # 'bitxor'
+      tree.astTransform = AstTransformNodeCreator('BitXOR', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(57, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[57] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 116: # 'sizeof_separator'
+      tree.astTransform = AstTransformNodeCreator('SizeOf', {'var': 1})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(116, tracer) )
+      tree.add( self._SIZEOF_BODY() )
+    elif  self.sym.getId() == 89: # 'gteq'
+      tree.astTransform = AstTransformNodeCreator('GreaterThanEq', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(89, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[89] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 77: # 'lbrace'
+      tree.astTransform = AstTransformNodeCreator('TypeInitializion', {'type': 1, 'initializer': 4})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(77, tracer) )
+      tree.add( self.__GEN11() )
+      tree.add( self._TRAILING_COMMA_OPT() )
+      tree.add( self.expect(115, tracer) )
+    elif  self.sym.getId() == 24: # 'bitor'
+      tree.astTransform = AstTransformNodeCreator('BitOR', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(24, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[24] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 112: # 'bitoreq'
+      tree.astTransform = AstTransformNodeCreator('ORAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(112, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[112] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 81: # 'dot'
+      tree.astTransform = AstTransformNodeCreator('MemberSelect', {'member': 2, 'object': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      tree.add( self.expect(81, tracer) )
+      tree.add( self.__EXPR() )
+    elif  self.sym.getId() == 75: # 'sub'
+      tree.astTransform = AstTransformNodeCreator('Sub', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(75, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[75] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 7: # 'modeq'
+      tree.astTransform = AstTransformNodeCreator('ModAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(7, tracer) )
+      tree.add( self.__EXPR( self.infixBp0[7] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 40: # 'lshift'
+      tree.astTransform = AstTransformNodeCreator('LeftShift', {'right': 2, 'left': 0})
       if left:
         tree.add(left)
       tree.add( self.expect(40, tracer) )
       tree.add( self.__EXPR( self.infixBp0[40] ) )
       tree.isInfix = True
-    elif  self.sym.getId() == 114: # 'lparen'
-      tree.astTransform = AstTransformNodeCreator('FuncCall', {'params': 2, 'name': 0})
-      if left:
-        tree.add(left)
-      tree.add( self.expect(114, tracer) )
-      tree.add( self.__GEN5() )
-      tree.add( self.expect(59, tracer) )
     return tree
   infixBp1 = {
-    49: 1000,
-    114: 1000,
+    7: 1000,
+    14: 1000,
+    15: 9000,
+    16: 5000,
+    17: 12000,
+    20: 15000,
+    22: 1000,
+    24: 7000,
+    29: 1000,
+    31: 1000,
+    40: 10000,
+    41: 8000,
+    43: 11000,
+    53: 8000,
+    57: 6000,
+    60: 15000,
+    61: 3000,
+    63: 1000,
+    64: 1000,
+    67: 15000,
+    68: 4000,
+    72: 12000,
+    75: 11000,
+    77: 14000,
+    78: 15000,
+    79: 2000,
+    81: 15000,
+    85: 1000,
+    86: 12000,
+    87: 1000,
+    89: 9000,
+    90: 1000,
+    92: 15000,
+    97: 10000,
+    109: 9000,
+    111: 9000,
+    112: 1000,
   }
   prefixBp1 = {
+    16: 13000,
+    20: 13000,
+    30: 13000,
+    60: 13000,
+    75: 13000,
+    82: 13000,
+    86: 13000,
   }
-  def direct_abstract_declarator(self):
-    return self.__DIRECT_ABSTRACT_DECLARATOR()
-  def __DIRECT_ABSTRACT_DECLARATOR( self, rbp = 0, depth = 0 ):
+  def expr_sans_comma(self):
+    return self.__EXPR_SANS_COMMA()
+  def __EXPR_SANS_COMMA( self, rbp = 0, depth = 0 ):
     t = self.sym
     if depth is not False:
-      tracer = DebugTracer("(expr) __DIRECT_ABSTRACT_DECLARATOR", str(self.sym), 'N/A', depth)
+      tracer = DebugTracer("(expr) __EXPR_SANS_COMMA", str(self.sym), 'N/A', depth)
       depth = depth + 1
     else:
       tracer = None
@@ -5135,53 +5111,330 @@ class Parser:
       left.tracer = tracer
     return left
   def nud1(self, tracer):
-    tree = ParseTree( NonTerminal(227, '_direct_abstract_declarator') )
+    tree = ParseTree( NonTerminal(241, '_expr_sans_comma') )
     if not self.sym:
       return tree
-    if self.sym.getId() in [114]:
+    if self.sym.getId() in [86]:
+      tree.astTransform = AstTransformNodeCreator('Dereference', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(86, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.prefixBp1[86] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [39]:
       tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 1
+      return self.expect( 39, tracer )
+    elif self.sym.getId() in [39]:
+      tree.astTransform = AstTransformNodeCreator('FuncCall', {'params': 2, 'name': 0})
+      tree.nudMorphemeCount = 1
+      return self.expect( 39, tracer )
+    elif self.sym.getId() in [20]:
+      tree.astTransform = AstTransformNodeCreator('PreDecr', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(20, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.prefixBp1[20] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [117]:
+      tree.astTransform = AstTransformNodeCreator('SizeOf', {'var': 1})
+      tree.nudMorphemeCount = 1
+      return self.expect( 117, tracer )
+    elif self.sym.getId() in [104]:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 1
+      return self.expect( 104, tracer )
+    elif self.sym.getId() in [60]:
+      tree.astTransform = AstTransformNodeCreator('PreIncr', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(60, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.prefixBp1[60] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [16]:
+      tree.astTransform = AstTransformNodeCreator('AddressOf', {'var': 1})
+      tree.nudMorphemeCount = 2
+      tree.add( self.expect(16, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.prefixBp1[16] ) )
+      tree.isPrefix = True
+    elif self.sym.getId() in [9, 12, 56, 65]:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 1
+      tree.add( self._CONSTANT() )
+    elif self.sym.getId() in [78]:
+      tree.astTransform = AstTransformSubstitution(2)
       tree.nudMorphemeCount = 3
-      tree.add( self.expect(114, tracer) )
-      tree.add( self._ABSTRACT_DECLARATOR() )
-      tree.add( self.expect(59, tracer) )
-    elif self.sym.getId() in [114, -1, 14]:
-      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(78, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA() )
+      tree.add( self.expect(105, tracer) )
+    elif self.sym.getId() in [91]:
+      tree.astTransform = AstTransformNodeCreator('TypeInitializion', {'type': 1, 'initializer': 4})
+      tree.nudMorphemeCount = 3
+      tree.add( self.expect(91, tracer) )
+      tree.add( self._TYPE_NAME() )
+      tree.add( self.expect(105, tracer) )
+    elif self.sym.getId() in [39]:
+      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
       tree.nudMorphemeCount = 1
-      tree.add( self._DIRECT_ABSTRACT_DECLARATOR_OPT() )
-    elif self.sym.getId() in [114, -1, 14]:
-      tree.astTransform = AstTransformSubstitution(0)
-      tree.nudMorphemeCount = 1
-      tree.add( self._DIRECT_ABSTRACT_DECLARATOR_OPT() )
+      return self.expect( 39, tracer )
     return tree
   def led1(self, left, tracer):
-    tree = ParseTree( NonTerminal(227, '_direct_abstract_declarator') )
-    if  self.sym.getId() == 49: # 'lsquare'
-      tree.astTransform = AstTransformSubstitution(0)
+    tree = ParseTree( NonTerminal(241, '_expr_sans_comma') )
+    if  self.sym.getId() == 92: # 'arrow'
+      tree.astTransform = AstTransformNodeCreator('DerefMemberSelect', {'member': 2, 'object': 0})
+      tree.isExprNud = True
       if left:
         tree.add(left)
-      tree.add( self.expect(49, tracer) )
-      tree.add( self._DIRECT_ABSTRACT_DECLARATOR_EXPR() )
-      tree.add( self.expect(96, tracer) )
-    elif  self.sym.getId() == 114: # 'lparen'
-      tree.astTransform = AstTransformSubstitution(0)
+      tree.add( self.expect(92, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA() )
+    elif  self.sym.getId() == 116: # 'sizeof_separator'
+      tree.astTransform = AstTransformNodeCreator('SizeOf', {'var': 1})
       if left:
         tree.add(left)
-      tree.add( self.expect(114, tracer) )
-      tree.add( self._PARAMETER_TYPE_LIST_OPT() )
-      tree.add( self.expect(59, tracer) )
+      tree.add( self.expect(116, tracer) )
+      tree.add( self._SIZEOF_BODY() )
+    elif  self.sym.getId() == 22: # 'lshifteq'
+      tree.astTransform = AstTransformNodeCreator('LeftShiftAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(22, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[22] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 20: # 'decr'
+      tree.astTransform = AstTransformNodeCreator('PostDecr', {'var': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      return self.expect( 20, tracer )
+    elif  self.sym.getId() == 72: # 'div'
+      tree.astTransform = AstTransformNodeCreator('Div', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(72, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[72] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 111: # 'lt'
+      tree.astTransform = AstTransformNodeCreator('LessThan', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(111, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[111] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 78: # 'lparen'
+      tree.astTransform = AstTransformNodeCreator('FuncCall', {'params': 2, 'name': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(78, tracer) )
+      tree.add( self.__GEN37() )
+      tree.add( self.expect(105, tracer) )
+    elif  self.sym.getId() == 64: # 'subeq'
+      tree.astTransform = AstTransformNodeCreator('SubtractAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(64, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[64] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 16: # 'bitand'
+      tree.astTransform = AstTransformNodeCreator('BitAND', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(16, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[16] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 29: # 'bitandeq'
+      tree.astTransform = AstTransformNodeCreator('ANDAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(29, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[29] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 17: # 'mod'
+      tree.astTransform = AstTransformNodeCreator('Mod', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(17, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[17] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 109: # 'gt'
+      tree.astTransform = AstTransformNodeCreator('GreaterThan', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(109, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[109] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 79: # 'questionmark'
+      tree.astTransform = AstTransformNodeCreator('TernaryOperator', {'true': 2, 'false': 4, 'cond': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      tree.add( self.expect(79, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA() )
+      tree.add( self.expect(34, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA() )
+    elif  self.sym.getId() == 85: # 'muleq'
+      tree.astTransform = AstTransformNodeCreator('MultiplyAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(85, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[85] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 60: # 'incr'
+      tree.astTransform = AstTransformNodeCreator('PostIncr', {'var': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      return self.expect( 60, tracer )
+    elif  self.sym.getId() == 97: # 'rshift'
+      tree.astTransform = AstTransformNodeCreator('RightShift', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(97, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[97] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 24: # 'bitor'
+      tree.astTransform = AstTransformNodeCreator('BitOR', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(24, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[24] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 41: # 'eq'
+      tree.astTransform = AstTransformNodeCreator('Equals', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(41, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[41] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 90: # 'diveq'
+      tree.astTransform = AstTransformNodeCreator('DivideAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(90, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[90] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 15: # 'lteq'
+      tree.astTransform = AstTransformNodeCreator('LessThanEq', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(15, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[15] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 57: # 'bitxor'
+      tree.astTransform = AstTransformNodeCreator('BitXOR', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(57, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[57] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 77: # 'lbrace'
+      tree.astTransform = AstTransformNodeCreator('TypeInitializion', {'type': 1, 'initializer': 4})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(77, tracer) )
+      tree.add( self.__GEN11() )
+      tree.add( self._TRAILING_COMMA_OPT() )
+      tree.add( self.expect(115, tracer) )
+    elif  self.sym.getId() == 7: # 'modeq'
+      tree.astTransform = AstTransformNodeCreator('ModAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(7, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[7] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 31: # 'assign'
+      tree.astTransform = AstTransformNodeCreator('Assign', {'var': 0, 'value': 2})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(31, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[31] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 89: # 'gteq'
+      tree.astTransform = AstTransformNodeCreator('GreaterThanEq', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(89, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[89] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 43: # 'add'
+      tree.astTransform = AstTransformNodeCreator('Add', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(43, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[43] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 63: # 'addeq'
+      tree.astTransform = AstTransformNodeCreator('AddAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(63, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[63] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 14: # 'rshifteq'
+      tree.astTransform = AstTransformNodeCreator('RightShiftAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(14, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[14] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 67: # 'lsquare'
+      tree.astTransform = AstTransformNodeCreator('ArrayIndex', {'params': 2, 'name': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(67, tracer) )
+      tree.add( self.__GEN37() )
+      tree.add( self.expect(99, tracer) )
+    elif  self.sym.getId() == 81: # 'dot'
+      tree.astTransform = AstTransformNodeCreator('MemberSelect', {'member': 2, 'object': 0})
+      tree.isExprNud = True
+      if left:
+        tree.add(left)
+      tree.add( self.expect(81, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA() )
+    elif  self.sym.getId() == 112: # 'bitoreq'
+      tree.astTransform = AstTransformNodeCreator('ORAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(112, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[112] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 40: # 'lshift'
+      tree.astTransform = AstTransformNodeCreator('LeftShift', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(40, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[40] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 86: # 'asterisk'
+      tree.astTransform = AstTransformNodeCreator('Mul', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(86, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[86] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 75: # 'sub'
+      tree.astTransform = AstTransformNodeCreator('Sub', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(75, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[75] ) )
+      tree.isInfix = True
+    elif  self.sym.getId() == 87: # 'bitxoreq'
+      tree.astTransform = AstTransformNodeCreator('XORAssign', {'right': 2, 'left': 0})
+      if left:
+        tree.add(left)
+      tree.add( self.expect(87, tracer) )
+      tree.add( self.__EXPR_SANS_COMMA( self.infixBp1[87] ) )
+      tree.isInfix = True
     return tree
   infixBp2 = {
-    49: 1000,
-    114: 1000,
+    67: 1000,
+    78: 1000,
   }
   prefixBp2 = {
   }
-  def direct_declarator(self):
-    return self.__DIRECT_DECLARATOR()
-  def __DIRECT_DECLARATOR( self, rbp = 0, depth = 0 ):
+  def direct_abstract_declarator(self):
+    return self.__DIRECT_ABSTRACT_DECLARATOR()
+  def __DIRECT_ABSTRACT_DECLARATOR( self, rbp = 0, depth = 0 ):
     t = self.sym
     if depth is not False:
-      tracer = DebugTracer("(expr) __DIRECT_DECLARATOR", str(self.sym), 'N/A', depth)
+      tracer = DebugTracer("(expr) __DIRECT_ABSTRACT_DECLARATOR", str(self.sym), 'N/A', depth)
       depth = depth + 1
     else:
       tracer = None
@@ -5199,36 +5452,100 @@ class Parser:
       left.tracer = tracer
     return left
   def nud2(self, tracer):
-    tree = ParseTree( NonTerminal(145, '_direct_declarator') )
+    tree = ParseTree( NonTerminal(227, '_direct_abstract_declarator') )
     if not self.sym:
       return tree
-    elif self.sym.getId() in [75]:
+    if self.sym.getId() in [78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 3
+      tree.add( self.expect(78, tracer) )
+      tree.add( self._ABSTRACT_DECLARATOR() )
+      tree.add( self.expect(105, tracer) )
+    elif self.sym.getId() in [-1, 102, 78]:
       tree.astTransform = AstTransformSubstitution(0)
       tree.nudMorphemeCount = 1
-      return self.expect( 75, tracer )
-    elif self.sym.getId() in [114]:
-      tree.astTransform = AstTransformSubstitution(1)
-      tree.nudMorphemeCount = 3
-      tree.add( self.expect(114, tracer) )
-      tree.add( self._DECLARATOR() )
-      tree.add( self.expect(59, tracer) )
+      tree.add( self._DIRECT_ABSTRACT_DECLARATOR_OPT() )
+    elif self.sym.getId() in [-1, 102, 78]:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 1
+      tree.add( self._DIRECT_ABSTRACT_DECLARATOR_OPT() )
     return tree
   def led2(self, left, tracer):
-    tree = ParseTree( NonTerminal(145, '_direct_declarator') )
-    if  self.sym.getId() == 114: # 'lparen'
+    tree = ParseTree( NonTerminal(227, '_direct_abstract_declarator') )
+    if  self.sym.getId() == 67: # 'lsquare'
+      tree.astTransform = AstTransformSubstitution(0)
+      if left:
+        tree.add(left)
+      tree.add( self.expect(67, tracer) )
+      tree.add( self._DIRECT_ABSTRACT_DECLARATOR_EXPR() )
+      tree.add( self.expect(99, tracer) )
+    elif  self.sym.getId() == 78: # 'lparen'
+      tree.astTransform = AstTransformSubstitution(0)
+      if left:
+        tree.add(left)
+      tree.add( self.expect(78, tracer) )
+      tree.add( self._PARAMETER_TYPE_LIST_OPT() )
+      tree.add( self.expect(105, tracer) )
+    return tree
+  infixBp3 = {
+    67: 1000,
+    78: 1000,
+  }
+  prefixBp3 = {
+  }
+  def direct_declarator(self):
+    return self.__DIRECT_DECLARATOR()
+  def __DIRECT_DECLARATOR( self, rbp = 0, depth = 0 ):
+    t = self.sym
+    if depth is not False:
+      tracer = DebugTracer("(expr) __DIRECT_DECLARATOR", str(self.sym), 'N/A', depth)
+      depth = depth + 1
+    else:
+      tracer = None
+    left = self.nud3(depth)
+    if isinstance(left, ParseTree):
+      left.isExpr = True
+      left.isNud = True
+      tracer.add(left.tracer)
+    while rbp < self.binding_power(self.sym, self.infixBp3):
+      left = self.led3(left, depth)
+      if isinstance(left, ParseTree):
+        tracer.add(left.tracer)
+    if left:
+      left.isExpr = True
+      left.tracer = tracer
+    return left
+  def nud3(self, tracer):
+    tree = ParseTree( NonTerminal(150, '_direct_declarator') )
+    if not self.sym:
+      return tree
+    if self.sym.getId() in [39]:
+      tree.astTransform = AstTransformSubstitution(0)
+      tree.nudMorphemeCount = 1
+      return self.expect( 39, tracer )
+    elif self.sym.getId() in [78]:
+      tree.astTransform = AstTransformSubstitution(1)
+      tree.nudMorphemeCount = 3
+      tree.add( self.expect(78, tracer) )
+      tree.add( self._DECLARATOR() )
+      tree.add( self.expect(105, tracer) )
+    return tree
+  def led3(self, left, tracer):
+    tree = ParseTree( NonTerminal(150, '_direct_declarator') )
+    if  self.sym.getId() == 78: # 'lparen'
       tree.astTransform = AstTransformNodeCreator('FunctionSignature', {'params': 2, 'declarator': 0})
       tree.isExprNud = True
       if left:
         tree.add(left)
-      tree.add( self.expect(114, tracer) )
+      tree.add( self.expect(78, tracer) )
       tree.add( self._DIRECT_DECLARATOR_PARAMETER_LIST() )
-      tree.add( self.expect(59, tracer) )
-    elif  self.sym.getId() == 49: # 'lsquare'
+      tree.add( self.expect(105, tracer) )
+    elif  self.sym.getId() == 67: # 'lsquare'
       tree.astTransform = AstTransformNodeCreator('Array', {'name': 0, 'size': 2})
       tree.isExprNud = True
       if left:
         tree.add(left)
-      tree.add( self.expect(49, tracer) )
+      tree.add( self.expect(67, tracer) )
       tree.add( self._DIRECT_DECLARATOR_EXPR() )
-      tree.add( self.expect(96, tracer) )
+      tree.add( self.expect(99, tracer) )
     return tree
