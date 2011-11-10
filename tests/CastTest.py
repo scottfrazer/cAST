@@ -102,8 +102,8 @@ transformations = [
   ('ppparse', ppparse),
   ('ppast', ppast),
   ('ctok', ctok),
-  #('cparse', cparse),
-  #('cast', cast)
+  ('cparse', cparse),
+  ('cast', cast)
 ]
 
 def load_tests(loader, tests, pattern):
