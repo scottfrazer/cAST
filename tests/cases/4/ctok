@@ -1,0 +1,22 @@
+external_declaration_hint,6,1,,tests/cases/4/source.c
+int,6,1,int,tests/cases/4/source.c
+function_definition_hint,6,1,,tests/cases/4/source.c
+identifier,6,5,main,tests/cases/4/source.c
+lparen,6,9,(,tests/cases/4/source.c
+rparen,6,10,),tests/cases/4/source.c
+lbrace,7,1,{,tests/cases/4/source.c
+identifier,8,5,printf,tests/cases/4/source.c
+lparen,8,11,(,tests/cases/4/source.c
+string_literal,8,12,"%d %d %d\n",tests/cases/4/source.c
+comma,8,24,,,tests/cases/4/source.c
+integer_constant,8,26,1,tests/cases/4/source.c
+comma,8,26,,,tests/cases/4/source.c
+integer_constant,8,26,2,tests/cases/4/source.c
+comma,8,26,,,tests/cases/4/source.c
+integer_constant,8,26,3,tests/cases/4/source.c
+rparen,8,27,),tests/cases/4/source.c
+semi,8,28,;,tests/cases/4/source.c
+return,9,5,return,tests/cases/4/source.c
+integer_constant,9,12,0,tests/cases/4/source.c
+semi,9,13,;,tests/cases/4/source.c
+rbrace,10,1,},tests/cases/4/source.c

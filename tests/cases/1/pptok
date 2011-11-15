@@ -1,0 +1,17 @@
+define_function,1,1,#define,tests/cases/1/source.c
+identifier,1,9,EXT,tests/cases/1/source.c
+lparen,1,12,(,tests/cases/1/source.c
+identifier,1,13,a,tests/cases/1/source.c
+comma,1,14,,,tests/cases/1/source.c
+identifier,1,15,b,tests/cases/1/source.c
+rparen,1,16,),tests/cases/1/source.c
+identifier,1,18,a,tests/cases/1/source.c
+add,1,19,+,tests/cases/1/source.c
+identifier,1,20,b,tests/cases/1/source.c
+separator,1,1,,tests/cases/1/source.c
+define,2,1,#define,tests/cases/1/source.c
+identifier,2,9,alias,tests/cases/1/source.c
+identifier,2,15,EXT,tests/cases/1/source.c
+separator,2,1,,tests/cases/1/source.c
+csource,3,1,int main() {\n    printf("%d\n", alias(7,8));\n}\n,tests/cases/1/source.c
+separator,6,1,,tests/cases/1/source.c

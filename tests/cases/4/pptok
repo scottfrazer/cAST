@@ -1,0 +1,10 @@
+define,1,1,#define,tests/cases/4/source.c
+identifier,1,9,A,tests/cases/4/source.c
+pp_number,1,11,1,tests/cases/4/source.c
+comma,1,12,,,tests/cases/4/source.c
+pp_number,2,1,2,tests/cases/4/source.c
+comma,2,2,,,tests/cases/4/source.c
+pp_number,3,1,3,tests/cases/4/source.c
+separator,4,1,,tests/cases/4/source.c
+csource,5,1,\nint main()\n{\n    printf("%d %d %d\n", A);\n    return 0;\n}\n,tests/cases/4/source.c
+separator,11,1,,tests/cases/4/source.c

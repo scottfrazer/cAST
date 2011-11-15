@@ -26,17 +26,19 @@ class CastVersusGccTest(unittest.TestCase):
     self.__dict__.update(locals())
     self.maxDiff = None
 
-  def getCastOutput(self, filepath):
+  def getCastOutput(self):
     cPPFactory = PreProcessorFactory()
-    cPP = cPPFactory.create([], ['tests/cases'])
+    cPP = cPPFactory.create([], [self.filepath])
+    filepath = os.path.join(self.filepath, 'source.c')
     sourcecode = SourceCode(filepath, open(filepath))
     cT, symbols = cPP.process( sourcecode, dict() )
     actualTokens = list(map(mapFuncSimple, list(cT)))
     return '\n'.join(actualTokens)
 
-  def getGccOutput(self, filepath):
+  def getGccOutput(self):
     regex = re.compile(r'^\#.*$', re.M)
     null = open('/dev/null', 'w')
+    filepath = os.path.join(self.filepath, 'source.c')
     gcc = subprocess.check_output(['gcc', '-std=c99', '-E', filepath], stderr=null)
     null.close()
     gcc = gcc.decode('ascii')
@@ -48,7 +50,7 @@ class CastVersusGccTest(unittest.TestCase):
 
   def test_doesCastPreprocessExactlyLikeGccDoes(self):
     filepath = os.path.join(directory, self.filepath)
-    self.assertEqual(self.getGccOutput(filepath), self.getCastOutput(filepath), \
+    self.assertEqual(self.getGccOutput(), self.getCastOutput(), \
         "File %s didn't parse the same in GCC and cAST" % (filepath) )
 
 def mapFunc(x):
@@ -76,14 +78,14 @@ def ppast(sourcecode):
 
 def ctok(sourcecode):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [directory])
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict() )
   actualTokens = list(map(mapFunc, list(cT)))
   return '\n'.join(actualTokens)
 
 def cparse(sourcecode):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [directory])
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict() )
   parsetree = cParser().parse(cT)
   prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
@@ -91,7 +93,7 @@ def cparse(sourcecode):
 
 def cast(sourcecode):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [directory])
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict() )
   ast = cParser().parse(cT).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'type'))
@@ -107,14 +109,15 @@ transformations = [
 ]
 
 def load_tests(loader, tests, pattern):
-  files = list(filter(lambda x: x.endswith('.c'), os.listdir(directory)))
+  testDirectories = os.listdir(directory)
   suite = unittest.TestSuite()
-  for path in files:
+  for path in testDirectories:
+    path = os.path.join(directory, path)
     suite.addTest(CastVersusGccTest('test_doesCastPreprocessExactlyLikeGccDoes', path))
-    for (extension, transformFunction) in transformations:
-      expectedPath = os.path.join(directory, path + '.' + extension)
-      sourcePath = os.path.join(directory, path)
-      sourcecode = SourceCode(path, open(sourcePath))
+    for (expected, transformFunction) in transformations:
+      expectedPath = os.path.join(path, expected)
+      sourcePath = os.path.join(path, 'source.c')
+      sourcecode = SourceCode(sourcePath, open(sourcePath))
       actual = transformFunction(sourcecode)
       if not os.path.exists(expectedPath):
         fp = open(expectedPath, 'w')
