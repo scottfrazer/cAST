@@ -1,0 +1,17 @@
+define,4,1,#define,test/cases/3/source.c
+identifier,4,9,A,test/cases/3/source.c
+pp_number,4,11,2,test/cases/3/source.c
+comma,4,14,,,test/cases/3/source.c
+pp_number,4,16,4,test/cases/3/source.c
+separator,4,1,,test/cases/3/source.c
+define,5,1,#define,test/cases/3/source.c
+identifier,5,9,B,test/cases/3/source.c
+pp_number,5,11,2,test/cases/3/source.c
+separator,5,1,,test/cases/3/source.c
+csource,6,1,,test/cases/3/source.c
+separator,6,1,,test/cases/3/source.c
+include,7,1,#include,test/cases/3/source.c
+header_local,7,10,"test.h",test/cases/3/source.c
+separator,7,1,,test/cases/3/source.c
+csource,8,1,int main()\n{\n    printf("%d %d %d\n", A, B);\n    return 0;\n}\n,test/cases/3/source.c
+separator,13,1,,test/cases/3/source.c

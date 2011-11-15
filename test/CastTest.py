@@ -7,16 +7,16 @@ from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.SourceCode import SourceCode, SourceCodeString
 
-directory = 'tests/cases'
+directory = 'test/cases'
 
 class CastTest(unittest.TestCase):
 
-  def __init__(self, arg=None, expected=None, actual=None):
-    super().__init__(arg)
+  def __init__(self, expected=None, actual=None):
+    super().__init__()
     self.__dict__.update(locals())
     self.maxDiff = None
 
-  def test_isCorrect(self):
+  def runTest(self):
     self.assertEqual(self.actual, self.expected)
 
 class CastVersusGccTest(unittest.TestCase):
@@ -118,11 +118,11 @@ def load_tests(loader, tests, pattern):
       expectedPath = os.path.join(path, expected)
       sourcePath = os.path.join(path, 'source.c')
       sourcecode = SourceCode(sourcePath, open(sourcePath))
-      actual = transformFunction(sourcecode)
+      actual = transformFunction(sourcecode).strip()
       if not os.path.exists(expectedPath):
         fp = open(expectedPath, 'w')
         fp.write(actual)
         fp.close()
-      expected = open(expectedPath).read()
-      suite.addTest( CastTest('test_isCorrect', expected, actual) )
+      expected = open(expectedPath).read().strip()
+      suite.addTest( CastTest(expected, actual) )
   return suite
