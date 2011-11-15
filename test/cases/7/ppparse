@@ -1,0 +1,32 @@
+(pp_file:
+  (pp_nodes_list:
+    (_gen0:
+      (pp_nodes:
+        csource
+      ),
+      separator,
+      (_gen0:
+        (pp_nodes:
+          (pp_directive:
+            (control_line:
+              (include_line:
+                include,
+                (include_type:
+                  header_global
+                )
+              )
+            )
+          )
+        ),
+        separator,
+        (_gen0:
+          (pp_nodes:
+            csource
+          ),
+          separator,
+          (_gen0: )
+        )
+      )
+    )
+  )
+)

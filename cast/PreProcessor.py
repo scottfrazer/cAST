@@ -77,13 +77,14 @@ class PreProcessor:
   def __init__( self, cPPP, cPE ):
     self.__dict__.update(locals())
   
-  def process( self, sourceCode, symbols = {}, lineno = 1 ):
+  def process( self, sourceCode, symbols = {}, lineno = 1, skipIncludes=False ):
     # Phase 1: Replace trigraphs with single-character equivalents
     for (trigraph, replacement) in self.trigraphs.items():
       sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     parsetree = self.cPPP.parse( ppLexer(sourceCode) )
     ast = parsetree.toAst()
+    self.cPE.skipIncludes = skipIncludes
     ctokens = self.cPE.eval(ast, symbols)
     return (ctokens, self.cPE.getSymbolTable())
   
@@ -144,6 +145,7 @@ class cPreprocessingEvaluator:
   def __init__(self, cPPP, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
     self.__dict__.update(locals())
     self.cLexerContext = None
+    self.skipIncludes = False
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
     self.cPPTtocT = {
       self.cPPP.TERMINAL_DEFINED : self.cP.TERMINAL_DEFINED ,
@@ -427,6 +429,8 @@ class cPreprocessingEvaluator:
         nodes = cPPAST.getAttr('nodes')
         return self._eval(nodes)
       elif cPPAST.name == 'Include':
+        if self.skipIncludes:
+          return list()
         filename = cPPAST.getAttr('file').getString()
         if (filename[0], filename[-1]) == ('"', '"'):
           filename = filename.strip('"')

@@ -13,7 +13,7 @@ def parseTypedef( string, lineno, colno, terminalId, lexer ):
   ident = None
 
   typedefId = cParser.TERMINAL_TYPEDEF
-  token = cToken(typedefId, lexer.resource, cParser.terminal_str[typedefId], string, lexer.lineno, lexer.colno - len(match))
+  token = cToken(typedefId, lexer.resource, cParser.terminal_str[typedefId], string, lexer.lineno, lexer.colno - len(string))
   lexer.addToken(token)
   for token in lexer:
     lexer.addToken(token)

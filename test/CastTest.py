@@ -59,42 +59,42 @@ def mapFunc(x):
 def mapFuncSimple(x):
   return "%s|%s" % (x.getTerminalStr(), x.getString().replace('\n', '\\n'))
 
-def pptok(sourcecode):
+def pptok(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   actualTokens = list(map(mapFunc, list(cPPL)))
   return '\n'.join(actualTokens)
 
-def ppparse(sourcecode):
+def ppparse(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   parsetree = ppParser().parse(cPPL)
   prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
   return prettyprint
 
-def ppast(sourcecode):
+def ppast(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   ast = ppParser().parse(cPPL).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'type'))
   return prettyprint
 
-def ctok(sourcecode):
+def ctok(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict() )
+  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
   actualTokens = list(map(mapFunc, list(cT)))
   return '\n'.join(actualTokens)
 
-def cparse(sourcecode):
+def cparse(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict() )
+  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
   parsetree = cParser().parse(cT)
   prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
   return prettyprint
 
-def cast(sourcecode):
+def cast(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict() )
+  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
   ast = cParser().parse(cT).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'type'))
   return prettyprint
@@ -113,12 +113,19 @@ def load_tests(loader, tests, pattern):
   suite = unittest.TestSuite()
   for path in testDirectories:
     path = os.path.join(directory, path)
-    suite.addTest(CastVersusGccTest('test_doesCastPreprocessExactlyLikeGccDoes', path))
+    sourcePath = os.path.join(path, 'source.c')
+    sourcecode = SourceCode(sourcePath, open(sourcePath))
+    options = []
+    if sourcecode.sourceCode[:2] == '//':
+      options = sourcecode.sourceCode[2:sourcecode.sourceCode.find('\n')].strip().split(' ')
+    skipIncludes = False
+    if 'no-includes' in options:
+      skipIncludes = True
+    if 'no-gcc' not in options:
+      suite.addTest(CastVersusGccTest('test_doesCastPreprocessExactlyLikeGccDoes', path))
     for (expected, transformFunction) in transformations:
       expectedPath = os.path.join(path, expected)
-      sourcePath = os.path.join(path, 'source.c')
-      sourcecode = SourceCode(sourcePath, open(sourcePath))
-      actual = transformFunction(sourcecode).strip()
+      actual = transformFunction(sourcecode, skipIncludes).strip()
       if not os.path.exists(expectedPath):
         fp = open(expectedPath, 'w')
         fp.write(actual)

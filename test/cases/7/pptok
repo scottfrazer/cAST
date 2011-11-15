@@ -1,0 +1,7 @@
+csource,1,1,// no-includes no-gcc\n,test/cases/7/source.c
+separator,2,1,,test/cases/7/source.c
+include,3,1,#include,test/cases/7/source.c
+header_global,3,10,<stdio.h>,test/cases/7/source.c
+separator,3,1,,test/cases/7/source.c
+csource,4,1,\nint main()\n{\n  printf("testing\n");\n}\n,test/cases/7/source.c
+separator,9,1,,test/cases/7/source.c

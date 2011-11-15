@@ -1,0 +1,9 @@
+(PPFile:
+  nodes=[
+    csource,
+    (Include:
+      file=header_global
+    ),
+    csource
+  ]
+)
