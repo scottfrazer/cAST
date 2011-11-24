@@ -1,0 +1,161 @@
+(translation_unit:
+  (_gen0:
+    (external_declaration:
+      external_declaration_hint,
+      (_gen1:
+        (declaration_specifier:
+          (type_specifier:
+            int
+          )
+        ),
+        (_gen2: )
+      ),
+      (external_declaration_sub:
+        (_gen3:
+          (external_declaration_sub_sub:
+            (external_prototype:
+              function_prototype_hint,
+              (declarator:
+                (pointer_opt: ),
+                (_direct_declarator:
+                  (_direct_declarator:
+                    lparen,
+                    (declarator:
+                      (pointer_opt:
+                        (pointer:
+                          (_gen36:
+                            (pointer_sub:
+                              asterisk,
+                              (type_qualifier_list_opt: )
+                            ),
+                            (_gen36: )
+                          )
+                        )
+                      ),
+                      (_direct_declarator:
+                        identifier,
+                        lparen,
+                        (direct_declarator_parameter_list:
+                          (parameter_type_list:
+                            (_gen29:
+                              (parameter_declaration:
+                                (_gen1:
+                                  (declaration_specifier:
+                                    (type_specifier:
+                                      int
+                                    )
+                                  ),
+                                  (_gen2: )
+                                ),
+                                (_gen34:
+                                  (parameter_declaration_sub:
+                                    (pointer_opt: ),
+                                    (parameter_declaration_sub_sub:
+                                      (_direct_declarator:
+                                        (_direct_declarator:
+                                          lparen,
+                                          (declarator:
+                                            (pointer_opt:
+                                              (pointer:
+                                                (_gen36:
+                                                  (pointer_sub:
+                                                    asterisk,
+                                                    (type_qualifier_list_opt: )
+                                                  ),
+                                                  (_gen36: )
+                                                )
+                                              )
+                                            ),
+                                            (_direct_declarator: )
+                                          ),
+                                          rparen
+                                        ),
+                                        lparen,
+                                        (direct_declarator_parameter_list:
+                                          (parameter_type_list:
+                                            (_gen29:
+                                              (parameter_declaration:
+                                                (_gen1:
+                                                  (declaration_specifier:
+                                                    (type_specifier:
+                                                      long
+                                                    )
+                                                  ),
+                                                  (_gen2: )
+                                                ),
+                                                (_gen34: )
+                                              ),
+                                              (_gen30: )
+                                            ),
+                                            (_gen31: )
+                                          )
+                                        ),
+                                        rparen
+                                      )
+                                    )
+                                  )
+                                )
+                              ),
+                              (_gen30:
+                                comma,
+                                (parameter_declaration:
+                                  (_gen1:
+                                    (declaration_specifier:
+                                      (type_specifier:
+                                        int
+                                      )
+                                    ),
+                                    (_gen2: )
+                                  ),
+                                  (_gen34: )
+                                ),
+                                (_gen30: )
+                              )
+                            ),
+                            (_gen31: )
+                          )
+                        ),
+                        rparen
+                      )
+                    ),
+                    rparen
+                  ),
+                  lparen,
+                  (direct_declarator_parameter_list:
+                    (parameter_type_list:
+                      (_gen29:
+                        (parameter_declaration:
+                          (_gen1:
+                            (declaration_specifier:
+                              (type_specifier:
+                                int
+                              )
+                            ),
+                            (_gen2: )
+                          ),
+                          (_gen34: )
+                        ),
+                        (_gen30: )
+                      ),
+                      (_gen31:
+                        (va_args:
+                          comma_va_args,
+                          elipsis
+                        )
+                      )
+                    )
+                  ),
+                  rparen
+                )
+              ),
+              (_gen5: )
+            )
+          ),
+          (_gen4: )
+        ),
+        semi
+      )
+    ),
+    (_gen0: )
+  )
+)

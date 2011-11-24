@@ -12,6 +12,11 @@
       "declaration_list := list(declaration)",
       "declaration := mlist(declaration_specifier, 1) + optional(init_declarator_list) + 'semi' -> Declaration( declaration_specifiers=$0, init_declarators=$1 )",
       "declaration_specifier := storage_class_specifier | type_specifier | type_qualifier | function_specifier",
+      "direct_abstract_declarator := optional(direct_abstract_declarator_sub0) + list(direct_abstract_declarator_sub1) -> DirectAbstractDeclarator()",
+      "direct_abstract_declarator_sub0 := 'lparen' + abstract_declarator + 'rparen'",
+      "direct_abstract_declarator_sub1 := 'lsquare' + direct_abstract_declarator_expr + 'rsquare'",
+      "direct_abstract_declarator_sub1 := 'lparen' + direct_abstract_declarator_sub2 + 'rparen'",
+      "direct_abstract_declarator_sub2 := 'asterisk' | optional(parameter_type_list)",
       "init_declarator_list := list(init_declarator, 'comma', 1)",
       "init_declarator := declarator + optional(declarator_initializer) -> InitDeclarator( declarator=$0, initializer=$1 )",
       "declarator_initializer := 'assign' + initializer -> $1",
@@ -22,9 +27,9 @@
       "designator := 'lsquare' + _expr + 'rsquare' -> ArrayAccess( index=$1 )",
       "designator := 'dot' + 'identifier' -> MemberAccess( name=$1 )",
       "storage_class_specifier := 'typedef' | 'extern' | 'static' | 'auto' | 'register'",
-      "type_specifier := 'void' | 'char' | 'short' | 'int' | 'long' | 'float' | 'double' | 'signed' | 'unsigned' | '_Bool' | '_Complex' | struct_specifier | union_specifier | enum_specifier | typedef_name",
-      "struct_specifier := 'struct' + struct_or_union_sub -> Struct( definition=$1 )",
-      "union_specifier := 'union' + struct_or_union_sub -> Union( definition=$1 )",
+      "type_specifier := 'void' | 'char' | 'short' | 'int' | 'long' | 'float' | 'double' | 'signed' | 'unsigned' | 'bool' | 'complex' | 'imaginary' | struct_specifier | union_specifier | enum_specifier | typedef_name",
+      "struct_specifier := 'struct' + 'declarator_hint' + struct_or_union_sub -> Struct( definition=$2 )",
+      "union_specifier := 'union' + 'declarator_hint' + struct_or_union_sub -> Union( definition=$1 )",
       "struct_or_union_sub := 'identifier' + optional(struct_or_union_body) -> StructOrUnion( name=$0, body=$1 )",
       "struct_or_union_sub := struct_or_union_body -> StructOrUnion( body=$0 )",
       "struct_or_union_body := 'lbrace' + list(struct_declaration) + 'rbrace' -> $1",
@@ -49,19 +54,17 @@
       "direct_declarator_modifier_list_opt := list(direct_declarator_modifier) | _empty",
       "direct_declarator_modifier := type_qualifier | 'static'",
       "direct_declarator_size := _expr | 'asterisk'",
-      "parameter_type_list := list(parameter_declaration, 'comma', 1) + va_args -> ParameterTypeList( parameter_declarations=$0, va_args=$1 )",
-      "parameter_type_list_opt := parameter_type_list | _empty",
+      "parameter_type_list := list(parameter_declaration, 'comma', 1) + optional(va_args) -> ParameterTypeList( parameter_declarations=$0, va_args=$1 )",
       "direct_declarator_parameter_list := parameter_type_list | list(identifier, 'comma') -> ParameterList( identifiers=$0 ) | _empty",
       "identifier := 'identifier'",
-      "va_args := 'comma_va_args' + 'elipsis' | _empty",
+      "va_args := 'comma_va_args' + 'elipsis' -> $1",
       "parameter_declaration := mlist(declaration_specifier, 1) + optional(parameter_declaration_sub) -> ParameterDeclaration(declaration_specifiers=$0, sub=$1 )",
       "parameter_declaration_sub := pointer_opt + parameter_declaration_sub_sub -> ParameterSub( pointer=$0, name_and_size=$1 )",
-      "parameter_declaration_sub_sub := _direct_declarator | direct_abstract_declarator_opt",
-      "abstract_declarator := pointer_opt + direct_abstract_declarator_opt",
+      "parameter_declaration_sub_sub := _direct_declarator | optional(direct_abstract_declarator)",
+      "abstract_declarator := pointer_opt + optional(direct_abstract_declarator) -> AbstractDeclarator(pointer=$1, direct_abstract_declarator=$1)",
       "pointer_opt := pointer | _empty",
       "pointer := list(pointer_sub)",
       "pointer_sub := 'asterisk' + type_qualifier_list_opt",
-      "direct_abstract_declarator_opt := _direct_abstract_declarator | _empty",
       "direct_abstract_declarator_expr := type_qualifier_list_opt + static_opt + _expr | 'asterisk' | _empty",
       "expression_opt := _expr | _empty",
 
@@ -95,18 +98,18 @@
       "jump_statement := 'return' + expression_opt + 'semi' -> Return( expr=$1 )",
 
 
-      "pp := 'defined' | 'defined_separator'",
+      "pp := 'defined' | 'defined_separator' | 'pp_number'",
       "token := keyword | 'identifier' | constant | 'string_literal' | punctuator | 'pp_number'",
-      "keyword := 'auto' | 'break' | 'case' | 'char' | 'const' | 'continue' | 'default' | 'do' | 'double' | 'else' | 'enum' | 'extern' | 'float' | 'for' | 'goto' | 'if' | 'inline' | 'int' | 'long' | 'register' | 'restrict' | 'return' | 'short' | 'signed' | 'sizeof' | 'static' | 'struct' | 'switch' | 'typedef' | 'union' | 'unsigned' | 'void' | 'volatile' | 'while' | '_Bool' | '_Complex' | '_Imaginary'",
+      "keyword := 'auto' | 'break' | 'case' | 'char' | 'const' | 'continue' | 'default' | 'do' | 'double' | 'else' | 'enum' | 'extern' | 'float' | 'for' | 'goto' | 'if' | 'inline' | 'int' | 'long' | 'register' | 'restrict' | 'return' | 'short' | 'signed' | 'sizeof' | 'static' | 'struct' | 'switch' | 'typedef' | 'union' | 'unsigned' | 'void' | 'volatile' | 'while' | 'bool' | 'complex' | 'imaginary'",
       "punctuator := 'arrow' | 'dot' | 'lbrace' | 'rbrace' | 'lsquare' | 'rsquare' | 'lparen' | 'rparen' | 'exclamation_point' | 'tilde' | 'sub' | 'add' | 'div' | 'ampersand' | 'decr' | 'incr' | 'or' | 'and' | 'bitor' | 'bitxor' | 'neq' | 'eq' | 'lteq' | 'gteq' | 'lt' | 'gt' | 'lshift' | 'rshift' | 'mod' | 'elipsis' | 'semi' | 'colon' | 'questionmark' | 'bitoreq' | 'bitxoreq' | 'bitandeq' | 'lshifteq' | 'rshifteq' | 'subeq' | 'addeq' | 'modeq' | 'muleq' | 'assign' | 'poundpound' | 'pound' | 'comma'",
-      "terminals := 'AUTO' | 'BOOL' | 'BREAK' | 'CASE' | 'CHAR' | 'COMPLEX' | 'CONST' | 'CONTINUE' | 'DEFAULT' | 'DO' | 'DOUBLE' | 'ELSE' | 'ENUM' | 'EXTERN' | 'FLOAT' | 'FOR' | 'GOTO' | 'IF' | 'IMAGINARY' | 'INLINE' | 'INT' | 'LONG' | 'REGISTER' | 'RESTRICT' | 'RETURN' | 'SHORT' | 'SIGNED' | 'SIZEOF' | 'STATIC' | 'STRUCT' | 'SWITCH' | 'TYPEDEF' | 'UNION' | 'UNSIGNED' | 'VOID' | 'VOLATILE' | 'WHILE' | 'POUND' | 'UNIVERSAL_CHARACTER_NAME' | 'LBRACE' | 'RBRACE' | 'POUNDPOUND' | 'ELIPSIS' | 'DOT' | 'QUESTIONMARK' | 'ARROW' | 'LTEQ' | 'GTEQ' | 'LT' | 'GT' | 'SEMI' | 'LPAREN' | 'RPAREN' | 'EQ' | 'NEQ' | 'ASSIGN' | 'LSQUARE' | 'RSQUARE' | 'COMMA' | 'COLON' | 'IDENTIFIER' | 'STRING_LITERAL' | 'NUMBER' | 'INCR' | 'DECR' | 'ADDEQ' | 'SUBEQ' | 'MULEQ' | 'DIVEQ' | 'MODEQ' | 'ADD' | 'SUB' | 'DIV' | 'MOD' | 'AND' | 'OR' | 'BITAND' | 'BITOR' | 'NOT' | 'BITXOR' | 'TILDE' | 'EXCLAMATION_POINT' | 'LSHIFT' | 'RSHIFT' | 'LSHIFTEQ' | 'RSHIFTEQ' | 'BITANDEQ' | 'BITXOREQ' | 'BITOREQ' | 'INTEGER_CONSTANT' | 'HEADER_NAME' | 'DECIMAL_FLOATING_CONSTANT' | 'HEXADECIMAL_FLOATING_CONSTANT' | 'CHARACTER_CONSTANT'",
 
-      "constant := 'integer_constant' | 'floating_constant' | 'enumeration_constant' | 'character_constant'",
+      "constant := 'integer_constant' | 'floating_constant' | 'enumeration_constant' | 'character_constant' | 'decimal_floating_constant' | 'hexadecimal_floating_constant'",
       "type_name := 'int' | 'char'",
       "initializer_list_item := 'integer_constant'",
       "trailing_comma_opt := 'trailing_comma' | _empty",
       "static_opt := 'static' | _empty",
-      "sizeof_body := 'identifier' | 'lparen' + type_name + 'rparen' -> $1"
+      "sizeof_body := 'identifier' | 'lparen' + type_name + 'rparen' -> $1",
+      "misc := 'universal_character_name'"
     ]
 
   },
@@ -182,17 +185,6 @@
         "_expr_sans_comma := _expr_sans_comma + 'rshifteq' + _expr_sans_comma -> RightShiftAssign( left=$0, right=$2 )",
         "_expr_sans_comma := {'identifier'} | {constant} | {'string_literal'}",
         "_expr_sans_comma := {'lparen' + _expr_sans_comma + 'rparen'} -> $2"
-      ]
-    },
-    {
-      "nonterminal": "_direct_abstract_declarator",
-      "rules": [
-        "_direct_abstract_declarator := {'lparen' + abstract_declarator + 'rparen'}",
-        "_direct_abstract_declarator := {direct_abstract_declarator_opt} + {'lsquare' + direct_abstract_declarator_expr + 'rsquare'}",
-        "_direct_abstract_declarator := {direct_abstract_declarator_opt} + {'lparen' + parameter_type_list_opt + 'rparen'}"
-      ],
-      "binding_power": [
-          {"associativity": "left", "terminals": ["lsquare", "lparen"]}
       ]
     },
     {

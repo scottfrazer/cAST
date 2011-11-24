@@ -11,13 +11,13 @@ directory = 'test/cases'
 
 class CastTest(unittest.TestCase):
 
-  def __init__(self, expected=None, actual=None):
+  def __init__(self, path=None, expected=None, actualFunc=None):
     super().__init__()
     self.__dict__.update(locals())
     self.maxDiff = None
 
   def runTest(self):
-    self.assertEqual(self.actual, self.expected)
+    self.assertEqual(self.expected, self.actualFunc(), 'failed to match %s' % self.path)
 
 class CastVersusGccTest(unittest.TestCase):
 
@@ -125,11 +125,15 @@ def load_tests(loader, tests, pattern):
       suite.addTest(CastVersusGccTest('test_doesCastPreprocessExactlyLikeGccDoes', path))
     for (expected, transformFunction) in transformations:
       expectedPath = os.path.join(path, expected)
+      def func(sourcecode, transformFunction, skipIncludes):
+        def ret():
+          return transformFunction(sourcecode, skipIncludes).strip()
+        return ret
       actual = transformFunction(sourcecode, skipIncludes).strip()
       if not os.path.exists(expectedPath):
         fp = open(expectedPath, 'w')
         fp.write(actual)
         fp.close()
       expected = open(expectedPath).read().strip()
-      suite.addTest( CastTest(expected, actual) )
+      suite.addTest( CastTest(path, expected, func(sourcecode,transformFunction, skipIncludes)) )
   return suite

@@ -1,0 +1,89 @@
+(translation_unit:
+  (_gen0:
+    (external_declaration:
+      external_declaration_hint,
+      (_gen1:
+        (declaration_specifier:
+          (type_specifier:
+            (struct_specifier:
+              struct,
+              declarator_hint,
+              (struct_or_union_sub:
+                identifier,
+                (_gen18:
+                  (struct_or_union_body:
+                    lbrace,
+                    (_gen19:
+                      (struct_declaration:
+                        (_gen20:
+                          (specifier_qualifier:
+                            (type_specifier:
+                              int
+                            )
+                          ),
+                          (_gen20: )
+                        ),
+                        (_gen21:
+                          (struct_declarator:
+                            (declarator:
+                              (pointer_opt: ),
+                              identifier
+                            ),
+                            (_gen23: )
+                          ),
+                          (_gen22: )
+                        ),
+                        semi
+                      ),
+                      (_gen19: )
+                    ),
+                    rbrace
+                  )
+                )
+              )
+            )
+          )
+        ),
+        (_gen2: )
+      ),
+      (external_declaration_sub:
+        (_gen3: ),
+        semi
+      )
+    ),
+    (_gen0:
+      (external_declaration:
+        external_declaration_hint,
+        (_gen1:
+          (declaration_specifier:
+            (type_specifier:
+              int
+            )
+          ),
+          (_gen2: )
+        ),
+        (external_declaration_sub:
+          (external_function:
+            function_definition_hint,
+            (declarator:
+              (pointer_opt: ),
+              (_direct_declarator:
+                identifier,
+                lparen,
+                (direct_declarator_parameter_list: ),
+                rparen
+              )
+            ),
+            (_gen5: ),
+            (compound_statement:
+              lbrace,
+              (_gen37: ),
+              rbrace
+            )
+          )
+        )
+      ),
+      (_gen0: )
+    )
+  )
+)

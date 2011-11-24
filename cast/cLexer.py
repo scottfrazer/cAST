@@ -57,7 +57,7 @@ def declaration_specifiers():
       c('typedef'),  c('extern'), c('static'), c('auto'), \
       c('register'), c('void'), c('char'), c('short'), c('int'), \
       c('long'), c('float'), c('double'), c('signed'), c('unsigned'), \
-      c('_bool'), c('_complex'), c('struct'), c('union'), c('enum'), \
+      c('bool'), c('complex'), c('imaginary'), c('struct'), c('union'), c('enum'), \
       c('typedef_identifier'), c('const'), c('restrict'), c('volatile'), \
       c('inline')
     }

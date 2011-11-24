@@ -81,5 +81,3 @@ typedef struct a {
 typedef int * int_ptr;
 
 typedef int (*pt2Function)(float, char, char);
-
-
