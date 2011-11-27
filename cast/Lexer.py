@@ -55,16 +55,21 @@ class PatternMatchingLexer(Lexer):
     else:
       self.colno += len(string)
 
-  def peek(self):
-    activity = True
-    while activity:
-      activity = False
-      if not len(self.string):
-        raise StopIteration()
+  # returns an n-item list of tuples: (terminalId, length)
+  def peek(self, n=1):
+    lookahead = list()
+    loc = 0
+    for i in range(n):
+      current = self.string[loc:]
+      if not len(current):
+        return lookahead
       for (regex, terminalId, function) in self.regex:
-        match = regex.match(self.string)
+        match = regex.match(current)
         if match:
-          return Token(terminalId, self.resource, 'peek', match.group(0), self.lineno, self.colno)
+          length = len(match.group(0))
+          loc += length
+          lookahead.append( (terminalId,match.group(0),) )
+    return lookahead
 
   def nextMatch(self):
     activity = True
@@ -76,9 +81,9 @@ class PatternMatchingLexer(Lexer):
         match = regex.match(self.string)
         if match:
           activity = True
+          sourceString = match.group(0)
           lineno = self.lineno
           colno = self.colno
-          sourceString = match.group(0)
           self.advance( sourceString )
           if function:
             function(sourceString, lineno, colno, terminalId, self)

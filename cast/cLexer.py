@@ -32,7 +32,7 @@ def parseLbrace( string, lineno, colno, terminalId, lexer ):
 def parseRbrace( string, lineno, colno, terminalId, lexer ):
   lexer.braceLevel -= 1
   token( string, lineno, colno, terminalId, lexer )
-  if {cParser.TERMINAL_RBRACE, lexer.braceLevel} in lexer.endifTokens:
+  if (cParser.TERMINAL_RBRACE, lexer.braceLevel) in lexer.endifTokens:
     lexer.endifTokens = lexer.endifTokens.difference({(cParser.TERMINAL_RBRACE, lexer.braceLevel)})
     token('', lineno, colno, cParser.TERMINAL_ENDIF, lexer)
 
@@ -63,7 +63,7 @@ def parseElse( string, lineno, colno, terminalId, lexer ):
 
 def parseSemi( string, lineno, colno, terminalId, lexer ):
   token( string, lineno, colno, terminalId, lexer )
-  if {cParser.TERMINAL_SEMI, lexer.braceLevel} in lexer.endifTokens:
+  if (cParser.TERMINAL_SEMI, lexer.braceLevel,) in lexer.endifTokens:
     lexer.endifTokens = lexer.endifTokens.difference({(cParser.TERMINAL_SEMI, lexer.braceLevel)})
     token('', lineno, colno, cParser.TERMINAL_ENDIF, lexer)
 
@@ -297,12 +297,12 @@ class cLexer(PatternMatchingLexer):
     return (self.braceLevel, self.parenLevel) in self.ifBlocks
   def addEndif(self):
     self.unmarkIf()
-    nextToken = self.peek()
+    nextTokens = set(map(lambda x: x[0], self.peek(2)))
     t = set()
-    if nextToken.id == cParser.TERMINAL_RBRACE:
-      t = {(cParser.TERMINAL_RBRACE, self.braceLevel)}
-    elif nextToken.id not in {cParser.TERMINAL_FOR, cParser.TERMINAL_IF, cParser.TERMINAL_WHILE, cParser.TERMINAL_DO}:
-      t = {(cParser.TERMINAL_SEMI, self.braceLevel)}
+    if cParser.TERMINAL_LBRACE in nextTokens:
+      t = {(cParser.TERMINAL_RBRACE, self.braceLevel,)}
+    elif not len(nextTokens.intersection({cParser.TERMINAL_FOR, cParser.TERMINAL_IF, cParser.TERMINAL_WHILE, cParser.TERMINAL_DO})):
+      t = {(cParser.TERMINAL_SEMI, self.braceLevel,)}
     else:
       self.markIf()
     self.endifTokens = self.endifTokens.union(t)
