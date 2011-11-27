@@ -32,6 +32,9 @@ def parseLbrace( string, lineno, colno, terminalId, lexer ):
 def parseRbrace( string, lineno, colno, terminalId, lexer ):
   lexer.braceLevel -= 1
   token( string, lineno, colno, terminalId, lexer )
+  if {cParser.TERMINAL_RBRACE, lexer.braceLevel} in lexer.endifTokens:
+    lexer.endifTokens = lexer.endifTokens.difference({(cParser.TERMINAL_RBRACE, lexer.braceLevel)})
+    token('', lineno, colno, cParser.TERMINAL_ENDIF, lexer)
 
 def parseLparenCast( string, lineno, colno, terminalId, lexer ):
   lexer.parenLevel += 1
@@ -47,6 +50,22 @@ def parseLparen( string, lineno, colno, terminalId, lexer ):
 def parseRparen( string, lineno, colno, terminalId, lexer ):
   lexer.parenLevel -= 1
   token( string, lineno, colno, terminalId, lexer )
+  if lexer.isIf():
+    lexer.addEndif()
+
+def parseIf( string, lineno, colno, terminalId, lexer ):
+  token( string, lineno, colno, terminalId, lexer )
+  lexer.markIf()
+
+def parseElse( string, lineno, colno, terminalId, lexer ):
+  token( string, lineno, colno, terminalId, lexer )
+  lexer.addEndif()
+
+def parseSemi( string, lineno, colno, terminalId, lexer ):
+  token( string, lineno, colno, terminalId, lexer )
+  if {cParser.TERMINAL_SEMI, lexer.braceLevel} in lexer.endifTokens:
+    lexer.endifTokens = lexer.endifTokens.difference({(cParser.TERMINAL_SEMI, lexer.braceLevel)})
+    token('', lineno, colno, cParser.TERMINAL_ENDIF, lexer)
 
 decls = None
 def declaration_specifiers():
@@ -154,13 +173,14 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'default(?=[^a-zA-Z])'), cParser.TERMINAL_DEFAULT, token ),
       ( re.compile(r'do(?=[^a-zA-Z])'), cParser.TERMINAL_DO, token ),
       ( re.compile(r'double(?=[^a-zA-Z])'), cParser.TERMINAL_DOUBLE, token ),
-      ( re.compile(r'else(?=[^a-zA-Z])'), cParser.TERMINAL_ELSE, token ),
+      ( re.compile(r'else\s+if(?=[^a-zA-Z])'), cParser.TERMINAL_ELSE_IF, parseIf ),
+      ( re.compile(r'else(?=[^a-zA-Z])'), cParser.TERMINAL_ELSE, parseElse ),
       ( re.compile(r'enum(?=[^a-zA-Z])'), cParser.TERMINAL_ENUM, token ),
       ( re.compile(r'extern(?=[^a-zA-Z])'), cParser.TERMINAL_EXTERN, token ),
       ( re.compile(r'float(?=[^a-zA-Z])'), cParser.TERMINAL_FLOAT, token ),
       ( re.compile(r'for(?=[^a-zA-Z])'), cParser.TERMINAL_FOR, token ),
       ( re.compile(r'goto(?=[^a-zA-Z])'), cParser.TERMINAL_GOTO, token ),
-      ( re.compile(r'if(?=[^a-zA-Z])'), cParser.TERMINAL_IF, token ),
+      ( re.compile(r'if(?=[^a-zA-Z])'), cParser.TERMINAL_IF, parseIf ),
       ( re.compile(r'_Imaginary(?=[^a-zA-Z])'), cParser.TERMINAL_IMAGINARY, token ),
       ( re.compile(r'inline(?=[^a-zA-Z])'), cParser.TERMINAL_INLINE, token ),
       ( re.compile(r'int(?=[^a-zA-Z])'), cParser.TERMINAL_INT, token ),
@@ -232,7 +252,7 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'\|\|'), cParser.TERMINAL_OR, token ),
       ( re.compile(r'\?'), cParser.TERMINAL_QUESTIONMARK, token ),
       ( re.compile(r':'), cParser.TERMINAL_COLON, token ),
-      ( re.compile(r';'), cParser.TERMINAL_SEMI, token ),
+      ( re.compile(r';'), cParser.TERMINAL_SEMI, parseSemi ),
       ( re.compile(r'=(?!=)'), cParser.TERMINAL_ASSIGN, token ),
       ( re.compile(r'\*='), cParser.TERMINAL_MULEQ, token ),
       ( re.compile(r'/='), cParser.TERMINAL_DIVEQ, token ),
@@ -266,6 +286,26 @@ class cLexer(PatternMatchingLexer):
     self.braceLevel = 0
     self.parenLevel = 0
     self.lock = False
+    self.ifBlocks = set()
+    self.endifTokens = set()
+
+  def markIf(self):
+    self.ifBlocks = self.ifBlocks.union({(self.braceLevel, self.parenLevel)})
+  def unmarkIf(self):
+    self.ifBlocks = self.ifBlocks.difference({(self.braceLevel, self.parenLevel)})
+  def isIf(self):
+    return (self.braceLevel, self.parenLevel) in self.ifBlocks
+  def addEndif(self):
+    self.unmarkIf()
+    nextToken = self.peek()
+    t = set()
+    if nextToken.id == cParser.TERMINAL_RBRACE:
+      t = {(cParser.TERMINAL_RBRACE, self.braceLevel)}
+    elif nextToken.id not in {cParser.TERMINAL_FOR, cParser.TERMINAL_IF, cParser.TERMINAL_WHILE, cParser.TERMINAL_DO}:
+      t = {(cParser.TERMINAL_SEMI, self.braceLevel)}
+    else:
+      self.markIf()
+    self.endifTokens = self.endifTokens.union(t)
 
   def __next__(self):
     token = super().__next__()

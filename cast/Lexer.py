@@ -54,7 +54,18 @@ class PatternMatchingLexer(Lexer):
       self.colno = len(string.split('\n')[-1]) + 1
     else:
       self.colno += len(string)
-  
+
+  def peek(self):
+    activity = True
+    while activity:
+      activity = False
+      if not len(self.string):
+        raise StopIteration()
+      for (regex, terminalId, function) in self.regex:
+        match = regex.match(self.string)
+        if match:
+          return Token(terminalId, self.resource, 'peek', match.group(0), self.lineno, self.colno)
+
   def nextMatch(self):
     activity = True
     while activity:

@@ -109,7 +109,7 @@
       "trailing_comma_opt := 'trailing_comma' | _empty",
       "static_opt := 'static' | _empty",
       "sizeof_body := 'identifier' | 'lparen' + type_name + 'rparen' -> $1",
-      "misc := 'universal_character_name'"
+      "misc := 'universal_character_name' | 'endif'"
     ]
 
   },
