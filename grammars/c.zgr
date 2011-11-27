@@ -88,7 +88,7 @@
       "selection_statement := 'switch' + 'lparen' + _expr + 'rparen' + statement -> Switch( expr=$2, statment=$4 )",
       "iteration_statement := 'while' + 'lparen' + _expr + 'rparen' + statement -> While( expr=$2, statement=$4 )",
       "iteration_statement := 'do' + statement + 'while' + 'lparen' + _expr + 'rparen' + 'semi' -> DoWhile( statement=$1, expr=4 )",
-      "iteration_statement := 'for' + 'lparen' + for_init + for_cond + for_incr + 'rparen' + statement -> For( init=$2, cond=$3, incr=$4 )",
+      "iteration_statement := 'for' + 'lparen' + for_init + for_cond + for_incr + 'rparen' + statement -> For( init=$2, cond=$3, incr=$4, statement=$6 )",
       "for_init := declaration + expression_opt | _expr | _empty",
       "for_cond := 'semi' + expression_opt -> $1",
       "for_incr := 'semi' + expression_opt -> $1 | _empty",
