@@ -4,9 +4,9 @@ from cast.Token import cToken
 from cast.cParser import Parser as cParser
 
 def parseLabelIdentifier( string, lineno, colno, terminalId, lexer ):
-  hintId = ppParser.TERMINAL_LABEL_HINT
-  lexer.addToken(cToken(hintId, lexer.resource, cParser.terminal_str[hintId], match, lineno, colno))
-  lexer.addToken(cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], match, lineno, colno))
+  hintId = cParser.TERMINAL_LABEL_HINT
+  lexer.addToken(cToken(hintId, lexer.resource, cParser.terminal_str[hintId], '', lineno, colno))
+  lexer.addToken(cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], string, lineno, colno))
 
 def parseTypedef( string, lineno, colno, terminalId, lexer ):
   queue = []
