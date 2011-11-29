@@ -1,0 +1,25 @@
+
+
+int f(void), *fip(), (*pfi)();
+
+
+
+
+
+
+int (*apfi[3])(int *x, int *y);
+
+
+
+
+
+
+
+
+
+
+
+
+int (*fpfi(int (*)(long), int))(int, ...);
+
+int main() { char str[]={'a','b','c',}; return 0; }

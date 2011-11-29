@@ -1,0 +1,2 @@
+csource,1,1,int main( int argc, char * argv[] )\n{\n  int y;\n  y = factorial(6);\n  printf("6! = %d\n", y);\n}\n\nint factorial(int x)\n{\n  if ( x == 1 )\n    return 1;\n  return x * factorial(x-1);\n}\n,test/cases/12/source.c
+separator,14,1,,test/cases/12/source.c

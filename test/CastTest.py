@@ -11,13 +11,16 @@ directory = 'test/cases'
 
 class CastTest(unittest.TestCase):
 
-  def __init__(self, path=None, expected=None, actualFunc=None):
+  def __init__(self, path=None, expectedPath=None, actualFunc=None):
     super().__init__()
     self.__dict__.update(locals())
     self.maxDiff = None
 
   def runTest(self):
-    self.assertEqual(self.expected, self.actualFunc(), 'failed to match %s' % self.path)
+    fp = open(self.expectedPath)
+    expected = fp.read().rstrip()
+    fp.close()
+    self.assertEqual(expected, self.actualFunc(), 'failed to match %s (%s)' % (self.path, self.expectedPath))
 
 class CastVersusGccTest(unittest.TestCase):
 
@@ -98,6 +101,12 @@ def cast(sourcecode, skipIncludes=False):
   ast = cParser().parse(cT).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'type'))
   return prettyprint
+
+def preprocessed(sourcecode, skipIncludes=False):
+  cPPFactory = PreProcessorFactory()
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
+  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
+  return cT.toString()
   
 transformations = [
   ('pptok', pptok),
@@ -105,13 +114,18 @@ transformations = [
   ('ppast', ppast),
   ('ctok', ctok),
   ('cparse', cparse),
-  ('cast', cast)
+  ('cast', cast),
+  ('preprocessed', preprocessed)
 ]
 
 def load_tests(loader, tests, pattern):
   testDirectories = os.listdir(directory)
   suite = unittest.TestSuite()
   for path in testDirectories:
+    try:
+      int(path)
+    except ValueError:
+      continue
     path = os.path.join(directory, path)
     sourcePath = os.path.join(path, 'source.c')
     sourcecode = SourceCode(sourcePath, open(sourcePath))
@@ -127,13 +141,12 @@ def load_tests(loader, tests, pattern):
       expectedPath = os.path.join(path, expected)
       def func(sourcecode, transformFunction, skipIncludes):
         def ret():
-          return transformFunction(sourcecode, skipIncludes).strip()
+          return transformFunction(sourcecode, skipIncludes).rstrip()
         return ret
-      actual = transformFunction(sourcecode, skipIncludes).strip()
+      actual = transformFunction(sourcecode, skipIncludes).rstrip()
       if not os.path.exists(expectedPath):
         fp = open(expectedPath, 'w')
-        fp.write(actual)
+        fp.write(actual + '\n')
         fp.close()
-      expected = open(expectedPath).read().strip()
-      suite.addTest( CastTest(path, expected, func(sourcecode,transformFunction, skipIncludes)) )
+      suite.addTest( CastTest(path, expectedPath, func(sourcecode,transformFunction, skipIncludes)) )
   return suite

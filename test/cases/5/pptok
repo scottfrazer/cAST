@@ -29,5 +29,5 @@ identifier,3,24,z,test/cases/5/source.c
 rparen,3,25,),test/cases/5/source.c
 rparen,3,26,),test/cases/5/source.c
 separator,3,1,,test/cases/5/source.c
-csource,4,1,\nint main()\n{\n	printf("%d\n", FOO(BAR(1000)));\n	return 0;\n},test/cases/5/source.c
-separator,9,1,,test/cases/5/source.c
+csource,4,1,\nint main()\n{\n  printf("%d\n", FOO(BAR(1000)));\n  return 0;\n}\n,test/cases/5/source.c
+separator,10,1,,test/cases/5/source.c

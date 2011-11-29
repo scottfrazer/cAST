@@ -55,12 +55,13 @@ When you see a lbrace, enqueue tokens until corresponding rbrace.  If next token
 C Helper Tokens
 ---------------
 
-comma_va_args - a comma that comes before an elipsis
-trailing_comma - comma before an rbrace
+comma_va_args - the comma that comes before the optional elipsis.
+trailing_comma - optional trailing comma before an rbrace
 declarator_hint - 
 function_definition_hint
 defined_separator
-typedef_identifier
+typedef_identifier - parsed like an identifier, but is a typedef name.
+endif - for ending if,elif,else blocks.
 
 Typedefs, how do they work?
 ---------------------------

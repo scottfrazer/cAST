@@ -1,0 +1,2 @@
+
+int (*fpfi(int (*)(long), int))(int, ...);
