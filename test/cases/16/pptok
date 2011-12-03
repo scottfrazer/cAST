@@ -1,0 +1,2 @@
+csource,1,1,typedef int myint;\ntypedef struct a {int a; myint b;} mystruct;\n\nint main()\n{\n  typedef int myint_;\n  myint x = 10;\n  myint_ z = 2;\n  mystruct y;\n  y.b = 15;\n  printf("%d %d %d\n", z, x, y.b);\n}\n,test/cases/16/source.c
+separator,13,1,,test/cases/16/source.c

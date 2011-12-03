@@ -1,7 +1,11 @@
 (TranslationUnit:
   external_declarations=[
     (ExternalDeclaration:
-      declarations=[],
+      declarations=[
+        (ExternalDeclarator:
+          init_declarator=None
+        )
+      ],
       declaration_specifiers=[
         (Struct:
           definition=(StructOrUnion:

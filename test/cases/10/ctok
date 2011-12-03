@@ -13,7 +13,6 @@ integer_constant,2,16,3,test/cases/10/source.c
 semi,2,17,;,test/cases/10/source.c
 external_declaration_hint,3,1,,test/cases/10/source.c
 struct,3,1,struct,test/cases/10/source.c
-declarator_hint,3,1,,test/cases/10/source.c
 identifier,3,8,b,test/cases/10/source.c
 lbrace,3,10,{,test/cases/10/source.c
 int,4,3,int,test/cases/10/source.c
@@ -24,6 +23,7 @@ int,5,3,int,test/cases/10/source.c
 identifier,5,7,b,test/cases/10/source.c
 semi,5,8,;,test/cases/10/source.c
 rbrace,6,1,},test/cases/10/source.c
+declarator_hint,3,1,,test/cases/10/source.c
 semi,6,2,;,test/cases/10/source.c
 external_declaration_hint,7,1,,test/cases/10/source.c
 int,7,1,int,test/cases/10/source.c

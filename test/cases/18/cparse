@@ -30,12 +30,19 @@
                 (_gen39:
                   (block_item:
                     (statement:
-                      (jump_statement:
-                        return,
+                      (expression_statement:
                         (expression_opt:
                           (_expr:
-                            (constant:
-                              integer_constant
+                            (_expr:
+                              identifier,
+                              dot,
+                              identifier
+                            ),
+                            assign,
+                            (_expr:
+                              (constant:
+                                integer_constant
+                              )
                             )
                           )
                         ),

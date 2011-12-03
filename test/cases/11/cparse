@@ -7,35 +7,34 @@
           (type_specifier:
             (struct_specifier:
               struct,
-              declarator_hint,
               (struct_or_union_sub:
                 identifier,
-                (_gen18:
+                (_gen19:
                   (struct_or_union_body:
                     lbrace,
-                    (_gen19:
+                    (_gen20:
                       (struct_declaration:
-                        (_gen20:
+                        (_gen21:
                           (specifier_qualifier:
                             (type_specifier:
                               int
                             )
                           ),
-                          (_gen20: )
+                          (_gen21: )
                         ),
-                        (_gen21:
+                        (_gen22:
                           (struct_declarator:
                             (declarator:
                               (pointer_opt: ),
                               identifier
                             ),
-                            (_gen23: )
+                            (_gen24: )
                           ),
-                          (_gen22: )
+                          (_gen23: )
                         ),
                         semi
                       ),
-                      (_gen19: )
+                      (_gen20: )
                     ),
                     rbrace
                   )
@@ -47,7 +46,15 @@
         (_gen2: )
       ),
       (external_declaration_sub:
-        (_gen3: ),
+        (_gen3:
+          (external_declaration_sub_sub:
+            (external_declarator:
+              declarator_hint,
+              (_gen6: )
+            )
+          ),
+          (_gen4: )
+        ),
         semi
       )
     ),
@@ -77,7 +84,7 @@
             (_gen5: ),
             (compound_statement:
               lbrace,
-              (_gen37: ),
+              (_gen38: ),
               rbrace
             )
           )

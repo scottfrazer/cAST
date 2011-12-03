@@ -1,0 +1,14 @@
+external_declaration_hint,1,1,,test/cases/18/source.c
+int,1,1,int,test/cases/18/source.c
+function_definition_hint,1,1,,test/cases/18/source.c
+identifier,1,5,main,test/cases/18/source.c
+lparen,1,9,(,test/cases/18/source.c
+rparen,1,10,),test/cases/18/source.c
+lbrace,2,1,{,test/cases/18/source.c
+identifier,3,3,a,test/cases/18/source.c
+dot,3,4,.,test/cases/18/source.c
+identifier,3,5,b,test/cases/18/source.c
+assign,3,7,=,test/cases/18/source.c
+integer_constant,3,9,0,test/cases/18/source.c
+semi,3,10,;,test/cases/18/source.c
+rbrace,4,1,},test/cases/18/source.c

@@ -107,7 +107,7 @@ class cPreprocessorFunctionFactory:
           for va_arg_rlist, next in zip_longest(params[index:], params[index+1:]):
             paramValues['__VA_ARGS__'].extend(va_arg_rlist)
             if next:
-              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminal('comma'), '<stream>', 'comma', ',', 0, 0))
+              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminal('comma'), '<stream>', 'comma', ',', 0, 0, None))
         else:
           paramValues[param] = params[index]
       nodes = []
@@ -273,7 +273,7 @@ class cPreprocessingEvaluator:
     if token.type == 'c':
       return token
     newId = self.cPPTtocT[token.id]
-    return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno )
+    return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno, None )
   
   def _eval( self, cPPAST ):
     rtokens = TokenList()

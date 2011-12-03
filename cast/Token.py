@@ -52,9 +52,16 @@ class ppToken(Token):
   def getTerminalStr(self):
     return ppParser.terminal_str[self.getId()].lower()
 
+# TODO: this takes ridiculous parameters.
+# 1) should be able to imply terminal_str from id
+# 2) lineno, colno, context should all be one Context object
 class cToken(Token):
   type = 'c'
   fromPreprocessor = False
+
+  def __init__(self, id, resource, terminal_str, source_string, lineno, colno, context):
+    super().__init__(id, resource, terminal_str, source_string, lineno, colno)
+    self.context = context
 
   def getTerminalStr(self):
     return cParser.terminal_str[self.getId()].lower()

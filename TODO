@@ -51,7 +51,6 @@ int (*ptr)(short a, short b, short c);
 When you see a lbrace, enqueue tokens until corresponding rbrace.  If next token is a semi-colon, it's a declaration.  If not, it's a function definition
 
 
-
 C Helper Tokens
 ---------------
 
