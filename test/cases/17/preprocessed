@@ -1,0 +1,20 @@
+typedef int MILES, KLICKSP();
+typedef struct { double hi, lo; } range;
+typedef struct s { int x; } t, * tp;
+
+int main()
+{
+  MILES distance;
+  extern KLICKSP * metricp;
+  t w = { .x = 7 };
+  tp v;
+  v = &w;
+  range y;
+  range z, *zp;
+  printf("%d\n", v->x);
+}
+
+int test(register const int a)
+{
+  return a;
+}

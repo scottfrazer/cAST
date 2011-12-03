@@ -1,0 +1,2 @@
+csource,1,1,int main()\n{\n  a.b = 0;\n}\n,test/cases/18/source.c
+separator,5,1,,test/cases/18/source.c

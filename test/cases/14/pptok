@@ -1,0 +1,2 @@
+csource,1,1,int main()\n{\n  int a = 0;\n  while(1) {\n    func();\n  }\n\n  do {\n    func();\n    a += 1;\n  } while(0);\n  \n  switch(a)\n  {\n    case 0:\n      func();\n      a += 1;\n      break;\n    case 1:\n      func();\n      goto byebye;\n      break;\n    default:\n      break;\n  }\n\nbyebye:\n  printf("See ya!");\n  return 0;\n}\n\nint func()\n{\n  return 0;\n}\n,test/cases/14/source.c
+separator,36,1,,test/cases/14/source.c

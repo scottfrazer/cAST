@@ -1,0 +1,28 @@
+(TranslationUnit:
+  external_declarations=[
+    (ExternalDeclaration:
+      declarations=(FunctionDefinition:
+        body=[
+          (Assign:
+            var=(MemberSelect:
+              member=identifier,
+              object=identifier
+            ),
+            value=integer_constant
+          )
+        ],
+        declaration_list=None,
+        signature=(Declarator:
+          direct_declarator=(FunctionSignature:
+            params=None,
+            declarator=identifier
+          ),
+          pointer=None
+        )
+      ),
+      declaration_specifiers=[
+        int
+      ]
+    )
+  ]
+)

@@ -1,0 +1,674 @@
+(translation_unit:
+  (_gen0:
+    (external_declaration:
+      external_declaration_hint,
+      (_gen1:
+        (declaration_specifier:
+          (storage_class_specifier:
+            typedef
+          )
+        ),
+        (_gen2:
+          (declaration_specifier:
+            (type_specifier:
+              int
+            )
+          ),
+          (_gen2: )
+        )
+      ),
+      (external_declaration_sub:
+        (_gen3:
+          (external_declaration_sub_sub:
+            (external_declarator:
+              declarator_hint,
+              (_gen6:
+                (init_declarator:
+                  (declarator:
+                    (pointer_opt: ),
+                    identifier
+                  ),
+                  (_gen14: )
+                )
+              )
+            )
+          ),
+          (_gen4:
+            comma,
+            (external_declaration_sub_sub:
+              (external_prototype:
+                function_prototype_hint,
+                (declarator:
+                  (pointer_opt: ),
+                  (_direct_declarator:
+                    identifier,
+                    lparen,
+                    (direct_declarator_parameter_list: ),
+                    rparen
+                  )
+                ),
+                (_gen5: )
+              )
+            ),
+            (_gen4: )
+          )
+        ),
+        semi
+      )
+    ),
+    (_gen0:
+      (external_declaration:
+        external_declaration_hint,
+        (_gen1:
+          (declaration_specifier:
+            (storage_class_specifier:
+              typedef
+            )
+          ),
+          (_gen2:
+            (declaration_specifier:
+              (type_specifier:
+                (struct_specifier:
+                  struct,
+                  (struct_or_union_sub:
+                    (struct_or_union_body:
+                      lbrace,
+                      (_gen20:
+                        (struct_declaration:
+                          (_gen21:
+                            (specifier_qualifier:
+                              (type_specifier:
+                                double
+                              )
+                            ),
+                            (_gen21: )
+                          ),
+                          (_gen22:
+                            (struct_declarator:
+                              (declarator:
+                                (pointer_opt: ),
+                                identifier
+                              ),
+                              (_gen24: )
+                            ),
+                            (_gen23:
+                              comma,
+                              (struct_declarator:
+                                (declarator:
+                                  (pointer_opt: ),
+                                  identifier
+                                ),
+                                (_gen24: )
+                              ),
+                              (_gen23: )
+                            )
+                          ),
+                          semi
+                        ),
+                        (_gen20: )
+                      ),
+                      rbrace
+                    )
+                  )
+                )
+              )
+            ),
+            (_gen2: )
+          )
+        ),
+        (external_declaration_sub:
+          (_gen3:
+            (external_declaration_sub_sub:
+              (external_declarator:
+                declarator_hint,
+                (_gen6:
+                  (init_declarator:
+                    (declarator:
+                      (pointer_opt: ),
+                      identifier
+                    ),
+                    (_gen14: )
+                  )
+                )
+              )
+            ),
+            (_gen4: )
+          ),
+          semi
+        )
+      ),
+      (_gen0:
+        (external_declaration:
+          external_declaration_hint,
+          (_gen1:
+            (declaration_specifier:
+              (storage_class_specifier:
+                typedef
+              )
+            ),
+            (_gen2:
+              (declaration_specifier:
+                (type_specifier:
+                  (struct_specifier:
+                    struct,
+                    (struct_or_union_sub:
+                      identifier,
+                      (_gen19:
+                        (struct_or_union_body:
+                          lbrace,
+                          (_gen20:
+                            (struct_declaration:
+                              (_gen21:
+                                (specifier_qualifier:
+                                  (type_specifier:
+                                    int
+                                  )
+                                ),
+                                (_gen21: )
+                              ),
+                              (_gen22:
+                                (struct_declarator:
+                                  (declarator:
+                                    (pointer_opt: ),
+                                    identifier
+                                  ),
+                                  (_gen24: )
+                                ),
+                                (_gen23: )
+                              ),
+                              semi
+                            ),
+                            (_gen20: )
+                          ),
+                          rbrace
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              (_gen2: )
+            )
+          ),
+          (external_declaration_sub:
+            (_gen3:
+              (external_declaration_sub_sub:
+                (external_declarator:
+                  declarator_hint,
+                  (_gen6:
+                    (init_declarator:
+                      (declarator:
+                        (pointer_opt: ),
+                        identifier
+                      ),
+                      (_gen14: )
+                    )
+                  )
+                )
+              ),
+              (_gen4:
+                comma,
+                (external_declaration_sub_sub:
+                  (external_declarator:
+                    declarator_hint,
+                    (_gen6:
+                      (init_declarator:
+                        (declarator:
+                          (pointer_opt:
+                            (pointer:
+                              (_gen37:
+                                (pointer_sub:
+                                  asterisk,
+                                  (type_qualifier_list_opt: )
+                                ),
+                                (_gen37: )
+                              )
+                            )
+                          ),
+                          identifier
+                        ),
+                        (_gen14: )
+                      )
+                    )
+                  )
+                ),
+                (_gen4: )
+              )
+            ),
+            semi
+          )
+        ),
+        (_gen0:
+          (external_declaration:
+            external_declaration_hint,
+            (_gen1:
+              (declaration_specifier:
+                (type_specifier:
+                  int
+                )
+              ),
+              (_gen2: )
+            ),
+            (external_declaration_sub:
+              (external_function:
+                function_definition_hint,
+                (declarator:
+                  (pointer_opt: ),
+                  (_direct_declarator:
+                    identifier,
+                    lparen,
+                    (direct_declarator_parameter_list: ),
+                    rparen
+                  )
+                ),
+                (_gen5: ),
+                (compound_statement:
+                  lbrace,
+                  (_gen38:
+                    (block_item_list:
+                      (_gen39:
+                        (block_item:
+                          (declaration:
+                            (_gen1:
+                              (declaration_specifier:
+                                (type_specifier:
+                                  (typedef_name:
+                                    typedef_identifier
+                                  )
+                                )
+                              ),
+                              (_gen2: )
+                            ),
+                            (_gen8:
+                              (init_declarator_list:
+                                (_gen12:
+                                  (init_declarator:
+                                    (declarator:
+                                      (pointer_opt: ),
+                                      identifier
+                                    ),
+                                    (_gen14: )
+                                  ),
+                                  (_gen13: )
+                                )
+                              )
+                            ),
+                            semi
+                          )
+                        ),
+                        (_gen39:
+                          (block_item:
+                            (declaration:
+                              (_gen1:
+                                (declaration_specifier:
+                                  (storage_class_specifier:
+                                    extern
+                                  )
+                                ),
+                                (_gen2:
+                                  (declaration_specifier:
+                                    (type_specifier:
+                                      (typedef_name:
+                                        typedef_identifier
+                                      )
+                                    )
+                                  ),
+                                  (_gen2: )
+                                )
+                              ),
+                              (_gen8:
+                                (init_declarator_list:
+                                  (_gen12:
+                                    (init_declarator:
+                                      (declarator:
+                                        (pointer_opt:
+                                          (pointer:
+                                            (_gen37:
+                                              (pointer_sub:
+                                                asterisk,
+                                                (type_qualifier_list_opt: )
+                                              ),
+                                              (_gen37: )
+                                            )
+                                          )
+                                        ),
+                                        identifier
+                                      ),
+                                      (_gen14: )
+                                    ),
+                                    (_gen13: )
+                                  )
+                                )
+                              ),
+                              semi
+                            )
+                          ),
+                          (_gen39:
+                            (block_item:
+                              (declaration:
+                                (_gen1:
+                                  (declaration_specifier:
+                                    (type_specifier:
+                                      (typedef_name:
+                                        typedef_identifier
+                                      )
+                                    )
+                                  ),
+                                  (_gen2: )
+                                ),
+                                (_gen8:
+                                  (init_declarator_list:
+                                    (_gen12:
+                                      (init_declarator:
+                                        (declarator:
+                                          (pointer_opt: ),
+                                          identifier
+                                        ),
+                                        (_gen14:
+                                          (declarator_initializer:
+                                            assign,
+                                            (initializer:
+                                              lbrace,
+                                              (_gen15:
+                                                (initializer_list_item:
+                                                  (_gen17:
+                                                    (designation:
+                                                      (_gen18:
+                                                        (designator:
+                                                          dot,
+                                                          identifier
+                                                        ),
+                                                        (_gen18: )
+                                                      ),
+                                                      assign
+                                                    )
+                                                  ),
+                                                  (initializer:
+                                                    (_expr:
+                                                      (constant:
+                                                        integer_constant
+                                                      )
+                                                    )
+                                                  )
+                                                ),
+                                                (_gen16: )
+                                              ),
+                                              (trailing_comma_opt: ),
+                                              rbrace
+                                            )
+                                          )
+                                        )
+                                      ),
+                                      (_gen13: )
+                                    )
+                                  )
+                                ),
+                                semi
+                              )
+                            ),
+                            (_gen39:
+                              (block_item:
+                                (declaration:
+                                  (_gen1:
+                                    (declaration_specifier:
+                                      (type_specifier:
+                                        (typedef_name:
+                                          typedef_identifier
+                                        )
+                                      )
+                                    ),
+                                    (_gen2: )
+                                  ),
+                                  (_gen8:
+                                    (init_declarator_list:
+                                      (_gen12:
+                                        (init_declarator:
+                                          (declarator:
+                                            (pointer_opt: ),
+                                            identifier
+                                          ),
+                                          (_gen14: )
+                                        ),
+                                        (_gen13: )
+                                      )
+                                    )
+                                  ),
+                                  semi
+                                )
+                              ),
+                              (_gen39:
+                                (block_item:
+                                  (statement:
+                                    (expression_statement:
+                                      (expression_opt:
+                                        (_expr:
+                                          identifier,
+                                          assign,
+                                          (_expr:
+                                            bitand,
+                                            identifier
+                                          )
+                                        )
+                                      ),
+                                      semi
+                                    )
+                                  )
+                                ),
+                                (_gen39:
+                                  (block_item:
+                                    (declaration:
+                                      (_gen1:
+                                        (declaration_specifier:
+                                          (type_specifier:
+                                            (typedef_name:
+                                              typedef_identifier
+                                            )
+                                          )
+                                        ),
+                                        (_gen2: )
+                                      ),
+                                      (_gen8:
+                                        (init_declarator_list:
+                                          (_gen12:
+                                            (init_declarator:
+                                              (declarator:
+                                                (pointer_opt: ),
+                                                identifier
+                                              ),
+                                              (_gen14: )
+                                            ),
+                                            (_gen13: )
+                                          )
+                                        )
+                                      ),
+                                      semi
+                                    )
+                                  ),
+                                  (_gen39:
+                                    (block_item:
+                                      (declaration:
+                                        (_gen1:
+                                          (declaration_specifier:
+                                            (type_specifier:
+                                              (typedef_name:
+                                                typedef_identifier
+                                              )
+                                            )
+                                          ),
+                                          (_gen2: )
+                                        ),
+                                        (_gen8:
+                                          (init_declarator_list:
+                                            (_gen12:
+                                              (init_declarator:
+                                                (declarator:
+                                                  (pointer_opt: ),
+                                                  identifier
+                                                ),
+                                                (_gen14: )
+                                              ),
+                                              (_gen13:
+                                                comma,
+                                                (init_declarator:
+                                                  (declarator:
+                                                    (pointer_opt:
+                                                      (pointer:
+                                                        (_gen37:
+                                                          (pointer_sub:
+                                                            asterisk,
+                                                            (type_qualifier_list_opt: )
+                                                          ),
+                                                          (_gen37: )
+                                                        )
+                                                      )
+                                                    ),
+                                                    identifier
+                                                  ),
+                                                  (_gen14: )
+                                                ),
+                                                (_gen13: )
+                                              )
+                                            )
+                                          )
+                                        ),
+                                        semi
+                                      )
+                                    ),
+                                    (_gen39:
+                                      (block_item:
+                                        (statement:
+                                          (expression_statement:
+                                            (expression_opt:
+                                              (_expr:
+                                                identifier,
+                                                lparen,
+                                                (_gen43:
+                                                  string_literal,
+                                                  (_gen44:
+                                                    comma,
+                                                    (_expr_sans_comma:
+                                                      identifier,
+                                                      arrow,
+                                                      identifier
+                                                    ),
+                                                    (_gen44: )
+                                                  )
+                                                ),
+                                                rparen
+                                              )
+                                            ),
+                                            semi
+                                          )
+                                        )
+                                      ),
+                                      (_gen39: )
+                                    )
+                                  )
+                                )
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  ),
+                  rbrace
+                )
+              )
+            )
+          ),
+          (_gen0:
+            (external_declaration:
+              external_declaration_hint,
+              (_gen1:
+                (declaration_specifier:
+                  (type_specifier:
+                    int
+                  )
+                ),
+                (_gen2: )
+              ),
+              (external_declaration_sub:
+                (external_function:
+                  function_definition_hint,
+                  (declarator:
+                    (pointer_opt: ),
+                    (_direct_declarator:
+                      identifier,
+                      lparen,
+                      (direct_declarator_parameter_list:
+                        (parameter_type_list:
+                          (_gen30:
+                            (parameter_declaration:
+                              (_gen1:
+                                (declaration_specifier:
+                                  (storage_class_specifier:
+                                    register
+                                  )
+                                ),
+                                (_gen2:
+                                  (declaration_specifier:
+                                    (type_qualifier:
+                                      const
+                                    )
+                                  ),
+                                  (_gen2:
+                                    (declaration_specifier:
+                                      (type_specifier:
+                                        int
+                                      )
+                                    ),
+                                    (_gen2: )
+                                  )
+                                )
+                              ),
+                              (_gen35:
+                                (parameter_declaration_sub:
+                                  (pointer_opt: ),
+                                  (parameter_declaration_sub_sub:
+                                    identifier
+                                  )
+                                )
+                              )
+                            ),
+                            (_gen31: )
+                          ),
+                          (_gen32: )
+                        )
+                      ),
+                      rparen
+                    )
+                  ),
+                  (_gen5: ),
+                  (compound_statement:
+                    lbrace,
+                    (_gen38:
+                      (block_item_list:
+                        (_gen39:
+                          (block_item:
+                            (statement:
+                              (jump_statement:
+                                return,
+                                (expression_opt:
+                                  identifier
+                                ),
+                                semi
+                              )
+                            )
+                          ),
+                          (_gen39: )
+                        )
+                      )
+                    ),
+                    rbrace
+                  )
+                )
+              )
+            ),
+            (_gen0: )
+          )
+        )
+      )
+    )
+  )
+)

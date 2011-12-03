@@ -1,0 +1,2 @@
+csource,1,1,typedef int MILES, KLICKSP();\ntypedef struct { double hi, lo; } range;\ntypedef struct s { int x; } t, * tp;\n\nint main()\n{\n  MILES distance; /* int */\n  extern KLICKSP * metricp; /* pointer to function with no parameters returning int */\n  t w = { .x = 7 };\n  tp v;\n  v = &w;\n  range y; /* struct */\n  range z, *zp; /* struct, ptr to struct */\n  printf("%d\n", v->x);\n}\n\nint test(register const int a)\n{\n  return a;\n}\n,test/cases/17/source.c
+separator,21,1,,test/cases/17/source.c

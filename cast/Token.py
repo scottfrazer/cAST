@@ -52,9 +52,16 @@ class ppToken(Token):
   def getTerminalStr(self):
     return ppParser.terminal_str[self.getId()].lower()
 
+# TODO: this takes ridiculous parameters.
+# 1) should be able to imply terminal_str from id
+# 2) lineno, colno, context should all be one Context object
 class cToken(Token):
   type = 'c'
   fromPreprocessor = False
+
+  def __init__(self, id, resource, terminal_str, source_string, lineno, colno, context):
+    super().__init__(id, resource, terminal_str, source_string, lineno, colno)
+    self.context = context
 
   def getTerminalStr(self):
     return cParser.terminal_str[self.getId()].lower()
@@ -62,9 +69,14 @@ class cToken(Token):
 class TokenList(list):
   def toString(self):
     class Cursor:
-      string = ''
-      lineno = 1
-      colno = 1
+      def __init__(self):
+        self.string = ''
+        self.lineno = 1
+        self.colno = 1
+        c = lambda x: cParser.str_terminal[x]
+        self.insertSpaceAfter = {
+          c('else')
+        }
       def add(self, token):
         if token.lineno > self.lineno:
           self.string += ''.join('\n' for i in range(token.lineno - self.lineno))
@@ -74,7 +86,7 @@ class TokenList(list):
           self.string += ''.join(' ' for i in range(token.colno - self.colno))
           self.colno = token.colno
         self.string += token.source_string
-        if token.fromPreprocessor:
+        if token.fromPreprocessor or token.id in self.insertSpaceAfter:
           self.string += ' '
         self.colno += len(token.source_string)
       def __str__(self):

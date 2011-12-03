@@ -1,0 +1,2 @@
+csource,1,1,struct a {int x;};\nint main() {}\n,test/cases/11/source.c
+separator,3,1,,test/cases/11/source.c
