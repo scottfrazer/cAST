@@ -1,0 +1,2 @@
+csource,1,1,int a;\nstatic int b = 3;\nstruct b {\n  int *a;\n  int b;\n};\nint func(int x, char y) {return x+y;}\nint foo(a,b)\n  char a;\n  char b;\n{}\nint (*ptr)(short a, short b, short c);\nint main() {}\n,test/cases/10/source.c
+separator,14,1,,test/cases/10/source.c

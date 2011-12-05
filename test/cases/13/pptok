@@ -1,0 +1,24 @@
+define,1,1,#define,test/cases/13/source.c
+identifier,1,9,true,test/cases/13/source.c
+pp_number,1,14,1,test/cases/13/source.c
+separator,1,1,,test/cases/13/source.c
+define,2,1,#define,test/cases/13/source.c
+identifier,2,9,false,test/cases/13/source.c
+pp_number,2,15,0,test/cases/13/source.c
+separator,2,1,,test/cases/13/source.c
+define,3,1,#define,test/cases/13/source.c
+identifier,3,9,pass,test/cases/13/source.c
+identifier,3,14,printf,test/cases/13/source.c
+lparen,3,20,(,test/cases/13/source.c
+string_literal,3,21,"pass\n",test/cases/13/source.c
+rparen,3,29,),test/cases/13/source.c
+separator,3,1,,test/cases/13/source.c
+define,4,1,#define,test/cases/13/source.c
+identifier,4,9,fail,test/cases/13/source.c
+identifier,4,14,printf,test/cases/13/source.c
+lparen,4,20,(,test/cases/13/source.c
+string_literal,4,21,"fail\n",test/cases/13/source.c
+rparen,4,29,),test/cases/13/source.c
+separator,4,1,,test/cases/13/source.c
+csource,5,1,\nint main()\n{\n  int x;\n\n  if (true) pass;\n  if (true) {pass;}\n  if (false) fail; else pass;\n  if (false) {fail;} else pass;\n  if (false) {fail;} else {pass;}\n  if (true) for(x=0;x<1;x++){pass;}\n  if (false) for(x=0;x<1;x++)fail; else for(x=0;x<1;x++)pass;\n  if (false) {for(x=0;x<1;x++){fail;}} else {for(x=0;x<1;x++){pass;}}\n  if (false) for(x=0;x<1;x++){fail;} else for(x=0;x<1;x++){pass;}\n  if(false)fail;else if(true)pass;else fail;\n}\n\n,test/cases/13/source.c
+separator,22,1,,test/cases/13/source.c

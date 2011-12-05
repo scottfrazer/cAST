@@ -4,6 +4,6 @@
 
 int main()
 {
-	printf("%d\n", FOO(BAR(1000)));
-	return 0;
+  printf("%d\n", FOO(BAR(1000)));
+  return 0;
 }

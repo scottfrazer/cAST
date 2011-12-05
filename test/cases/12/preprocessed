@@ -1,0 +1,13 @@
+int main( int argc, char * argv[] )
+{
+  int y;
+  y = factorial(6);
+  printf("6! = %d\n", y);
+}
+
+int factorial(int x)
+{
+  if ( x == 1 )
+    return 1;
+  return x * factorial(x-1);
+}
