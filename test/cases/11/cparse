@@ -9,32 +9,32 @@
               struct,
               (struct_or_union_sub:
                 identifier,
-                (_gen19:
+                (_gen16:
                   (struct_or_union_body:
                     lbrace,
-                    (_gen20:
+                    (_gen17:
                       (struct_declaration:
-                        (_gen21:
+                        (_gen18:
                           (specifier_qualifier:
                             (type_specifier:
                               int
                             )
                           ),
-                          (_gen21: )
+                          (_gen18: )
                         ),
-                        (_gen22:
+                        (_gen19:
                           (struct_declarator:
                             (declarator:
                               (pointer_opt: ),
                               identifier
                             ),
-                            (_gen24: )
+                            (_gen21: )
                           ),
-                          (_gen23: )
+                          (_gen20: )
                         ),
                         semi
                       ),
-                      (_gen20: )
+                      (_gen17: )
                     ),
                     rbrace
                   )
@@ -84,7 +84,7 @@
             (_gen5: ),
             (compound_statement:
               lbrace,
-              (_gen38: ),
+              (_gen35: ),
               rbrace
             )
           )

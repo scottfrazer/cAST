@@ -12,17 +12,12 @@
       "declaration_list := list(declaration)",
       "declaration := mlist(declaration_specifier, 1) + optional(init_declarator_list) + 'semi' -> Declaration( declaration_specifiers=$0, init_declarators=$1 )",
       "declaration_specifier := storage_class_specifier | type_specifier | type_qualifier | function_specifier",
-      "direct_abstract_declarator := optional(direct_abstract_declarator_sub0) + list(direct_abstract_declarator_sub1) -> DirectAbstractDeclarator(abstract_declarator=$0, sub=$1)",
-      "direct_abstract_declarator_sub0 := 'lparen' + abstract_declarator + 'rparen'",
-      "direct_abstract_declarator_sub1 := 'lsquare' + direct_abstract_declarator_expr + 'rsquare'",
-      "direct_abstract_declarator_sub1 := 'lparen' + direct_abstract_declarator_sub2 + 'rparen'",
-      "direct_abstract_declarator_sub2 := 'asterisk' | optional(parameter_type_list)",
       "init_declarator_list := list(init_declarator, 'comma', 1)",
       "init_declarator := declarator + optional(declarator_initializer) -> InitDeclarator( declarator=$0, initializer=$1 )",
       "declarator_initializer := 'assign' + initializer -> $1",
-      "initializer := _expr",
+      "initializer := _expr_sans_comma",
       "initializer := 'lbrace' + list(initializer_list_item, 'comma', 1) + trailing_comma_opt + 'rbrace' -> $1",
-      "initializer_list_item := optional(designation) + initializer",
+      "initializer_list_item := optional(designation) + initializer -> Initialization(designation=$0, initializer=$1)",
       "designation := list(designator) + 'assign'",
       "designator := 'lsquare' + _expr + 'rsquare' -> ArrayAccess( index=$1 )",
       "designator := 'dot' + 'identifier' -> MemberAccess( name=$1 )",
@@ -60,12 +55,13 @@
       "va_args := 'comma_va_args' + 'elipsis' -> $1",
       "parameter_declaration := mlist(declaration_specifier, 1) + optional(parameter_declaration_sub) -> ParameterDeclaration(declaration_specifiers=$0, sub=$1 )",
       "parameter_declaration_sub := pointer_opt + parameter_declaration_sub_sub -> ParameterSub( pointer=$0, name_and_size=$1 )",
-      "parameter_declaration_sub_sub := _direct_declarator | optional(direct_abstract_declarator)",
-      "abstract_declarator := pointer_opt + optional(direct_abstract_declarator) -> AbstractDeclarator(pointer=$1, direct_abstract_declarator=$1)",
+      "parameter_declaration_sub_sub := _direct_declarator | optional(_direct_abstract_declarator)",
+      "abstract_declarator := pointer_opt + _direct_abstract_declarator -> AbstractDeclarator(pointer=$1, direct_abstract_declarator=$1)",
       "pointer_opt := pointer | _empty",
       "pointer := list(pointer_sub)",
       "pointer_sub := 'asterisk' + type_qualifier_list_opt",
       "direct_abstract_declarator_expr := type_qualifier_list_opt + static_opt + _expr | 'asterisk' | _empty",
+      "direct_abstract_declarator_opt := _direct_abstract_declarator | _empty",
       "expression_opt := _expr | _empty",
 
       "statement := labeled_statement",
@@ -197,6 +193,18 @@
       ],
       "binding_power": [
           {"associativity": "left", "terminals": ["lsquare", "lparen"]}
+      ]
+    },
+    {
+      "nonterminal": "_direct_abstract_declarator",
+      "rules": [
+        "_direct_abstract_declarator := {'lparen' + abstract_declarator + 'rparen'} -> $1",
+        "_direct_abstract_declarator := {direct_abstract_declarator_opt} + {'lsquare' + direct_abstract_declarator_expr + 'rsquare'} -> AbstractArray( object=$0, size=$2 )",
+        "_direct_abstract_declarator := {direct_abstract_declarator_opt} + {'lparen' + optional(parameter_type_list) + 'rparen'} -> AbstractFunction( object=$0, params=$2 )"
+      ],
+      "binding_power": [
+          {"associativity": "left", "terminals": ["lsquare", "lparen"]},
+          {"associativity": "unary", "terminals": ["lparen"]}
       ]
     }
   ]
