@@ -147,11 +147,14 @@
             init_declarators=[
               (InitDeclarator:
                 initializer=[
-                  [
-                    (MemberAccess:
-                      name=identifier
-                    )
-                  ]
+                  (Initialization:
+                    designation=[
+                      (MemberAccess:
+                        name=identifier
+                      )
+                    ],
+                    initializer=integer_constant
+                  )
                 ],
                 declarator=(Declarator:
                   direct_declarator=identifier,

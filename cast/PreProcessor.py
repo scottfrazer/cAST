@@ -271,7 +271,7 @@ class cPreprocessingEvaluator:
   
   def _tokenToCToken(self, token):
     if token.type == 'c':
-      return token
+      return copy(token)
     newId = self.cPPTtocT[token.id]
     return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno, None )
   
@@ -340,10 +340,9 @@ class cPreprocessingEvaluator:
                    result = replacement_token.run(params, token.lineno, token.colno)
                    tmp.extend(result)
                    break
-              new_token = copy(replacement_token)
+              new_token = self._tokenToCToken(replacement_token)
               new_token.colno = token.colno
               new_token.lineno = token.lineno
-              new_token.fromPreprocessor = True
               if new_token.id == ppParser.TERMINAL_PP_NUMBER:
                 new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
               tmp.append(new_token)

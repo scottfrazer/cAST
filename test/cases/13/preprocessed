@@ -7,14 +7,14 @@ int main()
 {
   int x;
 
-  if (1    ) printf ( "pass\n" ) ;
-  if (1    ) {printf ( "pass\n" ) ;}
-  if (0     ) printf ( "fail\n" ) ;else printf ( "pass\n" ) ;
-  if (0     ) {printf ( "fail\n" ) ;}else printf ( "pass\n" ) ;
-  if (0     ) {printf ( "fail\n" ) ;}else {printf ( "pass\n" ) ;}
-  if (1    ) for(x=0;x<1;x++){printf ( "pass\n" ) ;}
-  if (0     ) for(x=0;x<1;x++)printf ( "fail\n" ) ;else for(x=0;x<1;x++)printf ( "pass\n" ) ;
-  if (0     ) {for(x=0;x<1;x++){printf ( "fail\n" ) ;}}else {for(x=0;x<1;x++){printf ( "pass\n" ) ;}}
-  if (0     ) for(x=0;x<1;x++){printf ( "fail\n" ) ;}else for(x=0;x<1;x++){printf ( "pass\n" ) ;}
-  if(0     )printf ( "fail\n" ) ;else if(1 )printf ( "pass\n" ) ;else printf ( "fail\n" ) ;
+  if (1   ) printf("pass\n");
+  if (1   ) {printf("pass\n");}
+  if (0    ) printf("fail\n");else printf("pass\n");
+  if (0    ) {printf("fail\n");}else printf("pass\n");
+  if (0    ) {printf("fail\n");}else {printf("pass\n");}
+  if (1   ) for(x=0;x<1;x++){printf("pass\n");}
+  if (0    ) for(x=0;x<1;x++)printf("fail\n");else for(x=0;x<1;x++)printf("pass\n");
+  if (0    ) {for(x=0;x<1;x++){printf("fail\n");}}else {for(x=0;x<1;x++){printf("pass\n");}}
+  if (0    ) for(x=0;x<1;x++){printf("fail\n");}else for(x=0;x<1;x++){printf("pass\n");}
+  if(0    )printf("fail\n");else if(1)printf("pass\n");else printf("fail\n");
 }

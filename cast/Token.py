@@ -18,7 +18,7 @@ class Token:
     return self.id
 
   def getTerminalStr(self):
-    return 'id:' + self.id
+    return self.terminal_str
 
   def getResource(self):
     return self.resource
@@ -29,7 +29,7 @@ class Token:
   def __str__( self ):
     #return "'%s'" % (self.source_string)
     #return "'%s'" % (self.terminal_str.lower())
-    return '\033[1;34m<%s (%s) %d,%d>\033[0m' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
+    #return '\033[1;34m<%s (%s) %d,%d>\033[0m' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
     return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
     return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
 
@@ -49,9 +49,6 @@ class Token:
 class ppToken(Token):
   type = 'pp'
 
-  def getTerminalStr(self):
-    return ppParser.terminal_str[self.getId()].lower()
-
 # TODO: this takes ridiculous parameters.
 # 1) should be able to imply terminal_str from id
 # 2) lineno, colno, context should all be one Context object
@@ -62,9 +59,6 @@ class cToken(Token):
   def __init__(self, id, resource, terminal_str, source_string, lineno, colno, context):
     super().__init__(id, resource, terminal_str, source_string, lineno, colno)
     self.context = context
-
-  def getTerminalStr(self):
-    return cParser.terminal_str[self.getId()].lower()
 
 class TokenList(list):
   def toString(self):

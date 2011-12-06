@@ -21,7 +21,7 @@
                     (pointer_opt: ),
                     identifier
                   ),
-                  (_gen14: )
+                  (_gen11: )
                 )
               )
             )
@@ -60,11 +60,11 @@
                       (pointer_opt: ),
                       identifier
                     ),
-                    (_gen14:
+                    (_gen11:
                       (declarator_initializer:
                         assign,
                         (initializer:
-                          (_expr:
+                          (_expr_sans_comma:
                             (constant:
                               integer_constant
                             )
@@ -91,64 +91,64 @@
                   struct,
                   (struct_or_union_sub:
                     identifier,
-                    (_gen19:
+                    (_gen16:
                       (struct_or_union_body:
                         lbrace,
-                        (_gen20:
+                        (_gen17:
                           (struct_declaration:
-                            (_gen21:
+                            (_gen18:
                               (specifier_qualifier:
                                 (type_specifier:
                                   int
                                 )
                               ),
-                              (_gen21: )
+                              (_gen18: )
                             ),
-                            (_gen22:
+                            (_gen19:
                               (struct_declarator:
                                 (declarator:
                                   (pointer_opt:
                                     (pointer:
-                                      (_gen37:
+                                      (_gen34:
                                         (pointer_sub:
                                           asterisk,
                                           (type_qualifier_list_opt: )
                                         ),
-                                        (_gen37: )
+                                        (_gen34: )
                                       )
                                     )
                                   ),
                                   identifier
                                 ),
-                                (_gen24: )
+                                (_gen21: )
                               ),
-                              (_gen23: )
+                              (_gen20: )
                             ),
                             semi
                           ),
-                          (_gen20:
+                          (_gen17:
                             (struct_declaration:
-                              (_gen21:
+                              (_gen18:
                                 (specifier_qualifier:
                                   (type_specifier:
                                     int
                                   )
                                 ),
-                                (_gen21: )
+                                (_gen18: )
                               ),
-                              (_gen22:
+                              (_gen19:
                                 (struct_declarator:
                                   (declarator:
                                     (pointer_opt: ),
                                     identifier
                                   ),
-                                  (_gen24: )
+                                  (_gen21: )
                                 ),
-                                (_gen23: )
+                                (_gen20: )
                               ),
                               semi
                             ),
-                            (_gen20: )
+                            (_gen17: )
                           )
                         ),
                         rbrace
@@ -194,7 +194,7 @@
                     lparen,
                     (direct_declarator_parameter_list:
                       (parameter_type_list:
-                        (_gen30:
+                        (_gen27:
                           (parameter_declaration:
                             (_gen1:
                               (declaration_specifier:
@@ -204,7 +204,7 @@
                               ),
                               (_gen2: )
                             ),
-                            (_gen35:
+                            (_gen32:
                               (parameter_declaration_sub:
                                 (pointer_opt: ),
                                 (parameter_declaration_sub_sub:
@@ -213,7 +213,7 @@
                               )
                             )
                           ),
-                          (_gen31:
+                          (_gen28:
                             comma,
                             (parameter_declaration:
                               (_gen1:
@@ -224,7 +224,7 @@
                                 ),
                                 (_gen2: )
                               ),
-                              (_gen35:
+                              (_gen32:
                                 (parameter_declaration_sub:
                                   (pointer_opt: ),
                                   (parameter_declaration_sub_sub:
@@ -233,10 +233,10 @@
                                 )
                               )
                             ),
-                            (_gen31: )
+                            (_gen28: )
                           )
                         ),
-                        (_gen32: )
+                        (_gen29: )
                       )
                     ),
                     rparen
@@ -245,9 +245,9 @@
                 (_gen5: ),
                 (compound_statement:
                   lbrace,
-                  (_gen38:
+                  (_gen35:
                     (block_item_list:
-                      (_gen39:
+                      (_gen36:
                         (block_item:
                           (statement:
                             (jump_statement:
@@ -263,7 +263,7 @@
                             )
                           )
                         ),
-                        (_gen39: )
+                        (_gen36: )
                       )
                     )
                   ),
@@ -292,16 +292,16 @@
                       identifier,
                       lparen,
                       (direct_declarator_parameter_list:
-                        (_gen33:
+                        (_gen30:
                           (identifier:
                             identifier
                           ),
-                          (_gen34:
+                          (_gen31:
                             comma,
                             (identifier:
                               identifier
                             ),
-                            (_gen34: )
+                            (_gen31: )
                           )
                         )
                       ),
@@ -322,15 +322,15 @@
                           ),
                           (_gen8:
                             (init_declarator_list:
-                              (_gen12:
+                              (_gen9:
                                 (init_declarator:
                                   (declarator:
                                     (pointer_opt: ),
                                     identifier
                                   ),
-                                  (_gen14: )
+                                  (_gen11: )
                                 ),
-                                (_gen13: )
+                                (_gen10: )
                               )
                             )
                           ),
@@ -348,15 +348,15 @@
                             ),
                             (_gen8:
                               (init_declarator_list:
-                                (_gen12:
+                                (_gen9:
                                   (init_declarator:
                                     (declarator:
                                       (pointer_opt: ),
                                       identifier
                                     ),
-                                    (_gen14: )
+                                    (_gen11: )
                                   ),
-                                  (_gen13: )
+                                  (_gen10: )
                                 )
                               )
                             ),
@@ -369,7 +369,7 @@
                   ),
                   (compound_statement:
                     lbrace,
-                    (_gen38: ),
+                    (_gen35: ),
                     rbrace
                   )
                 )
@@ -401,12 +401,12 @@
                                   (declarator:
                                     (pointer_opt:
                                       (pointer:
-                                        (_gen37:
+                                        (_gen34:
                                           (pointer_sub:
                                             asterisk,
                                             (type_qualifier_list_opt: )
                                           ),
-                                          (_gen37: )
+                                          (_gen34: )
                                         )
                                       )
                                     ),
@@ -417,7 +417,7 @@
                                 lparen,
                                 (direct_declarator_parameter_list:
                                   (parameter_type_list:
-                                    (_gen30:
+                                    (_gen27:
                                       (parameter_declaration:
                                         (_gen1:
                                           (declaration_specifier:
@@ -427,7 +427,7 @@
                                           ),
                                           (_gen2: )
                                         ),
-                                        (_gen35:
+                                        (_gen32:
                                           (parameter_declaration_sub:
                                             (pointer_opt: ),
                                             (parameter_declaration_sub_sub:
@@ -436,7 +436,7 @@
                                           )
                                         )
                                       ),
-                                      (_gen31:
+                                      (_gen28:
                                         comma,
                                         (parameter_declaration:
                                           (_gen1:
@@ -447,7 +447,7 @@
                                             ),
                                             (_gen2: )
                                           ),
-                                          (_gen35:
+                                          (_gen32:
                                             (parameter_declaration_sub:
                                               (pointer_opt: ),
                                               (parameter_declaration_sub_sub:
@@ -456,7 +456,7 @@
                                             )
                                           )
                                         ),
-                                        (_gen31:
+                                        (_gen28:
                                           comma,
                                           (parameter_declaration:
                                             (_gen1:
@@ -467,7 +467,7 @@
                                               ),
                                               (_gen2: )
                                             ),
-                                            (_gen35:
+                                            (_gen32:
                                               (parameter_declaration_sub:
                                                 (pointer_opt: ),
                                                 (parameter_declaration_sub_sub:
@@ -476,17 +476,17 @@
                                               )
                                             )
                                           ),
-                                          (_gen31: )
+                                          (_gen28: )
                                         )
                                       )
                                     ),
-                                    (_gen32: )
+                                    (_gen29: )
                                   )
                                 ),
                                 rparen
                               )
                             ),
-                            (_gen14: )
+                            (_gen11: )
                           )
                         )
                       )
@@ -522,7 +522,7 @@
                       (_gen5: ),
                       (compound_statement:
                         lbrace,
-                        (_gen38: ),
+                        (_gen35: ),
                         rbrace
                       )
                     )

@@ -25,9 +25,9 @@
           (_gen5: ),
           (compound_statement:
             lbrace,
-            (_gen38:
+            (_gen35:
               (block_item_list:
-                (_gen39:
+                (_gen36:
                   (block_item:
                     (declaration:
                       (_gen1:
@@ -40,22 +40,22 @@
                       ),
                       (_gen8:
                         (init_declarator_list:
-                          (_gen12:
+                          (_gen9:
                             (init_declarator:
                               (declarator:
                                 (pointer_opt: ),
                                 identifier
                               ),
-                              (_gen14: )
+                              (_gen11: )
                             ),
-                            (_gen13: )
+                            (_gen10: )
                           )
                         )
                       ),
                       semi
                     )
                   ),
-                  (_gen39:
+                  (_gen36:
                     (block_item:
                       (statement:
                         (selection_statement:
@@ -73,9 +73,13 @@
                                 (_expr:
                                   identifier,
                                   lparen,
-                                  (_gen43:
-                                    string_literal,
-                                    (_gen44: )
+                                  (_gen40:
+                                    (_expr_sans_comma:
+                                      (constant:
+                                        string_literal
+                                      )
+                                    ),
+                                    (_gen41: )
                                   ),
                                   rparen
                                 )
@@ -84,12 +88,12 @@
                             )
                           ),
                           endif,
-                          (_gen40: ),
-                          (_gen41: )
+                          (_gen37: ),
+                          (_gen38: )
                         )
                       )
                     ),
-                    (_gen39:
+                    (_gen36:
                       (block_item:
                         (statement:
                           (selection_statement:
@@ -104,9 +108,9 @@
                             (statement:
                               (compound_statement:
                                 lbrace,
-                                (_gen38:
+                                (_gen35:
                                   (block_item_list:
-                                    (_gen39:
+                                    (_gen36:
                                       (block_item:
                                         (statement:
                                           (expression_statement:
@@ -114,9 +118,13 @@
                                               (_expr:
                                                 identifier,
                                                 lparen,
-                                                (_gen43:
-                                                  string_literal,
-                                                  (_gen44: )
+                                                (_gen40:
+                                                  (_expr_sans_comma:
+                                                    (constant:
+                                                      string_literal
+                                                    )
+                                                  ),
+                                                  (_gen41: )
                                                 ),
                                                 rparen
                                               )
@@ -125,7 +133,7 @@
                                           )
                                         )
                                       ),
-                                      (_gen39: )
+                                      (_gen36: )
                                     )
                                   )
                                 ),
@@ -133,12 +141,12 @@
                               )
                             ),
                             endif,
-                            (_gen40: ),
-                            (_gen41: )
+                            (_gen37: ),
+                            (_gen38: )
                           )
                         )
                       ),
-                      (_gen39:
+                      (_gen36:
                         (block_item:
                           (statement:
                             (selection_statement:
@@ -156,9 +164,13 @@
                                     (_expr:
                                       identifier,
                                       lparen,
-                                      (_gen43:
-                                        string_literal,
-                                        (_gen44: )
+                                      (_gen40:
+                                        (_expr_sans_comma:
+                                          (constant:
+                                            string_literal
+                                          )
+                                        ),
+                                        (_gen41: )
                                       ),
                                       rparen
                                     )
@@ -167,8 +179,8 @@
                                 )
                               ),
                               endif,
-                              (_gen40: ),
-                              (_gen41:
+                              (_gen37: ),
+                              (_gen38:
                                 (else_statement:
                                   else,
                                   (statement:
@@ -177,9 +189,13 @@
                                         (_expr:
                                           identifier,
                                           lparen,
-                                          (_gen43:
-                                            string_literal,
-                                            (_gen44: )
+                                          (_gen40:
+                                            (_expr_sans_comma:
+                                              (constant:
+                                                string_literal
+                                              )
+                                            ),
+                                            (_gen41: )
                                           ),
                                           rparen
                                         )
@@ -193,7 +209,7 @@
                             )
                           )
                         ),
-                        (_gen39:
+                        (_gen36:
                           (block_item:
                             (statement:
                               (selection_statement:
@@ -208,9 +224,9 @@
                                 (statement:
                                   (compound_statement:
                                     lbrace,
-                                    (_gen38:
+                                    (_gen35:
                                       (block_item_list:
-                                        (_gen39:
+                                        (_gen36:
                                           (block_item:
                                             (statement:
                                               (expression_statement:
@@ -218,9 +234,13 @@
                                                   (_expr:
                                                     identifier,
                                                     lparen,
-                                                    (_gen43:
-                                                      string_literal,
-                                                      (_gen44: )
+                                                    (_gen40:
+                                                      (_expr_sans_comma:
+                                                        (constant:
+                                                          string_literal
+                                                        )
+                                                      ),
+                                                      (_gen41: )
                                                     ),
                                                     rparen
                                                   )
@@ -229,7 +249,7 @@
                                               )
                                             )
                                           ),
-                                          (_gen39: )
+                                          (_gen36: )
                                         )
                                       )
                                     ),
@@ -237,8 +257,8 @@
                                   )
                                 ),
                                 endif,
-                                (_gen40: ),
-                                (_gen41:
+                                (_gen37: ),
+                                (_gen38:
                                   (else_statement:
                                     else,
                                     (statement:
@@ -247,9 +267,13 @@
                                           (_expr:
                                             identifier,
                                             lparen,
-                                            (_gen43:
-                                              string_literal,
-                                              (_gen44: )
+                                            (_gen40:
+                                              (_expr_sans_comma:
+                                                (constant:
+                                                  string_literal
+                                                )
+                                              ),
+                                              (_gen41: )
                                             ),
                                             rparen
                                           )
@@ -263,7 +287,7 @@
                               )
                             )
                           ),
-                          (_gen39:
+                          (_gen36:
                             (block_item:
                               (statement:
                                 (selection_statement:
@@ -278,9 +302,9 @@
                                   (statement:
                                     (compound_statement:
                                       lbrace,
-                                      (_gen38:
+                                      (_gen35:
                                         (block_item_list:
-                                          (_gen39:
+                                          (_gen36:
                                             (block_item:
                                               (statement:
                                                 (expression_statement:
@@ -288,9 +312,13 @@
                                                     (_expr:
                                                       identifier,
                                                       lparen,
-                                                      (_gen43:
-                                                        string_literal,
-                                                        (_gen44: )
+                                                      (_gen40:
+                                                        (_expr_sans_comma:
+                                                          (constant:
+                                                            string_literal
+                                                          )
+                                                        ),
+                                                        (_gen41: )
                                                       ),
                                                       rparen
                                                     )
@@ -299,7 +327,7 @@
                                                 )
                                               )
                                             ),
-                                            (_gen39: )
+                                            (_gen36: )
                                           )
                                         )
                                       ),
@@ -307,16 +335,16 @@
                                     )
                                   ),
                                   endif,
-                                  (_gen40: ),
-                                  (_gen41:
+                                  (_gen37: ),
+                                  (_gen38:
                                     (else_statement:
                                       else,
                                       (statement:
                                         (compound_statement:
                                           lbrace,
-                                          (_gen38:
+                                          (_gen35:
                                             (block_item_list:
-                                              (_gen39:
+                                              (_gen36:
                                                 (block_item:
                                                   (statement:
                                                     (expression_statement:
@@ -324,9 +352,13 @@
                                                         (_expr:
                                                           identifier,
                                                           lparen,
-                                                          (_gen43:
-                                                            string_literal,
-                                                            (_gen44: )
+                                                          (_gen40:
+                                                            (_expr_sans_comma:
+                                                              (constant:
+                                                                string_literal
+                                                              )
+                                                            ),
+                                                            (_gen41: )
                                                           ),
                                                           rparen
                                                         )
@@ -335,7 +367,7 @@
                                                     )
                                                   )
                                                 ),
-                                                (_gen39: )
+                                                (_gen36: )
                                               )
                                             )
                                           ),
@@ -348,7 +380,7 @@
                                 )
                               )
                             ),
-                            (_gen39:
+                            (_gen36:
                               (block_item:
                                 (statement:
                                   (selection_statement:
@@ -402,9 +434,9 @@
                                         (statement:
                                           (compound_statement:
                                             lbrace,
-                                            (_gen38:
+                                            (_gen35:
                                               (block_item_list:
-                                                (_gen39:
+                                                (_gen36:
                                                   (block_item:
                                                     (statement:
                                                       (expression_statement:
@@ -412,9 +444,13 @@
                                                           (_expr:
                                                             identifier,
                                                             lparen,
-                                                            (_gen43:
-                                                              string_literal,
-                                                              (_gen44: )
+                                                            (_gen40:
+                                                              (_expr_sans_comma:
+                                                                (constant:
+                                                                  string_literal
+                                                                )
+                                                              ),
+                                                              (_gen41: )
                                                             ),
                                                             rparen
                                                           )
@@ -423,7 +459,7 @@
                                                       )
                                                     )
                                                   ),
-                                                  (_gen39: )
+                                                  (_gen36: )
                                                 )
                                               )
                                             ),
@@ -433,12 +469,12 @@
                                       )
                                     ),
                                     endif,
-                                    (_gen40: ),
-                                    (_gen41: )
+                                    (_gen37: ),
+                                    (_gen38: )
                                   )
                                 )
                               ),
-                              (_gen39:
+                              (_gen36:
                                 (block_item:
                                   (statement:
                                     (selection_statement:
@@ -495,9 +531,13 @@
                                                 (_expr:
                                                   identifier,
                                                   lparen,
-                                                  (_gen43:
-                                                    string_literal,
-                                                    (_gen44: )
+                                                  (_gen40:
+                                                    (_expr_sans_comma:
+                                                      (constant:
+                                                        string_literal
+                                                      )
+                                                    ),
+                                                    (_gen41: )
                                                   ),
                                                   rparen
                                                 )
@@ -508,8 +548,8 @@
                                         )
                                       ),
                                       endif,
-                                      (_gen40: ),
-                                      (_gen41:
+                                      (_gen37: ),
+                                      (_gen38:
                                         (else_statement:
                                           else,
                                           (statement:
@@ -557,9 +597,13 @@
                                                     (_expr:
                                                       identifier,
                                                       lparen,
-                                                      (_gen43:
-                                                        string_literal,
-                                                        (_gen44: )
+                                                      (_gen40:
+                                                        (_expr_sans_comma:
+                                                          (constant:
+                                                            string_literal
+                                                          )
+                                                        ),
+                                                        (_gen41: )
                                                       ),
                                                       rparen
                                                     )
@@ -575,7 +619,7 @@
                                     )
                                   )
                                 ),
-                                (_gen39:
+                                (_gen36:
                                   (block_item:
                                     (statement:
                                       (selection_statement:
@@ -590,9 +634,9 @@
                                         (statement:
                                           (compound_statement:
                                             lbrace,
-                                            (_gen38:
+                                            (_gen35:
                                               (block_item_list:
-                                                (_gen39:
+                                                (_gen36:
                                                   (block_item:
                                                     (statement:
                                                       (iteration_statement:
@@ -636,9 +680,9 @@
                                                         (statement:
                                                           (compound_statement:
                                                             lbrace,
-                                                            (_gen38:
+                                                            (_gen35:
                                                               (block_item_list:
-                                                                (_gen39:
+                                                                (_gen36:
                                                                   (block_item:
                                                                     (statement:
                                                                       (expression_statement:
@@ -646,9 +690,13 @@
                                                                           (_expr:
                                                                             identifier,
                                                                             lparen,
-                                                                            (_gen43:
-                                                                              string_literal,
-                                                                              (_gen44: )
+                                                                            (_gen40:
+                                                                              (_expr_sans_comma:
+                                                                                (constant:
+                                                                                  string_literal
+                                                                                )
+                                                                              ),
+                                                                              (_gen41: )
                                                                             ),
                                                                             rparen
                                                                           )
@@ -657,7 +705,7 @@
                                                                       )
                                                                     )
                                                                   ),
-                                                                  (_gen39: )
+                                                                  (_gen36: )
                                                                 )
                                                               )
                                                             ),
@@ -667,7 +715,7 @@
                                                       )
                                                     )
                                                   ),
-                                                  (_gen39: )
+                                                  (_gen36: )
                                                 )
                                               )
                                             ),
@@ -675,16 +723,16 @@
                                           )
                                         ),
                                         endif,
-                                        (_gen40: ),
-                                        (_gen41:
+                                        (_gen37: ),
+                                        (_gen38:
                                           (else_statement:
                                             else,
                                             (statement:
                                               (compound_statement:
                                                 lbrace,
-                                                (_gen38:
+                                                (_gen35:
                                                   (block_item_list:
-                                                    (_gen39:
+                                                    (_gen36:
                                                       (block_item:
                                                         (statement:
                                                           (iteration_statement:
@@ -728,9 +776,9 @@
                                                             (statement:
                                                               (compound_statement:
                                                                 lbrace,
-                                                                (_gen38:
+                                                                (_gen35:
                                                                   (block_item_list:
-                                                                    (_gen39:
+                                                                    (_gen36:
                                                                       (block_item:
                                                                         (statement:
                                                                           (expression_statement:
@@ -738,9 +786,13 @@
                                                                               (_expr:
                                                                                 identifier,
                                                                                 lparen,
-                                                                                (_gen43:
-                                                                                  string_literal,
-                                                                                  (_gen44: )
+                                                                                (_gen40:
+                                                                                  (_expr_sans_comma:
+                                                                                    (constant:
+                                                                                      string_literal
+                                                                                    )
+                                                                                  ),
+                                                                                  (_gen41: )
                                                                                 ),
                                                                                 rparen
                                                                               )
@@ -749,7 +801,7 @@
                                                                           )
                                                                         )
                                                                       ),
-                                                                      (_gen39: )
+                                                                      (_gen36: )
                                                                     )
                                                                   )
                                                                 ),
@@ -759,7 +811,7 @@
                                                           )
                                                         )
                                                       ),
-                                                      (_gen39: )
+                                                      (_gen36: )
                                                     )
                                                   )
                                                 ),
@@ -772,7 +824,7 @@
                                       )
                                     )
                                   ),
-                                  (_gen39:
+                                  (_gen36:
                                     (block_item:
                                       (statement:
                                         (selection_statement:
@@ -826,9 +878,9 @@
                                               (statement:
                                                 (compound_statement:
                                                   lbrace,
-                                                  (_gen38:
+                                                  (_gen35:
                                                     (block_item_list:
-                                                      (_gen39:
+                                                      (_gen36:
                                                         (block_item:
                                                           (statement:
                                                             (expression_statement:
@@ -836,9 +888,13 @@
                                                                 (_expr:
                                                                   identifier,
                                                                   lparen,
-                                                                  (_gen43:
-                                                                    string_literal,
-                                                                    (_gen44: )
+                                                                  (_gen40:
+                                                                    (_expr_sans_comma:
+                                                                      (constant:
+                                                                        string_literal
+                                                                      )
+                                                                    ),
+                                                                    (_gen41: )
                                                                   ),
                                                                   rparen
                                                                 )
@@ -847,7 +903,7 @@
                                                             )
                                                           )
                                                         ),
-                                                        (_gen39: )
+                                                        (_gen36: )
                                                       )
                                                     )
                                                   ),
@@ -857,8 +913,8 @@
                                             )
                                           ),
                                           endif,
-                                          (_gen40: ),
-                                          (_gen41:
+                                          (_gen37: ),
+                                          (_gen38:
                                             (else_statement:
                                               else,
                                               (statement:
@@ -903,9 +959,9 @@
                                                   (statement:
                                                     (compound_statement:
                                                       lbrace,
-                                                      (_gen38:
+                                                      (_gen35:
                                                         (block_item_list:
-                                                          (_gen39:
+                                                          (_gen36:
                                                             (block_item:
                                                               (statement:
                                                                 (expression_statement:
@@ -913,9 +969,13 @@
                                                                     (_expr:
                                                                       identifier,
                                                                       lparen,
-                                                                      (_gen43:
-                                                                        string_literal,
-                                                                        (_gen44: )
+                                                                      (_gen40:
+                                                                        (_expr_sans_comma:
+                                                                          (constant:
+                                                                            string_literal
+                                                                          )
+                                                                        ),
+                                                                        (_gen41: )
                                                                       ),
                                                                       rparen
                                                                     )
@@ -924,7 +984,7 @@
                                                                 )
                                                               )
                                                             ),
-                                                            (_gen39: )
+                                                            (_gen36: )
                                                           )
                                                         )
                                                       ),
@@ -939,7 +999,7 @@
                                         )
                                       )
                                     ),
-                                    (_gen39:
+                                    (_gen36:
                                       (block_item:
                                         (statement:
                                           (selection_statement:
@@ -957,9 +1017,13 @@
                                                   (_expr:
                                                     identifier,
                                                     lparen,
-                                                    (_gen43:
-                                                      string_literal,
-                                                      (_gen44: )
+                                                    (_gen40:
+                                                      (_expr_sans_comma:
+                                                        (constant:
+                                                          string_literal
+                                                        )
+                                                      ),
+                                                      (_gen41: )
                                                     ),
                                                     rparen
                                                   )
@@ -968,9 +1032,9 @@
                                               )
                                             ),
                                             endif,
-                                            (_gen40:
+                                            (_gen37:
                                               (else_if_statement_list:
-                                                (_gen42:
+                                                (_gen39:
                                                   (else_if_statement:
                                                     else_if,
                                                     lparen,
@@ -986,9 +1050,13 @@
                                                           (_expr:
                                                             identifier,
                                                             lparen,
-                                                            (_gen43:
-                                                              string_literal,
-                                                              (_gen44: )
+                                                            (_gen40:
+                                                              (_expr_sans_comma:
+                                                                (constant:
+                                                                  string_literal
+                                                                )
+                                                              ),
+                                                              (_gen41: )
                                                             ),
                                                             rparen
                                                           )
@@ -998,11 +1066,11 @@
                                                     ),
                                                     endif
                                                   ),
-                                                  (_gen42: )
+                                                  (_gen39: )
                                                 )
                                               )
                                             ),
-                                            (_gen41:
+                                            (_gen38:
                                               (else_statement:
                                                 else,
                                                 (statement:
@@ -1011,9 +1079,13 @@
                                                       (_expr:
                                                         identifier,
                                                         lparen,
-                                                        (_gen43:
-                                                          string_literal,
-                                                          (_gen44: )
+                                                        (_gen40:
+                                                          (_expr_sans_comma:
+                                                            (constant:
+                                                              string_literal
+                                                            )
+                                                          ),
+                                                          (_gen41: )
                                                         ),
                                                         rparen
                                                       )
@@ -1027,7 +1099,7 @@
                                           )
                                         )
                                       ),
-                                      (_gen39: )
+                                      (_gen36: )
                                     )
                                   )
                                 )

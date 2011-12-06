@@ -188,7 +188,18 @@
             init_declarators=[
               (InitDeclarator:
                 initializer=[
-                  None
+                  (Initialization:
+                    designation=None,
+                    initializer=character_constant
+                  ),
+                  (Initialization:
+                    designation=None,
+                    initializer=character_constant
+                  ),
+                  (Initialization:
+                    designation=None,
+                    initializer=character_constant
+                  )
                 ],
                 declarator=(Declarator:
                   direct_declarator=(Array:

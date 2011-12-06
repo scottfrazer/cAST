@@ -20,7 +20,7 @@
               lparen,
               (direct_declarator_parameter_list:
                 (parameter_type_list:
-                  (_gen30:
+                  (_gen27:
                     (parameter_declaration:
                       (_gen1:
                         (declaration_specifier:
@@ -30,7 +30,7 @@
                         ),
                         (_gen2: )
                       ),
-                      (_gen35:
+                      (_gen32:
                         (parameter_declaration_sub:
                           (pointer_opt: ),
                           (parameter_declaration_sub_sub:
@@ -39,7 +39,7 @@
                         )
                       )
                     ),
-                    (_gen31:
+                    (_gen28:
                       comma,
                       (parameter_declaration:
                         (_gen1:
@@ -50,7 +50,7 @@
                           ),
                           (_gen2: )
                         ),
-                        (_gen35:
+                        (_gen32:
                           (parameter_declaration_sub:
                             (pointer_opt: ),
                             (parameter_declaration_sub_sub:
@@ -59,10 +59,10 @@
                           )
                         )
                       ),
-                      (_gen31: )
+                      (_gen28: )
                     )
                   ),
-                  (_gen32: )
+                  (_gen29: )
                 )
               ),
               rparen
@@ -71,9 +71,9 @@
           (_gen5: ),
           (compound_statement:
             lbrace,
-            (_gen38:
+            (_gen35:
               (block_item_list:
-                (_gen39:
+                (_gen36:
                   (block_item:
                     (statement:
                       (jump_statement:
@@ -89,7 +89,7 @@
                       )
                     )
                   ),
-                  (_gen39: )
+                  (_gen36: )
                 )
               )
             ),
@@ -124,9 +124,9 @@
             (_gen5: ),
             (compound_statement:
               lbrace,
-              (_gen38:
+              (_gen35:
                 (block_item_list:
-                  (_gen39:
+                  (_gen36:
                     (block_item:
                       (statement:
                         (expression_statement:
@@ -134,30 +134,30 @@
                             (_expr:
                               identifier,
                               lparen,
-                              (_gen43:
+                              (_gen40:
                                 string_literal,
-                                (_gen44:
+                                (_gen41:
                                   comma,
                                   (_expr_sans_comma:
                                     (constant:
                                       integer_constant
                                     )
                                   ),
-                                  (_gen44:
+                                  (_gen41:
                                     comma,
                                     (_expr_sans_comma:
                                       (constant:
                                         integer_constant
                                       )
                                     ),
-                                    (_gen44:
+                                    (_gen41:
                                       comma,
                                       (_expr_sans_comma:
                                         (constant:
                                           integer_constant
                                         )
                                       ),
-                                      (_gen44: )
+                                      (_gen41: )
                                     )
                                   )
                                 )
@@ -169,7 +169,7 @@
                         )
                       )
                     ),
-                    (_gen39:
+                    (_gen36:
                       (block_item:
                         (statement:
                           (jump_statement:
@@ -185,7 +185,7 @@
                           )
                         )
                       ),
-                      (_gen39: )
+                      (_gen36: )
                     )
                   )
                 )
