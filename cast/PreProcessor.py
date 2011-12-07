@@ -147,64 +147,18 @@ class cPreprocessingEvaluator:
     self.cLexerContext = None
     self.skipIncludes = False
     self.cPFF = cPreprocessorFunctionFactory(self.cP, self, self.logger)
-    self.cPPTtocT = {
-      self.cPPP.TERMINAL_DEFINED : self.cP.TERMINAL_DEFINED ,
-      self.cPPP.TERMINAL_DEFINED_SEPARATOR : self.cP.TERMINAL_DEFINED_SEPARATOR ,
-      self.cPPP.TERMINAL_BITOREQ : self.cP.TERMINAL_BITOREQ ,
-      self.cPPP.TERMINAL_OR : self.cP.TERMINAL_OR ,
-      self.cPPP.TERMINAL_BITXOREQ : self.cP.TERMINAL_BITXOREQ ,
-      self.cPPP.TERMINAL_DIV : self.cP.TERMINAL_DIV ,
-      self.cPPP.TERMINAL_AND : self.cP.TERMINAL_AND ,
-      self.cPPP.TERMINAL_ELIPSIS : self.cP.TERMINAL_ELIPSIS ,
-      self.cPPP.TERMINAL_BITOR : self.cP.TERMINAL_BITOR ,
-      self.cPPP.TERMINAL_LSHIFTEQ : self.cP.TERMINAL_LSHIFTEQ ,
-      self.cPPP.TERMINAL_BITNOT : self.cP.TERMINAL_BITNOT ,
-      self.cPPP.TERMINAL_BITXOR : self.cP.TERMINAL_BITXOR ,
-      self.cPPP.TERMINAL_RSHIFTEQ : self.cP.TERMINAL_RSHIFTEQ ,
-      self.cPPP.TERMINAL_ARROW : self.cP.TERMINAL_ARROW ,
-      self.cPPP.TERMINAL_SUB : self.cP.TERMINAL_SUB ,
-      self.cPPP.TERMINAL_RBRACE : self.cP.TERMINAL_RBRACE ,
-      self.cPPP.TERMINAL_DOT : self.cP.TERMINAL_DOT ,
-      self.cPPP.TERMINAL_LTEQ : self.cP.TERMINAL_LTEQ ,
-      self.cPPP.TERMINAL_MODEQ : self.cP.TERMINAL_MODEQ ,
-      self.cPPP.TERMINAL_ADDEQ : self.cP.TERMINAL_ADDEQ ,
-      self.cPPP.TERMINAL_MULEQ : self.cP.TERMINAL_MULEQ ,
-      self.cPPP.TERMINAL_GTEQ : self.cP.TERMINAL_GTEQ ,
-      self.cPPP.TERMINAL_RPAREN : self.cP.TERMINAL_RPAREN ,
-      self.cPPP.TERMINAL_LT : self.cP.TERMINAL_LT ,
-      self.cPPP.TERMINAL_ASSIGN : self.cP.TERMINAL_ASSIGN ,
-      self.cPPP.TERMINAL_NEQ : self.cP.TERMINAL_NEQ ,
-      self.cPPP.TERMINAL_RSQUARE : self.cP.TERMINAL_RSQUARE ,
-      self.cPPP.TERMINAL_LPAREN : self.cP.TERMINAL_LPAREN ,
-      self.cPPP.TERMINAL_ADD : self.cP.TERMINAL_ADD ,
-      self.cPPP.TERMINAL_POUND : self.cP.TERMINAL_POUND ,
-      self.cPPP.TERMINAL_LSQUARE : self.cP.TERMINAL_LSQUARE ,
-      self.cPPP.TERMINAL_RSHIFT : self.cP.TERMINAL_RSHIFT ,
-      self.cPPP.TERMINAL_COMMA : self.cP.TERMINAL_COMMA ,
-      self.cPPP.TERMINAL_EXCLAMATION_POINT : self.cP.TERMINAL_EXCLAMATION_POINT ,
-      self.cPPP.TERMINAL_BITANDEQ : self.cP.TERMINAL_BITANDEQ ,
-      self.cPPP.TERMINAL_SEMI : self.cP.TERMINAL_SEMI ,
-      self.cPPP.TERMINAL_EQ : self.cP.TERMINAL_EQ ,
-      self.cPPP.TERMINAL_MOD : self.cP.TERMINAL_MOD ,
-      self.cPPP.TERMINAL_COLON : self.cP.TERMINAL_COLON ,
-      self.cPPP.TERMINAL_QUESTIONMARK : self.cP.TERMINAL_QUESTIONMARK ,
-      self.cPPP.TERMINAL_MUL : self.cP.TERMINAL_ASTERISK ,
-      self.cPPP.TERMINAL_IDENTIFIER : self.cP.TERMINAL_IDENTIFIER ,
-      self.cPPP.TERMINAL_GT : self.cP.TERMINAL_GT ,
-      self.cPPP.TERMINAL_BITAND : self.cP.TERMINAL_BITAND ,
-      self.cPPP.TERMINAL_PP_NUMBER : self.cP.TERMINAL_INTEGER_CONSTANT ,
-      self.cPPP.TERMINAL_LSHIFT : self.cP.TERMINAL_LSHIFT ,
-      self.cPPP.TERMINAL_CHARACTER_CONSTANT : self.cP.TERMINAL_CHARACTER_CONSTANT ,
-      self.cPPP.TERMINAL_POUNDPOUND : self.cP.TERMINAL_POUNDPOUND ,
-      self.cPPP.TERMINAL_DECR : self.cP.TERMINAL_DECR ,
-      self.cPPP.TERMINAL_STRING_LITERAL : self.cP.TERMINAL_STRING_LITERAL ,
-      self.cPPP.TERMINAL_SUBEQ : self.cP.TERMINAL_SUBEQ ,
-      self.cPPP.TERMINAL_TILDE : self.cP.TERMINAL_TILDE ,
-      self.cPPP.TERMINAL_AMPERSAND : self.cP.TERMINAL_AMPERSAND ,
-      self.cPPP.TERMINAL_INCR : self.cP.TERMINAL_INCR ,
-      self.cPPP.TERMINAL_LBRACE : self.cP.TERMINAL_LBRACE
-    }
-    self.cTtocPPT = {v: k for k, v in self.cPPTtocT.items()}
+
+    tokenConvert = ['ADD', 'ADDEQ', 'AMPERSAND', 'AND', 'ARROW', 'ASSIGN', 'BITAND', 'BITANDEQ', 'BITNOT', 'BITOR', 'BITOREQ', 'BITXOR', 'BITXOREQ', 'CHARACTER_CONSTANT', 'COLON', 'COMMA', 'DECR', 'DEFINED', 'DEFINED_SEPARATOR', 'DIV', 'DOT', 'ELIPSIS', 'EQ', 'EXCLAMATION_POINT', 'GT', 'GTEQ', 'IDENTIFIER', 'INCR', 'LBRACE', 'LPAREN', 'LSHIFT', 'LSHIFTEQ', 'LSQUARE', 'LT', 'LTEQ', 'MOD', 'MODEQ', 'MUL', 'MULEQ', 'NEQ', 'OR', 'POUND', 'POUNDPOUND', 'PP_NUMBER', 'QUESTIONMARK', 'RBRACE', 'RPAREN', 'RSHIFT', 'RSHIFTEQ', 'RSQUARE', 'SEMI', 'STRING_LITERAL', 'SUB', 'SUBEQ', 'TILDE']
+    tokenMap = dict(zip(tokenConvert, tokenConvert))
+    tokenMap['MUL'] = 'ASTERISK'
+    tokenMap['PP_NUMBER'] = 'INTEGER_CONSTANT'
+    self.cPPTtocT = dict()
+    self.cTtocPPT = dict()
+    for pp_token, c_token in tokenMap.items():
+      ppVarName = 'TERMINAL_' + pp_token
+      cVarName = 'TERMINAL_' + c_token
+      self.cPPTtocT[ppParser.__dict__[ppVarName]] = cParser.__dict__[cVarName]
+      self.cTtocPPT[cParser.__dict__[cVarName]] = ppParser.__dict__[ppVarName]
 
   def eval( self, cPPAST, symbols = {} ):
     self.symbols = symbols
@@ -213,15 +167,6 @@ class cPreprocessingEvaluator:
 
   def getSymbolTable(self):
     return self.symbols
-
-  def newlines(self, number):
-    return ''.join(['\n' for i in range(number)])
-  
-  def _cT_to_cPPT(self, cT_list):
-    tokens = []
-    for token in cT_list:
-      tokens.append(ppToken(self.cTtocPPT[token.id], token.resource, token.terminal_str, token.source_string, token.lineno, token.colno))
-    return tokens
   
   def _parseExpr(self, tokens):
     self.cPPP.iterator = iter(tokens)
@@ -234,39 +179,32 @@ class cPreprocessingEvaluator:
     else:
       return ppToken(self.cPPP.terminal('pp_number'), None, 'pp_number', value, 0, 0)
   
-  def _debugStr(self, cPPAST):
-    if isinstance(cPPAST, Token):
-      string = 'Token (%s) [line %d, col %d]' % (cPPAST.terminal_str.lower(), cPPAST.lineno, cPPAST.colno)
-      if cPPAST.terminal_str.lower() not in ['pp_number', 'identifier', 'csource']:
-        string = '(unidentified) ' + string
-      return string
-    if isinstance(cPPAST, list):
-      return 'List: [%s]' % (', '.join([self._debugStr(x) for x in cPPAST]))
-    if isinstance(cPPAST, ppAst):
-      return 'Ast: %s' % (cPPAST.name)
-  
   def _getCSourceMacroFunctionParams(self, cLexer):
-    # returns PP tokens
-    next(cLexer) # skip lparen
-    lparen = 1
+    lparen = 0
     buf = []
     params = []
-    for paramToken, plookahead in cLexer:
-      paramTokenStr = paramToken.terminal_str.lower()
-      if paramTokenStr == 'lparen':
+
+    for token, plookahead in cLexer:
+
+      if token.id == cParser.TERMINAL_LPAREN:
         lparen += 1
-      if paramTokenStr == 'rparen':
+        if lparen == 1:
+          continue
+
+      if token.id == cParser.TERMINAL_RPAREN:
         lparen -= 1
-      if (paramTokenStr == 'rparen' and lparen == 0) or (paramTokenStr == 'comma' and lparen == 1):
+
+      if (token.id == cParser.TERMINAL_RPAREN and lparen == 0) or (token.id == cParser.TERMINAL_COMMA and lparen == 1):
         params.append( buf )
         buf = []
       else:
-        # TODO: this line is kind of messy
-        token = ppLexer(SourceCodeEmpty(paramToken.getResource())).matchString(paramToken.getString())
+        token = ppLexer(SourceCodeEmpty(token.getResource())).matchString(token.getString())
         token.fromPreprocessor = True
         buf.append(token)
-      if paramTokenStr == 'rparen' and lparen == 0:
+
+      if token.id == cParser.TERMINAL_RPAREN and lparen == 0:
         break
+
     return params
   
   def _tokenToCToken(self, token):
@@ -280,13 +218,11 @@ class cPreprocessingEvaluator:
 
   def _eval( self, cPPAST ):
     if self.logger:
-      self._log('eval', self._debugStr(cPPAST))
       for symbol, replacement in self.symbols.items():
         if isinstance(replacement, list):
           replacementList = '[%s]' % (', '.join([str(x) for x in replacement]))
         else:
           replacementList = str(replacement)
-        self._log('symbol', '%s: %s' % (str(symbol), replacementList))
 
     tokenActions = {
       ppParser.TERMINAL_PP_NUMBER: self.eval_ppNumber,
@@ -345,7 +281,7 @@ class cPreprocessingEvaluator:
       try:
         actionFunction = tokenActions[cPPAST.id]
       except KeyError:
-        return cPPAST
+        raise Exception('Bad AST Node')
       return actionFunction(cPPAST)
 
     elif isinstance(cPPAST, list):
@@ -372,26 +308,20 @@ class cPreprocessingEvaluator:
     return self.ppnumber(cPPAST)
 
   def eval_identifier(self, cPPAST):
-    x = 0
+    replacementList = TokenList()
     if cPPAST.getString() in self.symbols:
-      x = self.symbols[cPPAST.getString()]
-    
-    try:
-      self._log('eval', 'evaluating expression for identifier %s' % (cPPAST.getString()))
-      self._log('eval', 'expression tokens: [%s]' % (self._debugStr(x)))
-      if len(x):
-        return self._parseExpr( self._cT_to_cPPT(x) )
-    except TypeError:
-      return x
+      replacementList = self.symbols[cPPAST.getString()]
+   
+    def tokenize(token):
+      tId = self.cTtocPPT[token.id]
+      return ppToken(tId, token.resource, ppParser.terminal_str[tId], token.source_string, token.lineno, token.colno)
+
+    return self._parseExpr( list(map(tokenize, replacementList)) )
 
   def eval_cSource(self, cPPAST):
-    tokens = []
-    params = []
-    advance = 0
+    tokens = TokenList()
 
-    sourceCode = SourceCodeString( cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
-
-    cLex = cLexer(sourceCode)
+    cLex = cLexer(SourceCodeString(cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn()))
     if self.cLexerContext:
       cLex.setContext(self.cLexerContext)
     cTokens = list(cLex)
@@ -399,15 +329,11 @@ class cPreprocessingEvaluator:
     cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
 
     for token, lookahead in cLexerWithLookahead:
-      if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
+      if token.id == cParser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
         replacement = self.symbols[token.getString()]
         if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-          if lookahead.getString() != '(':
-            if not isinstance(token, list):
-              tmptoken = [token]
-            else:
-              tmptoken = token
-            tokens.extend(tmptoken)
+          if lookahead.id != cParser.TERMINAL_LPAREN:
+            tokens.append(token)
             continue
           else:
             params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
@@ -415,15 +341,14 @@ class cPreprocessingEvaluator:
             tokens.extend(result)
         elif isinstance(replacement, list):
           tmp = []
-          for (replacement_token, next_token) in zip_longest(replacement, replacement[1:]):
-            if not next_token:
-              if isinstance(replacement_token, self.cPFF.cPreprocessorFunction) and \
-                 lookahead.getString() == '(':
+          for (rtoken, next_rtoken) in zip_longest(replacement, replacement[1:]):
+            if not next_rtoken:
+              if isinstance(rtoken, self.cPFF.cPreprocessorFunction) and lookahead.id == cParser.TERMINAL_LPAREN:
                  params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
-                 result = replacement_token.run(params, token.lineno, token.colno)
+                 result = rtoken.run(params, token.lineno, token.colno)
                  tmp.extend(result)
                  break
-            new_token = self._tokenToCToken(replacement_token)
+            new_token = self._tokenToCToken(rtoken)
             new_token.colno = token.colno
             new_token.lineno = token.lineno
             if new_token.id == ppParser.TERMINAL_PP_NUMBER:
@@ -435,16 +360,16 @@ class cPreprocessingEvaluator:
           raise Exception('unknown macro replacement type')
       else:
         tokens.append(token)
-    lines = len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
-    self.line += lines
-    return TokenList(tokens)
+
+    self.line += len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
+    return tokens
   
   def eval_PPFile(self, cPPAST):
     nodes = cPPAST.getAttr('nodes')
     return self._eval(nodes)
 
   def eval_IfSection(self, cPPAST):
-    rtokens = list()
+    rtokens = TokenList()
     self.line += 1
     value = self._eval(cPPAST.getAttr('if'))
     if value:
@@ -479,7 +404,6 @@ class cPreprocessingEvaluator:
     ident = cPPAST.getAttr('ident').getString()
     nodes = cPPAST.getAttr('nodes')
     if ident in self.symbols:
-      self._log('IFDEF (true)', str(ident))
       return self._eval(nodes)
     else:
       self.line += self.countSourceLines(nodes)
@@ -740,11 +664,6 @@ class cPreprocessingEvaluator:
       return 8
     else:
       return 10
-  
-  def _log(self, category, message):
-    if not self.logger:
-      return
-    self.logger.log(category, message)
   
   def countSourceLines(self, cPPAST):
     lines = 0
