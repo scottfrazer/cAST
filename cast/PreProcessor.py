@@ -28,31 +28,6 @@ sys.setrecursionlimit(2000)
 # cPT = C Parse Tree
 # cPE = C Preprocessor Evaluator
 
-class Debugger:
-  class DebugLogger:
-    def __init__(self, module, filepath):
-      self.__dict__.update(locals())
-      self.fp = open(filepath, 'w')
-    
-    def log( self, category, line ):
-      self.fp.write( "[%s] %s\n" % (category, line) )
-      # TODO close file in destructor
-      self.fp.flush()
-
-  def __init__(self, directory):
-    self.__dict__.update(locals())
-    self.loggers = {}
-  
-  def getLogger(self, module):
-    return None
-    filepath = os.path.join(self.directory, module)
-    if module in self.loggers:
-      logger = self.loggers[module]
-    else:
-      logger = self.DebugLogger(module, filepath)
-      self.loggers[module] = logger
-    return logger
-
 class Factory:
   def create(self, includePathGlobal = ['.'], includePathLocal = ['.']):
     cPPP = ppParser()
@@ -86,10 +61,8 @@ class PreProcessor:
     ast = parsetree.toAst()
     self.cPE.skipIncludes = skipIncludes
     ctokens = self.cPE.eval(ast, symbols)
-    return (ctokens, self.cPE.getSymbolTable())
+    return (ctokens, self.cPE.symbols)
   
-
-#cPFF
 class cPreprocessorFunctionFactory:
   class cPreprocessorFunction:
     def __init__(self, name, params, body, cP, cPE, logger = None):
@@ -132,14 +105,12 @@ class cPreprocessorFunctionFactory:
     
     def __str__(self):
       return '[cPreprocessorFunction params=%s body=%s]' % (', '.join(self.params), str(self.body))
-    
 
   def __init__(self, cP, cPE, logger = None):
     self.__dict__.update(locals())
   
   def create(self, name, params, body):
     return self.cPreprocessorFunction(name, params, body, self.cP, self.cPE, self.logger)
-  
 
 class cPreprocessingEvaluator:
   def __init__(self, cPPP, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
@@ -160,68 +131,13 @@ class cPreprocessingEvaluator:
       self.cPPTtocT[ppParser.__dict__[ppVarName]] = cParser.__dict__[cVarName]
       self.cTtocPPT[cParser.__dict__[cVarName]] = ppParser.__dict__[ppVarName]
 
-  def eval( self, cPPAST, symbols = {} ):
-    self.symbols = symbols
-    self.line = 1
-    return self._eval(cPPAST)
-
-  def getSymbolTable(self):
-    return self.symbols
-  
-  def _getCSourceMacroFunctionParams(self, cLexer):
-    # TODO: This function expects the first token in cLexer
-    # to be a left paren.  If it's not, an exception should be raised.
-    # use a peek() method to look ahead without consuming
-    lparen = 0
-    buf = []
-    params = []
-
-    for token, plookahead in cLexer:
-      if token.id == cParser.TERMINAL_LPAREN:
-        lparen += 1
-        if lparen == 1:
-          continue # Just skip the first left paren, then start algorithm
-
-      if token.id == cParser.TERMINAL_RPAREN:
-        lparen -= 1
-
-      if (token.id == cParser.TERMINAL_RPAREN and lparen == 0) or (token.id == cParser.TERMINAL_COMMA and lparen == 1):
-        params.append( buf )
-        buf = []
-      else:
-        token = ppLexer(SourceCodeEmpty(token.getResource())).matchString(token.getString())
-        token.fromPreprocessor = True
-        buf.append(token)
-
-      if token.id == cParser.TERMINAL_RPAREN and lparen == 0:
-        break
-
-    return params
-  
-  def _tokenToCToken(self, token):
-    if token.type == 'c':
-      return copy(token)
-    newId = self.cPPTtocT[token.id]
-    return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno, None )
- 
-  def evalInt( self, tree, attr ):
-    return int(self.ppnumber(self._eval(tree.getAttr(attr))))
-
-  def _eval( self, cPPAST ):
-    if self.logger:
-      for symbol, replacement in self.symbols.items():
-        if isinstance(replacement, list):
-          replacementList = '[%s]' % (', '.join([str(x) for x in replacement]))
-        else:
-          replacementList = str(replacement)
-
-    tokenActions = {
+    self.tokenActions = {
       ppParser.TERMINAL_PP_NUMBER: self.eval_ppNumber,
       ppParser.TERMINAL_IDENTIFIER: self.eval_identifier,
       ppParser.TERMINAL_CSOURCE: self.eval_cSource
     }
 
-    astActions = {
+    self.astActions = {
       'PPFile': self.eval_PPFile,
       'IfSection': self.eval_IfSection,
       'If': self.eval_If,
@@ -265,12 +181,105 @@ class cPreprocessingEvaluator:
       'TernaryOperator': self.eval_TernaryOperator
     }
 
+  def _ppnumber(self, element):
+    if isinstance(element, Token):
+      nstr = element.getString()
+      if isinstance(nstr, int) or isinstance(nstr, float):
+        return nstr
+      nstr = re.sub(r'[lLuU]', '', nstr)
+      if 'e' in nstr or 'E' in nstr:
+        nstr = nstr.split( 'e' if 'e' in nstr else 'E' )
+        num = int(nstr[0], self._base(nstr[0])) ** int(nstr[1], self._base(nstr[1]))
+      elif 'p' in nstr or 'P' in nstr:
+        nstr = nstr.split( 'p' if 'p' in nstr else 'P' )
+        num = int(nstr[0], self._base(nstr[0])) * (2 ** int(nstr[1], self._base(nstr[1])))
+      else:
+        num = int(nstr, self._base(nstr))
+      return num
+    else:
+      return int(element)
+  
+  def _base(self, string):
+    if string[:2] in {'0x', '0X'}: return 16
+    elif string[0] == '0': return 8
+    else: return 10
+  
+  def _countSourceLines(self, cPPAST):
+    lines = 0
+    if not cPPAST:
+      return 0
+    if isinstance(cPPAST, Token):
+      return len(cPPAST.source_string.split('\n'))
+    if isinstance(cPPAST, list):
+      for node in cPPAST:
+        lines += self._countSourceLines(node)
+    elif cPPAST.name in ['Line', 'Undef', 'Error', 'Pragma', 'Define', 'Include']:
+      return 1
+    elif cPPAST.name in ['If', 'IfDef', 'IfNDef', 'ElseIf', 'Else', 'PPFile']:
+      nodes = cPPAST.getAttr('nodes')
+      if nodes and len(nodes):
+        for node in nodes:
+          lines += self._countSourceLines(node)
+      if cPPAST.name in ['If', 'IfDef', 'IfNDef', 'ElseIf', 'Else']:
+        lines += 1
+    elif cPPAST.name == 'IfSection':
+      lines += 1 # endif
+      lines += self._countSourceLines(cPPAST.getAttr('if'))
+      nodes = cPPAST.getAttr('elif')
+      if nodes and len(nodes):
+        for node in nodes:
+          lines += self._countSourceLines(node)
+      if cPPAST.getAttr('else'):
+        lines += self._countSourceLines(cPPAST.getAttr('else'))
+    return lines
+  
+  def _getMacroFunctionParams(self, cLexer):
+    # TODO: This function expects the first token in cLexer
+    # to be a left paren.  If it's not, an exception should be raised.
+    # use a peek() method to look ahead without consuming
+    lparen = 0
+    buf = []
+    params = []
+
+    for token, plookahead in cLexer:
+      if token.id == cParser.TERMINAL_LPAREN:
+        lparen += 1
+        if lparen == 1:
+          continue # Just skip the first left paren, then start algorithm
+
+      if token.id == cParser.TERMINAL_RPAREN:
+        lparen -= 1
+
+      if (token.id == cParser.TERMINAL_RPAREN and lparen == 0) or (token.id == cParser.TERMINAL_COMMA and lparen == 1):
+        params.append( buf )
+        buf = []
+      else:
+        token = ppLexer(SourceCodeEmpty(token.getResource())).matchString(token.getString())
+        token.fromPreprocessor = True
+        buf.append(token)
+
+      if token.id == cParser.TERMINAL_RPAREN and lparen == 0:
+        break
+
+    return params
+ 
+  def _evalInt( self, tree, attr ):
+    return int(self._ppnumber(self._eval(tree.getAttr(attr))))
+
+  def _eval( self, cPPAST ):
+    if self.logger:
+      for symbol, replacement in self.symbols.items():
+        if isinstance(replacement, list):
+          replacementList = '[%s]' % (', '.join([str(x) for x in replacement]))
+        else:
+          replacementList = str(replacement)
+
     if not cPPAST:
       return []
 
     if isinstance(cPPAST, Token):
       try:
-        actionFunction = tokenActions[cPPAST.id]
+        actionFunction = self.tokenActions[cPPAST.id]
       except KeyError:
         raise Exception('Bad AST Node')
       return actionFunction(cPPAST)
@@ -288,15 +297,20 @@ class cPreprocessingEvaluator:
 
     elif isinstance(cPPAST, ppAst):
       try:
-        actionFunction = astActions[cPPAST.name]
+        actionFunction = self.astActions[cPPAST.name]
       except KeyError:
         raise Exception('Bad AST Node')
       return actionFunction(cPPAST)
     else:
       raise Exception('Bad AST Node')
 
+  def eval( self, cPPAST, symbols = {} ):
+    self.symbols = symbols
+    self.line = 1
+    return self._eval(cPPAST)
+
   def eval_ppNumber(self, cPPAST):
-    return self.ppnumber(cPPAST)
+    return self._ppnumber(cPPAST)
 
   def eval_identifier(self, cPPAST):
     replacementList = TokenList()
@@ -320,56 +334,12 @@ class cPreprocessingEvaluator:
 
   def eval_cSource(self, cPPAST):
     tokens = TokenList()
-
     cLex = cLexer(SourceCodeString(cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn()))
     if self.cLexerContext:
       cLex.setContext(self.cLexerContext)
     cTokens = list(cLex)
     self.cLexerContext = cLex.getContext()
-    cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
-
-    # TODO: this is the same algorithm as in eval_ReplacementList()
-    for token, lookahead in cLexerWithLookahead:
-      if token.id == cParser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
-        replacement = self.symbols[token.getString()]
-        if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-          # 1
-          if lookahead and lookahead.id == cParser.TERMINAL_LPAREN:
-            params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
-            result = replacement.run(params, token.lineno, token.colno)
-            tokens.extend(result)
-            continue
-          elif lookahead:
-            tokens.append(token)
-            continue
-          else:
-            # TODO: can we get rid of this?  seems like a relic...
-            tokens.append(replacement)
-            continue
-        elif replacement is None:
-          continue
-        elif isinstance(replacement, list):
-          tmp = []
-          for (rtoken, next_rtoken) in zip_longest(replacement, replacement[1:]):
-            if not next_rtoken:
-              if isinstance(rtoken, self.cPFF.cPreprocessorFunction) and lookahead.id == cParser.TERMINAL_LPAREN:
-                 params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
-                 result = rtoken.run(params, token.lineno, token.colno)
-                 tmp.extend(result)
-                 break
-            new_token = self._tokenToCToken(rtoken)
-            new_token.colno = token.colno
-            new_token.lineno = token.lineno
-            if new_token.id == ppParser.TERMINAL_PP_NUMBER:
-              new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
-            tmp.append(new_token)
-          tokens.extend(tmp)
-          continue
-        else:
-          raise Exception('unknown macro replacement type')
-      else:
-        tokens.append(token)
-
+    tokens = self._eval(ppAst('ReplacementList', {'tokens': cTokens}))
     self.line += len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
     return tokens
   
@@ -406,7 +376,7 @@ class cPreprocessingEvaluator:
     if self._eval(expr) != 0:
       return self._eval(nodes)
     else:
-      self.line += self.countSourceLines(nodes)
+      self.line += self._countSourceLines(nodes)
     return None
 
   def eval_IfDef(self, cPPAST):
@@ -415,7 +385,7 @@ class cPreprocessingEvaluator:
     if ident in self.symbols:
       return self._eval(nodes)
     else:
-      self.line += self.countSourceLines(nodes)
+      self.line += self._countSourceLines(nodes)
     return None
 
   def eval_IfNDef(self, cPPAST):
@@ -424,7 +394,7 @@ class cPreprocessingEvaluator:
     if ident not in self.symbols:
       return self._eval(nodes)
     else:
-      self.line += self.countSourceLines(nodes)
+      self.line += self._countSourceLines(nodes)
     return None
 
   def eval_ElseIf(self, cPPAST):
@@ -433,7 +403,7 @@ class cPreprocessingEvaluator:
     if self._eval(expr) != 0:
       return self._eval(nodes)
     else:
-      self.line += self.countSourceLines(nodes)
+      self.line += self._countSourceLines(nodes)
     return None
 
   def eval_Else(self, cPPAST):
@@ -519,19 +489,24 @@ class cPreprocessingEvaluator:
     #      #define var 1 bar 3
     # eval( ReplacementList([1, bar, 3]) ) = ReplacementList([1, 2, 3])
     # input and output tokens are ctokens.
-    
-    tokens = list(map(self._tokenToCToken, cPPAST.getAttr('tokens')))
+  
+    def make_cToken(token):
+      if token.type == 'c':
+        return copy(token)
+      newId = self.cPPTtocT[token.id]
+      return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno, None )
+
+    tokens = list(map(make_cToken, cPPAST.getAttr('tokens')))
     rtokens = []
     newTokens = []
 
     tokensWithLookahead = zip_longest(tokens, tokens[1:])
     for token, lookahead in tokensWithLookahead:
-      # TODO: this algorithm implemented in eval_cSource()
       if token.id == cParser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
         replacement = self.symbols[token.getString()]
         if isinstance(replacement, self.cPFF.cPreprocessorFunction):
           if lookahead and lookahead.id == cParser.TERMINAL_LPAREN:
-            params = self._getCSourceMacroFunctionParams(tokensWithLookahead)
+            params = self._getMacroFunctionParams(tokensWithLookahead)
             result = replacement.run(params, token.lineno, token.colno)
             newTokens.extend(result)
             continue
@@ -545,18 +520,15 @@ class cPreprocessingEvaluator:
         elif replacement is None:
           continue
         elif isinstance(replacement, list):
-          newTokens.extend(replacement)
-          continue
-          # TODO: this is from eval_cSource()
           tmp = []
           for (rtoken, next_rtoken) in zip_longest(replacement, replacement[1:]):
             if not next_rtoken:
               if isinstance(rtoken, self.cPFF.cPreprocessorFunction) and lookahead.id == cParser.TERMINAL_LPAREN:
-                 params = self._getCSourceMacroFunctionParams(tokensWithLookahead)
+                 params = self._getMacroFunctionParams(tokensWithLookahead)
                  result = rtoken.run(params, token.lineno, token.colno)
                  tmp.extend(result)
                  break
-            new_token = self._tokenToCToken(rtoken)
+            new_token = copy(rtoken)
             new_token.colno = token.colno
             new_token.lineno = token.lineno
             if new_token.id == ppParser.TERMINAL_PP_NUMBER:
@@ -564,7 +536,6 @@ class cPreprocessingEvaluator:
             tmp.append(new_token)
           newTokens.extend(tmp)
           continue
-
         else:
           raise Exception('unknown macro replacement type', replacement)
       else:
@@ -580,145 +551,71 @@ class cPreprocessingEvaluator:
     return cPPAST.getAttr('expr').getString() in self.symbols
 
   def eval_Add(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') + self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') + self._evalInt(cPPAST, 'right')
 
   def eval_Sub(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') - self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') - self._evalInt(cPPAST, 'right')
 
   def eval_LessThan(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') < self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') < self._evalInt(cPPAST, 'right')
 
   def eval_GreaterThan(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') > self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') > self._evalInt(cPPAST, 'right')
 
   def eval_LessThanEq(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') <= self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') <= self._evalInt(cPPAST, 'right')
 
   def eval_GreaterThanEq(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') >= self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') >= self._evalInt(cPPAST, 'right')
 
   def eval_Mul(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') * self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') * self._evalInt(cPPAST, 'right')
 
   def eval_Div(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') / self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') / self._evalInt(cPPAST, 'right')
 
   def eval_Mod(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') % self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') % self._evalInt(cPPAST, 'right')
 
   def eval_Equals(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') == self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') == self._evalInt(cPPAST, 'right')
 
   def eval_NotEquals(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') != self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') != self._evalInt(cPPAST, 'right')
 
   def eval_Comma(self, cPPAST):
     self._eval(left)
-    return self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'right')
 
   def eval_LeftShift(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') << self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') << self._evalInt(cPPAST, 'right')
 
   def eval_RightShift(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') >> self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') >> self._evalInt(cPPAST, 'right')
 
   def eval_BitAND(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') & self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') & self._evalInt(cPPAST, 'right')
 
   def eval_BitOR(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') | self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') | self._evalInt(cPPAST, 'right')
 
   def eval_BitXOR(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') ^ self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') ^ self._evalInt(cPPAST, 'right')
 
   def eval_BitNOT(self, cPPAST):
-    return ~self.evalInt(cPPAST, 'expr')
+    return ~self._evalInt(cPPAST, 'expr')
 
   def eval_And(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') and self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') and self._evalInt(cPPAST, 'right')
 
   def eval_Or(self, cPPAST):
-    return self.evalInt(cPPAST, 'left') or self.evalInt(cPPAST, 'right')
+    return self._evalInt(cPPAST, 'left') or self._evalInt(cPPAST, 'right')
 
   def eval_Not(self, cPPAST):
-    return not self.evalInt(cPPAST, 'expr')
+    return not self._evalInt(cPPAST, 'expr')
 
   def eval_TernaryOperator(self, cPPAST):
-    if self.evalInt(cPPAST, 'cond'):
-      return self.evalInt(cPPAST, 'true')
+    if self._evalInt(cPPAST, 'cond'):
+      return self._evalInt(cPPAST, 'true')
     else:
-      return self.evalInt(cPPAST, 'false')
-
-  def ppnumber(self, element):
-    if isinstance(element, Token):
-      numstr = element.getString()
-      if isinstance(numstr, int) or isinstance(numstr, float):
-        return numstr
-      numstr = re.sub(r'[lLuU]', '', numstr)
-      if 'e' in numstr or 'E' in numstr:
-        numstr = numstr.split( 'e' if 'e' in numstr else 'E' )
-        num = int(numstr[0], self._base(numstr[0])) ** int(numstr[1], self._base(numstr[1]))
-      elif 'p' in numstr or 'P' in numstr:
-        numstr = numstr.split( 'p' if 'p' in numstr else 'P' )
-        num = int(numstr[0], self._base(numstr[0])) * (2 ** int(numstr[1], self._base(numstr[1])))
-      else:
-        num = int(numstr, self._base(numstr))
-      return num
-    elif isinstance(element, list):
-      if len(element):
-        return int(element[0])
-      return 0
-    else:
-      return int(element)
-  
-  def _base(self, string):
-    if string[:2] == '0x' or string[:2] == '0X':
-      return 16
-    elif string[0] == '0':
-      return 8
-    else:
-      return 10
-  
-  def countSourceLines(self, cPPAST):
-    lines = 0
-    if not cPPAST:
-      return 0
-    if isinstance(cPPAST, Token):
-      return len(cPPAST.source_string.split('\n'))
-    if isinstance(cPPAST, list):
-      for node in cPPAST:
-        lines += self.countSourceLines(node)
-    elif cPPAST.name in ['Line', 'Undef', 'Error', 'Pragma', 'Define', 'Include']:
-      return 1
-    elif cPPAST.name in ['If', 'IfDef', 'IfNDef', 'ElseIf', 'Else', 'PPFile']:
-      nodes = cPPAST.getAttr('nodes')
-      if nodes and len(nodes):
-        for node in nodes:
-          lines += self.countSourceLines(node)
-      if cPPAST.name in ['If', 'IfDef', 'IfNDef', 'ElseIf', 'Else']:
-        lines += 1
-    elif cPPAST.name == 'IfSection':
-      lines += 1 # endif
-      lines += self.countSourceLines(cPPAST.getAttr('if'))
-      nodes = cPPAST.getAttr('elif')
-      if nodes and len(nodes):
-        for node in nodes:
-          lines += self.countSourceLines(node)
-      if cPPAST.getAttr('else'):
-        lines += self.countSourceLines(cPPAST.getAttr('else'))
-    return lines
-  
-
-# This is what can be tokenized and parsed as C code.
-class cTranslationUnit:
-  def __init__( self, cT, cP, logger = None ):
-    self.__dict__.update(locals())
-  
-  def process( self ):
-    if self.logger:
-      for t in self.cT:
-        self.logger.log('token', str(t))
-    return cT
-    parsetree = self.cP.parse( self.cT, 'translation_unit' )
-    ast = parsetree.toAst()
-    return ast
+      return self._evalInt(cPPAST, 'false')
