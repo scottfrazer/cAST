@@ -168,28 +168,19 @@ class cPreprocessingEvaluator:
   def getSymbolTable(self):
     return self.symbols
   
-  def _parseExpr(self, tokens):
-    self.cPPP.iterator = iter(tokens)
-    self.cPPP.sym = self.cPPP.getsym()
-    parsetree = self.cPPP.expr()
-    ast = parsetree.toAst()
-    value = self._eval(ast)
-    if isinstance(value, Token):
-      return value
-    else:
-      return ppToken(self.cPPP.terminal('pp_number'), None, 'pp_number', value, 0, 0)
-  
   def _getCSourceMacroFunctionParams(self, cLexer):
+    # TODO: This function expects the first token in cLexer
+    # to be a left paren.  If it's not, an exception should be raised.
+    # use a peek() method to look ahead without consuming
     lparen = 0
     buf = []
     params = []
 
     for token, plookahead in cLexer:
-
       if token.id == cParser.TERMINAL_LPAREN:
         lparen += 1
         if lparen == 1:
-          continue
+          continue # Just skip the first left paren, then start algorithm
 
       if token.id == cParser.TERMINAL_RPAREN:
         lparen -= 1
@@ -316,7 +307,16 @@ class cPreprocessingEvaluator:
       tId = self.cTtocPPT[token.id]
       return ppToken(tId, token.resource, ppParser.terminal_str[tId], token.source_string, token.lineno, token.colno)
 
-    return self._parseExpr( list(map(tokenize, replacementList)) )
+    self.cPPP.iterator = iter(list(map(tokenize, replacementList)))
+    self.cPPP.sym = self.cPPP.getsym()
+    parsetree = self.cPPP.expr()
+    ast = parsetree.toAst()
+    value = self._eval(ast)
+    ppZero = ppToken(self.cPPP.terminal('pp_number'), None, 'pp_number', value, 0, 0)
+
+    if isinstance(value, Token):
+      return value
+    return ppZero
 
   def eval_cSource(self, cPPAST):
     tokens = TokenList()
@@ -328,17 +328,26 @@ class cPreprocessingEvaluator:
     self.cLexerContext = cLex.getContext()
     cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
 
+    # TODO: this is the same algorithm as in eval_ReplacementList()
     for token, lookahead in cLexerWithLookahead:
       if token.id == cParser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
         replacement = self.symbols[token.getString()]
         if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-          if lookahead.id != cParser.TERMINAL_LPAREN:
-            tokens.append(token)
-            continue
-          else:
+          # 1
+          if lookahead and lookahead.id == cParser.TERMINAL_LPAREN:
             params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
             result = replacement.run(params, token.lineno, token.colno)
             tokens.extend(result)
+            continue
+          elif lookahead:
+            tokens.append(token)
+            continue
+          else:
+            # TODO: can we get rid of this?  seems like a relic...
+            tokens.append(replacement)
+            continue
+        elif replacement is None:
+          continue
         elif isinstance(replacement, list):
           tmp = []
           for (rtoken, next_rtoken) in zip_longest(replacement, replacement[1:]):
@@ -511,54 +520,59 @@ class cPreprocessingEvaluator:
     # eval( ReplacementList([1, bar, 3]) ) = ReplacementList([1, 2, 3])
     # input and output tokens are ctokens.
     
-    # If tokens are not ctokens, convert them!
-    tokens = cPPAST.getAttr('tokens')
+    tokens = list(map(self._tokenToCToken, cPPAST.getAttr('tokens')))
     rtokens = []
-    advance = 0
     newTokens = []
-    for (index, token) in enumerate(tokens):
-      if advance > 0:
-        advance -= 1
-        continue
-      if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
+
+    tokensWithLookahead = zip_longest(tokens, tokens[1:])
+    for token, lookahead in tokensWithLookahead:
+      # TODO: this algorithm implemented in eval_cSource()
+      if token.id == cParser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
         replacement = self.symbols[token.getString()]
         if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-          if index >= len(tokens) - 1:
-            newTokens.append(replacement)
-          elif tokens[index + 1].getString() == '(':
-            advance = 2 # skip the identifier and lparen
-            params = []
-            param_tokens = []
-            lparen_count = 1
-            for token in tokens[index + advance:]:
-              if token.getString() == '(':
-                lparen_count += 1
-              if token.getString() == ')':
-                if lparen_count == 1:
-                  value = param_tokens
-                  params.append(param_tokens)
-                  break
-                lparen_count -= 1
-                param_tokens.append(self._tokenToCToken(token))
-              elif token.getString() == ',' and lparen_count == 1:
-                if len(param_tokens):
-                  value = param_tokens
-                  params.append(param_tokens)
-                  param_tokens = []
-              else:
-                param_tokens.append(self._tokenToCToken(token))
-              advance += 1
+          if lookahead and lookahead.id == cParser.TERMINAL_LPAREN:
+            params = self._getCSourceMacroFunctionParams(tokensWithLookahead)
             result = replacement.run(params, token.lineno, token.colno)
             newTokens.extend(result)
+            continue
+          elif lookahead:
+            newTokens.append(token)
+            continue
           else:
-            newTokens.append(self._tokenToCToken(token))
+            # TODO: can we get rid of this?  seems like a relic...
+            newTokens.append(replacement)
+            continue
+        elif replacement is None:
+          continue
+        elif isinstance(replacement, list):
+          newTokens.extend(replacement)
+          continue
+          # TODO: this is from eval_cSource()
+          tmp = []
+          for (rtoken, next_rtoken) in zip_longest(replacement, replacement[1:]):
+            if not next_rtoken:
+              if isinstance(rtoken, self.cPFF.cPreprocessorFunction) and lookahead.id == cParser.TERMINAL_LPAREN:
+                 params = self._getCSourceMacroFunctionParams(tokensWithLookahead)
+                 result = rtoken.run(params, token.lineno, token.colno)
+                 tmp.extend(result)
+                 break
+            new_token = self._tokenToCToken(rtoken)
+            new_token.colno = token.colno
+            new_token.lineno = token.lineno
+            if new_token.id == ppParser.TERMINAL_PP_NUMBER:
+              new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
+            tmp.append(new_token)
+          newTokens.extend(tmp)
+          continue
+
         else:
-          newTokens.extend( self.symbols[token.getString()] )
+          raise Exception('unknown macro replacement type', replacement)
       else:
-        newTokens.append(self._tokenToCToken(token))
+        newTokens.append(token)
     return newTokens
 
   def eval_FuncCall(self, cPPAST):
+    # TODO: implement
     name = cPPAST.getAttr('name')
     params = cPPAST.getAttr('params')
 
