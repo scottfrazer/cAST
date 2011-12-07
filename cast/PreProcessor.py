@@ -274,9 +274,11 @@ class cPreprocessingEvaluator:
       return copy(token)
     newId = self.cPPTtocT[token.id]
     return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno, None )
-  
+ 
+  def evalInt( self, tree, attr ):
+    return int(self.ppnumber(self._eval(tree.getAttr(attr))))
+
   def _eval( self, cPPAST ):
-    rtokens = TokenList()
     if self.logger:
       self._log('eval', self._debugStr(cPPAST))
       for symbol, replacement in self.symbols.items():
@@ -285,323 +287,430 @@ class cPreprocessingEvaluator:
         else:
           replacementList = str(replacement)
         self._log('symbol', '%s: %s' % (str(symbol), replacementList))
+
+    tokenActions = {
+      ppParser.TERMINAL_PP_NUMBER: self.eval_ppNumber,
+      ppParser.TERMINAL_IDENTIFIER: self.eval_identifier,
+      ppParser.TERMINAL_CSOURCE: self.eval_cSource
+    }
+
+    astActions = {
+      'PPFile': self.eval_PPFile,
+      'IfSection': self.eval_IfSection,
+      'If': self.eval_If,
+      'IfDef': self.eval_IfDef,
+      'IfNDef': self.eval_IfNDef,
+      'ElseIf': self.eval_ElseIf,
+      'Else': self.eval_Else,
+      'Include': self.eval_Include,
+      'Define': self.eval_Define,
+      'DefineFunction': self.eval_DefineFunction,
+      'Pragma': self.eval_Pragma,
+      'Error': self.eval_Error,
+      'Warning': self.eval_Warning,
+      'Undef': self.eval_Undef,
+      'Line': self.eval_Line,
+      'ReplacementList': self.eval_ReplacementList,
+      'identifier': self.eval_identifier,
+      'FuncCall': self.eval_FuncCall,
+      'IsDefined': self.eval_IsDefined,
+      'Add': self.eval_Add,
+      'Sub': self.eval_Sub,
+      'LessThan': self.eval_LessThan,
+      'GreaterThan': self.eval_GreaterThan,
+      'LessThanEq': self.eval_LessThanEq,
+      'GreaterThanEq': self.eval_GreaterThanEq,
+      'Mul': self.eval_Mul,
+      'Div': self.eval_Div,
+      'Mod': self.eval_Mod,
+      'Equals': self.eval_Equals,
+      'NotEquals': self.eval_NotEquals,
+      'Comma': self.eval_Comma,
+      'LeftShift': self.eval_LeftShift,
+      'RightShift': self.eval_RightShift,
+      'BitAND': self.eval_BitAND,
+      'BitOR': self.eval_BitOR,
+      'BitXOR': self.eval_BitXOR,
+      'BitNOT': self.eval_BitNOT,
+      'And': self.eval_And,
+      'Or': self.eval_Or,
+      'Not': self.eval_Not,
+      'TernaryOperator': self.eval_TernaryOperator
+    }
+
     if not cPPAST:
       return []
-    elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'pp_number':
-      return self.ppnumber(cPPAST)
-    elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'identifier':
-      x = 0
-      if cPPAST.getString() in self.symbols:
-        x = self.symbols[cPPAST.getString()]
-      
+
+    if isinstance(cPPAST, Token):
       try:
-        self._log('eval', 'evaluating expression for identifier %s' % (cPPAST.getString()))
-        self._log('eval', 'expression tokens: [%s]' % (self._debugStr(x)))
-        if len(x):
-          return self._parseExpr( self._cT_to_cPPT(x) )
-      except TypeError:
-        return x
-    elif isinstance(cPPAST, Token) and cPPAST.terminal_str.lower() == 'csource':
-      tokens = []
-      params = []
-      advance = 0
+        actionFunction = tokenActions[cPPAST.id]
+      except KeyError:
+        return cPPAST
+      return actionFunction(cPPAST)
 
-      sourceCode = SourceCodeString( cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
-
-      cLex = cLexer(sourceCode)
-      if self.cLexerContext:
-        cLex.setContext(self.cLexerContext)
-      cTokens = list(cLex)
-      self.cLexerContext = cLex.getContext()
-      cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
-
-      for token, lookahead in cLexerWithLookahead:
-        if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
-          replacement = self.symbols[token.getString()]
-          if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-            if lookahead.getString() != '(':
-              if not isinstance(token, list):
-                tmptoken = [token]
-              else:
-                tmptoken = token
-              tokens.extend(tmptoken)
-              continue
-            else:
-              params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
-              result = replacement.run(params, token.lineno, token.colno)
-              tokens.extend(result)
-          elif isinstance(replacement, list):
-            tmp = []
-            for (replacement_token, next_token) in zip_longest(replacement, replacement[1:]):
-              if not next_token:
-                if isinstance(replacement_token, self.cPFF.cPreprocessorFunction) and \
-                   lookahead.getString() == '(':
-                   params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
-                   result = replacement_token.run(params, token.lineno, token.colno)
-                   tmp.extend(result)
-                   break
-              new_token = self._tokenToCToken(replacement_token)
-              new_token.colno = token.colno
-              new_token.lineno = token.lineno
-              if new_token.id == ppParser.TERMINAL_PP_NUMBER:
-                new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
-              tmp.append(new_token)
-            tokens.extend(tmp)
-            continue
-          else:
-            raise Exception('unknown macro replacement type')
-        else:
-          tokens.append(token)
-      lines = len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
-      self.line += lines
-      return TokenList(tokens)
-    elif isinstance(cPPAST, Token):
-      return cPPAST
     elif isinstance(cPPAST, list):
+      rtokens = TokenList()
       if cPPAST and len(cPPAST):
         for node in cPPAST:
           result = self._eval(node)
           if isinstance(result, list):
             rtokens.extend(result)
-          else:
+          elif result:
             rtokens.append(result)
       return rtokens
+
+    elif isinstance(cPPAST, ppAst):
+      try:
+        actionFunction = astActions[cPPAST.name]
+      except KeyError:
+        raise Exception('Bad AST Node')
+      return actionFunction(cPPAST)
     else:
-      if cPPAST.name == 'PPFile':
-        nodes = cPPAST.getAttr('nodes')
-        return self._eval(nodes)
-      elif cPPAST.name == 'IfSection':
-        self.line += 1
-        value = self._eval(cPPAST.getAttr('if'))
+      raise Exception('Bad AST Node')
+
+  def eval_ppNumber(self, cPPAST):
+    return self.ppnumber(cPPAST)
+
+  def eval_identifier(self, cPPAST):
+    x = 0
+    if cPPAST.getString() in self.symbols:
+      x = self.symbols[cPPAST.getString()]
+    
+    try:
+      self._log('eval', 'evaluating expression for identifier %s' % (cPPAST.getString()))
+      self._log('eval', 'expression tokens: [%s]' % (self._debugStr(x)))
+      if len(x):
+        return self._parseExpr( self._cT_to_cPPT(x) )
+    except TypeError:
+      return x
+
+  def eval_cSource(self, cPPAST):
+    tokens = []
+    params = []
+    advance = 0
+
+    sourceCode = SourceCodeString( cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
+
+    cLex = cLexer(sourceCode)
+    if self.cLexerContext:
+      cLex.setContext(self.cLexerContext)
+    cTokens = list(cLex)
+    self.cLexerContext = cLex.getContext()
+    cLexerWithLookahead = zip_longest(cTokens, cTokens[1:])
+
+    for token, lookahead in cLexerWithLookahead:
+      if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
+        replacement = self.symbols[token.getString()]
+        if isinstance(replacement, self.cPFF.cPreprocessorFunction):
+          if lookahead.getString() != '(':
+            if not isinstance(token, list):
+              tmptoken = [token]
+            else:
+              tmptoken = token
+            tokens.extend(tmptoken)
+            continue
+          else:
+            params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
+            result = replacement.run(params, token.lineno, token.colno)
+            tokens.extend(result)
+        elif isinstance(replacement, list):
+          tmp = []
+          for (replacement_token, next_token) in zip_longest(replacement, replacement[1:]):
+            if not next_token:
+              if isinstance(replacement_token, self.cPFF.cPreprocessorFunction) and \
+                 lookahead.getString() == '(':
+                 params = self._getCSourceMacroFunctionParams(cLexerWithLookahead)
+                 result = replacement_token.run(params, token.lineno, token.colno)
+                 tmp.extend(result)
+                 break
+            new_token = self._tokenToCToken(replacement_token)
+            new_token.colno = token.colno
+            new_token.lineno = token.lineno
+            if new_token.id == ppParser.TERMINAL_PP_NUMBER:
+              new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
+            tmp.append(new_token)
+          tokens.extend(tmp)
+          continue
+        else:
+          raise Exception('unknown macro replacement type')
+      else:
+        tokens.append(token)
+    lines = len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
+    self.line += lines
+    return TokenList(tokens)
+  
+  def eval_PPFile(self, cPPAST):
+    nodes = cPPAST.getAttr('nodes')
+    return self._eval(nodes)
+
+  def eval_IfSection(self, cPPAST):
+    rtokens = list()
+    self.line += 1
+    value = self._eval(cPPAST.getAttr('if'))
+    if value:
+      rtokens.extend( value )
+    for elseif in cPPAST.getAttr('elif'):
+      self.line += 1
+      if not value:
+        value = self._eval(elseif)
         if value:
           rtokens.extend( value )
-        for elseif in cPPAST.getAttr('elif'):
+      else:
+        self._eval(elseif) # Silent eval to count line numbers properly
+    if cPPAST.getAttr('else'):
+      elseEval = self._eval(cPPAST.getAttr('else'))
+      self.line += 1
+      if not value:
+        value = elseEval
+        rtokens.extend( value )
+    self.line += 1
+    return rtokens
+
+  def eval_If(self, cPPAST):
+    expr = cPPAST.getAttr('expr')
+    nodes = cPPAST.getAttr('nodes')
+    if self._eval(expr) != 0:
+      return self._eval(nodes)
+    else:
+      self.line += self.countSourceLines(nodes)
+    return None
+
+  def eval_IfDef(self, cPPAST):
+    ident = cPPAST.getAttr('ident').getString()
+    nodes = cPPAST.getAttr('nodes')
+    if ident in self.symbols:
+      self._log('IFDEF (true)', str(ident))
+      return self._eval(nodes)
+    else:
+      self.line += self.countSourceLines(nodes)
+    return None
+
+  def eval_IfNDef(self, cPPAST):
+    ident = cPPAST.getAttr('ident').getString()
+    nodes = cPPAST.getAttr('nodes')
+    if ident not in self.symbols:
+      return self._eval(nodes)
+    else:
+      self.line += self.countSourceLines(nodes)
+    return None
+
+  def eval_ElseIf(self, cPPAST):
+    expr = cPPAST.getAttr('expr')
+    nodes = cPPAST.getAttr('nodes')
+    if self._eval(expr) != 0:
+      return self._eval(nodes)
+    else:
+      self.line += self.countSourceLines(nodes)
+    return None
+
+  def eval_Else(self, cPPAST):
+    nodes = cPPAST.getAttr('nodes')
+    return self._eval(nodes)
+
+  def eval_Include(self, cPPAST):
+    if self.skipIncludes:
+      return list()
+    filename = cPPAST.getAttr('file').getString()
+    if (filename[0], filename[-1]) == ('"', '"'):
+      filename = filename.strip('"')
+      for directory in self.includePathLocal:
+        path = os.path.join( directory, filename )
+        if os.path.isfile( path ):
           self.line += 1
-          if not value:
-            value = self._eval(elseif)
-            if value:
-              rtokens.extend( value )
-          else:
-            self._eval(elseif) # Silent eval to count line numbers properly
-        if cPPAST.getAttr('else'):
-          elseEval = self._eval(cPPAST.getAttr('else'))
+          includePath = copy(self.includePathLocal)
+          includePath.append( os.path.dirname(path) )
+          preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
+          sourceCode = SourceCode( path, open(path) )
+          (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
+          self.symbols = symbolTable
+          return tokens
+      raise NameError(filename + ' not found in include path')
+    elif (filename[0], filename[-1]) == ('<', '>'):
+      filename = filename.strip('<>')
+      for directory in self.includePathGlobal:
+        path = os.path.join( directory, filename )
+        if os.path.isfile( path ):
           self.line += 1
-          if not value:
-            value = elseEval
-            rtokens.extend( value )
-        self.line += 1
-        return rtokens
-      elif cPPAST.name == 'If':
-        expr = cPPAST.getAttr('expr')
-        nodes = cPPAST.getAttr('nodes')
-        if self._eval(expr) != 0:
-          return self._eval(nodes)
-        else:
-          self.line += self.countSourceLines(nodes)
-        return None
-      elif cPPAST.name == 'IfDef':
-        ident = cPPAST.getAttr('ident').getString()
-        nodes = cPPAST.getAttr('nodes')
-        if ident in self.symbols:
-          self._log('IFDEF (true)', str(ident))
-          return self._eval(nodes)
-        else:
-          self.line += self.countSourceLines(nodes)
-        return None
-      elif cPPAST.name == 'IfNDef':
-        ident = cPPAST.getAttr('ident').getString()
-        nodes = cPPAST.getAttr('nodes')
-        if ident not in self.symbols:
-          return self._eval(nodes)
-        else:
-          self.line += self.countSourceLines(nodes)
-        return None
-      elif cPPAST.name == 'ElseIf':
-        expr = cPPAST.getAttr('expr')
-        nodes = cPPAST.getAttr('nodes')
-        if self._eval(expr) != 0:
-          return self._eval(nodes)
-        else:
-          self.line += self.countSourceLines(nodes)
-        return None
-      elif cPPAST.name == 'Else':
-        nodes = cPPAST.getAttr('nodes')
-        return self._eval(nodes)
-      elif cPPAST.name == 'Include':
-        if self.skipIncludes:
-          return list()
-        filename = cPPAST.getAttr('file').getString()
-        if (filename[0], filename[-1]) == ('"', '"'):
-          filename = filename.strip('"')
-          for directory in self.includePathLocal:
-            path = os.path.join( directory, filename )
-            if os.path.isfile( path ):
-              self.line += 1
-              includePath = copy(self.includePathLocal)
-              includePath.append( os.path.dirname(path) )
-              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
-              sourceCode = SourceCode( path, open(path) )
-              (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
-              self.symbols = symbolTable
-              return tokens
-          raise NameError(filename + ' not found in include path')
-        elif (filename[0], filename[-1]) == ('<', '>'):
-          filename = filename.strip('<>')
-          for directory in self.includePathGlobal:
-            path = os.path.join( directory, filename )
-            if os.path.isfile( path ):
-              self.line += 1
-              includePath = copy(self.includePathLocal)
-              includePath.append( os.path.dirname(path) )
-              preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
-              sourceCode = SourceCode( path, open(path) )
-              (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
-              self.symbols = symbolTable
-              return tokens
-          raise NameError(filename + ' not found in include path')
-        else:
-          raise NameError('invalid include type')
-      elif cPPAST.name == 'Define':
-        ident = cPPAST.getAttr('ident')
-        body = cPPAST.getAttr('body')
-        self.symbols[ident.getString()] = self._eval(body)
-        self.line += 1
-      elif cPPAST.name == 'DefineFunction':
-        ident = cPPAST.getAttr('ident')
-        params = cPPAST.getAttr('params')
-        body = cPPAST.getAttr('body')
-        self.symbols[ident.getString()] = self.cPFF.create( ident, [p.getString() for p in params], body )
-        self.line += 1
-      elif cPPAST.name == 'Pragma':
-        cPPAST.getAttr('tokens')
-        self.line += 1
-      elif cPPAST.name == 'Error':
-        cPPAST.getAttr('tokens')
-        self.line += 1
-      elif cPPAST.name == 'Warning':
-        cPPAST.getAttr('tokens')
-        self.line += 1
-      elif cPPAST.name == 'Undef':
-        ident = cPPAST.getAttr('ident').getString()
-        if ident in self.symbols:
-          del self.symbols[ident]
-        self.line += 1
-      elif cPPAST.name == 'Line':
-        cPPAST.getAttr('tokens')
-        self.line += 1
-      elif cPPAST.name == 'ReplacementList':
-        # This means: return the replacement with macros replaced.
-        # e.g. #define bar 2
-        #      #define var 1 bar 3
-        # eval( ReplacementList([1, bar, 3]) ) = ReplacementList([1, 2, 3])
-        # input and output tokens are ctokens.
-        
-        # If tokens are not ctokens, convert them!
-        tokens = cPPAST.getAttr('tokens')
-        rtokens = []
-        advance = 0
-        newTokens = []
-        for (index, token) in enumerate(tokens):
-          if advance > 0:
-            advance -= 1
-            continue
-          if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
-            replacement = self.symbols[token.getString()]
-            if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-              if index >= len(tokens) - 1:
-                newTokens.append(replacement)
-              elif tokens[index + 1].getString() == '(':
-                advance = 2 # skip the identifier and lparen
-                params = []
-                param_tokens = []
-                lparen_count = 1
-                for token in tokens[index + advance:]:
-                  if token.getString() == '(':
-                    lparen_count += 1
-                  if token.getString() == ')':
-                    if lparen_count == 1:
-                      value = param_tokens
-                      params.append(param_tokens)
-                      break
-                    lparen_count -= 1
-                    param_tokens.append(self._tokenToCToken(token))
-                  elif token.getString() == ',' and lparen_count == 1:
-                    if len(param_tokens):
-                      value = param_tokens
-                      params.append(param_tokens)
-                      param_tokens = []
-                  else:
-                    param_tokens.append(self._tokenToCToken(token))
-                  advance += 1
-                result = replacement.run(params, token.lineno, token.colno)
-                newTokens.extend(result)
+          includePath = copy(self.includePathLocal)
+          includePath.append( os.path.dirname(path) )
+          preprocessor = self.preProcessorFactory.create(self.includePathGlobal, includePath)
+          sourceCode = SourceCode( path, open(path) )
+          (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
+          self.symbols = symbolTable
+          return tokens
+      raise NameError(filename + ' not found in include path')
+    else:
+      raise NameError('invalid include type')
+
+  def eval_Define(self, cPPAST):
+    ident = cPPAST.getAttr('ident')
+    body = cPPAST.getAttr('body')
+    self.symbols[ident.getString()] = self._eval(body)
+    self.line += 1
+
+  def eval_DefineFunction(self, cPPAST):
+    ident = cPPAST.getAttr('ident')
+    params = cPPAST.getAttr('params')
+    body = cPPAST.getAttr('body')
+    self.symbols[ident.getString()] = self.cPFF.create( ident, [p.getString() for p in params], body )
+    self.line += 1
+
+  def eval_Pragma(self, cPPAST):
+    # TODO: implement
+    cPPAST.getAttr('tokens')
+    self.line += 1
+
+  def eval_Error(self, cPPAST):
+    # TODO: implement
+    cPPAST.getAttr('tokens')
+    self.line += 1
+
+  def eval_Warning(self, cPPAST):
+    # TODO: implement
+    cPPAST.getAttr('tokens')
+    self.line += 1
+
+  def eval_Undef(self, cPPAST):
+    ident = cPPAST.getAttr('ident').getString()
+    if ident in self.symbols:
+      del self.symbols[ident]
+    self.line += 1
+
+  def eval_Line(self, cPPAST):
+    cPPAST.getAttr('tokens')
+    self.line += 1
+
+  def eval_ReplacementList(self, cPPAST):
+    # This means: return the replacement with macros replaced.
+    # e.g. #define bar 2
+    #      #define var 1 bar 3
+    # eval( ReplacementList([1, bar, 3]) ) = ReplacementList([1, 2, 3])
+    # input and output tokens are ctokens.
+    
+    # If tokens are not ctokens, convert them!
+    tokens = cPPAST.getAttr('tokens')
+    rtokens = []
+    advance = 0
+    newTokens = []
+    for (index, token) in enumerate(tokens):
+      if advance > 0:
+        advance -= 1
+        continue
+      if token.terminal_str.lower() == 'identifier' and token.getString() in self.symbols:
+        replacement = self.symbols[token.getString()]
+        if isinstance(replacement, self.cPFF.cPreprocessorFunction):
+          if index >= len(tokens) - 1:
+            newTokens.append(replacement)
+          elif tokens[index + 1].getString() == '(':
+            advance = 2 # skip the identifier and lparen
+            params = []
+            param_tokens = []
+            lparen_count = 1
+            for token in tokens[index + advance:]:
+              if token.getString() == '(':
+                lparen_count += 1
+              if token.getString() == ')':
+                if lparen_count == 1:
+                  value = param_tokens
+                  params.append(param_tokens)
+                  break
+                lparen_count -= 1
+                param_tokens.append(self._tokenToCToken(token))
+              elif token.getString() == ',' and lparen_count == 1:
+                if len(param_tokens):
+                  value = param_tokens
+                  params.append(param_tokens)
+                  param_tokens = []
               else:
-                newTokens.append(self._tokenToCToken(token))
-            else:
-              newTokens.extend( self.symbols[token.getString()] )
+                param_tokens.append(self._tokenToCToken(token))
+              advance += 1
+            result = replacement.run(params, token.lineno, token.colno)
+            newTokens.extend(result)
           else:
             newTokens.append(self._tokenToCToken(token))
-        return newTokens
-      elif cPPAST.name == 'FuncCall':
-        name = cPPAST.getAttr('name')
-        params = cPPAST.getAttr('params')
-      elif cPPAST.name == 'IsDefined':
-        return cPPAST.getAttr('expr').getString() in self.symbols
-      elif cPPAST.name == 'Add':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) + self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'Sub':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) - self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'LessThan':
-        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) < self.ppnumber(self._eval(cPPAST.getAttr('right'))))
-      elif cPPAST.name == 'GreaterThan':
-        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) > self.ppnumber(self._eval(cPPAST.getAttr('right'))))
-      elif cPPAST.name == 'LessThanEq':
-        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) <= self.ppnumber(self._eval(cPPAST.getAttr('right'))))
-      elif cPPAST.name == 'GreaterThanEq':
-        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) >= self.ppnumber(self._eval(cPPAST.getAttr('right'))))
-      elif cPPAST.name == 'Mul':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) * self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'Div':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) / self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'Mod':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) % self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'Equals':
-        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) == self.ppnumber(self._eval(cPPAST.getAttr('right'))))
-      elif cPPAST.name == 'NotEquals':
-        return int(self.ppnumber(self._eval(cPPAST.getAttr('left'))) != self.ppnumber(self._eval(cPPAST.getAttr('right'))))
-      elif cPPAST.name == 'Comma':
-        self._eval(left)
-        return self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'LeftShift':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) << self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'RightShift':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) >> self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'BitAND':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) & self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'BitOR':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) | self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'BitXOR':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) ^ self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'BitNOT':
-        return ~self.ppnumber(self._eval(cPPAST.getAttr('expr')))
-      elif cPPAST.name == 'And':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) and self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'Or':
-        return self.ppnumber(self._eval(cPPAST.getAttr('left'))) or self.ppnumber(self._eval(cPPAST.getAttr('right')))
-      elif cPPAST.name == 'Not':
-        return not self.ppnumber(self._eval(cPPAST.getAttr('expr')))
-      elif cPPAST.name == 'TernaryOperator':
-        cond = cPPAST.getAttr('cond')
-        true = cPPAST.getAttr('true')
-        false = cPPAST.getAttr('false')
-        if self._eval(cond) != 0:
-          return self._eval(true)
         else:
-          return self._eval(false)
+          newTokens.extend( self.symbols[token.getString()] )
       else:
-        raise Exception('Bad AST Node', str(cPPAST))
-    return rtokens
-  
+        newTokens.append(self._tokenToCToken(token))
+    return newTokens
+
+  def eval_FuncCall(self, cPPAST):
+    name = cPPAST.getAttr('name')
+    params = cPPAST.getAttr('params')
+
+  def eval_IsDefined(self, cPPAST):
+    return cPPAST.getAttr('expr').getString() in self.symbols
+
+  def eval_Add(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') + self.evalInt(cPPAST, 'right')
+
+  def eval_Sub(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') - self.evalInt(cPPAST, 'right')
+
+  def eval_LessThan(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') < self.evalInt(cPPAST, 'right')
+
+  def eval_GreaterThan(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') > self.evalInt(cPPAST, 'right')
+
+  def eval_LessThanEq(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') <= self.evalInt(cPPAST, 'right')
+
+  def eval_GreaterThanEq(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') >= self.evalInt(cPPAST, 'right')
+
+  def eval_Mul(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') * self.evalInt(cPPAST, 'right')
+
+  def eval_Div(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') / self.evalInt(cPPAST, 'right')
+
+  def eval_Mod(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') % self.evalInt(cPPAST, 'right')
+
+  def eval_Equals(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') == self.evalInt(cPPAST, 'right')
+
+  def eval_NotEquals(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') != self.evalInt(cPPAST, 'right')
+
+  def eval_Comma(self, cPPAST):
+    self._eval(left)
+    return self.evalInt(cPPAST, 'right')
+
+  def eval_LeftShift(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') << self.evalInt(cPPAST, 'right')
+
+  def eval_RightShift(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') >> self.evalInt(cPPAST, 'right')
+
+  def eval_BitAND(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') & self.evalInt(cPPAST, 'right')
+
+  def eval_BitOR(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') | self.evalInt(cPPAST, 'right')
+
+  def eval_BitXOR(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') ^ self.evalInt(cPPAST, 'right')
+
+  def eval_BitNOT(self, cPPAST):
+    return ~self.evalInt(cPPAST, 'expr')
+
+  def eval_And(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') and self.evalInt(cPPAST, 'right')
+
+  def eval_Or(self, cPPAST):
+    return self.evalInt(cPPAST, 'left') or self.evalInt(cPPAST, 'right')
+
+  def eval_Not(self, cPPAST):
+    return not self.evalInt(cPPAST, 'expr')
+
+  def eval_TernaryOperator(self, cPPAST):
+    if self.evalInt(cPPAST, 'cond'):
+      return self.evalInt(cPPAST, 'true')
+    else:
+      return self.evalInt(cPPAST, 'false')
+
   def ppnumber(self, element):
     if isinstance(element, Token):
       numstr = element.getString()
