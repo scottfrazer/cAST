@@ -80,7 +80,7 @@ class cPreprocessorFunctionFactory:
           for va_arg_rlist, next in zip_longest(params[index:], params[index+1:]):
             paramValues['__VA_ARGS__'].extend(va_arg_rlist)
             if next:
-              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminal('comma'), '<stream>', 'comma', ',', 0, 0, None))
+              paramValues['__VA_ARGS__'].append(cToken(self.cP.terminals['comma'], '<stream>', 'comma', ',', 0, 0, None))
         else:
           paramValues[param] = params[index]
       nodes = []
@@ -186,6 +186,8 @@ class cPreprocessingEvaluator:
       nstr = element.getString()
       if isinstance(nstr, int) or isinstance(nstr, float):
         return nstr
+      if isinstance(nstr, list):
+        return 0
       nstr = re.sub(r'[lLuU]', '', nstr)
       if 'e' in nstr or 'E' in nstr:
         nstr = nstr.split( 'e' if 'e' in nstr else 'E' )
@@ -319,14 +321,14 @@ class cPreprocessingEvaluator:
    
     def tokenize(token):
       tId = self.cTtocPPT[token.id]
-      return ppToken(tId, token.resource, ppParser.terminal_str[tId], token.source_string, token.lineno, token.colno)
+      return ppToken(tId, token.resource, ppParser.terminals[tId], token.source_string, token.lineno, token.colno)
 
     self.cPPP.iterator = iter(list(map(tokenize, replacementList)))
     self.cPPP.sym = self.cPPP.getsym()
-    parsetree = self.cPPP.expr()
+    parsetree = self.cPPP.parse__expr()
     ast = parsetree.toAst()
     value = self._eval(ast)
-    ppZero = ppToken(self.cPPP.terminal('pp_number'), None, 'pp_number', value, 0, 0)
+    ppZero = ppToken(self.cPPP.terminals['pp_number'], None, 'pp_number', value, 0, 0)
 
     if isinstance(value, Token):
       return value
@@ -494,7 +496,7 @@ class cPreprocessingEvaluator:
       if token.type == 'c':
         return copy(token)
       newId = self.cPPTtocT[token.id]
-      return cToken( newId, token.resource, cParser.terminal_str[newId], token.source_string, token.lineno, token.colno, None )
+      return cToken( newId, token.resource, cParser.terminals[newId], token.source_string, token.lineno, token.colno, None )
 
     tokens = list(map(make_cToken, cPPAST.getAttr('tokens')))
     rtokens = []

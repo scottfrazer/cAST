@@ -74,11 +74,7 @@
                                   identifier,
                                   lparen,
                                   (_gen40:
-                                    (_expr_sans_comma:
-                                      (constant:
-                                        string_literal
-                                      )
-                                    ),
+                                    string_literal,
                                     (_gen41: )
                                   ),
                                   rparen
@@ -119,11 +115,7 @@
                                                 identifier,
                                                 lparen,
                                                 (_gen40:
-                                                  (_expr_sans_comma:
-                                                    (constant:
-                                                      string_literal
-                                                    )
-                                                  ),
+                                                  string_literal,
                                                   (_gen41: )
                                                 ),
                                                 rparen
@@ -165,11 +157,7 @@
                                       identifier,
                                       lparen,
                                       (_gen40:
-                                        (_expr_sans_comma:
-                                          (constant:
-                                            string_literal
-                                          )
-                                        ),
+                                        string_literal,
                                         (_gen41: )
                                       ),
                                       rparen
@@ -190,11 +178,7 @@
                                           identifier,
                                           lparen,
                                           (_gen40:
-                                            (_expr_sans_comma:
-                                              (constant:
-                                                string_literal
-                                              )
-                                            ),
+                                            string_literal,
                                             (_gen41: )
                                           ),
                                           rparen
@@ -235,11 +219,7 @@
                                                     identifier,
                                                     lparen,
                                                     (_gen40:
-                                                      (_expr_sans_comma:
-                                                        (constant:
-                                                          string_literal
-                                                        )
-                                                      ),
+                                                      string_literal,
                                                       (_gen41: )
                                                     ),
                                                     rparen
@@ -268,11 +248,7 @@
                                             identifier,
                                             lparen,
                                             (_gen40:
-                                              (_expr_sans_comma:
-                                                (constant:
-                                                  string_literal
-                                                )
-                                              ),
+                                              string_literal,
                                               (_gen41: )
                                             ),
                                             rparen
@@ -313,11 +289,7 @@
                                                       identifier,
                                                       lparen,
                                                       (_gen40:
-                                                        (_expr_sans_comma:
-                                                          (constant:
-                                                            string_literal
-                                                          )
-                                                        ),
+                                                        string_literal,
                                                         (_gen41: )
                                                       ),
                                                       rparen
@@ -353,11 +325,7 @@
                                                           identifier,
                                                           lparen,
                                                           (_gen40:
-                                                            (_expr_sans_comma:
-                                                              (constant:
-                                                                string_literal
-                                                              )
-                                                            ),
+                                                            string_literal,
                                                             (_gen41: )
                                                           ),
                                                           rparen
@@ -445,11 +413,7 @@
                                                             identifier,
                                                             lparen,
                                                             (_gen40:
-                                                              (_expr_sans_comma:
-                                                                (constant:
-                                                                  string_literal
-                                                                )
-                                                              ),
+                                                              string_literal,
                                                               (_gen41: )
                                                             ),
                                                             rparen
@@ -532,11 +496,7 @@
                                                   identifier,
                                                   lparen,
                                                   (_gen40:
-                                                    (_expr_sans_comma:
-                                                      (constant:
-                                                        string_literal
-                                                      )
-                                                    ),
+                                                    string_literal,
                                                     (_gen41: )
                                                   ),
                                                   rparen
@@ -598,11 +558,7 @@
                                                       identifier,
                                                       lparen,
                                                       (_gen40:
-                                                        (_expr_sans_comma:
-                                                          (constant:
-                                                            string_literal
-                                                          )
-                                                        ),
+                                                        string_literal,
                                                         (_gen41: )
                                                       ),
                                                       rparen
@@ -691,11 +647,7 @@
                                                                             identifier,
                                                                             lparen,
                                                                             (_gen40:
-                                                                              (_expr_sans_comma:
-                                                                                (constant:
-                                                                                  string_literal
-                                                                                )
-                                                                              ),
+                                                                              string_literal,
                                                                               (_gen41: )
                                                                             ),
                                                                             rparen
@@ -787,11 +739,7 @@
                                                                                 identifier,
                                                                                 lparen,
                                                                                 (_gen40:
-                                                                                  (_expr_sans_comma:
-                                                                                    (constant:
-                                                                                      string_literal
-                                                                                    )
-                                                                                  ),
+                                                                                  string_literal,
                                                                                   (_gen41: )
                                                                                 ),
                                                                                 rparen
@@ -889,11 +837,7 @@
                                                                   identifier,
                                                                   lparen,
                                                                   (_gen40:
-                                                                    (_expr_sans_comma:
-                                                                      (constant:
-                                                                        string_literal
-                                                                      )
-                                                                    ),
+                                                                    string_literal,
                                                                     (_gen41: )
                                                                   ),
                                                                   rparen
@@ -970,11 +914,7 @@
                                                                       identifier,
                                                                       lparen,
                                                                       (_gen40:
-                                                                        (_expr_sans_comma:
-                                                                          (constant:
-                                                                            string_literal
-                                                                          )
-                                                                        ),
+                                                                        string_literal,
                                                                         (_gen41: )
                                                                       ),
                                                                       rparen
@@ -1018,11 +958,7 @@
                                                     identifier,
                                                     lparen,
                                                     (_gen40:
-                                                      (_expr_sans_comma:
-                                                        (constant:
-                                                          string_literal
-                                                        )
-                                                      ),
+                                                      string_literal,
                                                       (_gen41: )
                                                     ),
                                                     rparen
@@ -1051,11 +987,7 @@
                                                             identifier,
                                                             lparen,
                                                             (_gen40:
-                                                              (_expr_sans_comma:
-                                                                (constant:
-                                                                  string_literal
-                                                                )
-                                                              ),
+                                                              string_literal,
                                                               (_gen41: )
                                                             ),
                                                             rparen
@@ -1080,11 +1012,7 @@
                                                         identifier,
                                                         lparen,
                                                         (_gen40:
-                                                          (_expr_sans_comma:
-                                                            (constant:
-                                                              string_literal
-                                                            )
-                                                          ),
+                                                          string_literal,
                                                           (_gen41: )
                                                         ),
                                                         rparen

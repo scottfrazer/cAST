@@ -67,7 +67,7 @@ class TokenList(list):
         self.string = ''
         self.lineno = 1
         self.colno = 1
-        c = lambda x: cParser.str_terminal[x]
+        c = lambda x: cParser.terminals[x]
         self.insertSpaceAfter = {
           c('else')
         }

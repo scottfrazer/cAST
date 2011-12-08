@@ -8,15 +8,15 @@ def parseIdentifier( string, lineno, colno, terminalId, lexer ):
   if addedToken.source_string in lexer.typedefs:
     tId = cParser.TERMINAL_TYPEDEF_IDENTIFIER
     addedToken.id = tId
-    addedToken.terminal_str = cParser.terminal_str[tId]
+    addedToken.terminal_str = cParser.terminals[tId]
   else:
     lexer.lastIdentifier = addedToken
 
 def parseLabelIdentifier( string, lineno, colno, terminalId, lexer ):
   hintId = cParser.TERMINAL_LABEL_HINT
   ctx = lexer.getContext()
-  lexer.addToken(cToken(hintId, lexer.resource, cParser.terminal_str[hintId], '', lineno, colno, context=ctx))
-  lexer.addToken(cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], string, lineno, colno, context=ctx))
+  lexer.addToken(cToken(hintId, lexer.resource, cParser.terminals[hintId], '', lineno, colno, context=ctx))
+  lexer.addToken(cToken(terminalId, lexer.resource, cParser.terminals[terminalId], string, lineno, colno, context=ctx))
 
 def parseTypedef( string, lineno, colno, terminalId, lexer ):
   lexer.typedefBlocks = lexer.typedefBlocks.union({(lexer.braceLevel, lexer.parenLevel)})
@@ -67,7 +67,7 @@ def parseSemi( string, lineno, colno, terminalId, lexer ):
     lexer.typedefBlocks = lexer.typedefBlocks.difference({(lexer.braceLevel, lexer.parenLevel)})
     tId = cParser.TERMINAL_TYPEDEF_IDENTIFIER
     if lexer.lastIdentifier:
-      lexer.typedefs[lexer.lastIdentifier.source_string] = cToken(tId, lexer.resource, cParser.terminal_str[tId], lexer.lastIdentifier.source_string, lineno, colno, lexer.getContext())
+      lexer.typedefs[lexer.lastIdentifier.source_string] = cToken(tId, lexer.resource, cParser.terminals[tId], lexer.lastIdentifier.source_string, lineno, colno, lexer.getContext())
     else:
       raise Exception('no last identifier')
 
@@ -76,7 +76,7 @@ def parseComma( string, lineno, colno, terminalId, lexer ):
   if (lexer.braceLevel, lexer.parenLevel) in lexer.typedefBlocks:
     tId = cParser.TERMINAL_TYPEDEF_IDENTIFIER
     if lexer.lastIdentifier:
-      lexer.typedefs[lexer.lastIdentifier.source_string] = cToken(tId, lexer.resource, cParser.terminal_str[tId], lexer.lastIdentifier.source_string, lineno, colno, lexer.getContext())
+      lexer.typedefs[lexer.lastIdentifier.source_string] = cToken(tId, lexer.resource, cParser.terminals[tId], lexer.lastIdentifier.source_string, lineno, colno, lexer.getContext())
     else:
       raise Exception('no last identifier')
 
@@ -84,7 +84,7 @@ decls = None
 def declaration_specifiers():
   global decls
   if not decls:
-    c = lambda x: cParser.str_terminal[x]
+    c = lambda x: cParser.terminals[x]
     # decls = set(map(c, ['typedef','extern','static','auto','register','void','char','short','int','long','float','double','signed','unsigned','bool','complex','imaginary','struct','union','enum','typedef_identifier','const','restrict','volatile','inline']))
     decls = { 
       c('typedef'),  c('extern'), c('static'), c('auto'), \
@@ -97,7 +97,7 @@ def declaration_specifiers():
   return decls
 
 def token(string, lineno, colno, terminalId, lexer):
-  matchedToken = cToken(terminalId, lexer.resource, cParser.terminal_str[terminalId], string, lineno, colno, lexer.getContext())
+  matchedToken = cToken(terminalId, lexer.resource, cParser.terminals[terminalId], string, lineno, colno, lexer.getContext())
 
   if lexer.lock:
     lexer.addToken(matchedToken)
@@ -162,12 +162,12 @@ def token(string, lineno, colno, terminalId, lexer):
           break
 
       if hintId != False:
-        hint = cToken(hintId, lexer.resource, cParser.terminal_str[hintId], '', lineno, colno, lexer.getContext())
+        hint = cToken(hintId, lexer.resource, cParser.terminals[hintId], '', lineno, colno, lexer.getContext())
         tokens.append(hint)
       tokens.extend(queue)
     # endwhile
     edHintId = cParser.TERMINAL_EXTERNAL_DECLARATION_HINT
-    lexer.addToken(cToken(edHintId, lexer.resource, cParser.terminal_str[edHintId], '', lineno, colno, lexer.getContext()))
+    lexer.addToken(cToken(edHintId, lexer.resource, cParser.terminals[edHintId], '', lineno, colno, lexer.getContext()))
     for token in declarationSpecifiers:
       lexer.addToken(token)
     for token in tokens:

@@ -214,11 +214,7 @@
                                     string_literal,
                                     (_gen41:
                                       comma,
-                                      (_expr_sans_comma:
-                                        (constant:
-                                          string_literal
-                                        )
-                                      ),
+                                      string_literal,
                                       (_gen41: )
                                     )
                                   ),

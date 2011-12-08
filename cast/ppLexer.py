@@ -13,19 +13,19 @@ def parseDefine( match, lineno, colno, terminalId, lexer ):
     terminalId = ppParser.TERMINAL_DEFINE_FUNCTION
   else:
     terminalId = ppParser.TERMINAL_DEFINE
-  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], match, lineno, colno))
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminals[terminalId], match, lineno, colno))
 
 def parseDefined( match, lineno, colno, terminalId, lexer ):
   separatorId = ppParser.TERMINAL_DEFINED_SEPARATOR
-  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], match, lineno, colno))
-  lexer.addToken(ppToken(separatorId, lexer.resource, ppParser.terminal_str[separatorId], match, lineno, colno))
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminals[terminalId], match, lineno, colno))
+  lexer.addToken(ppToken(separatorId, lexer.resource, ppParser.terminals[separatorId], match, lineno, colno))
 
 def parseInclude( match, lineno, colno, terminalId, lexer ):
   headerGlobal = re.compile(r'[<][^\n>]+[>]')
   headerLocal = re.compile(r'["][^\n"]+["]')
   leadingWhitespace = re.compile(r'[\t ]*')
 
-  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], match, lineno, colno))
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminals[terminalId], match, lineno, colno))
   lexer.advance( leadingWhitespace.match(lexer.string).group(0) )
 
   regexes = {
@@ -37,13 +37,13 @@ def parseInclude( match, lineno, colno, terminalId, lexer ):
     rmatch = regex.match(lexer.string)
     if rmatch:
       rstring = rmatch.group(0)
-      token = ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], rstring, lexer.lineno, lexer.colno)
+      token = ppToken(terminalId, lexer.resource, ppParser.terminals[terminalId], rstring, lexer.lineno, lexer.colno)
       lexer.addToken(token)
       lexer.advance(rstring)
       break
 
 def token(string, lineno, colno, terminalId, lexer):
-  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminal_str[terminalId], string, lineno, colno))
+  lexer.addToken(ppToken(terminalId, lexer.resource, ppParser.terminals[terminalId], string, lineno, colno))
 
 class ppLexer(Lexer):
   regex = [
@@ -136,7 +136,7 @@ class ppLexer(Lexer):
     for (regex, terminalId, function) in self.regex:
       match = regex.match(string)
       if match:
-        return ppToken(terminalId, self.resource, ppParser.terminal_str[terminalId], match.group(0), 0, 0)
+        return ppToken(terminalId, self.resource, ppParser.terminals[terminalId], match.group(0), 0, 0)
     return None
   
   def _advance(self, lines):
@@ -211,7 +211,7 @@ class ppLexer(Lexer):
           continue
         if emit_separator:
           terminalId = ppParser.TERMINAL_SEPARATOR
-          self._addToken( ppToken(terminalId, self.resource, ppParser.terminal_str[terminalId], '', self.lineno, 1) )
+          self._addToken( ppToken(terminalId, self.resource, ppParser.terminals[terminalId], '', self.lineno, 1) )
         self._advance( lines + 1 )
         if self._hasToken():
           return self._popToken()
@@ -231,8 +231,8 @@ class ppLexer(Lexer):
     if emit_csource:
       csourceId = ppParser.TERMINAL_CSOURCE
       separatorId = ppParser.TERMINAL_SEPARATOR
-      token = ppToken(csourceId, self.resource, ppParser.terminal_str[csourceId], '\n'.join(buf), buf_line, 1)
-      self._addToken( ppToken(separatorId, self.resource, ppParser.terminal_str[separatorId], '', self.lineno, 1) )
+      token = ppToken(csourceId, self.resource, ppParser.terminals[csourceId], '\n'.join(buf), buf_line, 1)
+      self._addToken( ppToken(separatorId, self.resource, ppParser.terminals[separatorId], '', self.lineno, 1) )
       return token
     raise StopIteration()
   
