@@ -199,8 +199,8 @@
       "nonterminal": "_direct_abstract_declarator",
       "rules": [
         "_direct_abstract_declarator := {'lparen' + abstract_declarator + 'rparen'} -> $1",
-        "_direct_abstract_declarator := {direct_abstract_declarator_opt} + {'lsquare' + direct_abstract_declarator_expr + 'rsquare'} -> AbstractArray( object=$0, size=$2 )",
-        "_direct_abstract_declarator := {direct_abstract_declarator_opt} + {'lparen' + optional(parameter_type_list) + 'rparen'} -> AbstractFunction( object=$0, params=$2 )"
+        "_direct_abstract_declarator := {optional(_direct_abstract_declarator)} + {'lsquare' + direct_abstract_declarator_expr + 'rsquare'} -> AbstractArray( object=$0, size=$2 )",
+        "_direct_abstract_declarator := {optional(_direct_abstract_declarator)} + {'lparen' + optional(parameter_type_list) + 'rparen'} -> AbstractFunction( object=$0, params=$2 )"
       ],
       "binding_power": [
           {"associativity": "left", "terminals": ["lsquare", "lparen"]},

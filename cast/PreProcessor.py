@@ -1,6 +1,7 @@
 import sys, re, os
 from itertools import zip_longest, islice
 from copy import copy, deepcopy
+from cast.cParser import TokenStream
 from cast.cParser import Parser as cParser
 from cast.ppParser import Parser as ppParser
 from cast.ppParser import Ast as ppAst
@@ -57,7 +58,7 @@ class PreProcessor:
     for (trigraph, replacement) in self.trigraphs.items():
       sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
-    parsetree = self.cPPP.parse( ppLexer(sourceCode) )
+    parsetree = self.cPPP.parse( TokenStream(ppLexer(sourceCode)) )
     ast = parsetree.toAst()
     self.cPE.skipIncludes = skipIncludes
     ctokens = self.cPE.eval(ast, symbols)
@@ -323,8 +324,7 @@ class cPreprocessingEvaluator:
       tId = self.cTtocPPT[token.id]
       return ppToken(tId, token.resource, ppParser.terminals[tId], token.source_string, token.lineno, token.colno)
 
-    self.cPPP.iterator = iter(list(map(tokenize, replacementList)))
-    self.cPPP.sym = self.cPPP.getsym()
+    self.cPPP.tokens = TokenStream(list(map(tokenize, replacementList)))
     parsetree = self.cPPP.parse__expr()
     ast = parsetree.toAst()
     value = self._eval(ast)

@@ -3,6 +3,7 @@ from cast.ppParser import Parser as ppParser
 from cast.cParser import Parser as cParser
 from cast.ppLexer import ppLexer
 from cast.cLexer import cLexer
+from cast.cParser import TokenStream
 from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.SourceCode import SourceCode, SourceCodeString
@@ -69,13 +70,13 @@ def pptok(sourcecode, skipIncludes=False):
 
 def ppparse(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
-  parsetree = ppParser().parse(cPPL)
+  parsetree = ppParser().parse(TokenStream(cPPL))
   prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
   return prettyprint
 
 def ppast(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
-  ast = ppParser().parse(cPPL).toAst()
+  ast = ppParser().parse(TokenStream(cPPL)).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'type'))
   return prettyprint
 
@@ -90,7 +91,7 @@ def cparse(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
-  parsetree = cParser().parse(cT)
+  parsetree = cParser().parse(TokenStream(cT))
   prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
   return prettyprint
 
@@ -98,7 +99,7 @@ def cast(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
-  ast = cParser().parse(cT).toAst()
+  ast = cParser().parse(TokenStream(cT)).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'type'))
   return prettyprint
 

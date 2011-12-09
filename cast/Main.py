@@ -5,6 +5,7 @@ import sys, os, argparse, subprocess, re, logging
 from cast.ppLexer import ppLexer
 from cast.PreProcessor import Factory as PreProcessorFactory
 from cast.ppParser import Parser as ppParser
+from cast.ppParser import TokenStream
 from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.SourceCode import SourceCode
 from cast.Logger import Factory as LoggerFactory
@@ -122,7 +123,7 @@ def Cli():
     from cast.cParser import Parser as cParser
     try:
       cT, symbols = cPP.process( cSourceCode )
-      parsetree = cParser().parse(cT)
+      parsetree = cParser().parse(TokenStream(cT))
       print(ParseTreePrettyPrintable(parsetree, cli.format))
     except Exception as e:
       print(e, '\n', e.tracer)
@@ -133,7 +134,7 @@ def Cli():
     try:
       cT, symbols = cPP.process( cSourceCode )
       parser = cParser()
-      parsetree = parser.parse(cT)
+      parsetree = parser.parse(TokenStream(cT))
       ast = parsetree.toAst()
       print(AstPrettyPrintable(ast, cli.format))
     except Exception as e:
