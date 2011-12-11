@@ -32,7 +32,9 @@
                             (struct_declarator:
                               (declarator:
                                 (pointer_opt: ),
-                                identifier
+                                (_direct_declarator:
+                                  identifier
+                                )
                               ),
                               (_gen21: )
                             ),
@@ -54,7 +56,9 @@
                               (struct_declarator:
                                 (declarator:
                                   (pointer_opt: ),
-                                  identifier
+                                  (_direct_declarator:
+                                    identifier
+                                  )
                                 ),
                                 (_gen21: )
                               ),
@@ -84,7 +88,9 @@
                 (init_declarator:
                   (declarator:
                     (pointer_opt: ),
-                    identifier
+                    (_direct_declarator:
+                      identifier
+                    )
                   ),
                   (_gen11: )
                 )
@@ -133,7 +139,9 @@
                           )
                         )
                       ),
-                      identifier
+                      (_direct_declarator:
+                        identifier
+                      )
                     ),
                     (_gen11: )
                   )
@@ -187,7 +195,9 @@
                                   )
                                 )
                               ),
-                              identifier
+                              (_direct_declarator:
+                                identifier
+                              )
                             ),
                             rparen
                           ),
@@ -269,7 +279,9 @@
                 (declarator:
                   (pointer_opt: ),
                   (_direct_declarator:
-                    identifier,
+                    (_direct_declarator:
+                      identifier
+                    ),
                     lparen,
                     (direct_declarator_parameter_list: ),
                     rparen
@@ -299,7 +311,9 @@
                                   (init_declarator:
                                     (declarator:
                                       (pointer_opt: ),
-                                      identifier
+                                      (_direct_declarator:
+                                        identifier
+                                      )
                                     ),
                                     (_gen11: )
                                   ),
@@ -329,7 +343,9 @@
                                     (init_declarator:
                                       (declarator:
                                         (pointer_opt: ),
-                                        identifier
+                                        (_direct_declarator:
+                                          identifier
+                                        )
                                       ),
                                       (_gen11: )
                                     ),
@@ -359,7 +375,9 @@
                                       (init_declarator:
                                         (declarator:
                                           (pointer_opt: ),
-                                          identifier
+                                          (_direct_declarator:
+                                            identifier
+                                          )
                                         ),
                                         (_gen11: )
                                       ),

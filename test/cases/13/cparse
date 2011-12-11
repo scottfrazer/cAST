@@ -16,7 +16,9 @@
           (declarator:
             (pointer_opt: ),
             (_direct_declarator:
-              identifier,
+              (_direct_declarator:
+                identifier
+              ),
               lparen,
               (direct_declarator_parameter_list: ),
               rparen
@@ -44,7 +46,9 @@
                             (init_declarator:
                               (declarator:
                                 (pointer_opt: ),
-                                identifier
+                                (_direct_declarator:
+                                  identifier
+                                )
                               ),
                               (_gen11: )
                             ),
@@ -71,10 +75,14 @@
                             (expression_statement:
                               (expression_opt:
                                 (_expr:
-                                  identifier,
+                                  (_expr:
+                                    identifier
+                                  ),
                                   lparen,
                                   (_gen40:
-                                    string_literal,
+                                    (_expr_sans_comma:
+                                      string_literal
+                                    ),
                                     (_gen41: )
                                   ),
                                   rparen
@@ -112,10 +120,14 @@
                                           (expression_statement:
                                             (expression_opt:
                                               (_expr:
-                                                identifier,
+                                                (_expr:
+                                                  identifier
+                                                ),
                                                 lparen,
                                                 (_gen40:
-                                                  string_literal,
+                                                  (_expr_sans_comma:
+                                                    string_literal
+                                                  ),
                                                   (_gen41: )
                                                 ),
                                                 rparen
@@ -154,10 +166,14 @@
                                 (expression_statement:
                                   (expression_opt:
                                     (_expr:
-                                      identifier,
+                                      (_expr:
+                                        identifier
+                                      ),
                                       lparen,
                                       (_gen40:
-                                        string_literal,
+                                        (_expr_sans_comma:
+                                          string_literal
+                                        ),
                                         (_gen41: )
                                       ),
                                       rparen
@@ -175,10 +191,14 @@
                                     (expression_statement:
                                       (expression_opt:
                                         (_expr:
-                                          identifier,
+                                          (_expr:
+                                            identifier
+                                          ),
                                           lparen,
                                           (_gen40:
-                                            string_literal,
+                                            (_expr_sans_comma:
+                                              string_literal
+                                            ),
                                             (_gen41: )
                                           ),
                                           rparen
@@ -216,10 +236,14 @@
                                               (expression_statement:
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     lparen,
                                                     (_gen40:
-                                                      string_literal,
+                                                      (_expr_sans_comma:
+                                                        string_literal
+                                                      ),
                                                       (_gen41: )
                                                     ),
                                                     rparen
@@ -245,10 +269,14 @@
                                       (expression_statement:
                                         (expression_opt:
                                           (_expr:
-                                            identifier,
+                                            (_expr:
+                                              identifier
+                                            ),
                                             lparen,
                                             (_gen40:
-                                              string_literal,
+                                              (_expr_sans_comma:
+                                                string_literal
+                                              ),
                                               (_gen41: )
                                             ),
                                             rparen
@@ -286,10 +314,14 @@
                                                 (expression_statement:
                                                   (expression_opt:
                                                     (_expr:
-                                                      identifier,
+                                                      (_expr:
+                                                        identifier
+                                                      ),
                                                       lparen,
                                                       (_gen40:
-                                                        string_literal,
+                                                        (_expr_sans_comma:
+                                                          string_literal
+                                                        ),
                                                         (_gen41: )
                                                       ),
                                                       rparen
@@ -322,10 +354,14 @@
                                                     (expression_statement:
                                                       (expression_opt:
                                                         (_expr:
-                                                          identifier,
+                                                          (_expr:
+                                                            identifier
+                                                          ),
                                                           lparen,
                                                           (_gen40:
-                                                            string_literal,
+                                                            (_expr_sans_comma:
+                                                              string_literal
+                                                            ),
                                                             (_gen41: )
                                                           ),
                                                           rparen
@@ -366,7 +402,9 @@
                                         lparen,
                                         (for_init:
                                           (_expr:
-                                            identifier,
+                                            (_expr:
+                                              identifier
+                                            ),
                                             assign,
                                             (_expr:
                                               (constant:
@@ -379,7 +417,9 @@
                                           semi,
                                           (expression_opt:
                                             (_expr:
-                                              identifier,
+                                              (_expr:
+                                                identifier
+                                              ),
                                               lt,
                                               (_expr:
                                                 (constant:
@@ -393,7 +433,9 @@
                                           semi,
                                           (expression_opt:
                                             (_expr:
-                                              identifier,
+                                              (_expr:
+                                                identifier
+                                              ),
                                               incr
                                             )
                                           )
@@ -410,10 +452,14 @@
                                                       (expression_statement:
                                                         (expression_opt:
                                                           (_expr:
-                                                            identifier,
+                                                            (_expr:
+                                                              identifier
+                                                            ),
                                                             lparen,
                                                             (_gen40:
-                                                              string_literal,
+                                                              (_expr_sans_comma:
+                                                                string_literal
+                                                              ),
                                                               (_gen41: )
                                                             ),
                                                             rparen
@@ -456,7 +502,9 @@
                                           lparen,
                                           (for_init:
                                             (_expr:
-                                              identifier,
+                                              (_expr:
+                                                identifier
+                                              ),
                                               assign,
                                               (_expr:
                                                 (constant:
@@ -469,7 +517,9 @@
                                             semi,
                                             (expression_opt:
                                               (_expr:
-                                                identifier,
+                                                (_expr:
+                                                  identifier
+                                                ),
                                                 lt,
                                                 (_expr:
                                                   (constant:
@@ -483,7 +533,9 @@
                                             semi,
                                             (expression_opt:
                                               (_expr:
-                                                identifier,
+                                                (_expr:
+                                                  identifier
+                                                ),
                                                 incr
                                               )
                                             )
@@ -493,10 +545,14 @@
                                             (expression_statement:
                                               (expression_opt:
                                                 (_expr:
-                                                  identifier,
+                                                  (_expr:
+                                                    identifier
+                                                  ),
                                                   lparen,
                                                   (_gen40:
-                                                    string_literal,
+                                                    (_expr_sans_comma:
+                                                      string_literal
+                                                    ),
                                                     (_gen41: )
                                                   ),
                                                   rparen
@@ -518,7 +574,9 @@
                                               lparen,
                                               (for_init:
                                                 (_expr:
-                                                  identifier,
+                                                  (_expr:
+                                                    identifier
+                                                  ),
                                                   assign,
                                                   (_expr:
                                                     (constant:
@@ -531,7 +589,9 @@
                                                 semi,
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     lt,
                                                     (_expr:
                                                       (constant:
@@ -545,7 +605,9 @@
                                                 semi,
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     incr
                                                   )
                                                 )
@@ -555,10 +617,14 @@
                                                 (expression_statement:
                                                   (expression_opt:
                                                     (_expr:
-                                                      identifier,
+                                                      (_expr:
+                                                        identifier
+                                                      ),
                                                       lparen,
                                                       (_gen40:
-                                                        string_literal,
+                                                        (_expr_sans_comma:
+                                                          string_literal
+                                                        ),
                                                         (_gen41: )
                                                       ),
                                                       rparen
@@ -600,7 +666,9 @@
                                                         lparen,
                                                         (for_init:
                                                           (_expr:
-                                                            identifier,
+                                                            (_expr:
+                                                              identifier
+                                                            ),
                                                             assign,
                                                             (_expr:
                                                               (constant:
@@ -613,7 +681,9 @@
                                                           semi,
                                                           (expression_opt:
                                                             (_expr:
-                                                              identifier,
+                                                              (_expr:
+                                                                identifier
+                                                              ),
                                                               lt,
                                                               (_expr:
                                                                 (constant:
@@ -627,7 +697,9 @@
                                                           semi,
                                                           (expression_opt:
                                                             (_expr:
-                                                              identifier,
+                                                              (_expr:
+                                                                identifier
+                                                              ),
                                                               incr
                                                             )
                                                           )
@@ -644,10 +716,14 @@
                                                                       (expression_statement:
                                                                         (expression_opt:
                                                                           (_expr:
-                                                                            identifier,
+                                                                            (_expr:
+                                                                              identifier
+                                                                            ),
                                                                             lparen,
                                                                             (_gen40:
-                                                                              string_literal,
+                                                                              (_expr_sans_comma:
+                                                                                string_literal
+                                                                              ),
                                                                               (_gen41: )
                                                                             ),
                                                                             rparen
@@ -692,7 +768,9 @@
                                                             lparen,
                                                             (for_init:
                                                               (_expr:
-                                                                identifier,
+                                                                (_expr:
+                                                                  identifier
+                                                                ),
                                                                 assign,
                                                                 (_expr:
                                                                   (constant:
@@ -705,7 +783,9 @@
                                                               semi,
                                                               (expression_opt:
                                                                 (_expr:
-                                                                  identifier,
+                                                                  (_expr:
+                                                                    identifier
+                                                                  ),
                                                                   lt,
                                                                   (_expr:
                                                                     (constant:
@@ -719,7 +799,9 @@
                                                               semi,
                                                               (expression_opt:
                                                                 (_expr:
-                                                                  identifier,
+                                                                  (_expr:
+                                                                    identifier
+                                                                  ),
                                                                   incr
                                                                 )
                                                               )
@@ -736,10 +818,14 @@
                                                                           (expression_statement:
                                                                             (expression_opt:
                                                                               (_expr:
-                                                                                identifier,
+                                                                                (_expr:
+                                                                                  identifier
+                                                                                ),
                                                                                 lparen,
                                                                                 (_gen40:
-                                                                                  string_literal,
+                                                                                  (_expr_sans_comma:
+                                                                                    string_literal
+                                                                                  ),
                                                                                   (_gen41: )
                                                                                 ),
                                                                                 rparen
@@ -790,7 +876,9 @@
                                               lparen,
                                               (for_init:
                                                 (_expr:
-                                                  identifier,
+                                                  (_expr:
+                                                    identifier
+                                                  ),
                                                   assign,
                                                   (_expr:
                                                     (constant:
@@ -803,7 +891,9 @@
                                                 semi,
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     lt,
                                                     (_expr:
                                                       (constant:
@@ -817,7 +907,9 @@
                                                 semi,
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     incr
                                                   )
                                                 )
@@ -834,10 +926,14 @@
                                                             (expression_statement:
                                                               (expression_opt:
                                                                 (_expr:
-                                                                  identifier,
+                                                                  (_expr:
+                                                                    identifier
+                                                                  ),
                                                                   lparen,
                                                                   (_gen40:
-                                                                    string_literal,
+                                                                    (_expr_sans_comma:
+                                                                      string_literal
+                                                                    ),
                                                                     (_gen41: )
                                                                   ),
                                                                   rparen
@@ -867,7 +963,9 @@
                                                   lparen,
                                                   (for_init:
                                                     (_expr:
-                                                      identifier,
+                                                      (_expr:
+                                                        identifier
+                                                      ),
                                                       assign,
                                                       (_expr:
                                                         (constant:
@@ -880,7 +978,9 @@
                                                     semi,
                                                     (expression_opt:
                                                       (_expr:
-                                                        identifier,
+                                                        (_expr:
+                                                          identifier
+                                                        ),
                                                         lt,
                                                         (_expr:
                                                           (constant:
@@ -894,7 +994,9 @@
                                                     semi,
                                                     (expression_opt:
                                                       (_expr:
-                                                        identifier,
+                                                        (_expr:
+                                                          identifier
+                                                        ),
                                                         incr
                                                       )
                                                     )
@@ -911,10 +1013,14 @@
                                                                 (expression_statement:
                                                                   (expression_opt:
                                                                     (_expr:
-                                                                      identifier,
+                                                                      (_expr:
+                                                                        identifier
+                                                                      ),
                                                                       lparen,
                                                                       (_gen40:
-                                                                        string_literal,
+                                                                        (_expr_sans_comma:
+                                                                          string_literal
+                                                                        ),
                                                                         (_gen41: )
                                                                       ),
                                                                       rparen
@@ -955,10 +1061,14 @@
                                               (expression_statement:
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     lparen,
                                                     (_gen40:
-                                                      string_literal,
+                                                      (_expr_sans_comma:
+                                                        string_literal
+                                                      ),
                                                       (_gen41: )
                                                     ),
                                                     rparen
@@ -984,10 +1094,14 @@
                                                       (expression_statement:
                                                         (expression_opt:
                                                           (_expr:
-                                                            identifier,
+                                                            (_expr:
+                                                              identifier
+                                                            ),
                                                             lparen,
                                                             (_gen40:
-                                                              string_literal,
+                                                              (_expr_sans_comma:
+                                                                string_literal
+                                                              ),
                                                               (_gen41: )
                                                             ),
                                                             rparen
@@ -1009,10 +1123,14 @@
                                                   (expression_statement:
                                                     (expression_opt:
                                                       (_expr:
-                                                        identifier,
+                                                        (_expr:
+                                                          identifier
+                                                        ),
                                                         lparen,
                                                         (_gen40:
-                                                          string_literal,
+                                                          (_expr_sans_comma:
+                                                            string_literal
+                                                          ),
                                                           (_gen41: )
                                                         ),
                                                         rparen

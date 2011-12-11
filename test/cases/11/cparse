@@ -26,7 +26,9 @@
                           (struct_declarator:
                             (declarator:
                               (pointer_opt: ),
-                              identifier
+                              (_direct_declarator:
+                                identifier
+                              )
                             ),
                             (_gen21: )
                           ),
@@ -75,7 +77,9 @@
             (declarator:
               (pointer_opt: ),
               (_direct_declarator:
-                identifier,
+                (_direct_declarator:
+                  identifier
+                ),
                 lparen,
                 (direct_declarator_parameter_list: ),
                 rparen

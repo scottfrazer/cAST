@@ -18,7 +18,9 @@
               (declarator:
                 (pointer_opt: ),
                 (_direct_declarator:
-                  identifier,
+                  (_direct_declarator:
+                    identifier
+                  ),
                   lparen,
                   (direct_declarator_parameter_list:
                     (parameter_type_list:
@@ -63,7 +65,9 @@
                     )
                   ),
                   (_direct_declarator:
-                    identifier,
+                    (_direct_declarator:
+                      identifier
+                    ),
                     lparen,
                     (direct_declarator_parameter_list: ),
                     rparen
@@ -96,7 +100,9 @@
                                   )
                                 )
                               ),
-                              identifier
+                              (_direct_declarator:
+                                identifier
+                              )
                             ),
                             rparen
                           ),
@@ -153,7 +159,9 @@
                               )
                             ),
                             (_direct_declarator:
-                              identifier,
+                              (_direct_declarator:
+                                identifier
+                              ),
                               lsquare,
                               (direct_declarator_expr:
                                 (direct_declarator_modifier_list_opt: ),
@@ -197,7 +205,9 @@
                                       )
                                     ),
                                     (parameter_declaration_sub_sub:
-                                      identifier
+                                      (_direct_declarator:
+                                        identifier
+                                      )
                                     )
                                   )
                                 )
@@ -227,7 +237,9 @@
                                         )
                                       ),
                                       (parameter_declaration_sub_sub:
-                                        identifier
+                                        (_direct_declarator:
+                                          identifier
+                                        )
                                       )
                                     )
                                   )
@@ -285,7 +297,9 @@
                             )
                           ),
                           (_direct_declarator:
-                            identifier,
+                            (_direct_declarator:
+                              identifier
+                            ),
                             lparen,
                             (direct_declarator_parameter_list:
                               (parameter_type_list:
@@ -425,7 +439,9 @@
                 (declarator:
                   (pointer_opt: ),
                   (_direct_declarator:
-                    identifier,
+                    (_direct_declarator:
+                      identifier
+                    ),
                     lparen,
                     (direct_declarator_parameter_list: ),
                     rparen
@@ -454,7 +470,9 @@
                                     (declarator:
                                       (pointer_opt: ),
                                       (_direct_declarator:
-                                        identifier,
+                                        (_direct_declarator:
+                                          identifier
+                                        ),
                                         lsquare,
                                         (direct_declarator_expr: ),
                                         rsquare

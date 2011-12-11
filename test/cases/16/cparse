@@ -26,7 +26,9 @@
                 (init_declarator:
                   (declarator:
                     (pointer_opt: ),
-                    identifier
+                    (_direct_declarator:
+                      identifier
+                    )
                   ),
                   (_gen11: )
                 )
@@ -71,7 +73,9 @@
                               (struct_declarator:
                                 (declarator:
                                   (pointer_opt: ),
-                                  identifier
+                                  (_direct_declarator:
+                                    identifier
+                                  )
                                 ),
                                 (_gen21: )
                               ),
@@ -95,7 +99,9 @@
                                 (struct_declarator:
                                   (declarator:
                                     (pointer_opt: ),
-                                    identifier
+                                    (_direct_declarator:
+                                      identifier
+                                    )
                                   ),
                                   (_gen21: )
                                 ),
@@ -125,7 +131,9 @@
                   (init_declarator:
                     (declarator:
                       (pointer_opt: ),
-                      identifier
+                      (_direct_declarator:
+                        identifier
+                      )
                     ),
                     (_gen11: )
                   )
@@ -154,7 +162,9 @@
               (declarator:
                 (pointer_opt: ),
                 (_direct_declarator:
-                  identifier,
+                  (_direct_declarator:
+                    identifier
+                  ),
                   lparen,
                   (direct_declarator_parameter_list: ),
                   rparen
@@ -189,7 +199,9 @@
                                 (init_declarator:
                                   (declarator:
                                     (pointer_opt: ),
-                                    identifier
+                                    (_direct_declarator:
+                                      identifier
+                                    )
                                   ),
                                   (_gen11: )
                                 ),
@@ -219,7 +231,9 @@
                                   (init_declarator:
                                     (declarator:
                                       (pointer_opt: ),
-                                      identifier
+                                      (_direct_declarator:
+                                        identifier
+                                      )
                                     ),
                                     (_gen11:
                                       (declarator_initializer:
@@ -260,7 +274,9 @@
                                     (init_declarator:
                                       (declarator:
                                         (pointer_opt: ),
-                                        identifier
+                                        (_direct_declarator:
+                                          identifier
+                                        )
                                       ),
                                       (_gen11:
                                         (declarator_initializer:
@@ -301,7 +317,9 @@
                                       (init_declarator:
                                         (declarator:
                                           (pointer_opt: ),
-                                          identifier
+                                          (_direct_declarator:
+                                            identifier
+                                          )
                                         ),
                                         (_gen11: )
                                       ),
@@ -319,9 +337,13 @@
                                     (expression_opt:
                                       (_expr:
                                         (_expr:
-                                          identifier,
+                                          (_expr:
+                                            identifier
+                                          ),
                                           dot,
-                                          identifier
+                                          (_expr:
+                                            identifier
+                                          )
                                         ),
                                         assign,
                                         (_expr:
@@ -341,22 +363,34 @@
                                     (expression_statement:
                                       (expression_opt:
                                         (_expr:
-                                          identifier,
+                                          (_expr:
+                                            identifier
+                                          ),
                                           lparen,
                                           (_gen40:
-                                            string_literal,
+                                            (_expr_sans_comma:
+                                              string_literal
+                                            ),
                                             (_gen41:
                                               comma,
-                                              identifier,
+                                              (_expr_sans_comma:
+                                                identifier
+                                              ),
                                               (_gen41:
                                                 comma,
-                                                identifier,
+                                                (_expr_sans_comma:
+                                                  identifier
+                                                ),
                                                 (_gen41:
                                                   comma,
                                                   (_expr_sans_comma:
-                                                    identifier,
+                                                    (_expr_sans_comma:
+                                                      identifier
+                                                    ),
                                                     dot,
-                                                    identifier
+                                                    (_expr_sans_comma:
+                                                      identifier
+                                                    )
                                                   ),
                                                   (_gen41: )
                                                 )

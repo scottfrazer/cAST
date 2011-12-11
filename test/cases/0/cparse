@@ -18,7 +18,9 @@
               (declarator:
                 (pointer_opt: ),
                 (_direct_declarator:
-                  identifier,
+                  (_direct_declarator:
+                    identifier
+                  ),
                   lparen,
                   (direct_declarator_parameter_list: ),
                   rparen
@@ -49,7 +51,9 @@
             (declarator:
               (pointer_opt: ),
               (_direct_declarator:
-                identifier,
+                (_direct_declarator:
+                  identifier
+                ),
                 lparen,
                 (direct_declarator_parameter_list:
                   (parameter_type_list:
@@ -67,7 +71,9 @@
                           (parameter_declaration_sub:
                             (pointer_opt: ),
                             (parameter_declaration_sub_sub:
-                              identifier
+                              (_direct_declarator:
+                                identifier
+                              )
                             )
                           )
                         )
@@ -87,7 +93,9 @@
                             (parameter_declaration_sub:
                               (pointer_opt: ),
                               (parameter_declaration_sub_sub:
-                                identifier
+                                (_direct_declarator:
+                                  identifier
+                                )
                               )
                             )
                           )
@@ -113,9 +121,13 @@
                           return,
                           (expression_opt:
                             (_expr:
-                              identifier,
+                              (_expr:
+                                identifier
+                              ),
                               add,
-                              identifier
+                              (_expr:
+                                identifier
+                              )
                             )
                           ),
                           semi
@@ -148,7 +160,9 @@
               (declarator:
                 (pointer_opt: ),
                 (_direct_declarator:
-                  identifier,
+                  (_direct_declarator:
+                    identifier
+                  ),
                   lparen,
                   (direct_declarator_parameter_list: ),
                   rparen
@@ -165,10 +179,14 @@
                           (expression_statement:
                             (expression_opt:
                               (_expr:
-                                identifier,
+                                (_expr:
+                                  identifier
+                                ),
                                 lparen,
                                 (_gen40:
-                                  string_literal,
+                                  (_expr_sans_comma:
+                                    string_literal
+                                  ),
                                   (_gen41:
                                     comma,
                                     (_expr_sans_comma:
@@ -208,13 +226,19 @@
                             (expression_statement:
                               (expression_opt:
                                 (_expr:
-                                  identifier,
+                                  (_expr:
+                                    identifier
+                                  ),
                                   lparen,
                                   (_gen40:
-                                    string_literal,
+                                    (_expr_sans_comma:
+                                      string_literal
+                                    ),
                                     (_gen41:
                                       comma,
-                                      string_literal,
+                                      (_expr_sans_comma:
+                                        string_literal
+                                      ),
                                       (_gen41: )
                                     )
                                   ),
@@ -231,10 +255,14 @@
                               (expression_statement:
                                 (expression_opt:
                                   (_expr:
-                                    identifier,
+                                    (_expr:
+                                      identifier
+                                    ),
                                     lparen,
                                     (_gen40:
-                                      string_literal,
+                                      (_expr_sans_comma:
+                                        string_literal
+                                      ),
                                       (_gen41: )
                                     ),
                                     rparen
@@ -261,7 +289,9 @@
                                       (init_declarator:
                                         (declarator:
                                           (pointer_opt: ),
-                                          identifier
+                                          (_direct_declarator:
+                                            identifier
+                                          )
                                         ),
                                         (_gen11:
                                           (declarator_initializer:
@@ -289,10 +319,14 @@
                                   (expression_statement:
                                     (expression_opt:
                                       (_expr:
-                                        identifier,
+                                        (_expr:
+                                          identifier
+                                        ),
                                         lparen,
                                         (_gen40:
-                                          string_literal,
+                                          (_expr_sans_comma:
+                                            string_literal
+                                          ),
                                           (_gen41:
                                             comma,
                                             (_expr_sans_comma:
@@ -316,10 +350,14 @@
                                     (expression_statement:
                                       (expression_opt:
                                         (_expr:
-                                          identifier,
+                                          (_expr:
+                                            identifier
+                                          ),
                                           lparen,
                                           (_gen40:
-                                            string_literal,
+                                            (_expr_sans_comma:
+                                              string_literal
+                                            ),
                                             (_gen41: )
                                           ),
                                           rparen
@@ -335,7 +373,9 @@
                                       (expression_statement:
                                         (expression_opt:
                                           (_expr:
-                                            identifier,
+                                            (_expr:
+                                              identifier
+                                            ),
                                             addeq,
                                             (_expr:
                                               (constant:

@@ -33,7 +33,9 @@
                         )
                       ),
                       (_direct_declarator:
-                        identifier,
+                        (_direct_declarator:
+                          identifier
+                        ),
                         lparen,
                         (direct_declarator_parameter_list:
                           (parameter_type_list:

@@ -466,9 +466,13 @@
                                         (if_part:
                                           if,
                                           (_expr:
-                                            identifier,
+                                            (_expr:
+                                              identifier
+                                            ),
                                             eq,
-                                            pp_number
+                                            (_expr:
+                                              pp_number
+                                            )
                                           ),
                                           (pp_nodes_list:
                                             (_gen0:
@@ -571,16 +575,22 @@
                                                 (_gen1:
                                                   (elseif_part:
                                                     elif,
-                                                    pp_number,
+                                                    (_expr:
+                                                      pp_number
+                                                    ),
                                                     (pp_nodes_list: )
                                                   ),
                                                   (_gen1:
                                                     (elseif_part:
                                                       elif,
                                                       (_expr:
-                                                        pp_number,
+                                                        (_expr:
+                                                          pp_number
+                                                        ),
                                                         sub,
-                                                        pp_number
+                                                        (_expr:
+                                                          pp_number
+                                                        )
                                                       ),
                                                       (pp_nodes_list:
                                                         (_gen0:
@@ -596,9 +606,13 @@
                                                       (elseif_part:
                                                         elif,
                                                         (_expr:
-                                                          pp_number,
+                                                          (_expr:
+                                                            pp_number
+                                                          ),
                                                           sub,
-                                                          pp_number
+                                                          (_expr:
+                                                            pp_number
+                                                          )
                                                         ),
                                                         (pp_nodes_list:
                                                           (_gen0:

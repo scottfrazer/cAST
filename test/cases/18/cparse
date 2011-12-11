@@ -16,7 +16,9 @@
           (declarator:
             (pointer_opt: ),
             (_direct_declarator:
-              identifier,
+              (_direct_declarator:
+                identifier
+              ),
               lparen,
               (direct_declarator_parameter_list: ),
               rparen
@@ -34,9 +36,13 @@
                         (expression_opt:
                           (_expr:
                             (_expr:
-                              identifier,
+                              (_expr:
+                                identifier
+                              ),
                               dot,
-                              identifier
+                              (_expr:
+                                identifier
+                              )
                             ),
                             assign,
                             (_expr:

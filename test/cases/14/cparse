@@ -16,7 +16,9 @@
           (declarator:
             (pointer_opt: ),
             (_direct_declarator:
-              identifier,
+              (_direct_declarator:
+                identifier
+              ),
               lparen,
               (direct_declarator_parameter_list: ),
               rparen
@@ -44,7 +46,9 @@
                             (init_declarator:
                               (declarator:
                                 (pointer_opt: ),
-                                identifier
+                                (_direct_declarator:
+                                  identifier
+                                )
                               ),
                               (_gen11:
                                 (declarator_initializer:
@@ -89,7 +93,9 @@
                                         (expression_statement:
                                           (expression_opt:
                                             (_expr:
-                                              identifier,
+                                              (_expr:
+                                                identifier
+                                              ),
                                               lparen,
                                               (_gen40: ),
                                               rparen
@@ -125,7 +131,9 @@
                                           (expression_statement:
                                             (expression_opt:
                                               (_expr:
-                                                identifier,
+                                                (_expr:
+                                                  identifier
+                                                ),
                                                 lparen,
                                                 (_gen40: ),
                                                 rparen
@@ -141,7 +149,9 @@
                                             (expression_statement:
                                               (expression_opt:
                                                 (_expr:
-                                                  identifier,
+                                                  (_expr:
+                                                    identifier
+                                                  ),
                                                   addeq,
                                                   (_expr:
                                                     (constant:
@@ -180,7 +190,9 @@
                             (selection_statement:
                               switch,
                               lparen,
-                              identifier,
+                              (_expr:
+                                identifier
+                              ),
                               rparen,
                               (statement:
                                 (compound_statement:
@@ -202,7 +214,9 @@
                                                 (expression_statement:
                                                   (expression_opt:
                                                     (_expr:
-                                                      identifier,
+                                                      (_expr:
+                                                        identifier
+                                                      ),
                                                       lparen,
                                                       (_gen40: ),
                                                       rparen
@@ -220,7 +234,9 @@
                                               (expression_statement:
                                                 (expression_opt:
                                                   (_expr:
-                                                    identifier,
+                                                    (_expr:
+                                                      identifier
+                                                    ),
                                                     addeq,
                                                     (_expr:
                                                       (constant:
@@ -257,7 +273,9 @@
                                                       (expression_statement:
                                                         (expression_opt:
                                                           (_expr:
-                                                            identifier,
+                                                            (_expr:
+                                                              identifier
+                                                            ),
                                                             lparen,
                                                             (_gen40: ),
                                                             rparen
@@ -330,10 +348,14 @@
                                   (expression_statement:
                                     (expression_opt:
                                       (_expr:
-                                        identifier,
+                                        (_expr:
+                                          identifier
+                                        ),
                                         lparen,
                                         (_gen40:
-                                          string_literal,
+                                          (_expr_sans_comma:
+                                            string_literal
+                                          ),
                                           (_gen41: )
                                         ),
                                         rparen
@@ -392,7 +414,9 @@
             (declarator:
               (pointer_opt: ),
               (_direct_declarator:
-                identifier,
+                (_direct_declarator:
+                  identifier
+                ),
                 lparen,
                 (direct_declarator_parameter_list: ),
                 rparen
