@@ -27,9 +27,9 @@
           (_gen5: ),
           (compound_statement:
             lbrace,
-            (_gen35:
+            (_gen34:
               (block_item_list:
-                (_gen36:
+                (_gen35:
                   (block_item:
                     (statement:
                       (expression_statement:
@@ -39,11 +39,11 @@
                               identifier
                             ),
                             lparen,
-                            (_gen40:
+                            (_gen39:
                               (_expr_sans_comma:
                                 string_literal
                               ),
-                              (_gen41:
+                              (_gen40:
                                 comma,
                                 (_expr_sans_comma:
                                   (_expr_sans_comma:
@@ -58,7 +58,7 @@
                                     )
                                   )
                                 ),
-                                (_gen41: )
+                                (_gen40: )
                               )
                             ),
                             rparen
@@ -68,7 +68,7 @@
                       )
                     )
                   ),
-                  (_gen36: )
+                  (_gen35: )
                 )
               )
             ),

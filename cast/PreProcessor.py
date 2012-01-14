@@ -336,15 +336,16 @@ class cPreprocessingEvaluator:
 
   def eval_cSource(self, cPPAST):
     tokens = TokenList()
-    cLex = cLexer(SourceCodeString(cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn()))
-    if self.cLexerContext:
-      cLex.setContext(self.cLexerContext)
-    cTokens = list(cLex)
+    def preprocess_replace(ctokens):
+      return self._eval(ppAst('ReplacementList', {'tokens': ctokens}))
+    sourceCode = SourceCodeString(cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
+    cLex = cLexer(sourceCode, pp_expander=preprocess_replace, context=self.cLexerContext)
     self.cLexerContext = cLex.getContext()
-    tokens = self._eval(ppAst('ReplacementList', {'tokens': cTokens}))
+
+    cLexList = list(cLex)
     self.line += len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
-    return tokens
-  
+    return cLexList
+
   def eval_PPFile(self, cPPAST):
     nodes = cPPAST.getAttr('nodes')
     return self._eval(nodes)

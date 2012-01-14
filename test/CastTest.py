@@ -71,13 +71,13 @@ def pptok(sourcecode, skipIncludes=False):
 def ppparse(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   parsetree = ppParser().parse(TokenStream(cPPL))
-  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
+  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'terminal'))
   return prettyprint
 
 def ppast(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   ast = ppParser().parse(TokenStream(cPPL)).toAst()
-  prettyprint = str(AstPrettyPrintable(ast, 'type'))
+  prettyprint = str(AstPrettyPrintable(ast, 'terminal'))
   return prettyprint
 
 def ctok(sourcecode, skipIncludes=False):
@@ -92,7 +92,7 @@ def cparse(sourcecode, skipIncludes=False):
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
   parsetree = cParser().parse(TokenStream(cT))
-  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'type'))
+  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'terminal'))
   return prettyprint
 
 def cast(sourcecode, skipIncludes=False):
@@ -100,7 +100,7 @@ def cast(sourcecode, skipIncludes=False):
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
   cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
   ast = cParser().parse(TokenStream(cT)).toAst()
-  prettyprint = str(AstPrettyPrintable(ast, 'type'))
+  prettyprint = str(AstPrettyPrintable(ast, 'terminal'))
   return prettyprint
 
 def preprocessed(sourcecode, skipIncludes=False):
@@ -144,8 +144,8 @@ def load_tests(loader, tests, pattern):
         def ret():
           return transformFunction(sourcecode, skipIncludes).rstrip()
         return ret
-      actual = transformFunction(sourcecode, skipIncludes).rstrip()
       if not os.path.exists(expectedPath):
+        actual = transformFunction(sourcecode, skipIncludes).rstrip()
         fp = open(expectedPath, 'w')
         fp.write(actual + '\n')
         fp.close()

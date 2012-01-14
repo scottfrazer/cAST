@@ -27,9 +27,9 @@
           (_gen5: ),
           (compound_statement:
             lbrace,
-            (_gen35:
+            (_gen34:
               (block_item_list:
-                (_gen36:
+                (_gen35:
                   (block_item:
                     (statement:
                       (jump_statement:
@@ -45,7 +45,7 @@
                       )
                     )
                   ),
-                  (_gen36: )
+                  (_gen35: )
                 )
               )
             ),

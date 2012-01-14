@@ -1,4 +1,4 @@
-from cast.Token import Token
+from cast.Token import Token, cToken
 from cast.SourceCode import SourceCode
 
 class Lexer:
@@ -29,6 +29,9 @@ class PatternMatchingLexer(Lexer):
   
   def addToken(self, token):
     self.cache.append(token)
+  
+  def addTokens(self, tokens):
+    self.cache.extend(tokens)
   
   def hasToken(self):
     return len(self.cache) > 0
@@ -84,6 +87,8 @@ class PatternMatchingLexer(Lexer):
           sourceString = match.group(0)
           lineno = self.lineno
           colno = self.colno
+          # TODO: debug output of this format might be helpful.
+          # print("[{:<30}]\t'{}'".format(self.string[:30], match.group(0)))
           self.advance( sourceString )
           if function:
             function(sourceString, lineno, colno, terminalId, self)

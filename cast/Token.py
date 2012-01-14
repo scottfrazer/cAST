@@ -36,7 +36,7 @@ class Token:
   def toString( self, format = 'long' ):
     if format == 'tiny':
       return self.getString()
-    elif format == 'type':
+    elif format == 'terminal':
       return self.getTerminalStr()
     elif format == 'short':
       if len(self.getString()):
@@ -61,6 +61,33 @@ class cToken(Token):
     self.context = context
 
 class TokenList(list):
+  def __init__(self, arg1=[]):
+    super().__init__(arg1)
+    self.isIter = False
+  def __iter__(self):
+    if self.isIter == False:
+      self.index = 0
+      isIter = True
+    return self
+  def __next__(self):
+    try:
+      rval = self[self.index]
+      self.index += 1
+      return rval
+    except:
+      raise StopIteration
+  def reset(self):
+    self.isIter = False
+  def peek(self, whereto):
+    try:
+      return self[self.index + int(whereto)]
+    except:
+      return None
+  def check(self, whereto, ids):
+    try:
+      return self[self.index + int(whereto) - 1].id in ids
+    except:
+      return False
   def toString(self):
     class Cursor:
       def __init__(self):

@@ -27,9 +27,9 @@
           (_gen5: ),
           (compound_statement:
             lbrace,
-            (_gen35:
+            (_gen34:
               (block_item_list:
-                (_gen36:
+                (_gen35:
                   (block_item:
                     (declaration:
                       (_gen1:
@@ -70,7 +70,7 @@
                       semi
                     )
                   ),
-                  (_gen36:
+                  (_gen35:
                     (block_item:
                       (statement:
                         (iteration_statement:
@@ -85,9 +85,9 @@
                           (statement:
                             (compound_statement:
                               lbrace,
-                              (_gen35:
+                              (_gen34:
                                 (block_item_list:
-                                  (_gen36:
+                                  (_gen35:
                                     (block_item:
                                       (statement:
                                         (expression_statement:
@@ -97,7 +97,7 @@
                                                 identifier
                                               ),
                                               lparen,
-                                              (_gen40: ),
+                                              (_gen39: ),
                                               rparen
                                             )
                                           ),
@@ -105,7 +105,7 @@
                                         )
                                       )
                                     ),
-                                    (_gen36: )
+                                    (_gen35: )
                                   )
                                 )
                               ),
@@ -115,7 +115,7 @@
                         )
                       )
                     ),
-                    (_gen36:
+                    (_gen35:
                       (block_item:
                         (statement:
                           (iteration_statement:
@@ -123,9 +123,9 @@
                             (statement:
                               (compound_statement:
                                 lbrace,
-                                (_gen35:
+                                (_gen34:
                                   (block_item_list:
-                                    (_gen36:
+                                    (_gen35:
                                       (block_item:
                                         (statement:
                                           (expression_statement:
@@ -135,7 +135,7 @@
                                                   identifier
                                                 ),
                                                 lparen,
-                                                (_gen40: ),
+                                                (_gen39: ),
                                                 rparen
                                               )
                                             ),
@@ -143,7 +143,7 @@
                                           )
                                         )
                                       ),
-                                      (_gen36:
+                                      (_gen35:
                                         (block_item:
                                           (statement:
                                             (expression_statement:
@@ -164,7 +164,7 @@
                                             )
                                           )
                                         ),
-                                        (_gen36: )
+                                        (_gen35: )
                                       )
                                     )
                                   )
@@ -184,7 +184,7 @@
                           )
                         )
                       ),
-                      (_gen36:
+                      (_gen35:
                         (block_item:
                           (statement:
                             (selection_statement:
@@ -197,9 +197,9 @@
                               (statement:
                                 (compound_statement:
                                   lbrace,
-                                  (_gen35:
+                                  (_gen34:
                                     (block_item_list:
-                                      (_gen36:
+                                      (_gen35:
                                         (block_item:
                                           (statement:
                                             (labeled_statement:
@@ -218,7 +218,7 @@
                                                         identifier
                                                       ),
                                                       lparen,
-                                                      (_gen40: ),
+                                                      (_gen39: ),
                                                       rparen
                                                     )
                                                   ),
@@ -228,7 +228,7 @@
                                             )
                                           )
                                         ),
-                                        (_gen36:
+                                        (_gen35:
                                           (block_item:
                                             (statement:
                                               (expression_statement:
@@ -249,7 +249,7 @@
                                               )
                                             )
                                           ),
-                                          (_gen36:
+                                          (_gen35:
                                             (block_item:
                                               (statement:
                                                 (jump_statement:
@@ -258,7 +258,7 @@
                                                 )
                                               )
                                             ),
-                                            (_gen36:
+                                            (_gen35:
                                               (block_item:
                                                 (statement:
                                                   (labeled_statement:
@@ -277,7 +277,7 @@
                                                               identifier
                                                             ),
                                                             lparen,
-                                                            (_gen40: ),
+                                                            (_gen39: ),
                                                             rparen
                                                           )
                                                         ),
@@ -287,7 +287,7 @@
                                                   )
                                                 )
                                               ),
-                                              (_gen36:
+                                              (_gen35:
                                                 (block_item:
                                                   (statement:
                                                     (jump_statement:
@@ -297,7 +297,7 @@
                                                     )
                                                   )
                                                 ),
-                                                (_gen36:
+                                                (_gen35:
                                                   (block_item:
                                                     (statement:
                                                       (jump_statement:
@@ -306,7 +306,7 @@
                                                       )
                                                     )
                                                   ),
-                                                  (_gen36:
+                                                  (_gen35:
                                                     (block_item:
                                                       (statement:
                                                         (labeled_statement:
@@ -321,7 +321,7 @@
                                                         )
                                                       )
                                                     ),
-                                                    (_gen36: )
+                                                    (_gen35: )
                                                   )
                                                 )
                                               )
@@ -337,7 +337,7 @@
                             )
                           )
                         ),
-                        (_gen36:
+                        (_gen35:
                           (block_item:
                             (statement:
                               (labeled_statement:
@@ -352,11 +352,11 @@
                                           identifier
                                         ),
                                         lparen,
-                                        (_gen40:
+                                        (_gen39:
                                           (_expr_sans_comma:
                                             string_literal
                                           ),
-                                          (_gen41: )
+                                          (_gen40: )
                                         ),
                                         rparen
                                       )
@@ -367,7 +367,7 @@
                               )
                             )
                           ),
-                          (_gen36:
+                          (_gen35:
                             (block_item:
                               (statement:
                                 (jump_statement:
@@ -383,7 +383,7 @@
                                 )
                               )
                             ),
-                            (_gen36: )
+                            (_gen35: )
                           )
                         )
                       )
@@ -425,9 +425,9 @@
             (_gen5: ),
             (compound_statement:
               lbrace,
-              (_gen35:
+              (_gen34:
                 (block_item_list:
-                  (_gen36:
+                  (_gen35:
                     (block_item:
                       (statement:
                         (jump_statement:
@@ -443,7 +443,7 @@
                         )
                       )
                     ),
-                    (_gen36: )
+                    (_gen35: )
                   )
                 )
               ),
