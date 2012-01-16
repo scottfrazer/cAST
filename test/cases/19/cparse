@@ -1,0 +1,197 @@
+(translation_unit:
+  (_gen0:
+    (external_declaration:
+      external_declaration_hint,
+      (_gen1:
+        (declaration_specifier:
+          (type_specifier:
+            (struct_specifier:
+              struct,
+              (struct_or_union_sub:
+                identifier,
+                (_gen16:
+                  (struct_or_union_body:
+                    lbrace,
+                    (_gen17:
+                      (struct_declaration:
+                        (_gen18:
+                          (specifier_qualifier:
+                            (type_specifier:
+                              void
+                            )
+                          ),
+                          (_gen18: )
+                        ),
+                        (_gen19:
+                          (struct_declarator:
+                            (declarator:
+                              (_gen26: ),
+                              (_direct_declarator:
+                                (_direct_declarator:
+                                  lparen,
+                                  (declarator:
+                                    (_gen26:
+                                      (pointer:
+                                        (_gen36:
+                                          (pointer_sub:
+                                            asterisk,
+                                            (type_qualifier_list_opt: )
+                                          ),
+                                          (_gen37: )
+                                        )
+                                      )
+                                    ),
+                                    (_direct_declarator:
+                                      identifier
+                                    )
+                                  ),
+                                  rparen
+                                ),
+                                lparen,
+                                (direct_declarator_parameter_list:
+                                  (parameter_type_list:
+                                    (_gen28:
+                                      (parameter_declaration:
+                                        (abstract_parameter_declaration:
+                                          abstract_parameter_hint,
+                                          (_gen1:
+                                            (declaration_specifier:
+                                              (type_specifier:
+                                                void
+                                              )
+                                            ),
+                                            (_gen2: )
+                                          ),
+                                          (_gen34:
+                                            (abstract_declarator:
+                                              (pointer:
+                                                (_gen36:
+                                                  (pointer_sub:
+                                                    asterisk,
+                                                    (type_qualifier_list_opt: )
+                                                  ),
+                                                  (_gen37: )
+                                                )
+                                              ),
+                                              (_gen35: )
+                                            )
+                                          )
+                                        )
+                                      ),
+                                      (_gen29: )
+                                    ),
+                                    (_gen30: )
+                                  )
+                                ),
+                                rparen
+                              )
+                            ),
+                            (_gen21: )
+                          ),
+                          (_gen20: )
+                        ),
+                        semi
+                      ),
+                      (_gen17:
+                        (struct_declaration:
+                          (_gen18:
+                            (specifier_qualifier:
+                              (type_specifier:
+                                void
+                              )
+                            ),
+                            (_gen18: )
+                          ),
+                          (_gen19:
+                            (struct_declarator:
+                              (declarator:
+                                (_gen26:
+                                  (pointer:
+                                    (_gen36:
+                                      (pointer_sub:
+                                        asterisk,
+                                        (type_qualifier_list_opt: )
+                                      ),
+                                      (_gen37: )
+                                    )
+                                  )
+                                ),
+                                (_direct_declarator:
+                                  identifier
+                                )
+                              ),
+                              (_gen21: )
+                            ),
+                            (_gen20: )
+                          ),
+                          semi
+                        ),
+                        (_gen17:
+                          (struct_declaration:
+                            (_gen18:
+                              (specifier_qualifier:
+                                (type_specifier:
+                                  (struct_specifier:
+                                    struct,
+                                    (struct_or_union_sub:
+                                      identifier,
+                                      (_gen16: )
+                                    )
+                                  )
+                                )
+                              ),
+                              (_gen18: )
+                            ),
+                            (_gen19:
+                              (struct_declarator:
+                                (declarator:
+                                  (_gen26:
+                                    (pointer:
+                                      (_gen36:
+                                        (pointer_sub:
+                                          asterisk,
+                                          (type_qualifier_list_opt: )
+                                        ),
+                                        (_gen37: )
+                                      )
+                                    )
+                                  ),
+                                  (_direct_declarator:
+                                    identifier
+                                  )
+                                ),
+                                (_gen21: )
+                              ),
+                              (_gen20: )
+                            ),
+                            semi
+                          ),
+                          (_gen17: )
+                        )
+                      )
+                    ),
+                    rbrace
+                  )
+                )
+              )
+            )
+          )
+        ),
+        (_gen2: )
+      ),
+      (external_declaration_sub:
+        (_gen3:
+          (external_declaration_sub_sub:
+            (external_declarator:
+              declarator_hint,
+              (_gen6: )
+            )
+          ),
+          (_gen4: )
+        ),
+        semi
+      )
+    ),
+    (_gen0: )
+  )
+)

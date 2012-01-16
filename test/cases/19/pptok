@@ -1,0 +1,2 @@
+csource,1,1,struct mystruct \n{\n	void (*func)(void *);\n	void * arg;\n	struct mystruct *next;\n};\n,test/cases/19/source.c
+separator,7,1,,test/cases/19/source.c
