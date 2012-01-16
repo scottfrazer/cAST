@@ -82,7 +82,7 @@ def ppast(sourcecode, skipIncludes=False):
 
 def ctok(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource, skipIncludes=skipIncludes)])
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)], skipIncludes=skipIncludes)
   cT, symbols = cPP.process( sourcecode, dict() )
   actualTokens = list(map(mapFunc, list(cT)))
   return '\n'.join(actualTokens)

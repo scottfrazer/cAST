@@ -244,7 +244,7 @@ class cLexer(PatternMatchingLexer):
       self.endifTokens = set()
       self.hint_braceLevel = 0
       self.hint_parenLevel = 0
-      self.hint_structDecl = 0
+      self.hint_structDecl = set()
       self.hint_lock = False
     super().__init__(sourceCode, self.cRegex)
 
@@ -264,7 +264,7 @@ class cLexer(PatternMatchingLexer):
     elif token.id == cParser.TERMINAL_RBRACE:
       self.hint_braceLevel -= 1
 
-  def parse_parameters(self, tokenIterator):
+  def parse_parameter_list(self, tokenIterator):
     param = []
     params = []
     hint = cParser.TERMINAL_ABSTRACT_PARAMETER_HINT
@@ -285,7 +285,7 @@ class cLexer(PatternMatchingLexer):
          ( tokenIterator.check('+1', declaration_specifiers()) or \
            tokenIterator.check('+1', [cParser.TERMINAL_RPAREN]) ):
         param.append(token)
-        param.extend(self.parse_parameters(tokenIterator))
+        param.extend(self.parse_parameter_list(tokenIterator))
         continue
       elif (token.id == cParser.TERMINAL_COMMA) or \
            (token.id == cParser.TERMINAL_RPAREN and self.hint_parenLevel == startParenLevel - 1):
@@ -309,20 +309,61 @@ class cLexer(PatternMatchingLexer):
 
     return params
 
+  def parse_until(self, tokenIterator, terminal_id):
+    tokens = []
+    while True:
+      try:
+        n = next(tokenIterator)
+        self.update_hint_context(n)
+        tokens.append(n)
+        if n.id == terminal_id:
+          break
+      except StopIteration:
+        break
+    return tokens
+
+  def parse_parameters(self, tokenIterator):
+    tokens = []
+    hintId = False
+
+    if not tokenIterator.check('+1', [cParser.TERMINAL_IDENTIFIER]):
+      tokens.extend( self.parse_parameter_list(tokenIterator) )
+    else:
+      tokens.extend( self.parse_until(tokenIterator, cParser.TERMINAL_RPAREN) )
+
+    if tokenIterator.check('+1', [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA]):
+      hintId = cParser.TERMINAL_FUNCTION_PROTOTYPE_HINT
+      if tokenIterator.check('+1', [cParser.TERMINAL_COMMA]):
+        n = next(tokenIterator)
+        self.update_hint_context(n)
+        tokens.append(n)
+        self.keepGoing = True
+
+    elif tokenIterator.check('+1', [cParser.TERMINAL_LBRACE]):
+      hintId = cParser.TERMINAL_FUNCTION_DEFINITION_HINT
+
+    elif tokenIterator.check('+1', declaration_specifiers()):
+      hintId = cParser.TERMINAL_FUNCTION_DEFINITION_HINT
+      tokens.extend( self.parse_until(tokenIterator, cParser.TERMINAL_LBRACE) )
+
+    return (hintId, tokens)
+      
+
   def parseExternalDeclaration(self, tokenIterator):
     # returns as soon as a hint is determined or token stream ends
     ytokens = []
     xtokens = []
     self.lock = True
-    keepGoing = True
+    self.keepGoing = True
     collectDeclarationSpecifiers = True
 
-    while keepGoing:
-      keepGoing = funcFound = rparenFound = identFound = parametersParsed = hintId = False
+    while self.keepGoing:
+      self.keepGoing = funcFound = rparenFound = identFound = parametersParsed = False
+      hintId = False
       ztokens = []
       declarationSpecifiers = []
 
-      while True: #for token2 in tokenIterator:
+      while True:
         try:
           token2 = next(tokenIterator)
         except StopIteration:
@@ -331,16 +372,37 @@ class cLexer(PatternMatchingLexer):
         self.update_hint_context(token2)
 
         if collectDeclarationSpecifiers:
-          if self.hint_structDecl > 0:
-            if token2.id == cParser.TERMINAL_RBRACE:
-              self.hint_structDecl -= 1
+
+          if self.hint_braceLevel in self.hint_structDecl:
             declarationSpecifiers.append(token2)
-            if self.hint_structDecl == 0:
+
+            if funcFound and token2.id == cParser.TERMINAL_LPAREN and \
+               ( tokenIterator.check('+1', declaration_specifiers()) or \
+                 tokenIterator.check('+1', [cParser.TERMINAL_RPAREN, cParser.TERMINAL_IDENTIFIER]) ):
+              (_, paramTokens) =  self.parse_parameters(tokenIterator)
+              declarationSpecifiers.extend(paramTokens)
+            if token2.id == cParser.TERMINAL_RBRACE:
+              self.hint_structDecl = self.hint_structDecl.difference({self.hint_braceLevel})
+            if token2.id == cParser.TERMINAL_IDENTIFIER and \
+               (self.hint_parenLevel > 0 or tokenIterator.check('+1', [cParser.TERMINAL_LPAREN])):
+              funcFound = True
+              continue
+            if len(self.hint_structDecl) == 0:
               collectDeclarationSpecifiers = False
             continue
+
           elif token2.id in {cParser.TERMINAL_STRUCT, cParser.TERMINAL_UNION}:
-            self.hint_structDecl += 1
             declarationSpecifiers.append(token2)
+            while True:
+              try:
+                n = next(tokenIterator)
+                self.update_hint_context(n)
+                declarationSpecifiers.append(n)
+                if n.id == cParser.TERMINAL_LBRACE:
+                  break
+              except StopIteration:
+                break
+            self.hint_structDecl = self.hint_structDecl.union({self.hint_braceLevel})
             continue
           else:
             declarationSpecifiers.append(token2)
@@ -356,52 +418,20 @@ class cLexer(PatternMatchingLexer):
           funcFound = True
           continue
 
-        if funcFound:
-          if token2.id == cParser.TERMINAL_LPAREN and \
-             ( tokenIterator.check('+1', declaration_specifiers()) or \
-               tokenIterator.check('+1', [cParser.TERMINAL_RPAREN, cParser.TERMINAL_IDENTIFIER]) ):
-            if not tokenIterator.check('+1', [cParser.TERMINAL_IDENTIFIER]):
-              ztokens.extend( self.parse_parameters(tokenIterator) )
-            else:
-              while True:
-                try:
-                  n = next(tokenIterator)
-                  self.update_hint_context(n)
-                  ztokens.append(n)
-                  if n.id == cParser.TERMINAL_RPAREN:
-                    break
-                except StopIteration:
-                  break
-            if tokenIterator.check('+1', [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA]):
-              hintId = cParser.TERMINAL_FUNCTION_PROTOTYPE_HINT
-              if tokenIterator.check('+1', [cParser.TERMINAL_COMMA]):
-                n = next(tokenIterator)
-                self.update_hint_context(n)
-                ztokens.append(n)
-                keepGoing = True
-              break
-            if tokenIterator.check('+1', [cParser.TERMINAL_LBRACE]):
-              hintId = cParser.TERMINAL_FUNCTION_DEFINITION_HINT
-              break
-            if tokenIterator.check('+1', declaration_specifiers()):
-              hintId = cParser.TERMINAL_FUNCTION_DEFINITION_HINT
-              while True:
-                try:
-                  n = next(tokenIterator)
-                  self.update_hint_context(n)
-                  ztokens.append(n)
-                  if n.id == cParser.TERMINAL_LBRACE:
-                    break
-                except StopIteration:
-                  break
-              break
-            continue
+        if funcFound and token2.id == cParser.TERMINAL_LPAREN and \
+           ( tokenIterator.check('+1', declaration_specifiers()) or \
+             tokenIterator.check('+1', [cParser.TERMINAL_RPAREN, cParser.TERMINAL_IDENTIFIER]) ):
+          (hintId, paramTokens) = self.parse_parameters(tokenIterator)
+          ztokens.extend(paramTokens)
+          if hintId:
+            break
+          continue
 
         if token2.id in [cParser.TERMINAL_SEMI, cParser.TERMINAL_COMMA] and \
            self.hint_braceLevel == 0 and self.hint_parenLevel == 0:
           hintId = cParser.TERMINAL_DECLARATOR_HINT
           if token2.id == cParser.TERMINAL_COMMA:
-            keepGoing = True
+            self.keepGoing = True
           break
 
       ytokens.extend(declarationSpecifiers)

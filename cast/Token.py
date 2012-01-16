@@ -30,7 +30,7 @@ class Token:
     #return "'%s'" % (self.source_string)
     #return "'%s'" % (self.terminal_str.lower())
     #return '\033[1;34m<%s (%s) %d,%d>\033[0m' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
-    return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
+    return '[%s:%d] %s (%s) [%s line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.resource, self.lineno, self.colno )
     return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
 
   def toString( self, format = 'long' ):
