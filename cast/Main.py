@@ -41,6 +41,11 @@ def Cli():
               required = False,
               help = 'Writes debug information')
   
+  parser.add_argument('--skip-includes',
+              required = False,
+              action='store_true',
+              help = 'Don\'t process #include directives')
+  
   parser.add_argument('-e', '--encoding',
               required = False,
               help = 'File encoding')
@@ -82,7 +87,7 @@ def Cli():
   include_path_local = [os.path.dirname(os.path.abspath(cSourcePath))]
 
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create( include_path_global, include_path_local )
+  cPP = cPPFactory.create( include_path_global, include_path_local, skipIncludes=cli.skip_includes )
 
   if cli.command == 'pp':
     try:

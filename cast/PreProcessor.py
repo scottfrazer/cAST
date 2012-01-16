@@ -30,11 +30,11 @@ sys.setrecursionlimit(2000)
 # cPE = C Preprocessor Evaluator
 
 class Factory:
-  def create(self, includePathGlobal = ['.'], includePathLocal = ['.']):
+  def create(self, includePathGlobal=['.'], includePathLocal=['.'], skipIncludes=False):
     cPPP = ppParser()
     cP = cParser()
     cPE = cPreprocessingEvaluator( cPPP, cP, self, includePathGlobal, includePathLocal )
-    return PreProcessor( cPPP, cPE )
+    return PreProcessor( cPPP, cPE, skipIncludes=skipIncludes )
 
 # Also called 'source file' in ISO docs.
 # Takes C source code, pre-processes, returns C tokens
@@ -50,17 +50,18 @@ class PreProcessor:
     '??>': '}',
     '??-': '~',
   }
-  def __init__( self, cPPP, cPE ):
+
+  def __init__( self, cPPP, cPE, skipIncludes=False ):
     self.__dict__.update(locals())
   
-  def process( self, sourceCode, symbols = {}, lineno = 1, skipIncludes=False ):
+  def process( self, sourceCode, symbols = {}, lineno = 1 ):
     # Phase 1: Replace trigraphs with single-character equivalents
     for (trigraph, replacement) in self.trigraphs.items():
       sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     parsetree = self.cPPP.parse( TokenStream(ppLexer(sourceCode)) )
     ast = parsetree.toAst()
-    self.cPE.skipIncludes = skipIncludes
+    self.cPE.skipIncludes = self.skipIncludes
     ctokens = self.cPE.eval(ast, symbols)
     return (ctokens, self.cPE.symbols)
   
@@ -339,6 +340,8 @@ class cPreprocessingEvaluator:
     def preprocess_replace(ctokens):
       return self._eval(ppAst('ReplacementList', {'tokens': ctokens}))
     sourceCode = SourceCodeString(cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
+    if '__darwin_nl_item' in cPPAST.getString():
+      pass
     cLex = cLexer(sourceCode, pp_expander=preprocess_replace, context=self.cLexerContext)
     self.cLexerContext = cLex.getContext()
 

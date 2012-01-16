@@ -82,31 +82,31 @@ def ppast(sourcecode, skipIncludes=False):
 
 def ctok(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource, skipIncludes=skipIncludes)])
+  cT, symbols = cPP.process( sourcecode, dict() )
   actualTokens = list(map(mapFunc, list(cT)))
   return '\n'.join(actualTokens)
 
 def cparse(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)], skipIncludes=skipIncludes)
+  cT, symbols = cPP.process( sourcecode, dict() )
   parsetree = cParser().parse(TokenStream(cT))
   prettyprint = str(ParseTreePrettyPrintable(parsetree, 'terminal'))
   return prettyprint
 
 def cast(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)], skipIncludes=skipIncludes)
+  cT, symbols = cPP.process( sourcecode, dict() )
   ast = cParser().parse(TokenStream(cT)).toAst()
   prettyprint = str(AstPrettyPrintable(ast, 'terminal'))
   return prettyprint
 
 def preprocessed(sourcecode, skipIncludes=False):
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)])
-  cT, symbols = cPP.process( sourcecode, dict(), skipIncludes=skipIncludes )
+  cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)], skipIncludes=skipIncludes)
+  cT, symbols = cPP.process( sourcecode, dict() )
   return cT.toString()
   
 transformations = [

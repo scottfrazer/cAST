@@ -35,6 +35,9 @@ class SourceCodeString:
   def getLine(self):
     return self.line
 
+  def __str__(self):
+    return '<SourceCodeString str=%s>' % (self.string)
+
 class SourceCodeEmpty:
   def __init__(self, resource):
     self.resource = resource

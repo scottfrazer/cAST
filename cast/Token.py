@@ -83,6 +83,12 @@ class TokenList(list):
       return self[self.index + int(whereto)]
     except:
       return None
+  def go(self, whereto):
+    whereto = int(whereto)
+    if self.index + whereto < 0 or self.index + whereto + 1 > len(self):
+      raise Exception()
+    self.index += whereto
+    return self
   def check(self, whereto, ids):
     try:
       return self[self.index + int(whereto) - 1].id in ids
