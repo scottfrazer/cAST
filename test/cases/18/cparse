@@ -14,7 +14,7 @@
         (external_function:
           function_definition_hint,
           (declarator:
-            (pointer_opt: ),
+            (_gen26: ),
             (_direct_declarator:
               (_direct_declarator:
                 identifier
@@ -27,9 +27,9 @@
           (_gen5: ),
           (compound_statement:
             lbrace,
-            (_gen34:
+            (_gen39:
               (block_item_list:
-                (_gen35:
+                (_gen40:
                   (block_item:
                     (statement:
                       (expression_statement:
@@ -56,7 +56,7 @@
                       )
                     )
                   ),
-                  (_gen35: )
+                  (_gen40: )
                 )
               )
             ),

@@ -39,28 +39,28 @@
           direct_declarator=(FunctionSignature:
             params=(ParameterTypeList:
               parameter_declarations=[
-                (ParameterDeclaration:
-                  sub=(ParameterSub:
-                    name_and_size=identifier,
-                    pointer=None
-                  ),
+                (NamedParameter:
                   declaration_specifiers=[
                     int
-                  ]
+                  ],
+                  declarator=(Declarator:
+                    direct_declarator=identifier,
+                    pointer=None
+                  )
                 ),
-                (ParameterDeclaration:
-                  sub=(ParameterSub:
-                    name_and_size=(Array:
+                (NamedParameter:
+                  declaration_specifiers=[
+                    char
+                  ],
+                  declarator=(Declarator:
+                    direct_declarator=(Array:
                       name=identifier,
                       size=None
                     ),
                     pointer=[
                       asterisk
                     ]
-                  ),
-                  declaration_specifiers=[
-                    char
-                  ]
+                  )
                 )
               ],
               va_args=None
@@ -108,14 +108,14 @@
           direct_declarator=(FunctionSignature:
             params=(ParameterTypeList:
               parameter_declarations=[
-                (ParameterDeclaration:
-                  sub=(ParameterSub:
-                    name_and_size=identifier,
-                    pointer=None
-                  ),
+                (NamedParameter:
                   declaration_specifiers=[
                     int
-                  ]
+                  ],
+                  declarator=(Declarator:
+                    direct_declarator=identifier,
+                    pointer=None
+                  )
                 )
               ],
               va_args=None

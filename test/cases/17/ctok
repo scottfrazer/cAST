@@ -4,7 +4,7 @@ int,1,9,int,test/cases/17/source.c
 declarator_hint,1,1,,test/cases/17/source.c
 identifier,1,13,MILES,test/cases/17/source.c
 comma,1,18,,,test/cases/17/source.c
-function_prototype_hint,1,1,,test/cases/17/source.c
+function_prototype_hint,1,20,,test/cases/17/source.c
 identifier,1,20,KLICKSP,test/cases/17/source.c
 lparen,1,27,(,test/cases/17/source.c
 rparen,1,28,),test/cases/17/source.c
@@ -34,7 +34,7 @@ rbrace,3,27,},test/cases/17/source.c
 declarator_hint,3,1,,test/cases/17/source.c
 identifier,3,29,t,test/cases/17/source.c
 comma,3,30,,,test/cases/17/source.c
-declarator_hint,3,1,,test/cases/17/source.c
+declarator_hint,3,32,,test/cases/17/source.c
 asterisk,3,32,*,test/cases/17/source.c
 identifier,3,34,tp,test/cases/17/source.c
 semi,3,36,;,test/cases/17/source.c
@@ -95,6 +95,7 @@ int,17,1,int,test/cases/17/source.c
 function_definition_hint,17,1,,test/cases/17/source.c
 identifier,17,5,test,test/cases/17/source.c
 lparen,17,9,(,test/cases/17/source.c
+named_parameter_hint,17,10,,test/cases/17/source.c
 register,17,10,register,test/cases/17/source.c
 const,17,19,const,test/cases/17/source.c
 int,17,25,int,test/cases/17/source.c

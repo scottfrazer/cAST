@@ -1,6 +1,6 @@
 struct mystruct
 {
- void (*func)(void *);
- void * arg;
- struct mystruct *next;
+  void (*func)(void *);
+  void * arg;
+  struct mystruct *next;
 };

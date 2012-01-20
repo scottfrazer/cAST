@@ -8,11 +8,11 @@
             direct_declarator=(FunctionSignature:
               params=(ParameterTypeList:
                 parameter_declarations=[
-                  (ParameterDeclaration:
-                    sub=None,
+                  (AbstractParameter:
                     declaration_specifiers=[
                       void
-                    ]
+                    ],
+                    declarator=None
                   )
                 ],
                 va_args=None
@@ -65,27 +65,27 @@
               direct_declarator=(FunctionSignature:
                 params=(ParameterTypeList:
                   parameter_declarations=[
-                    (ParameterDeclaration:
-                      sub=(ParameterSub:
-                        name_and_size=identifier,
+                    (NamedParameter:
+                      declaration_specifiers=[
+                        int
+                      ],
+                      declarator=(Declarator:
+                        direct_declarator=identifier,
                         pointer=[
                           asterisk
                         ]
-                      ),
-                      declaration_specifiers=[
-                        int
-                      ]
+                      )
                     ),
-                    (ParameterDeclaration:
-                      sub=(ParameterSub:
-                        name_and_size=identifier,
+                    (NamedParameter:
+                      declaration_specifiers=[
+                        int
+                      ],
+                      declarator=(Declarator:
+                        direct_declarator=identifier,
                         pointer=[
                           asterisk
                         ]
-                      ),
-                      declaration_specifiers=[
-                        int
-                      ]
+                      )
                     )
                   ],
                   va_args=None
@@ -93,7 +93,10 @@
                 declarator=(Declarator:
                   direct_declarator=(Array:
                     name=identifier,
-                    size=None
+                    size=(DirectDeclaratorExpression:
+                      modifiers=None,
+                      value=integer_constant
+                    )
                   ),
                   pointer=[
                     asterisk
@@ -117,11 +120,11 @@
             direct_declarator=(FunctionSignature:
               params=(ParameterTypeList:
                 parameter_declarations=[
-                  (ParameterDeclaration:
-                    sub=None,
+                  (AbstractParameter:
                     declaration_specifiers=[
                       int
-                    ]
+                    ],
+                    declarator=None
                   )
                 ],
                 va_args=elipsis
@@ -130,38 +133,32 @@
                 direct_declarator=(FunctionSignature:
                   params=(ParameterTypeList:
                     parameter_declarations=[
-                      (ParameterDeclaration:
-                        sub=(ParameterSub:
-                          name_and_size=(FunctionSignature:
-                            params=(ParameterTypeList:
-                              parameter_declarations=[
-                                (ParameterDeclaration:
-                                  sub=None,
-                                  declaration_specifiers=[
-                                    long
-                                  ]
-                                )
-                              ],
-                              va_args=None
-                            ),
-                            declarator=(Declarator:
-                              direct_declarator=None,
-                              pointer=[
-                                asterisk
-                              ]
-                            )
-                          ),
-                          pointer=None
-                        ),
+                      (AbstractParameter:
                         declaration_specifiers=[
                           int
-                        ]
+                        ],
+                        declarator=(AbstractFunction:
+                          object=[
+                            asterisk
+                          ],
+                          params=(ParameterTypeList:
+                            parameter_declarations=[
+                              (AbstractParameter:
+                                declaration_specifiers=[
+                                  long
+                                ],
+                                declarator=None
+                              )
+                            ],
+                            va_args=None
+                          )
+                        )
                       ),
-                      (ParameterDeclaration:
-                        sub=None,
+                      (AbstractParameter:
                         declaration_specifiers=[
                           int
-                        ]
+                        ],
+                        declarator=None
                       )
                     ],
                     va_args=None

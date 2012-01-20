@@ -1,0 +1,11 @@
+external_declaration_hint,6,1,,test/cases/6/source.c
+int,6,1,int,test/cases/6/source.c
+function_definition_hint,6,1,,test/cases/6/source.c
+identifier,6,5,main,test/cases/6/source.c
+lparen,6,9,(,test/cases/6/source.c
+rparen,6,10,),test/cases/6/source.c
+lbrace,7,1,{,test/cases/6/source.c
+return,8,3,return,test/cases/6/source.c
+integer_constant,8,10,0,test/cases/6/source.c
+semi,8,11,;,test/cases/6/source.c
+rbrace,9,1,},test/cases/6/source.c

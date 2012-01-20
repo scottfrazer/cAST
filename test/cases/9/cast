@@ -8,11 +8,11 @@
             direct_declarator=(FunctionSignature:
               params=(ParameterTypeList:
                 parameter_declarations=[
-                  (ParameterDeclaration:
-                    sub=None,
+                  (AbstractParameter:
                     declaration_specifiers=[
                       int
-                    ]
+                    ],
+                    declarator=None
                   )
                 ],
                 va_args=elipsis
@@ -21,38 +21,32 @@
                 direct_declarator=(FunctionSignature:
                   params=(ParameterTypeList:
                     parameter_declarations=[
-                      (ParameterDeclaration:
-                        sub=(ParameterSub:
-                          name_and_size=(FunctionSignature:
-                            params=(ParameterTypeList:
-                              parameter_declarations=[
-                                (ParameterDeclaration:
-                                  sub=None,
-                                  declaration_specifiers=[
-                                    long
-                                  ]
-                                )
-                              ],
-                              va_args=None
-                            ),
-                            declarator=(Declarator:
-                              direct_declarator=None,
-                              pointer=[
-                                asterisk
-                              ]
-                            )
-                          ),
-                          pointer=None
-                        ),
+                      (AbstractParameter:
                         declaration_specifiers=[
                           int
-                        ]
+                        ],
+                        declarator=(AbstractFunction:
+                          object=[
+                            asterisk
+                          ],
+                          params=(ParameterTypeList:
+                            parameter_declarations=[
+                              (AbstractParameter:
+                                declaration_specifiers=[
+                                  long
+                                ],
+                                declarator=None
+                              )
+                            ],
+                            va_args=None
+                          )
+                        )
                       ),
-                      (ParameterDeclaration:
-                        sub=None,
+                      (AbstractParameter:
                         declaration_specifiers=[
                           int
-                        ]
+                        ],
+                        declarator=None
                       )
                     ],
                     va_args=None

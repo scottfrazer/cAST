@@ -29,10 +29,13 @@ asterisk,6,14,*,test/cases/15/source.c
 identifier,6,15,pt2Function,test/cases/15/source.c
 rparen,6,26,),test/cases/15/source.c
 lparen,6,27,(,test/cases/15/source.c
+abstract_parameter_hint,6,28,,test/cases/15/source.c
 float,6,28,float,test/cases/15/source.c
 comma,6,33,,,test/cases/15/source.c
+abstract_parameter_hint,6,35,,test/cases/15/source.c
 char,6,35,char,test/cases/15/source.c
 comma,6,39,,,test/cases/15/source.c
+abstract_parameter_hint,6,41,,test/cases/15/source.c
 char,6,41,char,test/cases/15/source.c
 rparen,6,45,),test/cases/15/source.c
 semi,6,46,;,test/cases/15/source.c

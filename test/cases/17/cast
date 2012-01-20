@@ -259,16 +259,16 @@
           direct_declarator=(FunctionSignature:
             params=(ParameterTypeList:
               parameter_declarations=[
-                (ParameterDeclaration:
-                  sub=(ParameterSub:
-                    name_and_size=identifier,
-                    pointer=None
-                  ),
+                (NamedParameter:
                   declaration_specifiers=[
                     register,
                     const,
                     int
-                  ]
+                  ],
+                  declarator=(Declarator:
+                    direct_declarator=identifier,
+                    pointer=None
+                  )
                 )
               ],
               va_args=None

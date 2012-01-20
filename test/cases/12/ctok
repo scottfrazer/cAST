@@ -3,9 +3,11 @@ int,1,1,int,test/cases/12/source.c
 function_definition_hint,1,1,,test/cases/12/source.c
 identifier,1,5,main,test/cases/12/source.c
 lparen,1,9,(,test/cases/12/source.c
+named_parameter_hint,1,11,,test/cases/12/source.c
 int,1,11,int,test/cases/12/source.c
 identifier,1,15,argc,test/cases/12/source.c
 comma,1,19,,,test/cases/12/source.c
+named_parameter_hint,1,21,,test/cases/12/source.c
 char,1,21,char,test/cases/12/source.c
 asterisk,1,26,*,test/cases/12/source.c
 identifier,1,28,argv,test/cases/12/source.c
@@ -36,6 +38,7 @@ int,8,1,int,test/cases/12/source.c
 function_definition_hint,8,1,,test/cases/12/source.c
 identifier,8,5,factorial,test/cases/12/source.c
 lparen,8,14,(,test/cases/12/source.c
+named_parameter_hint,8,15,,test/cases/12/source.c
 int,8,15,int,test/cases/12/source.c
 identifier,8,19,x,test/cases/12/source.c
 rparen,8,20,),test/cases/12/source.c

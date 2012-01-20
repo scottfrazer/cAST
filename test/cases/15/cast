@@ -73,23 +73,23 @@
               direct_declarator=(FunctionSignature:
                 params=(ParameterTypeList:
                   parameter_declarations=[
-                    (ParameterDeclaration:
-                      sub=None,
+                    (AbstractParameter:
                       declaration_specifiers=[
                         float
-                      ]
+                      ],
+                      declarator=None
                     ),
-                    (ParameterDeclaration:
-                      sub=None,
+                    (AbstractParameter:
                       declaration_specifiers=[
                         char
-                      ]
+                      ],
+                      declarator=None
                     ),
-                    (ParameterDeclaration:
-                      sub=None,
+                    (AbstractParameter:
                       declaration_specifiers=[
                         char
-                      ]
+                      ],
+                      declarator=None
                     )
                   ],
                   va_args=None

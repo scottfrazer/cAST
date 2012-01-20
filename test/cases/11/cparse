@@ -25,7 +25,7 @@
                         (_gen19:
                           (struct_declarator:
                             (declarator:
-                              (pointer_opt: ),
+                              (_gen26: ),
                               (_direct_declarator:
                                 identifier
                               )
@@ -75,7 +75,7 @@
           (external_function:
             function_definition_hint,
             (declarator:
-              (pointer_opt: ),
+              (_gen26: ),
               (_direct_declarator:
                 (_direct_declarator:
                   identifier
@@ -88,7 +88,7 @@
             (_gen5: ),
             (compound_statement:
               lbrace,
-              (_gen34: ),
+              (_gen39: ),
               rbrace
             )
           )

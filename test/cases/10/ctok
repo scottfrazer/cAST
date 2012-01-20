@@ -30,9 +30,11 @@ int,7,1,int,test/cases/10/source.c
 function_definition_hint,7,1,,test/cases/10/source.c
 identifier,7,5,func,test/cases/10/source.c
 lparen,7,9,(,test/cases/10/source.c
+named_parameter_hint,7,10,,test/cases/10/source.c
 int,7,10,int,test/cases/10/source.c
 identifier,7,14,x,test/cases/10/source.c
 comma,7,15,,,test/cases/10/source.c
+named_parameter_hint,7,17,,test/cases/10/source.c
 char,7,17,char,test/cases/10/source.c
 identifier,7,22,y,test/cases/10/source.c
 rparen,7,23,),test/cases/10/source.c
@@ -68,12 +70,15 @@ asterisk,12,6,*,test/cases/10/source.c
 identifier,12,7,ptr,test/cases/10/source.c
 rparen,12,10,),test/cases/10/source.c
 lparen,12,11,(,test/cases/10/source.c
+named_parameter_hint,12,12,,test/cases/10/source.c
 short,12,12,short,test/cases/10/source.c
 identifier,12,18,a,test/cases/10/source.c
 comma,12,19,,,test/cases/10/source.c
+named_parameter_hint,12,21,,test/cases/10/source.c
 short,12,21,short,test/cases/10/source.c
 identifier,12,27,b,test/cases/10/source.c
 comma,12,28,,,test/cases/10/source.c
+named_parameter_hint,12,30,,test/cases/10/source.c
 short,12,30,short,test/cases/10/source.c
 identifier,12,36,c,test/cases/10/source.c
 rparen,12,37,),test/cases/10/source.c

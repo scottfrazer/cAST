@@ -88,23 +88,23 @@
           direct_declarator=(FunctionSignature:
             params=(ParameterTypeList:
               parameter_declarations=[
-                (ParameterDeclaration:
-                  sub=(ParameterSub:
-                    name_and_size=identifier,
-                    pointer=None
-                  ),
+                (NamedParameter:
                   declaration_specifiers=[
                     int
-                  ]
-                ),
-                (ParameterDeclaration:
-                  sub=(ParameterSub:
-                    name_and_size=identifier,
+                  ],
+                  declarator=(Declarator:
+                    direct_declarator=identifier,
                     pointer=None
-                  ),
+                  )
+                ),
+                (NamedParameter:
                   declaration_specifiers=[
                     char
-                  ]
+                  ],
+                  declarator=(Declarator:
+                    direct_declarator=identifier,
+                    pointer=None
+                  )
                 )
               ],
               va_args=None
@@ -177,32 +177,32 @@
               direct_declarator=(FunctionSignature:
                 params=(ParameterTypeList:
                   parameter_declarations=[
-                    (ParameterDeclaration:
-                      sub=(ParameterSub:
-                        name_and_size=identifier,
-                        pointer=None
-                      ),
+                    (NamedParameter:
                       declaration_specifiers=[
                         short
-                      ]
+                      ],
+                      declarator=(Declarator:
+                        direct_declarator=identifier,
+                        pointer=None
+                      )
                     ),
-                    (ParameterDeclaration:
-                      sub=(ParameterSub:
-                        name_and_size=identifier,
-                        pointer=None
-                      ),
+                    (NamedParameter:
                       declaration_specifiers=[
                         short
-                      ]
+                      ],
+                      declarator=(Declarator:
+                        direct_declarator=identifier,
+                        pointer=None
+                      )
                     ),
-                    (ParameterDeclaration:
-                      sub=(ParameterSub:
-                        name_and_size=identifier,
-                        pointer=None
-                      ),
+                    (NamedParameter:
                       declaration_specifiers=[
                         short
-                      ]
+                      ],
+                      declarator=(Declarator:
+                        direct_declarator=identifier,
+                        pointer=None
+                      )
                     )
                   ],
                   va_args=None
