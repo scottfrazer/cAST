@@ -1,96 +1,96 @@
-external_declaration_hint,1,1,,test/cases/14/source.c
-int,1,1,int,test/cases/14/source.c
-function_definition_hint,1,1,,test/cases/14/source.c
-identifier,1,5,main,test/cases/14/source.c
-lparen,1,9,(,test/cases/14/source.c
-rparen,1,10,),test/cases/14/source.c
-lbrace,2,1,{,test/cases/14/source.c
-int,3,3,int,test/cases/14/source.c
-identifier,3,7,a,test/cases/14/source.c
-assign,3,9,=,test/cases/14/source.c
-integer_constant,3,11,0,test/cases/14/source.c
-semi,3,12,;,test/cases/14/source.c
-while,4,3,while,test/cases/14/source.c
-lparen,4,8,(,test/cases/14/source.c
-integer_constant,4,9,1,test/cases/14/source.c
-rparen,4,10,),test/cases/14/source.c
-lbrace,4,12,{,test/cases/14/source.c
-identifier,5,5,func,test/cases/14/source.c
-lparen,5,9,(,test/cases/14/source.c
-rparen,5,10,),test/cases/14/source.c
-semi,5,11,;,test/cases/14/source.c
-rbrace,6,3,},test/cases/14/source.c
-do,8,3,do,test/cases/14/source.c
-lbrace,8,6,{,test/cases/14/source.c
-identifier,9,5,func,test/cases/14/source.c
-lparen,9,9,(,test/cases/14/source.c
-rparen,9,10,),test/cases/14/source.c
-semi,9,11,;,test/cases/14/source.c
-identifier,10,5,a,test/cases/14/source.c
-addeq,10,7,+=,test/cases/14/source.c
-integer_constant,10,10,1,test/cases/14/source.c
-semi,10,11,;,test/cases/14/source.c
-rbrace,11,3,},test/cases/14/source.c
-while,11,5,while,test/cases/14/source.c
-lparen,11,10,(,test/cases/14/source.c
-integer_constant,11,11,0,test/cases/14/source.c
-rparen,11,12,),test/cases/14/source.c
-semi,11,13,;,test/cases/14/source.c
-switch,13,3,switch,test/cases/14/source.c
-lparen,13,9,(,test/cases/14/source.c
-identifier,13,10,a,test/cases/14/source.c
-rparen,13,11,),test/cases/14/source.c
-lbrace,14,3,{,test/cases/14/source.c
-case,15,5,case,test/cases/14/source.c
-integer_constant,15,10,0,test/cases/14/source.c
-colon,15,11,:,test/cases/14/source.c
-identifier,16,7,func,test/cases/14/source.c
-lparen,16,11,(,test/cases/14/source.c
-rparen,16,12,),test/cases/14/source.c
-semi,16,13,;,test/cases/14/source.c
-identifier,17,7,a,test/cases/14/source.c
-addeq,17,9,+=,test/cases/14/source.c
-integer_constant,17,12,1,test/cases/14/source.c
-semi,17,13,;,test/cases/14/source.c
-break,18,7,break,test/cases/14/source.c
-semi,18,12,;,test/cases/14/source.c
-case,19,5,case,test/cases/14/source.c
-integer_constant,19,10,1,test/cases/14/source.c
-colon,19,11,:,test/cases/14/source.c
-identifier,20,7,func,test/cases/14/source.c
-lparen,20,11,(,test/cases/14/source.c
-rparen,20,12,),test/cases/14/source.c
-semi,20,13,;,test/cases/14/source.c
-goto,21,7,goto,test/cases/14/source.c
-identifier,21,12,byebye,test/cases/14/source.c
-semi,21,18,;,test/cases/14/source.c
-break,22,7,break,test/cases/14/source.c
-semi,22,12,;,test/cases/14/source.c
-default,23,5,default,test/cases/14/source.c
-colon,23,12,:,test/cases/14/source.c
-break,24,7,break,test/cases/14/source.c
-semi,24,12,;,test/cases/14/source.c
-rbrace,25,3,},test/cases/14/source.c
-label_hint,27,1,,test/cases/14/source.c
-identifier,27,1,byebye,test/cases/14/source.c
-colon,27,7,:,test/cases/14/source.c
-identifier,28,3,printf,test/cases/14/source.c
-lparen,28,9,(,test/cases/14/source.c
-string_literal,28,10,"See ya!",test/cases/14/source.c
-rparen,28,19,),test/cases/14/source.c
-semi,28,20,;,test/cases/14/source.c
-return,29,3,return,test/cases/14/source.c
-integer_constant,29,10,0,test/cases/14/source.c
-semi,29,11,;,test/cases/14/source.c
-rbrace,30,1,},test/cases/14/source.c
-external_declaration_hint,32,1,,test/cases/14/source.c
-int,32,1,int,test/cases/14/source.c
-function_definition_hint,32,1,,test/cases/14/source.c
-identifier,32,5,func,test/cases/14/source.c
-lparen,32,9,(,test/cases/14/source.c
-rparen,32,10,),test/cases/14/source.c
-lbrace,33,1,{,test/cases/14/source.c
-return,34,3,return,test/cases/14/source.c
-integer_constant,34,10,0,test/cases/14/source.c
-semi,34,11,;,test/cases/14/source.c
-rbrace,35,1,},test/cases/14/source.c
+[c:75] external_declaration_hint () [test/cases/14/source.c line 1, col 1]
+[c:13] int (int) [test/cases/14/source.c line 1, col 1]
+[c:42] function_definition_hint () [test/cases/14/source.c line 1, col 1]
+[c:115] identifier (main) [test/cases/14/source.c line 1, col 5]
+[c:47] lparen (() [test/cases/14/source.c line 1, col 9]
+[c:48] rparen ()) [test/cases/14/source.c line 1, col 10]
+[c:59] lbrace ({) [test/cases/14/source.c line 2, col 1]
+[c:13] int (int) [test/cases/14/source.c line 3, col 3]
+[c:115] identifier (a) [test/cases/14/source.c line 3, col 7]
+[c:91] assign (=) [test/cases/14/source.c line 3, col 9]
+[c:49] integer_constant (0) [test/cases/14/source.c line 3, col 11]
+[c:20] semi (;) [test/cases/14/source.c line 3, col 12]
+[c:76] while (while) [test/cases/14/source.c line 4, col 3]
+[c:47] lparen (() [test/cases/14/source.c line 4, col 8]
+[c:49] integer_constant (1) [test/cases/14/source.c line 4, col 9]
+[c:48] rparen ()) [test/cases/14/source.c line 4, col 10]
+[c:59] lbrace ({) [test/cases/14/source.c line 4, col 12]
+[c:115] identifier (func) [test/cases/14/source.c line 5, col 5]
+[c:47] lparen (() [test/cases/14/source.c line 5, col 9]
+[c:48] rparen ()) [test/cases/14/source.c line 5, col 10]
+[c:20] semi (;) [test/cases/14/source.c line 5, col 11]
+[c:89] rbrace (}) [test/cases/14/source.c line 6, col 3]
+[c:19] do (do) [test/cases/14/source.c line 8, col 3]
+[c:59] lbrace ({) [test/cases/14/source.c line 8, col 6]
+[c:115] identifier (func) [test/cases/14/source.c line 9, col 5]
+[c:47] lparen (() [test/cases/14/source.c line 9, col 9]
+[c:48] rparen ()) [test/cases/14/source.c line 9, col 10]
+[c:20] semi (;) [test/cases/14/source.c line 9, col 11]
+[c:115] identifier (a) [test/cases/14/source.c line 10, col 5]
+[c:61] addeq (+=) [test/cases/14/source.c line 10, col 7]
+[c:49] integer_constant (1) [test/cases/14/source.c line 10, col 10]
+[c:20] semi (;) [test/cases/14/source.c line 10, col 11]
+[c:89] rbrace (}) [test/cases/14/source.c line 11, col 3]
+[c:76] while (while) [test/cases/14/source.c line 11, col 5]
+[c:47] lparen (() [test/cases/14/source.c line 11, col 10]
+[c:49] integer_constant (0) [test/cases/14/source.c line 11, col 11]
+[c:48] rparen ()) [test/cases/14/source.c line 11, col 12]
+[c:20] semi (;) [test/cases/14/source.c line 11, col 13]
+[c:52] switch (switch) [test/cases/14/source.c line 13, col 3]
+[c:47] lparen (() [test/cases/14/source.c line 13, col 9]
+[c:115] identifier (a) [test/cases/14/source.c line 13, col 10]
+[c:48] rparen ()) [test/cases/14/source.c line 13, col 11]
+[c:59] lbrace ({) [test/cases/14/source.c line 14, col 3]
+[c:100] case (case) [test/cases/14/source.c line 15, col 5]
+[c:49] integer_constant (0) [test/cases/14/source.c line 15, col 10]
+[c:114] colon (:) [test/cases/14/source.c line 15, col 11]
+[c:115] identifier (func) [test/cases/14/source.c line 16, col 7]
+[c:47] lparen (() [test/cases/14/source.c line 16, col 11]
+[c:48] rparen ()) [test/cases/14/source.c line 16, col 12]
+[c:20] semi (;) [test/cases/14/source.c line 16, col 13]
+[c:115] identifier (a) [test/cases/14/source.c line 17, col 7]
+[c:61] addeq (+=) [test/cases/14/source.c line 17, col 9]
+[c:49] integer_constant (1) [test/cases/14/source.c line 17, col 12]
+[c:20] semi (;) [test/cases/14/source.c line 17, col 13]
+[c:69] break (break) [test/cases/14/source.c line 18, col 7]
+[c:20] semi (;) [test/cases/14/source.c line 18, col 12]
+[c:100] case (case) [test/cases/14/source.c line 19, col 5]
+[c:49] integer_constant (1) [test/cases/14/source.c line 19, col 10]
+[c:114] colon (:) [test/cases/14/source.c line 19, col 11]
+[c:115] identifier (func) [test/cases/14/source.c line 20, col 7]
+[c:47] lparen (() [test/cases/14/source.c line 20, col 11]
+[c:48] rparen ()) [test/cases/14/source.c line 20, col 12]
+[c:20] semi (;) [test/cases/14/source.c line 20, col 13]
+[c:71] goto (goto) [test/cases/14/source.c line 21, col 7]
+[c:115] identifier (byebye) [test/cases/14/source.c line 21, col 12]
+[c:20] semi (;) [test/cases/14/source.c line 21, col 18]
+[c:69] break (break) [test/cases/14/source.c line 22, col 7]
+[c:20] semi (;) [test/cases/14/source.c line 22, col 12]
+[c:66] default (default) [test/cases/14/source.c line 23, col 5]
+[c:114] colon (:) [test/cases/14/source.c line 23, col 12]
+[c:69] break (break) [test/cases/14/source.c line 24, col 7]
+[c:20] semi (;) [test/cases/14/source.c line 24, col 12]
+[c:89] rbrace (}) [test/cases/14/source.c line 25, col 3]
+[c:107] label_hint () [test/cases/14/source.c line 27, col 1]
+[c:115] identifier (byebye) [test/cases/14/source.c line 27, col 1]
+[c:114] colon (:) [test/cases/14/source.c line 27, col 7]
+[c:115] identifier (printf) [test/cases/14/source.c line 28, col 3]
+[c:47] lparen (() [test/cases/14/source.c line 28, col 9]
+[c:82] string_literal ("See ya!") [test/cases/14/source.c line 28, col 10]
+[c:48] rparen ()) [test/cases/14/source.c line 28, col 19]
+[c:20] semi (;) [test/cases/14/source.c line 28, col 20]
+[c:118] return (return) [test/cases/14/source.c line 29, col 3]
+[c:49] integer_constant (0) [test/cases/14/source.c line 29, col 10]
+[c:20] semi (;) [test/cases/14/source.c line 29, col 11]
+[c:89] rbrace (}) [test/cases/14/source.c line 30, col 1]
+[c:75] external_declaration_hint () [test/cases/14/source.c line 32, col 1]
+[c:13] int (int) [test/cases/14/source.c line 32, col 1]
+[c:42] function_definition_hint () [test/cases/14/source.c line 32, col 1]
+[c:115] identifier (func) [test/cases/14/source.c line 32, col 5]
+[c:47] lparen (() [test/cases/14/source.c line 32, col 9]
+[c:48] rparen ()) [test/cases/14/source.c line 32, col 10]
+[c:59] lbrace ({) [test/cases/14/source.c line 33, col 1]
+[c:118] return (return) [test/cases/14/source.c line 34, col 3]
+[c:49] integer_constant (0) [test/cases/14/source.c line 34, col 10]
+[c:20] semi (;) [test/cases/14/source.c line 34, col 11]
+[c:89] rbrace (}) [test/cases/14/source.c line 35, col 1]

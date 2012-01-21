@@ -1,27 +1,27 @@
-external_declaration_hint,1,1,,test/cases/19/source.c
-struct,1,1,struct,test/cases/19/source.c
-identifier,1,8,mystruct,test/cases/19/source.c
-lbrace,2,1,{,test/cases/19/source.c
-void,3,3,void,test/cases/19/source.c
-lparen,3,8,(,test/cases/19/source.c
-asterisk,3,9,*,test/cases/19/source.c
-identifier,3,10,func,test/cases/19/source.c
-rparen,3,14,),test/cases/19/source.c
-lparen,3,15,(,test/cases/19/source.c
-abstract_parameter_hint,3,16,,test/cases/19/source.c
-void,3,16,void,test/cases/19/source.c
-asterisk,3,21,*,test/cases/19/source.c
-rparen,3,22,),test/cases/19/source.c
-semi,3,23,;,test/cases/19/source.c
-void,4,3,void,test/cases/19/source.c
-asterisk,4,8,*,test/cases/19/source.c
-identifier,4,10,arg,test/cases/19/source.c
-semi,4,13,;,test/cases/19/source.c
-struct,5,3,struct,test/cases/19/source.c
-identifier,5,10,mystruct,test/cases/19/source.c
-asterisk,5,19,*,test/cases/19/source.c
-identifier,5,20,next,test/cases/19/source.c
-semi,5,24,;,test/cases/19/source.c
-rbrace,6,1,},test/cases/19/source.c
-declarator_hint,1,1,,test/cases/19/source.c
-semi,6,2,;,test/cases/19/source.c
+[c:75] external_declaration_hint () [test/cases/19/source.c line 1, col 1]
+[c:2] struct (struct) [test/cases/19/source.c line 1, col 1]
+[c:115] identifier (mystruct) [test/cases/19/source.c line 1, col 8]
+[c:59] lbrace ({) [test/cases/19/source.c line 2, col 1]
+[c:117] void (void) [test/cases/19/source.c line 3, col 3]
+[c:47] lparen (() [test/cases/19/source.c line 3, col 8]
+[c:92] asterisk (*) [test/cases/19/source.c line 3, col 9]
+[c:115] identifier (func) [test/cases/19/source.c line 3, col 10]
+[c:48] rparen ()) [test/cases/19/source.c line 3, col 14]
+[c:47] lparen (() [test/cases/19/source.c line 3, col 15]
+[c:85] abstract_parameter_hint () [test/cases/19/source.c line 3, col 16]
+[c:117] void (void) [test/cases/19/source.c line 3, col 16]
+[c:92] asterisk (*) [test/cases/19/source.c line 3, col 21]
+[c:48] rparen ()) [test/cases/19/source.c line 3, col 22]
+[c:20] semi (;) [test/cases/19/source.c line 3, col 23]
+[c:117] void (void) [test/cases/19/source.c line 4, col 3]
+[c:92] asterisk (*) [test/cases/19/source.c line 4, col 8]
+[c:115] identifier (arg) [test/cases/19/source.c line 4, col 10]
+[c:20] semi (;) [test/cases/19/source.c line 4, col 13]
+[c:2] struct (struct) [test/cases/19/source.c line 5, col 3]
+[c:115] identifier (mystruct) [test/cases/19/source.c line 5, col 10]
+[c:92] asterisk (*) [test/cases/19/source.c line 5, col 19]
+[c:115] identifier (next) [test/cases/19/source.c line 5, col 20]
+[c:20] semi (;) [test/cases/19/source.c line 5, col 24]
+[c:89] rbrace (}) [test/cases/19/source.c line 6, col 1]
+[c:63] declarator_hint () [test/cases/19/source.c line 1, col 1]
+[c:20] semi (;) [test/cases/19/source.c line 6, col 2]

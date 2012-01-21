@@ -44,7 +44,7 @@ class Token:
       else:
         return "%s" % ( self.getTerminalStr() )
     else:
-      return '[%s:%d] %s (%s) [line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
+      return '[%s:%d] %s (%s) [%s line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.resource, self.lineno, self.colno )
 
 class ppToken(Token):
   type = 'pp'

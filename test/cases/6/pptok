@@ -1,2 +1,11 @@
-csource,1,1,/* #define FOO(x) x+1\n#define BAR(y) y+2\n#define BAZ(z) FOO(BAR(z))\n*/\n\nint main()\n{\n  return 0;\n}\n,test/cases/6/source.c
-separator,10,1,,test/cases/6/source.c
+[pp:18] csource (/* #define FOO(x) x+1
+#define BAR(y) y+2
+#define BAZ(z) FOO(BAR(z))
+*/
+
+int main()
+{
+  return 0;
+}
+) [test/cases/6/source.c line 1, col 1]
+[pp:55] separator () [test/cases/6/source.c line 10, col 1]

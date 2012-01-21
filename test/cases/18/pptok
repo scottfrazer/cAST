@@ -1,2 +1,6 @@
-csource,1,1,int main()\n{\n  a.b = 0;\n}\n,test/cases/18/source.c
-separator,5,1,,test/cases/18/source.c
+[pp:18] csource (int main()
+{
+  a.b = 0;
+}
+) [test/cases/18/source.c line 1, col 1]
+[pp:55] separator () [test/cases/18/source.c line 5, col 1]

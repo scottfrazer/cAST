@@ -1,108 +1,108 @@
-external_declaration_hint,1,1,,test/cases/17/source.c
-typedef,1,1,typedef,test/cases/17/source.c
-int,1,9,int,test/cases/17/source.c
-declarator_hint,1,1,,test/cases/17/source.c
-identifier,1,13,MILES,test/cases/17/source.c
-comma,1,18,,,test/cases/17/source.c
-function_prototype_hint,1,20,,test/cases/17/source.c
-identifier,1,20,KLICKSP,test/cases/17/source.c
-lparen,1,27,(,test/cases/17/source.c
-rparen,1,28,),test/cases/17/source.c
-semi,1,29,;,test/cases/17/source.c
-external_declaration_hint,2,1,,test/cases/17/source.c
-typedef,2,1,typedef,test/cases/17/source.c
-struct,2,9,struct,test/cases/17/source.c
-lbrace,2,16,{,test/cases/17/source.c
-double,2,18,double,test/cases/17/source.c
-identifier,2,25,hi,test/cases/17/source.c
-comma,2,27,,,test/cases/17/source.c
-identifier,2,29,lo,test/cases/17/source.c
-semi,2,31,;,test/cases/17/source.c
-rbrace,2,33,},test/cases/17/source.c
-declarator_hint,2,1,,test/cases/17/source.c
-identifier,2,35,range,test/cases/17/source.c
-semi,2,40,;,test/cases/17/source.c
-external_declaration_hint,3,1,,test/cases/17/source.c
-typedef,3,1,typedef,test/cases/17/source.c
-struct,3,9,struct,test/cases/17/source.c
-identifier,3,16,s,test/cases/17/source.c
-lbrace,3,18,{,test/cases/17/source.c
-int,3,20,int,test/cases/17/source.c
-identifier,3,24,x,test/cases/17/source.c
-semi,3,25,;,test/cases/17/source.c
-rbrace,3,27,},test/cases/17/source.c
-declarator_hint,3,1,,test/cases/17/source.c
-identifier,3,29,t,test/cases/17/source.c
-comma,3,30,,,test/cases/17/source.c
-declarator_hint,3,32,,test/cases/17/source.c
-asterisk,3,32,*,test/cases/17/source.c
-identifier,3,34,tp,test/cases/17/source.c
-semi,3,36,;,test/cases/17/source.c
-external_declaration_hint,5,1,,test/cases/17/source.c
-int,5,1,int,test/cases/17/source.c
-function_definition_hint,5,1,,test/cases/17/source.c
-identifier,5,5,main,test/cases/17/source.c
-lparen,5,9,(,test/cases/17/source.c
-rparen,5,10,),test/cases/17/source.c
-lbrace,6,1,{,test/cases/17/source.c
-typedef_identifier,7,3,MILES,test/cases/17/source.c
-identifier,7,9,distance,test/cases/17/source.c
-semi,7,17,;,test/cases/17/source.c
-extern,8,3,extern,test/cases/17/source.c
-typedef_identifier,8,10,KLICKSP,test/cases/17/source.c
-asterisk,8,18,*,test/cases/17/source.c
-identifier,8,20,metricp,test/cases/17/source.c
-semi,8,27,;,test/cases/17/source.c
-typedef_identifier,9,3,t,test/cases/17/source.c
-identifier,9,5,w,test/cases/17/source.c
-assign,9,7,=,test/cases/17/source.c
-lbrace,9,9,{,test/cases/17/source.c
-dot,9,11,.,test/cases/17/source.c
-identifier,9,12,x,test/cases/17/source.c
-assign,9,14,=,test/cases/17/source.c
-integer_constant,9,16,7,test/cases/17/source.c
-rbrace,9,18,},test/cases/17/source.c
-semi,9,19,;,test/cases/17/source.c
-typedef_identifier,10,3,tp,test/cases/17/source.c
-identifier,10,6,v,test/cases/17/source.c
-semi,10,7,;,test/cases/17/source.c
-identifier,11,3,v,test/cases/17/source.c
-assign,11,5,=,test/cases/17/source.c
-bitand,11,7,&,test/cases/17/source.c
-identifier,11,8,w,test/cases/17/source.c
-semi,11,9,;,test/cases/17/source.c
-typedef_identifier,12,3,range,test/cases/17/source.c
-identifier,12,9,y,test/cases/17/source.c
-semi,12,10,;,test/cases/17/source.c
-typedef_identifier,13,3,range,test/cases/17/source.c
-identifier,13,9,z,test/cases/17/source.c
-comma,13,10,,,test/cases/17/source.c
-asterisk,13,12,*,test/cases/17/source.c
-identifier,13,13,zp,test/cases/17/source.c
-semi,13,15,;,test/cases/17/source.c
-identifier,14,3,printf,test/cases/17/source.c
-lparen,14,9,(,test/cases/17/source.c
-string_literal,14,10,"%d\n",test/cases/17/source.c
-comma,14,16,,,test/cases/17/source.c
-identifier,14,18,v,test/cases/17/source.c
-arrow,14,19,->,test/cases/17/source.c
-identifier,14,21,x,test/cases/17/source.c
-rparen,14,22,),test/cases/17/source.c
-semi,14,23,;,test/cases/17/source.c
-rbrace,15,1,},test/cases/17/source.c
-external_declaration_hint,17,1,,test/cases/17/source.c
-int,17,1,int,test/cases/17/source.c
-function_definition_hint,17,1,,test/cases/17/source.c
-identifier,17,5,test,test/cases/17/source.c
-lparen,17,9,(,test/cases/17/source.c
-named_parameter_hint,17,10,,test/cases/17/source.c
-register,17,10,register,test/cases/17/source.c
-const,17,19,const,test/cases/17/source.c
-int,17,25,int,test/cases/17/source.c
-identifier,17,29,a,test/cases/17/source.c
-rparen,17,30,),test/cases/17/source.c
-lbrace,18,1,{,test/cases/17/source.c
-return,19,3,return,test/cases/17/source.c
-identifier,19,10,a,test/cases/17/source.c
-semi,19,11,;,test/cases/17/source.c
-rbrace,20,1,},test/cases/17/source.c
+[c:75] external_declaration_hint () [test/cases/17/source.c line 1, col 1]
+[c:4] typedef (typedef) [test/cases/17/source.c line 1, col 1]
+[c:13] int (int) [test/cases/17/source.c line 1, col 9]
+[c:63] declarator_hint () [test/cases/17/source.c line 1, col 1]
+[c:115] identifier (MILES) [test/cases/17/source.c line 1, col 13]
+[c:28] comma (,) [test/cases/17/source.c line 1, col 18]
+[c:88] function_prototype_hint () [test/cases/17/source.c line 1, col 20]
+[c:115] identifier (KLICKSP) [test/cases/17/source.c line 1, col 20]
+[c:47] lparen (() [test/cases/17/source.c line 1, col 27]
+[c:48] rparen ()) [test/cases/17/source.c line 1, col 28]
+[c:20] semi (;) [test/cases/17/source.c line 1, col 29]
+[c:75] external_declaration_hint () [test/cases/17/source.c line 2, col 1]
+[c:4] typedef (typedef) [test/cases/17/source.c line 2, col 1]
+[c:2] struct (struct) [test/cases/17/source.c line 2, col 9]
+[c:59] lbrace ({) [test/cases/17/source.c line 2, col 16]
+[c:30] double (double) [test/cases/17/source.c line 2, col 18]
+[c:115] identifier (hi) [test/cases/17/source.c line 2, col 25]
+[c:28] comma (,) [test/cases/17/source.c line 2, col 27]
+[c:115] identifier (lo) [test/cases/17/source.c line 2, col 29]
+[c:20] semi (;) [test/cases/17/source.c line 2, col 31]
+[c:89] rbrace (}) [test/cases/17/source.c line 2, col 33]
+[c:63] declarator_hint () [test/cases/17/source.c line 2, col 1]
+[c:115] identifier (range) [test/cases/17/source.c line 2, col 35]
+[c:20] semi (;) [test/cases/17/source.c line 2, col 40]
+[c:75] external_declaration_hint () [test/cases/17/source.c line 3, col 1]
+[c:4] typedef (typedef) [test/cases/17/source.c line 3, col 1]
+[c:2] struct (struct) [test/cases/17/source.c line 3, col 9]
+[c:115] identifier (s) [test/cases/17/source.c line 3, col 16]
+[c:59] lbrace ({) [test/cases/17/source.c line 3, col 18]
+[c:13] int (int) [test/cases/17/source.c line 3, col 20]
+[c:115] identifier (x) [test/cases/17/source.c line 3, col 24]
+[c:20] semi (;) [test/cases/17/source.c line 3, col 25]
+[c:89] rbrace (}) [test/cases/17/source.c line 3, col 27]
+[c:63] declarator_hint () [test/cases/17/source.c line 3, col 1]
+[c:115] identifier (t) [test/cases/17/source.c line 3, col 29]
+[c:28] comma (,) [test/cases/17/source.c line 3, col 30]
+[c:63] declarator_hint () [test/cases/17/source.c line 3, col 32]
+[c:92] asterisk (*) [test/cases/17/source.c line 3, col 32]
+[c:115] identifier (tp) [test/cases/17/source.c line 3, col 34]
+[c:20] semi (;) [test/cases/17/source.c line 3, col 36]
+[c:75] external_declaration_hint () [test/cases/17/source.c line 5, col 1]
+[c:13] int (int) [test/cases/17/source.c line 5, col 1]
+[c:42] function_definition_hint () [test/cases/17/source.c line 5, col 1]
+[c:115] identifier (main) [test/cases/17/source.c line 5, col 5]
+[c:47] lparen (() [test/cases/17/source.c line 5, col 9]
+[c:48] rparen ()) [test/cases/17/source.c line 5, col 10]
+[c:59] lbrace ({) [test/cases/17/source.c line 6, col 1]
+[c:113] typedef_identifier (MILES) [test/cases/17/source.c line 7, col 3]
+[c:115] identifier (distance) [test/cases/17/source.c line 7, col 9]
+[c:20] semi (;) [test/cases/17/source.c line 7, col 17]
+[c:27] extern (extern) [test/cases/17/source.c line 8, col 3]
+[c:113] typedef_identifier (KLICKSP) [test/cases/17/source.c line 8, col 10]
+[c:92] asterisk (*) [test/cases/17/source.c line 8, col 18]
+[c:115] identifier (metricp) [test/cases/17/source.c line 8, col 20]
+[c:20] semi (;) [test/cases/17/source.c line 8, col 27]
+[c:113] typedef_identifier (t) [test/cases/17/source.c line 9, col 3]
+[c:115] identifier (w) [test/cases/17/source.c line 9, col 5]
+[c:91] assign (=) [test/cases/17/source.c line 9, col 7]
+[c:59] lbrace ({) [test/cases/17/source.c line 9, col 9]
+[c:54] dot (.) [test/cases/17/source.c line 9, col 11]
+[c:115] identifier (x) [test/cases/17/source.c line 9, col 12]
+[c:91] assign (=) [test/cases/17/source.c line 9, col 14]
+[c:49] integer_constant (7) [test/cases/17/source.c line 9, col 16]
+[c:89] rbrace (}) [test/cases/17/source.c line 9, col 18]
+[c:20] semi (;) [test/cases/17/source.c line 9, col 19]
+[c:113] typedef_identifier (tp) [test/cases/17/source.c line 10, col 3]
+[c:115] identifier (v) [test/cases/17/source.c line 10, col 6]
+[c:20] semi (;) [test/cases/17/source.c line 10, col 7]
+[c:115] identifier (v) [test/cases/17/source.c line 11, col 3]
+[c:91] assign (=) [test/cases/17/source.c line 11, col 5]
+[c:36] bitand (&) [test/cases/17/source.c line 11, col 7]
+[c:115] identifier (w) [test/cases/17/source.c line 11, col 8]
+[c:20] semi (;) [test/cases/17/source.c line 11, col 9]
+[c:113] typedef_identifier (range) [test/cases/17/source.c line 12, col 3]
+[c:115] identifier (y) [test/cases/17/source.c line 12, col 9]
+[c:20] semi (;) [test/cases/17/source.c line 12, col 10]
+[c:113] typedef_identifier (range) [test/cases/17/source.c line 13, col 3]
+[c:115] identifier (z) [test/cases/17/source.c line 13, col 9]
+[c:28] comma (,) [test/cases/17/source.c line 13, col 10]
+[c:92] asterisk (*) [test/cases/17/source.c line 13, col 12]
+[c:115] identifier (zp) [test/cases/17/source.c line 13, col 13]
+[c:20] semi (;) [test/cases/17/source.c line 13, col 15]
+[c:115] identifier (printf) [test/cases/17/source.c line 14, col 3]
+[c:47] lparen (() [test/cases/17/source.c line 14, col 9]
+[c:82] string_literal ("%d\n") [test/cases/17/source.c line 14, col 10]
+[c:28] comma (,) [test/cases/17/source.c line 14, col 16]
+[c:115] identifier (v) [test/cases/17/source.c line 14, col 18]
+[c:51] arrow (->) [test/cases/17/source.c line 14, col 19]
+[c:115] identifier (x) [test/cases/17/source.c line 14, col 21]
+[c:48] rparen ()) [test/cases/17/source.c line 14, col 22]
+[c:20] semi (;) [test/cases/17/source.c line 14, col 23]
+[c:89] rbrace (}) [test/cases/17/source.c line 15, col 1]
+[c:75] external_declaration_hint () [test/cases/17/source.c line 17, col 1]
+[c:13] int (int) [test/cases/17/source.c line 17, col 1]
+[c:42] function_definition_hint () [test/cases/17/source.c line 17, col 1]
+[c:115] identifier (test) [test/cases/17/source.c line 17, col 5]
+[c:47] lparen (() [test/cases/17/source.c line 17, col 9]
+[c:31] named_parameter_hint () [test/cases/17/source.c line 17, col 10]
+[c:37] register (register) [test/cases/17/source.c line 17, col 10]
+[c:3] const (const) [test/cases/17/source.c line 17, col 19]
+[c:13] int (int) [test/cases/17/source.c line 17, col 25]
+[c:115] identifier (a) [test/cases/17/source.c line 17, col 29]
+[c:48] rparen ()) [test/cases/17/source.c line 17, col 30]
+[c:59] lbrace ({) [test/cases/17/source.c line 18, col 1]
+[c:118] return (return) [test/cases/17/source.c line 19, col 3]
+[c:115] identifier (a) [test/cases/17/source.c line 19, col 10]
+[c:20] semi (;) [test/cases/17/source.c line 19, col 11]
+[c:89] rbrace (}) [test/cases/17/source.c line 20, col 1]

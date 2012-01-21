@@ -1,69 +1,81 @@
-define,1,1,#define,test/cases/2/source.c
-identifier,1,9,qux0,test/cases/2/source.c
-pp_number,1,14,7,test/cases/2/source.c
-separator,1,1,,test/cases/2/source.c
-define,2,1,#define,test/cases/2/source.c
-identifier,2,9,qux,test/cases/2/source.c
-identifier,2,13,qux0,test/cases/2/source.c
-separator,2,1,,test/cases/2/source.c
-define_function,3,1,#define,test/cases/2/source.c
-identifier,3,9,foo,test/cases/2/source.c
-lparen,3,12,(,test/cases/2/source.c
-identifier,3,13,x,test/cases/2/source.c
-comma,3,14,,,test/cases/2/source.c
-identifier,3,16,y,test/cases/2/source.c
-rparen,3,17,),test/cases/2/source.c
-identifier,3,19,x,test/cases/2/source.c
-add,3,20,+,test/cases/2/source.c
-identifier,3,21,y,test/cases/2/source.c
-separator,3,1,,test/cases/2/source.c
-csource,4,1,//          s  s  |c|,test/cases/2/source.c
-separator,4,1,,test/cases/2/source.c
-define,5,1,#define,test/cases/2/source.c
-identifier,5,9,bar,test/cases/2/source.c
-identifier,5,13,foo,test/cases/2/source.c
-sub,5,17,-,test/cases/2/source.c
-identifier,5,19,foo,test/cases/2/source.c
-lparen,5,22,(,test/cases/2/source.c
-pp_number,5,23,66,test/cases/2/source.c
-comma,5,25,,,test/cases/2/source.c
-pp_number,5,26,33,test/cases/2/source.c
-rparen,5,28,),test/cases/2/source.c
-sub,5,30,-,test/cases/2/source.c
-identifier,5,32,foo,test/cases/2/source.c
-sub,5,36,-,test/cases/2/source.c
-identifier,5,38,foo,test/cases/2/source.c
-separator,5,1,,test/cases/2/source.c
-csource,6,1,//          |---------c----------|,test/cases/2/source.c
-separator,6,1,,test/cases/2/source.c
-define,7,1,#define,test/cases/2/source.c
-identifier,7,9,baz,test/cases/2/source.c
-identifier,7,13,foo,test/cases/2/source.c
-lparen,7,16,(,test/cases/2/source.c
-pp_number,7,17,4,test/cases/2/source.c
-comma,7,18,,,test/cases/2/source.c
-pp_number,7,19,5,test/cases/2/source.c
-rparen,7,20,),test/cases/2/source.c
-separator,7,1,,test/cases/2/source.c
-csource,8,1,//              c c,test/cases/2/source.c
-separator,8,1,,test/cases/2/source.c
-define_function,9,1,#define,test/cases/2/source.c
-identifier,9,9,var,test/cases/2/source.c
-lparen,9,12,(,test/cases/2/source.c
-identifier,9,13,s,test/cases/2/source.c
-comma,9,14,,,test/cases/2/source.c
-identifier,9,16,t,test/cases/2/source.c
-comma,9,17,,,test/cases/2/source.c
-elipsis,9,19,...,test/cases/2/source.c
-rparen,9,22,),test/cases/2/source.c
-identifier,9,24,s,test/cases/2/source.c
-add,9,25,+,test/cases/2/source.c
-identifier,9,26,t,test/cases/2/source.c
-add,9,27,+,test/cases/2/source.c
-identifier,9,28,foo,test/cases/2/source.c
-lparen,9,31,(,test/cases/2/source.c
-identifier,9,32,__VA_ARGS__,test/cases/2/source.c
-rparen,9,43,),test/cases/2/source.c
-separator,9,1,,test/cases/2/source.c
-csource,10,1,// functions take ctokens as params, return ctokens.\n// replacement tokens are stored as ctokens.\n\nint main()\n{\n  int foo = 2;\n  printf("%d\n", 1000+7000);\n  printf("%d\n", var(1,2,qux,4));\n  printf("%d\n", bar(7,8));\n  printf("%d\n", foo(4+1,7-1));\n  return 0;\n}\n,test/cases/2/source.c
-separator,22,1,,test/cases/2/source.c
+[pp:27] define (#define) [test/cases/2/source.c line 1, col 1]
+[pp:40] identifier (qux0) [test/cases/2/source.c line 1, col 9]
+[pp:23] pp_number (7) [test/cases/2/source.c line 1, col 14]
+[pp:55] separator () [test/cases/2/source.c line 1, col 1]
+[pp:27] define (#define) [test/cases/2/source.c line 2, col 1]
+[pp:40] identifier (qux) [test/cases/2/source.c line 2, col 9]
+[pp:40] identifier (qux0) [test/cases/2/source.c line 2, col 13]
+[pp:55] separator () [test/cases/2/source.c line 2, col 1]
+[pp:9] define_function (#define) [test/cases/2/source.c line 3, col 1]
+[pp:40] identifier (foo) [test/cases/2/source.c line 3, col 9]
+[pp:66] lparen (() [test/cases/2/source.c line 3, col 12]
+[pp:40] identifier (x) [test/cases/2/source.c line 3, col 13]
+[pp:41] comma (,) [test/cases/2/source.c line 3, col 14]
+[pp:40] identifier (y) [test/cases/2/source.c line 3, col 16]
+[pp:71] rparen ()) [test/cases/2/source.c line 3, col 17]
+[pp:40] identifier (x) [test/cases/2/source.c line 3, col 19]
+[pp:21] add (+) [test/cases/2/source.c line 3, col 20]
+[pp:40] identifier (y) [test/cases/2/source.c line 3, col 21]
+[pp:55] separator () [test/cases/2/source.c line 3, col 1]
+[pp:18] csource (//          s  s  |c|) [test/cases/2/source.c line 4, col 1]
+[pp:55] separator () [test/cases/2/source.c line 4, col 1]
+[pp:27] define (#define) [test/cases/2/source.c line 5, col 1]
+[pp:40] identifier (bar) [test/cases/2/source.c line 5, col 9]
+[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 13]
+[pp:68] sub (-) [test/cases/2/source.c line 5, col 17]
+[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 19]
+[pp:66] lparen (() [test/cases/2/source.c line 5, col 22]
+[pp:23] pp_number (66) [test/cases/2/source.c line 5, col 23]
+[pp:41] comma (,) [test/cases/2/source.c line 5, col 25]
+[pp:23] pp_number (33) [test/cases/2/source.c line 5, col 26]
+[pp:71] rparen ()) [test/cases/2/source.c line 5, col 28]
+[pp:68] sub (-) [test/cases/2/source.c line 5, col 30]
+[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 32]
+[pp:68] sub (-) [test/cases/2/source.c line 5, col 36]
+[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 38]
+[pp:55] separator () [test/cases/2/source.c line 5, col 1]
+[pp:18] csource (//          |---------c----------|) [test/cases/2/source.c line 6, col 1]
+[pp:55] separator () [test/cases/2/source.c line 6, col 1]
+[pp:27] define (#define) [test/cases/2/source.c line 7, col 1]
+[pp:40] identifier (baz) [test/cases/2/source.c line 7, col 9]
+[pp:40] identifier (foo) [test/cases/2/source.c line 7, col 13]
+[pp:66] lparen (() [test/cases/2/source.c line 7, col 16]
+[pp:23] pp_number (4) [test/cases/2/source.c line 7, col 17]
+[pp:41] comma (,) [test/cases/2/source.c line 7, col 18]
+[pp:23] pp_number (5) [test/cases/2/source.c line 7, col 19]
+[pp:71] rparen ()) [test/cases/2/source.c line 7, col 20]
+[pp:55] separator () [test/cases/2/source.c line 7, col 1]
+[pp:18] csource (//              c c) [test/cases/2/source.c line 8, col 1]
+[pp:55] separator () [test/cases/2/source.c line 8, col 1]
+[pp:9] define_function (#define) [test/cases/2/source.c line 9, col 1]
+[pp:40] identifier (var) [test/cases/2/source.c line 9, col 9]
+[pp:66] lparen (() [test/cases/2/source.c line 9, col 12]
+[pp:40] identifier (s) [test/cases/2/source.c line 9, col 13]
+[pp:41] comma (,) [test/cases/2/source.c line 9, col 14]
+[pp:40] identifier (t) [test/cases/2/source.c line 9, col 16]
+[pp:41] comma (,) [test/cases/2/source.c line 9, col 17]
+[pp:15] elipsis (...) [test/cases/2/source.c line 9, col 19]
+[pp:71] rparen ()) [test/cases/2/source.c line 9, col 22]
+[pp:40] identifier (s) [test/cases/2/source.c line 9, col 24]
+[pp:21] add (+) [test/cases/2/source.c line 9, col 25]
+[pp:40] identifier (t) [test/cases/2/source.c line 9, col 26]
+[pp:21] add (+) [test/cases/2/source.c line 9, col 27]
+[pp:40] identifier (foo) [test/cases/2/source.c line 9, col 28]
+[pp:66] lparen (() [test/cases/2/source.c line 9, col 31]
+[pp:40] identifier (__VA_ARGS__) [test/cases/2/source.c line 9, col 32]
+[pp:71] rparen ()) [test/cases/2/source.c line 9, col 43]
+[pp:55] separator () [test/cases/2/source.c line 9, col 1]
+[pp:18] csource (// functions take ctokens as params, return ctokens.
+// replacement tokens are stored as ctokens.
+
+int main()
+{
+  int foo = 2;
+  printf("%d\n", 1000+7000);
+  printf("%d\n", var(1,2,qux,4));
+  printf("%d\n", bar(7,8));
+  printf("%d\n", foo(4+1,7-1));
+  return 0;
+}
+) [test/cases/2/source.c line 10, col 1]
+[pp:55] separator () [test/cases/2/source.c line 22, col 1]

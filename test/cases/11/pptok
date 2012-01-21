@@ -1,2 +1,4 @@
-csource,1,1,struct a {int x;};\nint main() {}\n,test/cases/11/source.c
-separator,3,1,,test/cases/11/source.c
+[pp:18] csource (struct a {int x;};
+int main() {}
+) [test/cases/11/source.c line 1, col 1]
+[pp:55] separator () [test/cases/11/source.c line 3, col 1]

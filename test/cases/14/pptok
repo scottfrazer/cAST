@@ -1,2 +1,37 @@
-csource,1,1,int main()\n{\n  int a = 0;\n  while(1) {\n    func();\n  }\n\n  do {\n    func();\n    a += 1;\n  } while(0);\n  \n  switch(a)\n  {\n    case 0:\n      func();\n      a += 1;\n      break;\n    case 1:\n      func();\n      goto byebye;\n      break;\n    default:\n      break;\n  }\n\nbyebye:\n  printf("See ya!");\n  return 0;\n}\n\nint func()\n{\n  return 0;\n}\n,test/cases/14/source.c
-separator,36,1,,test/cases/14/source.c
+[pp:18] csource (int main()
+{
+  int a = 0;
+  while(1) {
+    func();
+  }
+
+  do {
+    func();
+    a += 1;
+  } while(0);
+  
+  switch(a)
+  {
+    case 0:
+      func();
+      a += 1;
+      break;
+    case 1:
+      func();
+      goto byebye;
+      break;
+    default:
+      break;
+  }
+
+byebye:
+  printf("See ya!");
+  return 0;
+}
+
+int func()
+{
+  return 0;
+}
+) [test/cases/14/source.c line 1, col 1]
+[pp:55] separator () [test/cases/14/source.c line 36, col 1]

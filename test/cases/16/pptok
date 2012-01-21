@@ -1,2 +1,14 @@
-csource,1,1,typedef int myint;\ntypedef struct a {int a; myint b;} mystruct;\n\nint main()\n{\n  typedef int myint_;\n  myint x = 10;\n  myint_ z = 2;\n  mystruct y;\n  y.b = 15;\n  printf("%d %d %d\n", z, x, y.b);\n}\n,test/cases/16/source.c
-separator,13,1,,test/cases/16/source.c
+[pp:18] csource (typedef int myint;
+typedef struct a {int a; myint b;} mystruct;
+
+int main()
+{
+  typedef int myint_;
+  myint x = 10;
+  myint_ z = 2;
+  mystruct y;
+  y.b = 15;
+  printf("%d %d %d\n", z, x, y.b);
+}
+) [test/cases/16/source.c line 1, col 1]
+[pp:55] separator () [test/cases/16/source.c line 13, col 1]

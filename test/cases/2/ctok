@@ -1,68 +1,68 @@
-external_declaration_hint,13,1,,test/cases/2/source.c
-int,13,1,int,test/cases/2/source.c
-function_definition_hint,13,1,,test/cases/2/source.c
-identifier,13,5,main,test/cases/2/source.c
-lparen,13,9,(,test/cases/2/source.c
-rparen,13,10,),test/cases/2/source.c
-lbrace,14,1,{,test/cases/2/source.c
-int,15,3,int,test/cases/2/source.c
-identifier,15,7,foo,test/cases/2/source.c
-assign,15,11,=,test/cases/2/source.c
-integer_constant,15,13,2,test/cases/2/source.c
-semi,15,14,;,test/cases/2/source.c
-identifier,16,3,printf,test/cases/2/source.c
-lparen,16,9,(,test/cases/2/source.c
-string_literal,16,10,"%d\n",test/cases/2/source.c
-comma,16,16,,,test/cases/2/source.c
-integer_constant,16,18,1000,test/cases/2/source.c
-add,16,22,+,test/cases/2/source.c
-integer_constant,16,23,7000,test/cases/2/source.c
-rparen,16,27,),test/cases/2/source.c
-semi,16,28,;,test/cases/2/source.c
-identifier,17,3,printf,test/cases/2/source.c
-lparen,17,9,(,test/cases/2/source.c
-string_literal,17,10,"%d\n",test/cases/2/source.c
-comma,17,16,,,test/cases/2/source.c
-integer_constant,17,18,1,test/cases/2/source.c
-add,17,18,+,test/cases/2/source.c
-integer_constant,17,18,2,test/cases/2/source.c
-add,17,18,+,test/cases/2/source.c
-integer_constant,17,18,7,test/cases/2/source.c
-add,17,18,+,test/cases/2/source.c
-integer_constant,17,18,4,test/cases/2/source.c
-rparen,17,32,),test/cases/2/source.c
-semi,17,33,;,test/cases/2/source.c
-identifier,18,3,printf,test/cases/2/source.c
-lparen,18,9,(,test/cases/2/source.c
-string_literal,18,10,"%d\n",test/cases/2/source.c
-comma,18,16,,,test/cases/2/source.c
-identifier,18,18,foo,test/cases/2/source.c
-sub,18,18,-,test/cases/2/source.c
-integer_constant,18,18,66,test/cases/2/source.c
-add,18,18,+,test/cases/2/source.c
-integer_constant,18,18,33,test/cases/2/source.c
-sub,18,18,-,test/cases/2/source.c
-identifier,18,18,foo,test/cases/2/source.c
-sub,18,18,-,test/cases/2/source.c
-integer_constant,18,18,7,test/cases/2/source.c
-add,18,18,+,test/cases/2/source.c
-integer_constant,18,18,8,test/cases/2/source.c
-rparen,18,26,),test/cases/2/source.c
-semi,18,27,;,test/cases/2/source.c
-identifier,19,3,printf,test/cases/2/source.c
-lparen,19,9,(,test/cases/2/source.c
-string_literal,19,10,"%d\n",test/cases/2/source.c
-comma,19,16,,,test/cases/2/source.c
-integer_constant,19,18,4,test/cases/2/source.c
-add,19,18,+,test/cases/2/source.c
-integer_constant,19,18,1,test/cases/2/source.c
-add,19,18,+,test/cases/2/source.c
-integer_constant,19,18,7,test/cases/2/source.c
-sub,19,18,-,test/cases/2/source.c
-integer_constant,19,18,1,test/cases/2/source.c
-rparen,19,30,),test/cases/2/source.c
-semi,19,31,;,test/cases/2/source.c
-return,20,3,return,test/cases/2/source.c
-integer_constant,20,10,0,test/cases/2/source.c
-semi,20,11,;,test/cases/2/source.c
-rbrace,21,1,},test/cases/2/source.c
+[c:75] external_declaration_hint () [test/cases/2/source.c line 13, col 1]
+[c:13] int (int) [test/cases/2/source.c line 13, col 1]
+[c:42] function_definition_hint () [test/cases/2/source.c line 13, col 1]
+[c:115] identifier (main) [test/cases/2/source.c line 13, col 5]
+[c:47] lparen (() [test/cases/2/source.c line 13, col 9]
+[c:48] rparen ()) [test/cases/2/source.c line 13, col 10]
+[c:59] lbrace ({) [test/cases/2/source.c line 14, col 1]
+[c:13] int (int) [test/cases/2/source.c line 15, col 3]
+[c:115] identifier (foo) [test/cases/2/source.c line 15, col 7]
+[c:91] assign (=) [test/cases/2/source.c line 15, col 11]
+[c:49] integer_constant (2) [test/cases/2/source.c line 15, col 13]
+[c:20] semi (;) [test/cases/2/source.c line 15, col 14]
+[c:115] identifier (printf) [test/cases/2/source.c line 16, col 3]
+[c:47] lparen (() [test/cases/2/source.c line 16, col 9]
+[c:82] string_literal ("%d\n") [test/cases/2/source.c line 16, col 10]
+[c:28] comma (,) [test/cases/2/source.c line 16, col 16]
+[c:49] integer_constant (1000) [test/cases/2/source.c line 16, col 18]
+[c:96] add (+) [test/cases/2/source.c line 16, col 22]
+[c:49] integer_constant (7000) [test/cases/2/source.c line 16, col 23]
+[c:48] rparen ()) [test/cases/2/source.c line 16, col 27]
+[c:20] semi (;) [test/cases/2/source.c line 16, col 28]
+[c:115] identifier (printf) [test/cases/2/source.c line 17, col 3]
+[c:47] lparen (() [test/cases/2/source.c line 17, col 9]
+[c:82] string_literal ("%d\n") [test/cases/2/source.c line 17, col 10]
+[c:28] comma (,) [test/cases/2/source.c line 17, col 16]
+[c:49] integer_constant (1) [test/cases/2/source.c line 17, col 18]
+[c:96] add (+) [test/cases/2/source.c line 17, col 18]
+[c:49] integer_constant (2) [test/cases/2/source.c line 17, col 18]
+[c:96] add (+) [test/cases/2/source.c line 17, col 18]
+[c:49] integer_constant (7) [test/cases/2/source.c line 17, col 18]
+[c:96] add (+) [test/cases/2/source.c line 17, col 18]
+[c:49] integer_constant (4) [test/cases/2/source.c line 17, col 18]
+[c:48] rparen ()) [test/cases/2/source.c line 17, col 32]
+[c:20] semi (;) [test/cases/2/source.c line 17, col 33]
+[c:115] identifier (printf) [test/cases/2/source.c line 18, col 3]
+[c:47] lparen (() [test/cases/2/source.c line 18, col 9]
+[c:82] string_literal ("%d\n") [test/cases/2/source.c line 18, col 10]
+[c:28] comma (,) [test/cases/2/source.c line 18, col 16]
+[c:115] identifier (foo) [test/cases/2/source.c line 18, col 18]
+[c:101] sub (-) [test/cases/2/source.c line 18, col 18]
+[c:49] integer_constant (66) [test/cases/2/source.c line 18, col 18]
+[c:96] add (+) [test/cases/2/source.c line 18, col 18]
+[c:49] integer_constant (33) [test/cases/2/source.c line 18, col 18]
+[c:101] sub (-) [test/cases/2/source.c line 18, col 18]
+[c:115] identifier (foo) [test/cases/2/source.c line 18, col 18]
+[c:101] sub (-) [test/cases/2/source.c line 18, col 18]
+[c:49] integer_constant (7) [test/cases/2/source.c line 18, col 18]
+[c:96] add (+) [test/cases/2/source.c line 18, col 18]
+[c:49] integer_constant (8) [test/cases/2/source.c line 18, col 18]
+[c:48] rparen ()) [test/cases/2/source.c line 18, col 26]
+[c:20] semi (;) [test/cases/2/source.c line 18, col 27]
+[c:115] identifier (printf) [test/cases/2/source.c line 19, col 3]
+[c:47] lparen (() [test/cases/2/source.c line 19, col 9]
+[c:82] string_literal ("%d\n") [test/cases/2/source.c line 19, col 10]
+[c:28] comma (,) [test/cases/2/source.c line 19, col 16]
+[c:49] integer_constant (4) [test/cases/2/source.c line 19, col 18]
+[c:96] add (+) [test/cases/2/source.c line 19, col 18]
+[c:49] integer_constant (1) [test/cases/2/source.c line 19, col 18]
+[c:96] add (+) [test/cases/2/source.c line 19, col 18]
+[c:49] integer_constant (7) [test/cases/2/source.c line 19, col 18]
+[c:101] sub (-) [test/cases/2/source.c line 19, col 18]
+[c:49] integer_constant (1) [test/cases/2/source.c line 19, col 18]
+[c:48] rparen ()) [test/cases/2/source.c line 19, col 30]
+[c:20] semi (;) [test/cases/2/source.c line 19, col 31]
+[c:118] return (return) [test/cases/2/source.c line 20, col 3]
+[c:49] integer_constant (0) [test/cases/2/source.c line 20, col 10]
+[c:20] semi (;) [test/cases/2/source.c line 20, col 11]
+[c:89] rbrace (}) [test/cases/2/source.c line 21, col 1]

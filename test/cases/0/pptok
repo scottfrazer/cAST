@@ -1,148 +1,154 @@
-define,1,1,#define,test/cases/0/source.c
-identifier,1,9,stdin,test/cases/0/source.c
-lparen,1,17,(,test/cases/0/source.c
-bitand,1,18,&,test/cases/0/source.c
-identifier,1,19,__sF,test/cases/0/source.c
-lsquare,1,23,[,test/cases/0/source.c
-pp_number,1,24,0,test/cases/0/source.c
-rsquare,1,25,],test/cases/0/source.c
-rparen,1,26,),test/cases/0/source.c
-separator,1,1,,test/cases/0/source.c
-ifdef,2,1,#ifdef,test/cases/0/source.c
-identifier,2,8,stdin,test/cases/0/source.c
-csource,3,1,int func();,test/cases/0/source.c
-separator,3,1,,test/cases/0/source.c
-else,4,1,#else,test/cases/0/source.c
-csource,5,1,int func1();,test/cases/0/source.c
-separator,5,1,,test/cases/0/source.c
-endif,6,1,#endif,test/cases/0/source.c
-separator,6,1,,test/cases/0/source.c
-csource,7,1,/* this is a comment */,test/cases/0/source.c
-separator,7,1,,test/cases/0/source.c
-define_function,8,1,#define,test/cases/0/source.c
-identifier,8,9,FUNC,test/cases/0/source.c
-lparen,8,13,(,test/cases/0/source.c
-identifier,8,14,A,test/cases/0/source.c
-comma,8,15,,,test/cases/0/source.c
-identifier,8,16,B,test/cases/0/source.c
-rparen,8,17,),test/cases/0/source.c
-identifier,8,19,A,test/cases/0/source.c
-add,8,20,+,test/cases/0/source.c
-identifier,8,21,B,test/cases/0/source.c
-separator,8,1,,test/cases/0/source.c
-define,9,1,#define,test/cases/0/source.c
-identifier,9,9,Y,test/cases/0/source.c
-pp_number,9,11,7,test/cases/0/source.c
-separator,9,1,,test/cases/0/source.c
-define,10,1,#define,test/cases/0/source.c
-identifier,10,9,J,test/cases/0/source.c
-pp_number,10,11,2,test/cases/0/source.c
-separator,10,1,,test/cases/0/source.c
-define,11,1,#define,test/cases/0/source.c
-identifier,11,9,PATH,test/cases/0/source.c
-string_literal,11,14,"b.c",test/cases/0/source.c
-separator,11,1,,test/cases/0/source.c
-define_function,12,1,#define,test/cases/0/source.c
-identifier,12,9,PHI,test/cases/0/source.c
-lparen,12,12,(,test/cases/0/source.c
-identifier,12,13,X,test/cases/0/source.c
-comma,12,14,,,test/cases/0/source.c
-identifier,12,16,Y,test/cases/0/source.c
-rparen,12,17,),test/cases/0/source.c
-identifier,12,19,X,test/cases/0/source.c
-sub,12,20,-,test/cases/0/source.c
-identifier,12,21,Y,test/cases/0/source.c
-separator,12,1,,test/cases/0/source.c
-csource,13,1,int add(int x, int y) {return x+y;},test/cases/0/source.c
-separator,13,1,,test/cases/0/source.c
-define,14,1,#define,test/cases/0/source.c
-identifier,14,9,X,test/cases/0/source.c
-identifier,14,11,FUNC,test/cases/0/source.c
-lparen,14,15,(,test/cases/0/source.c
-pp_number,14,16,1,test/cases/0/source.c
-comma,14,17,,,test/cases/0/source.c
-identifier,14,18,J,test/cases/0/source.c
-rparen,14,19,),test/cases/0/source.c
-add,14,21,+,test/cases/0/source.c
-identifier,14,23,Y,test/cases/0/source.c
-separator,14,1,,test/cases/0/source.c
-define,15,1,#define,test/cases/0/source.c
-identifier,15,9,Z,test/cases/0/source.c
-identifier,15,11,add,test/cases/0/source.c
-lparen,15,14,(,test/cases/0/source.c
-pp_number,15,15,1,test/cases/0/source.c
-comma,15,16,,,test/cases/0/source.c
-pp_number,15,17,2,test/cases/0/source.c
-rparen,15,18,),test/cases/0/source.c
-separator,15,1,,test/cases/0/source.c
-define,16,1,#define,test/cases/0/source.c
-identifier,16,9,THETA,test/cases/0/source.c
-pp_number,16,15,1,test/cases/0/source.c
-add,16,17,+,test/cases/0/source.c
-identifier,16,19,PHI,test/cases/0/source.c
-lparen,16,22,(,test/cases/0/source.c
-pp_number,16,23,10,test/cases/0/source.c
-comma,16,25,,,test/cases/0/source.c
-pp_number,16,27,2,test/cases/0/source.c
-rparen,16,28,),test/cases/0/source.c
-separator,16,1,,test/cases/0/source.c
-define,17,1,#define,test/cases/0/source.c
-identifier,17,9,PATH,test/cases/0/source.c
-string_literal,17,14,"c.c",test/cases/0/source.c
-separator,17,1,,test/cases/0/source.c
-csource,18,1,int main()\n{\nprintf("THETA %d\n", THETA);\nprintf("PATH %s\n", PATH);,test/cases/0/source.c
-separator,21,1,,test/cases/0/source.c
-if,22,1,#if,test/cases/0/source.c
-identifier,22,5,X,test/cases/0/source.c
-eq,22,6,==,test/cases/0/source.c
-pp_number,22,8,10,test/cases/0/source.c
-csource,23,1,    printf("first\n");\n,test/cases/0/source.c
-separator,24,1,,test/cases/0/source.c
-endif,25,1,#endif,test/cases/0/source.c
-separator,25,1,,test/cases/0/source.c
-csource,26,1,int a = 0;,test/cases/0/source.c
-separator,26,1,,test/cases/0/source.c
-define,27,1,#define,test/cases/0/source.c
-identifier,27,9,A,test/cases/0/source.c
-pp_number,27,11,1,test/cases/0/source.c
-separator,27,1,,test/cases/0/source.c
-define,28,1,#define,test/cases/0/source.c
-identifier,28,9,FOO,test/cases/0/source.c
-pp_number,28,13,1,test/cases/0/source.c
-separator,28,1,,test/cases/0/source.c
-ifdef,29,1,#ifdef,test/cases/0/source.c
-identifier,29,8,FOO,test/cases/0/source.c
-ifndef,30,1,    #ifndef,test/cases/0/source.c
-identifier,30,13,B,test/cases/0/source.c
-csource,31,1,    printf("second %d\n", A);\n    printf("third\n");,test/cases/0/source.c
-separator,32,1,,test/cases/0/source.c
-endif,33,1,    #endif,test/cases/0/source.c
-separator,33,1,,test/cases/0/source.c
-elif,34,1,#elif,test/cases/0/source.c
-pp_number,34,7,0,test/cases/0/source.c
-elif,35,1,#elif,test/cases/0/source.c
-pp_number,35,7,2,test/cases/0/source.c
-sub,35,8,-,test/cases/0/source.c
-pp_number,35,9,1,test/cases/0/source.c
-csource,36,1,printf("elif!\n");,test/cases/0/source.c
-separator,36,1,,test/cases/0/source.c
-elif,37,1,#elif,test/cases/0/source.c
-pp_number,37,7,3,test/cases/0/source.c
-sub,37,8,-,test/cases/0/source.c
-pp_number,37,9,1,test/cases/0/source.c
-csource,38,1,printf("elif, again!\n");,test/cases/0/source.c
-separator,38,1,,test/cases/0/source.c
-endif,39,1,#endif,test/cases/0/source.c
-separator,39,1,,test/cases/0/source.c
-csource,40,1,a += 1;,test/cases/0/source.c
-separator,40,1,,test/cases/0/source.c
-undef,41,1,#undef,test/cases/0/source.c
-identifier,41,8,A,test/cases/0/source.c
-separator,41,1,,test/cases/0/source.c
-csource,42,1,    return 0;,test/cases/0/source.c
-separator,42,1,,test/cases/0/source.c
-undef,43,1,#undef,test/cases/0/source.c
-identifier,43,8,FOO,test/cases/0/source.c
-separator,43,1,,test/cases/0/source.c
-csource,44,1,}\n,test/cases/0/source.c
-separator,45,1,,test/cases/0/source.c
+[pp:27] define (#define) [test/cases/0/source.c line 1, col 1]
+[pp:40] identifier (stdin) [test/cases/0/source.c line 1, col 9]
+[pp:66] lparen (() [test/cases/0/source.c line 1, col 17]
+[pp:35] bitand (&) [test/cases/0/source.c line 1, col 18]
+[pp:40] identifier (__sF) [test/cases/0/source.c line 1, col 19]
+[pp:59] lsquare ([) [test/cases/0/source.c line 1, col 23]
+[pp:23] pp_number (0) [test/cases/0/source.c line 1, col 24]
+[pp:63] rsquare (]) [test/cases/0/source.c line 1, col 25]
+[pp:71] rparen ()) [test/cases/0/source.c line 1, col 26]
+[pp:55] separator () [test/cases/0/source.c line 1, col 1]
+[pp:43] ifdef (#ifdef) [test/cases/0/source.c line 2, col 1]
+[pp:40] identifier (stdin) [test/cases/0/source.c line 2, col 8]
+[pp:18] csource (int func();) [test/cases/0/source.c line 3, col 1]
+[pp:55] separator () [test/cases/0/source.c line 3, col 1]
+[pp:17] else (#else) [test/cases/0/source.c line 4, col 1]
+[pp:18] csource (int func1();) [test/cases/0/source.c line 5, col 1]
+[pp:55] separator () [test/cases/0/source.c line 5, col 1]
+[pp:70] endif (#endif) [test/cases/0/source.c line 6, col 1]
+[pp:55] separator () [test/cases/0/source.c line 6, col 1]
+[pp:18] csource (/* this is a comment */) [test/cases/0/source.c line 7, col 1]
+[pp:55] separator () [test/cases/0/source.c line 7, col 1]
+[pp:9] define_function (#define) [test/cases/0/source.c line 8, col 1]
+[pp:40] identifier (FUNC) [test/cases/0/source.c line 8, col 9]
+[pp:66] lparen (() [test/cases/0/source.c line 8, col 13]
+[pp:40] identifier (A) [test/cases/0/source.c line 8, col 14]
+[pp:41] comma (,) [test/cases/0/source.c line 8, col 15]
+[pp:40] identifier (B) [test/cases/0/source.c line 8, col 16]
+[pp:71] rparen ()) [test/cases/0/source.c line 8, col 17]
+[pp:40] identifier (A) [test/cases/0/source.c line 8, col 19]
+[pp:21] add (+) [test/cases/0/source.c line 8, col 20]
+[pp:40] identifier (B) [test/cases/0/source.c line 8, col 21]
+[pp:55] separator () [test/cases/0/source.c line 8, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 9, col 1]
+[pp:40] identifier (Y) [test/cases/0/source.c line 9, col 9]
+[pp:23] pp_number (7) [test/cases/0/source.c line 9, col 11]
+[pp:55] separator () [test/cases/0/source.c line 9, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 10, col 1]
+[pp:40] identifier (J) [test/cases/0/source.c line 10, col 9]
+[pp:23] pp_number (2) [test/cases/0/source.c line 10, col 11]
+[pp:55] separator () [test/cases/0/source.c line 10, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 11, col 1]
+[pp:40] identifier (PATH) [test/cases/0/source.c line 11, col 9]
+[pp:13] string_literal ("b.c") [test/cases/0/source.c line 11, col 14]
+[pp:55] separator () [test/cases/0/source.c line 11, col 1]
+[pp:9] define_function (#define) [test/cases/0/source.c line 12, col 1]
+[pp:40] identifier (PHI) [test/cases/0/source.c line 12, col 9]
+[pp:66] lparen (() [test/cases/0/source.c line 12, col 12]
+[pp:40] identifier (X) [test/cases/0/source.c line 12, col 13]
+[pp:41] comma (,) [test/cases/0/source.c line 12, col 14]
+[pp:40] identifier (Y) [test/cases/0/source.c line 12, col 16]
+[pp:71] rparen ()) [test/cases/0/source.c line 12, col 17]
+[pp:40] identifier (X) [test/cases/0/source.c line 12, col 19]
+[pp:68] sub (-) [test/cases/0/source.c line 12, col 20]
+[pp:40] identifier (Y) [test/cases/0/source.c line 12, col 21]
+[pp:55] separator () [test/cases/0/source.c line 12, col 1]
+[pp:18] csource (int add(int x, int y) {return x+y;}) [test/cases/0/source.c line 13, col 1]
+[pp:55] separator () [test/cases/0/source.c line 13, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 14, col 1]
+[pp:40] identifier (X) [test/cases/0/source.c line 14, col 9]
+[pp:40] identifier (FUNC) [test/cases/0/source.c line 14, col 11]
+[pp:66] lparen (() [test/cases/0/source.c line 14, col 15]
+[pp:23] pp_number (1) [test/cases/0/source.c line 14, col 16]
+[pp:41] comma (,) [test/cases/0/source.c line 14, col 17]
+[pp:40] identifier (J) [test/cases/0/source.c line 14, col 18]
+[pp:71] rparen ()) [test/cases/0/source.c line 14, col 19]
+[pp:21] add (+) [test/cases/0/source.c line 14, col 21]
+[pp:40] identifier (Y) [test/cases/0/source.c line 14, col 23]
+[pp:55] separator () [test/cases/0/source.c line 14, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 15, col 1]
+[pp:40] identifier (Z) [test/cases/0/source.c line 15, col 9]
+[pp:40] identifier (add) [test/cases/0/source.c line 15, col 11]
+[pp:66] lparen (() [test/cases/0/source.c line 15, col 14]
+[pp:23] pp_number (1) [test/cases/0/source.c line 15, col 15]
+[pp:41] comma (,) [test/cases/0/source.c line 15, col 16]
+[pp:23] pp_number (2) [test/cases/0/source.c line 15, col 17]
+[pp:71] rparen ()) [test/cases/0/source.c line 15, col 18]
+[pp:55] separator () [test/cases/0/source.c line 15, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 16, col 1]
+[pp:40] identifier (THETA) [test/cases/0/source.c line 16, col 9]
+[pp:23] pp_number (1) [test/cases/0/source.c line 16, col 15]
+[pp:21] add (+) [test/cases/0/source.c line 16, col 17]
+[pp:40] identifier (PHI) [test/cases/0/source.c line 16, col 19]
+[pp:66] lparen (() [test/cases/0/source.c line 16, col 22]
+[pp:23] pp_number (10) [test/cases/0/source.c line 16, col 23]
+[pp:41] comma (,) [test/cases/0/source.c line 16, col 25]
+[pp:23] pp_number (2) [test/cases/0/source.c line 16, col 27]
+[pp:71] rparen ()) [test/cases/0/source.c line 16, col 28]
+[pp:55] separator () [test/cases/0/source.c line 16, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 17, col 1]
+[pp:40] identifier (PATH) [test/cases/0/source.c line 17, col 9]
+[pp:13] string_literal ("c.c") [test/cases/0/source.c line 17, col 14]
+[pp:55] separator () [test/cases/0/source.c line 17, col 1]
+[pp:18] csource (int main()
+{
+printf("THETA %d\n", THETA);
+printf("PATH %s\n", PATH);) [test/cases/0/source.c line 18, col 1]
+[pp:55] separator () [test/cases/0/source.c line 21, col 1]
+[pp:0] if (#if) [test/cases/0/source.c line 22, col 1]
+[pp:40] identifier (X) [test/cases/0/source.c line 22, col 5]
+[pp:54] eq (==) [test/cases/0/source.c line 22, col 6]
+[pp:23] pp_number (10) [test/cases/0/source.c line 22, col 8]
+[pp:18] csource (    printf("first\n");
+) [test/cases/0/source.c line 23, col 1]
+[pp:55] separator () [test/cases/0/source.c line 24, col 1]
+[pp:70] endif (#endif) [test/cases/0/source.c line 25, col 1]
+[pp:55] separator () [test/cases/0/source.c line 25, col 1]
+[pp:18] csource (int a = 0;) [test/cases/0/source.c line 26, col 1]
+[pp:55] separator () [test/cases/0/source.c line 26, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 27, col 1]
+[pp:40] identifier (A) [test/cases/0/source.c line 27, col 9]
+[pp:23] pp_number (1) [test/cases/0/source.c line 27, col 11]
+[pp:55] separator () [test/cases/0/source.c line 27, col 1]
+[pp:27] define (#define) [test/cases/0/source.c line 28, col 1]
+[pp:40] identifier (FOO) [test/cases/0/source.c line 28, col 9]
+[pp:23] pp_number (1) [test/cases/0/source.c line 28, col 13]
+[pp:55] separator () [test/cases/0/source.c line 28, col 1]
+[pp:43] ifdef (#ifdef) [test/cases/0/source.c line 29, col 1]
+[pp:40] identifier (FOO) [test/cases/0/source.c line 29, col 8]
+[pp:25] ifndef (    #ifndef) [test/cases/0/source.c line 30, col 1]
+[pp:40] identifier (B) [test/cases/0/source.c line 30, col 13]
+[pp:18] csource (    printf("second %d\n", A);
+    printf("third\n");) [test/cases/0/source.c line 31, col 1]
+[pp:55] separator () [test/cases/0/source.c line 32, col 1]
+[pp:70] endif (    #endif) [test/cases/0/source.c line 33, col 1]
+[pp:55] separator () [test/cases/0/source.c line 33, col 1]
+[pp:14] elif (#elif) [test/cases/0/source.c line 34, col 1]
+[pp:23] pp_number (0) [test/cases/0/source.c line 34, col 7]
+[pp:14] elif (#elif) [test/cases/0/source.c line 35, col 1]
+[pp:23] pp_number (2) [test/cases/0/source.c line 35, col 7]
+[pp:68] sub (-) [test/cases/0/source.c line 35, col 8]
+[pp:23] pp_number (1) [test/cases/0/source.c line 35, col 9]
+[pp:18] csource (printf("elif!\n");) [test/cases/0/source.c line 36, col 1]
+[pp:55] separator () [test/cases/0/source.c line 36, col 1]
+[pp:14] elif (#elif) [test/cases/0/source.c line 37, col 1]
+[pp:23] pp_number (3) [test/cases/0/source.c line 37, col 7]
+[pp:68] sub (-) [test/cases/0/source.c line 37, col 8]
+[pp:23] pp_number (1) [test/cases/0/source.c line 37, col 9]
+[pp:18] csource (printf("elif, again!\n");) [test/cases/0/source.c line 38, col 1]
+[pp:55] separator () [test/cases/0/source.c line 38, col 1]
+[pp:70] endif (#endif) [test/cases/0/source.c line 39, col 1]
+[pp:55] separator () [test/cases/0/source.c line 39, col 1]
+[pp:18] csource (a += 1;) [test/cases/0/source.c line 40, col 1]
+[pp:55] separator () [test/cases/0/source.c line 40, col 1]
+[pp:73] undef (#undef) [test/cases/0/source.c line 41, col 1]
+[pp:40] identifier (A) [test/cases/0/source.c line 41, col 8]
+[pp:55] separator () [test/cases/0/source.c line 41, col 1]
+[pp:18] csource (    return 0;) [test/cases/0/source.c line 42, col 1]
+[pp:55] separator () [test/cases/0/source.c line 42, col 1]
+[pp:73] undef (#undef) [test/cases/0/source.c line 43, col 1]
+[pp:40] identifier (FOO) [test/cases/0/source.c line 43, col 8]
+[pp:55] separator () [test/cases/0/source.c line 43, col 1]
+[pp:18] csource (}
+) [test/cases/0/source.c line 44, col 1]
+[pp:55] separator () [test/cases/0/source.c line 45, col 1]

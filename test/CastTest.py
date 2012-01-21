@@ -58,6 +58,7 @@ class CastVersusGccTest(unittest.TestCase):
         "File %s didn't parse the same in GCC and cAST" % (filepath) )
 
 def mapFunc(x):
+  return x.toString('long')
   return "%s,%s,%s,%s,%s" % (x.getTerminalStr(), x.getLine(), x.getColumn(), x.getString().replace('\n', '\\n'), x.getResource())
 
 def mapFuncSimple(x):

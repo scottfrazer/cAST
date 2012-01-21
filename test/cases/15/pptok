@@ -1,2 +1,15 @@
-csource,1,1,typedef struct a {\n  int x;\n  char y;\n} NAME;\ntypedef int * int_ptr;\ntypedef int (*pt2Function)(float, char, char);\n\nint main()\n{\n  NAME b;\n  int_ptr c;\n  pt2Function d;\n}\n,test/cases/15/source.c
-separator,14,1,,test/cases/15/source.c
+[pp:18] csource (typedef struct a {
+  int x;
+  char y;
+} NAME;
+typedef int * int_ptr;
+typedef int (*pt2Function)(float, char, char);
+
+int main()
+{
+  NAME b;
+  int_ptr c;
+  pt2Function d;
+}
+) [test/cases/15/source.c line 1, col 1]
+[pp:55] separator () [test/cases/15/source.c line 14, col 1]

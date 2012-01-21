@@ -1,283 +1,283 @@
-external_declaration_hint,6,1,,test/cases/13/source.c
-int,6,1,int,test/cases/13/source.c
-function_definition_hint,6,1,,test/cases/13/source.c
-identifier,6,5,main,test/cases/13/source.c
-lparen,6,9,(,test/cases/13/source.c
-rparen,6,10,),test/cases/13/source.c
-lbrace,7,1,{,test/cases/13/source.c
-int,8,3,int,test/cases/13/source.c
-identifier,8,7,x,test/cases/13/source.c
-semi,8,8,;,test/cases/13/source.c
-if,10,3,if,test/cases/13/source.c
-lparen,10,6,(,test/cases/13/source.c
-integer_constant,10,7,1,test/cases/13/source.c
-rparen,10,11,),test/cases/13/source.c
-identifier,10,13,printf,test/cases/13/source.c
-lparen,10,13,(,test/cases/13/source.c
-string_literal,10,13,"pass\n",test/cases/13/source.c
-rparen,10,13,),test/cases/13/source.c
-semi,10,17,;,test/cases/13/source.c
-endif,10,17,,test/cases/13/source.c
-if,11,3,if,test/cases/13/source.c
-lparen,11,6,(,test/cases/13/source.c
-integer_constant,11,7,1,test/cases/13/source.c
-rparen,11,11,),test/cases/13/source.c
-lbrace,11,13,{,test/cases/13/source.c
-identifier,11,14,printf,test/cases/13/source.c
-lparen,11,14,(,test/cases/13/source.c
-string_literal,11,14,"pass\n",test/cases/13/source.c
-rparen,11,14,),test/cases/13/source.c
-semi,11,18,;,test/cases/13/source.c
-rbrace,11,19,},test/cases/13/source.c
-endif,11,19,,test/cases/13/source.c
-if,12,3,if,test/cases/13/source.c
-lparen,12,6,(,test/cases/13/source.c
-integer_constant,12,7,0,test/cases/13/source.c
-rparen,12,12,),test/cases/13/source.c
-identifier,12,14,printf,test/cases/13/source.c
-lparen,12,14,(,test/cases/13/source.c
-string_literal,12,14,"fail\n",test/cases/13/source.c
-rparen,12,14,),test/cases/13/source.c
-semi,12,18,;,test/cases/13/source.c
-endif,12,18,,test/cases/13/source.c
-else,12,20,else,test/cases/13/source.c
-identifier,12,25,printf,test/cases/13/source.c
-lparen,12,25,(,test/cases/13/source.c
-string_literal,12,25,"pass\n",test/cases/13/source.c
-rparen,12,25,),test/cases/13/source.c
-semi,12,29,;,test/cases/13/source.c
-endif,12,29,,test/cases/13/source.c
-if,13,3,if,test/cases/13/source.c
-lparen,13,6,(,test/cases/13/source.c
-integer_constant,13,7,0,test/cases/13/source.c
-rparen,13,12,),test/cases/13/source.c
-lbrace,13,14,{,test/cases/13/source.c
-identifier,13,15,printf,test/cases/13/source.c
-lparen,13,15,(,test/cases/13/source.c
-string_literal,13,15,"fail\n",test/cases/13/source.c
-rparen,13,15,),test/cases/13/source.c
-semi,13,19,;,test/cases/13/source.c
-rbrace,13,20,},test/cases/13/source.c
-endif,13,20,,test/cases/13/source.c
-else,13,22,else,test/cases/13/source.c
-identifier,13,27,printf,test/cases/13/source.c
-lparen,13,27,(,test/cases/13/source.c
-string_literal,13,27,"pass\n",test/cases/13/source.c
-rparen,13,27,),test/cases/13/source.c
-semi,13,31,;,test/cases/13/source.c
-endif,13,31,,test/cases/13/source.c
-if,14,3,if,test/cases/13/source.c
-lparen,14,6,(,test/cases/13/source.c
-integer_constant,14,7,0,test/cases/13/source.c
-rparen,14,12,),test/cases/13/source.c
-lbrace,14,14,{,test/cases/13/source.c
-identifier,14,15,printf,test/cases/13/source.c
-lparen,14,15,(,test/cases/13/source.c
-string_literal,14,15,"fail\n",test/cases/13/source.c
-rparen,14,15,),test/cases/13/source.c
-semi,14,19,;,test/cases/13/source.c
-rbrace,14,20,},test/cases/13/source.c
-endif,14,20,,test/cases/13/source.c
-else,14,22,else,test/cases/13/source.c
-lbrace,14,27,{,test/cases/13/source.c
-identifier,14,28,printf,test/cases/13/source.c
-lparen,14,28,(,test/cases/13/source.c
-string_literal,14,28,"pass\n",test/cases/13/source.c
-rparen,14,28,),test/cases/13/source.c
-semi,14,32,;,test/cases/13/source.c
-rbrace,14,33,},test/cases/13/source.c
-endif,14,33,,test/cases/13/source.c
-if,15,3,if,test/cases/13/source.c
-lparen,15,6,(,test/cases/13/source.c
-integer_constant,15,7,1,test/cases/13/source.c
-rparen,15,11,),test/cases/13/source.c
-for,15,13,for,test/cases/13/source.c
-lparen,15,16,(,test/cases/13/source.c
-identifier,15,17,x,test/cases/13/source.c
-assign,15,18,=,test/cases/13/source.c
-integer_constant,15,19,0,test/cases/13/source.c
-semi,15,20,;,test/cases/13/source.c
-identifier,15,21,x,test/cases/13/source.c
-lt,15,22,<,test/cases/13/source.c
-integer_constant,15,23,1,test/cases/13/source.c
-semi,15,24,;,test/cases/13/source.c
-identifier,15,25,x,test/cases/13/source.c
-incr,15,26,++,test/cases/13/source.c
-rparen,15,28,),test/cases/13/source.c
-lbrace,15,29,{,test/cases/13/source.c
-identifier,15,30,printf,test/cases/13/source.c
-lparen,15,30,(,test/cases/13/source.c
-string_literal,15,30,"pass\n",test/cases/13/source.c
-rparen,15,30,),test/cases/13/source.c
-semi,15,34,;,test/cases/13/source.c
-rbrace,15,35,},test/cases/13/source.c
-endif,15,35,,test/cases/13/source.c
-if,16,3,if,test/cases/13/source.c
-lparen,16,6,(,test/cases/13/source.c
-integer_constant,16,7,0,test/cases/13/source.c
-rparen,16,12,),test/cases/13/source.c
-for,16,14,for,test/cases/13/source.c
-lparen,16,17,(,test/cases/13/source.c
-identifier,16,18,x,test/cases/13/source.c
-assign,16,19,=,test/cases/13/source.c
-integer_constant,16,20,0,test/cases/13/source.c
-semi,16,21,;,test/cases/13/source.c
-identifier,16,22,x,test/cases/13/source.c
-lt,16,23,<,test/cases/13/source.c
-integer_constant,16,24,1,test/cases/13/source.c
-semi,16,25,;,test/cases/13/source.c
-identifier,16,26,x,test/cases/13/source.c
-incr,16,27,++,test/cases/13/source.c
-rparen,16,29,),test/cases/13/source.c
-identifier,16,30,printf,test/cases/13/source.c
-lparen,16,30,(,test/cases/13/source.c
-string_literal,16,30,"fail\n",test/cases/13/source.c
-rparen,16,30,),test/cases/13/source.c
-semi,16,34,;,test/cases/13/source.c
-endif,16,34,,test/cases/13/source.c
-else,16,36,else,test/cases/13/source.c
-for,16,41,for,test/cases/13/source.c
-lparen,16,44,(,test/cases/13/source.c
-identifier,16,45,x,test/cases/13/source.c
-assign,16,46,=,test/cases/13/source.c
-integer_constant,16,47,0,test/cases/13/source.c
-semi,16,48,;,test/cases/13/source.c
-identifier,16,49,x,test/cases/13/source.c
-lt,16,50,<,test/cases/13/source.c
-integer_constant,16,51,1,test/cases/13/source.c
-semi,16,52,;,test/cases/13/source.c
-identifier,16,53,x,test/cases/13/source.c
-incr,16,54,++,test/cases/13/source.c
-rparen,16,56,),test/cases/13/source.c
-identifier,16,57,printf,test/cases/13/source.c
-lparen,16,57,(,test/cases/13/source.c
-string_literal,16,57,"pass\n",test/cases/13/source.c
-rparen,16,57,),test/cases/13/source.c
-semi,16,61,;,test/cases/13/source.c
-endif,16,61,,test/cases/13/source.c
-if,17,3,if,test/cases/13/source.c
-lparen,17,6,(,test/cases/13/source.c
-integer_constant,17,7,0,test/cases/13/source.c
-rparen,17,12,),test/cases/13/source.c
-lbrace,17,14,{,test/cases/13/source.c
-for,17,15,for,test/cases/13/source.c
-lparen,17,18,(,test/cases/13/source.c
-identifier,17,19,x,test/cases/13/source.c
-assign,17,20,=,test/cases/13/source.c
-integer_constant,17,21,0,test/cases/13/source.c
-semi,17,22,;,test/cases/13/source.c
-identifier,17,23,x,test/cases/13/source.c
-lt,17,24,<,test/cases/13/source.c
-integer_constant,17,25,1,test/cases/13/source.c
-semi,17,26,;,test/cases/13/source.c
-identifier,17,27,x,test/cases/13/source.c
-incr,17,28,++,test/cases/13/source.c
-rparen,17,30,),test/cases/13/source.c
-lbrace,17,31,{,test/cases/13/source.c
-identifier,17,32,printf,test/cases/13/source.c
-lparen,17,32,(,test/cases/13/source.c
-string_literal,17,32,"fail\n",test/cases/13/source.c
-rparen,17,32,),test/cases/13/source.c
-semi,17,36,;,test/cases/13/source.c
-rbrace,17,37,},test/cases/13/source.c
-rbrace,17,38,},test/cases/13/source.c
-endif,17,38,,test/cases/13/source.c
-else,17,40,else,test/cases/13/source.c
-lbrace,17,45,{,test/cases/13/source.c
-for,17,46,for,test/cases/13/source.c
-lparen,17,49,(,test/cases/13/source.c
-identifier,17,50,x,test/cases/13/source.c
-assign,17,51,=,test/cases/13/source.c
-integer_constant,17,52,0,test/cases/13/source.c
-semi,17,53,;,test/cases/13/source.c
-identifier,17,54,x,test/cases/13/source.c
-lt,17,55,<,test/cases/13/source.c
-integer_constant,17,56,1,test/cases/13/source.c
-semi,17,57,;,test/cases/13/source.c
-identifier,17,58,x,test/cases/13/source.c
-incr,17,59,++,test/cases/13/source.c
-rparen,17,61,),test/cases/13/source.c
-lbrace,17,62,{,test/cases/13/source.c
-identifier,17,63,printf,test/cases/13/source.c
-lparen,17,63,(,test/cases/13/source.c
-string_literal,17,63,"pass\n",test/cases/13/source.c
-rparen,17,63,),test/cases/13/source.c
-semi,17,67,;,test/cases/13/source.c
-rbrace,17,68,},test/cases/13/source.c
-rbrace,17,69,},test/cases/13/source.c
-endif,17,69,,test/cases/13/source.c
-if,18,3,if,test/cases/13/source.c
-lparen,18,6,(,test/cases/13/source.c
-integer_constant,18,7,0,test/cases/13/source.c
-rparen,18,12,),test/cases/13/source.c
-for,18,14,for,test/cases/13/source.c
-lparen,18,17,(,test/cases/13/source.c
-identifier,18,18,x,test/cases/13/source.c
-assign,18,19,=,test/cases/13/source.c
-integer_constant,18,20,0,test/cases/13/source.c
-semi,18,21,;,test/cases/13/source.c
-identifier,18,22,x,test/cases/13/source.c
-lt,18,23,<,test/cases/13/source.c
-integer_constant,18,24,1,test/cases/13/source.c
-semi,18,25,;,test/cases/13/source.c
-identifier,18,26,x,test/cases/13/source.c
-incr,18,27,++,test/cases/13/source.c
-rparen,18,29,),test/cases/13/source.c
-lbrace,18,30,{,test/cases/13/source.c
-identifier,18,31,printf,test/cases/13/source.c
-lparen,18,31,(,test/cases/13/source.c
-string_literal,18,31,"fail\n",test/cases/13/source.c
-rparen,18,31,),test/cases/13/source.c
-semi,18,35,;,test/cases/13/source.c
-rbrace,18,36,},test/cases/13/source.c
-endif,18,36,,test/cases/13/source.c
-else,18,38,else,test/cases/13/source.c
-for,18,43,for,test/cases/13/source.c
-lparen,18,46,(,test/cases/13/source.c
-identifier,18,47,x,test/cases/13/source.c
-assign,18,48,=,test/cases/13/source.c
-integer_constant,18,49,0,test/cases/13/source.c
-semi,18,50,;,test/cases/13/source.c
-identifier,18,51,x,test/cases/13/source.c
-lt,18,52,<,test/cases/13/source.c
-integer_constant,18,53,1,test/cases/13/source.c
-semi,18,54,;,test/cases/13/source.c
-identifier,18,55,x,test/cases/13/source.c
-incr,18,56,++,test/cases/13/source.c
-rparen,18,58,),test/cases/13/source.c
-lbrace,18,59,{,test/cases/13/source.c
-identifier,18,60,printf,test/cases/13/source.c
-lparen,18,60,(,test/cases/13/source.c
-string_literal,18,60,"pass\n",test/cases/13/source.c
-rparen,18,60,),test/cases/13/source.c
-semi,18,64,;,test/cases/13/source.c
-rbrace,18,65,},test/cases/13/source.c
-endif,18,65,,test/cases/13/source.c
-if,19,3,if,test/cases/13/source.c
-lparen,19,5,(,test/cases/13/source.c
-integer_constant,19,6,0,test/cases/13/source.c
-rparen,19,11,),test/cases/13/source.c
-identifier,19,12,printf,test/cases/13/source.c
-lparen,19,12,(,test/cases/13/source.c
-string_literal,19,12,"fail\n",test/cases/13/source.c
-rparen,19,12,),test/cases/13/source.c
-semi,19,16,;,test/cases/13/source.c
-endif,19,16,,test/cases/13/source.c
-else_if,19,17,else if,test/cases/13/source.c
-lparen,19,24,(,test/cases/13/source.c
-integer_constant,19,25,1,test/cases/13/source.c
-rparen,19,29,),test/cases/13/source.c
-identifier,19,30,printf,test/cases/13/source.c
-lparen,19,30,(,test/cases/13/source.c
-string_literal,19,30,"pass\n",test/cases/13/source.c
-rparen,19,30,),test/cases/13/source.c
-semi,19,34,;,test/cases/13/source.c
-endif,19,34,,test/cases/13/source.c
-else,19,35,else,test/cases/13/source.c
-identifier,19,40,printf,test/cases/13/source.c
-lparen,19,40,(,test/cases/13/source.c
-string_literal,19,40,"fail\n",test/cases/13/source.c
-rparen,19,40,),test/cases/13/source.c
-semi,19,44,;,test/cases/13/source.c
-endif,19,44,,test/cases/13/source.c
-rbrace,20,1,},test/cases/13/source.c
+[c:75] external_declaration_hint () [test/cases/13/source.c line 6, col 1]
+[c:13] int (int) [test/cases/13/source.c line 6, col 1]
+[c:42] function_definition_hint () [test/cases/13/source.c line 6, col 1]
+[c:115] identifier (main) [test/cases/13/source.c line 6, col 5]
+[c:47] lparen (() [test/cases/13/source.c line 6, col 9]
+[c:48] rparen ()) [test/cases/13/source.c line 6, col 10]
+[c:59] lbrace ({) [test/cases/13/source.c line 7, col 1]
+[c:13] int (int) [test/cases/13/source.c line 8, col 3]
+[c:115] identifier (x) [test/cases/13/source.c line 8, col 7]
+[c:20] semi (;) [test/cases/13/source.c line 8, col 8]
+[c:45] if (if) [test/cases/13/source.c line 10, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 10, col 6]
+[c:49] integer_constant (1) [test/cases/13/source.c line 10, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 10, col 11]
+[c:115] identifier (printf) [test/cases/13/source.c line 10, col 13]
+[c:47] lparen (() [test/cases/13/source.c line 10, col 13]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 10, col 13]
+[c:48] rparen ()) [test/cases/13/source.c line 10, col 13]
+[c:20] semi (;) [test/cases/13/source.c line 10, col 17]
+[c:50] endif () [test/cases/13/source.c line 10, col 17]
+[c:45] if (if) [test/cases/13/source.c line 11, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 11, col 6]
+[c:49] integer_constant (1) [test/cases/13/source.c line 11, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 11, col 11]
+[c:59] lbrace ({) [test/cases/13/source.c line 11, col 13]
+[c:115] identifier (printf) [test/cases/13/source.c line 11, col 14]
+[c:47] lparen (() [test/cases/13/source.c line 11, col 14]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 11, col 14]
+[c:48] rparen ()) [test/cases/13/source.c line 11, col 14]
+[c:20] semi (;) [test/cases/13/source.c line 11, col 18]
+[c:89] rbrace (}) [test/cases/13/source.c line 11, col 19]
+[c:50] endif () [test/cases/13/source.c line 11, col 19]
+[c:45] if (if) [test/cases/13/source.c line 12, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 12, col 6]
+[c:49] integer_constant (0) [test/cases/13/source.c line 12, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 12, col 12]
+[c:115] identifier (printf) [test/cases/13/source.c line 12, col 14]
+[c:47] lparen (() [test/cases/13/source.c line 12, col 14]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 12, col 14]
+[c:48] rparen ()) [test/cases/13/source.c line 12, col 14]
+[c:20] semi (;) [test/cases/13/source.c line 12, col 18]
+[c:50] endif () [test/cases/13/source.c line 12, col 18]
+[c:116] else (else) [test/cases/13/source.c line 12, col 20]
+[c:115] identifier (printf) [test/cases/13/source.c line 12, col 25]
+[c:47] lparen (() [test/cases/13/source.c line 12, col 25]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 12, col 25]
+[c:48] rparen ()) [test/cases/13/source.c line 12, col 25]
+[c:20] semi (;) [test/cases/13/source.c line 12, col 29]
+[c:50] endif () [test/cases/13/source.c line 12, col 29]
+[c:45] if (if) [test/cases/13/source.c line 13, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 13, col 6]
+[c:49] integer_constant (0) [test/cases/13/source.c line 13, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 13, col 12]
+[c:59] lbrace ({) [test/cases/13/source.c line 13, col 14]
+[c:115] identifier (printf) [test/cases/13/source.c line 13, col 15]
+[c:47] lparen (() [test/cases/13/source.c line 13, col 15]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 13, col 15]
+[c:48] rparen ()) [test/cases/13/source.c line 13, col 15]
+[c:20] semi (;) [test/cases/13/source.c line 13, col 19]
+[c:89] rbrace (}) [test/cases/13/source.c line 13, col 20]
+[c:50] endif () [test/cases/13/source.c line 13, col 20]
+[c:116] else (else) [test/cases/13/source.c line 13, col 22]
+[c:115] identifier (printf) [test/cases/13/source.c line 13, col 27]
+[c:47] lparen (() [test/cases/13/source.c line 13, col 27]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 13, col 27]
+[c:48] rparen ()) [test/cases/13/source.c line 13, col 27]
+[c:20] semi (;) [test/cases/13/source.c line 13, col 31]
+[c:50] endif () [test/cases/13/source.c line 13, col 31]
+[c:45] if (if) [test/cases/13/source.c line 14, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 14, col 6]
+[c:49] integer_constant (0) [test/cases/13/source.c line 14, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 14, col 12]
+[c:59] lbrace ({) [test/cases/13/source.c line 14, col 14]
+[c:115] identifier (printf) [test/cases/13/source.c line 14, col 15]
+[c:47] lparen (() [test/cases/13/source.c line 14, col 15]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 14, col 15]
+[c:48] rparen ()) [test/cases/13/source.c line 14, col 15]
+[c:20] semi (;) [test/cases/13/source.c line 14, col 19]
+[c:89] rbrace (}) [test/cases/13/source.c line 14, col 20]
+[c:50] endif () [test/cases/13/source.c line 14, col 20]
+[c:116] else (else) [test/cases/13/source.c line 14, col 22]
+[c:59] lbrace ({) [test/cases/13/source.c line 14, col 27]
+[c:115] identifier (printf) [test/cases/13/source.c line 14, col 28]
+[c:47] lparen (() [test/cases/13/source.c line 14, col 28]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 14, col 28]
+[c:48] rparen ()) [test/cases/13/source.c line 14, col 28]
+[c:20] semi (;) [test/cases/13/source.c line 14, col 32]
+[c:89] rbrace (}) [test/cases/13/source.c line 14, col 33]
+[c:50] endif () [test/cases/13/source.c line 14, col 33]
+[c:45] if (if) [test/cases/13/source.c line 15, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 15, col 6]
+[c:49] integer_constant (1) [test/cases/13/source.c line 15, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 15, col 11]
+[c:24] for (for) [test/cases/13/source.c line 15, col 13]
+[c:47] lparen (() [test/cases/13/source.c line 15, col 16]
+[c:115] identifier (x) [test/cases/13/source.c line 15, col 17]
+[c:91] assign (=) [test/cases/13/source.c line 15, col 18]
+[c:49] integer_constant (0) [test/cases/13/source.c line 15, col 19]
+[c:20] semi (;) [test/cases/13/source.c line 15, col 20]
+[c:115] identifier (x) [test/cases/13/source.c line 15, col 21]
+[c:112] lt (<) [test/cases/13/source.c line 15, col 22]
+[c:49] integer_constant (1) [test/cases/13/source.c line 15, col 23]
+[c:20] semi (;) [test/cases/13/source.c line 15, col 24]
+[c:115] identifier (x) [test/cases/13/source.c line 15, col 25]
+[c:80] incr (++) [test/cases/13/source.c line 15, col 26]
+[c:48] rparen ()) [test/cases/13/source.c line 15, col 28]
+[c:59] lbrace ({) [test/cases/13/source.c line 15, col 29]
+[c:115] identifier (printf) [test/cases/13/source.c line 15, col 30]
+[c:47] lparen (() [test/cases/13/source.c line 15, col 30]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 15, col 30]
+[c:48] rparen ()) [test/cases/13/source.c line 15, col 30]
+[c:20] semi (;) [test/cases/13/source.c line 15, col 34]
+[c:89] rbrace (}) [test/cases/13/source.c line 15, col 35]
+[c:50] endif () [test/cases/13/source.c line 15, col 35]
+[c:45] if (if) [test/cases/13/source.c line 16, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 16, col 6]
+[c:49] integer_constant (0) [test/cases/13/source.c line 16, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 16, col 12]
+[c:24] for (for) [test/cases/13/source.c line 16, col 14]
+[c:47] lparen (() [test/cases/13/source.c line 16, col 17]
+[c:115] identifier (x) [test/cases/13/source.c line 16, col 18]
+[c:91] assign (=) [test/cases/13/source.c line 16, col 19]
+[c:49] integer_constant (0) [test/cases/13/source.c line 16, col 20]
+[c:20] semi (;) [test/cases/13/source.c line 16, col 21]
+[c:115] identifier (x) [test/cases/13/source.c line 16, col 22]
+[c:112] lt (<) [test/cases/13/source.c line 16, col 23]
+[c:49] integer_constant (1) [test/cases/13/source.c line 16, col 24]
+[c:20] semi (;) [test/cases/13/source.c line 16, col 25]
+[c:115] identifier (x) [test/cases/13/source.c line 16, col 26]
+[c:80] incr (++) [test/cases/13/source.c line 16, col 27]
+[c:48] rparen ()) [test/cases/13/source.c line 16, col 29]
+[c:115] identifier (printf) [test/cases/13/source.c line 16, col 30]
+[c:47] lparen (() [test/cases/13/source.c line 16, col 30]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 16, col 30]
+[c:48] rparen ()) [test/cases/13/source.c line 16, col 30]
+[c:20] semi (;) [test/cases/13/source.c line 16, col 34]
+[c:50] endif () [test/cases/13/source.c line 16, col 34]
+[c:116] else (else) [test/cases/13/source.c line 16, col 36]
+[c:24] for (for) [test/cases/13/source.c line 16, col 41]
+[c:47] lparen (() [test/cases/13/source.c line 16, col 44]
+[c:115] identifier (x) [test/cases/13/source.c line 16, col 45]
+[c:91] assign (=) [test/cases/13/source.c line 16, col 46]
+[c:49] integer_constant (0) [test/cases/13/source.c line 16, col 47]
+[c:20] semi (;) [test/cases/13/source.c line 16, col 48]
+[c:115] identifier (x) [test/cases/13/source.c line 16, col 49]
+[c:112] lt (<) [test/cases/13/source.c line 16, col 50]
+[c:49] integer_constant (1) [test/cases/13/source.c line 16, col 51]
+[c:20] semi (;) [test/cases/13/source.c line 16, col 52]
+[c:115] identifier (x) [test/cases/13/source.c line 16, col 53]
+[c:80] incr (++) [test/cases/13/source.c line 16, col 54]
+[c:48] rparen ()) [test/cases/13/source.c line 16, col 56]
+[c:115] identifier (printf) [test/cases/13/source.c line 16, col 57]
+[c:47] lparen (() [test/cases/13/source.c line 16, col 57]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 16, col 57]
+[c:48] rparen ()) [test/cases/13/source.c line 16, col 57]
+[c:20] semi (;) [test/cases/13/source.c line 16, col 61]
+[c:50] endif () [test/cases/13/source.c line 16, col 61]
+[c:45] if (if) [test/cases/13/source.c line 17, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 17, col 6]
+[c:49] integer_constant (0) [test/cases/13/source.c line 17, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 17, col 12]
+[c:59] lbrace ({) [test/cases/13/source.c line 17, col 14]
+[c:24] for (for) [test/cases/13/source.c line 17, col 15]
+[c:47] lparen (() [test/cases/13/source.c line 17, col 18]
+[c:115] identifier (x) [test/cases/13/source.c line 17, col 19]
+[c:91] assign (=) [test/cases/13/source.c line 17, col 20]
+[c:49] integer_constant (0) [test/cases/13/source.c line 17, col 21]
+[c:20] semi (;) [test/cases/13/source.c line 17, col 22]
+[c:115] identifier (x) [test/cases/13/source.c line 17, col 23]
+[c:112] lt (<) [test/cases/13/source.c line 17, col 24]
+[c:49] integer_constant (1) [test/cases/13/source.c line 17, col 25]
+[c:20] semi (;) [test/cases/13/source.c line 17, col 26]
+[c:115] identifier (x) [test/cases/13/source.c line 17, col 27]
+[c:80] incr (++) [test/cases/13/source.c line 17, col 28]
+[c:48] rparen ()) [test/cases/13/source.c line 17, col 30]
+[c:59] lbrace ({) [test/cases/13/source.c line 17, col 31]
+[c:115] identifier (printf) [test/cases/13/source.c line 17, col 32]
+[c:47] lparen (() [test/cases/13/source.c line 17, col 32]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 17, col 32]
+[c:48] rparen ()) [test/cases/13/source.c line 17, col 32]
+[c:20] semi (;) [test/cases/13/source.c line 17, col 36]
+[c:89] rbrace (}) [test/cases/13/source.c line 17, col 37]
+[c:89] rbrace (}) [test/cases/13/source.c line 17, col 38]
+[c:50] endif () [test/cases/13/source.c line 17, col 38]
+[c:116] else (else) [test/cases/13/source.c line 17, col 40]
+[c:59] lbrace ({) [test/cases/13/source.c line 17, col 45]
+[c:24] for (for) [test/cases/13/source.c line 17, col 46]
+[c:47] lparen (() [test/cases/13/source.c line 17, col 49]
+[c:115] identifier (x) [test/cases/13/source.c line 17, col 50]
+[c:91] assign (=) [test/cases/13/source.c line 17, col 51]
+[c:49] integer_constant (0) [test/cases/13/source.c line 17, col 52]
+[c:20] semi (;) [test/cases/13/source.c line 17, col 53]
+[c:115] identifier (x) [test/cases/13/source.c line 17, col 54]
+[c:112] lt (<) [test/cases/13/source.c line 17, col 55]
+[c:49] integer_constant (1) [test/cases/13/source.c line 17, col 56]
+[c:20] semi (;) [test/cases/13/source.c line 17, col 57]
+[c:115] identifier (x) [test/cases/13/source.c line 17, col 58]
+[c:80] incr (++) [test/cases/13/source.c line 17, col 59]
+[c:48] rparen ()) [test/cases/13/source.c line 17, col 61]
+[c:59] lbrace ({) [test/cases/13/source.c line 17, col 62]
+[c:115] identifier (printf) [test/cases/13/source.c line 17, col 63]
+[c:47] lparen (() [test/cases/13/source.c line 17, col 63]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 17, col 63]
+[c:48] rparen ()) [test/cases/13/source.c line 17, col 63]
+[c:20] semi (;) [test/cases/13/source.c line 17, col 67]
+[c:89] rbrace (}) [test/cases/13/source.c line 17, col 68]
+[c:89] rbrace (}) [test/cases/13/source.c line 17, col 69]
+[c:50] endif () [test/cases/13/source.c line 17, col 69]
+[c:45] if (if) [test/cases/13/source.c line 18, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 18, col 6]
+[c:49] integer_constant (0) [test/cases/13/source.c line 18, col 7]
+[c:48] rparen ()) [test/cases/13/source.c line 18, col 12]
+[c:24] for (for) [test/cases/13/source.c line 18, col 14]
+[c:47] lparen (() [test/cases/13/source.c line 18, col 17]
+[c:115] identifier (x) [test/cases/13/source.c line 18, col 18]
+[c:91] assign (=) [test/cases/13/source.c line 18, col 19]
+[c:49] integer_constant (0) [test/cases/13/source.c line 18, col 20]
+[c:20] semi (;) [test/cases/13/source.c line 18, col 21]
+[c:115] identifier (x) [test/cases/13/source.c line 18, col 22]
+[c:112] lt (<) [test/cases/13/source.c line 18, col 23]
+[c:49] integer_constant (1) [test/cases/13/source.c line 18, col 24]
+[c:20] semi (;) [test/cases/13/source.c line 18, col 25]
+[c:115] identifier (x) [test/cases/13/source.c line 18, col 26]
+[c:80] incr (++) [test/cases/13/source.c line 18, col 27]
+[c:48] rparen ()) [test/cases/13/source.c line 18, col 29]
+[c:59] lbrace ({) [test/cases/13/source.c line 18, col 30]
+[c:115] identifier (printf) [test/cases/13/source.c line 18, col 31]
+[c:47] lparen (() [test/cases/13/source.c line 18, col 31]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 18, col 31]
+[c:48] rparen ()) [test/cases/13/source.c line 18, col 31]
+[c:20] semi (;) [test/cases/13/source.c line 18, col 35]
+[c:89] rbrace (}) [test/cases/13/source.c line 18, col 36]
+[c:50] endif () [test/cases/13/source.c line 18, col 36]
+[c:116] else (else) [test/cases/13/source.c line 18, col 38]
+[c:24] for (for) [test/cases/13/source.c line 18, col 43]
+[c:47] lparen (() [test/cases/13/source.c line 18, col 46]
+[c:115] identifier (x) [test/cases/13/source.c line 18, col 47]
+[c:91] assign (=) [test/cases/13/source.c line 18, col 48]
+[c:49] integer_constant (0) [test/cases/13/source.c line 18, col 49]
+[c:20] semi (;) [test/cases/13/source.c line 18, col 50]
+[c:115] identifier (x) [test/cases/13/source.c line 18, col 51]
+[c:112] lt (<) [test/cases/13/source.c line 18, col 52]
+[c:49] integer_constant (1) [test/cases/13/source.c line 18, col 53]
+[c:20] semi (;) [test/cases/13/source.c line 18, col 54]
+[c:115] identifier (x) [test/cases/13/source.c line 18, col 55]
+[c:80] incr (++) [test/cases/13/source.c line 18, col 56]
+[c:48] rparen ()) [test/cases/13/source.c line 18, col 58]
+[c:59] lbrace ({) [test/cases/13/source.c line 18, col 59]
+[c:115] identifier (printf) [test/cases/13/source.c line 18, col 60]
+[c:47] lparen (() [test/cases/13/source.c line 18, col 60]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 18, col 60]
+[c:48] rparen ()) [test/cases/13/source.c line 18, col 60]
+[c:20] semi (;) [test/cases/13/source.c line 18, col 64]
+[c:89] rbrace (}) [test/cases/13/source.c line 18, col 65]
+[c:50] endif () [test/cases/13/source.c line 18, col 65]
+[c:45] if (if) [test/cases/13/source.c line 19, col 3]
+[c:47] lparen (() [test/cases/13/source.c line 19, col 5]
+[c:49] integer_constant (0) [test/cases/13/source.c line 19, col 6]
+[c:48] rparen ()) [test/cases/13/source.c line 19, col 11]
+[c:115] identifier (printf) [test/cases/13/source.c line 19, col 12]
+[c:47] lparen (() [test/cases/13/source.c line 19, col 12]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 19, col 12]
+[c:48] rparen ()) [test/cases/13/source.c line 19, col 12]
+[c:20] semi (;) [test/cases/13/source.c line 19, col 16]
+[c:50] endif () [test/cases/13/source.c line 19, col 16]
+[c:11] else_if (else if) [test/cases/13/source.c line 19, col 17]
+[c:47] lparen (() [test/cases/13/source.c line 19, col 24]
+[c:49] integer_constant (1) [test/cases/13/source.c line 19, col 25]
+[c:48] rparen ()) [test/cases/13/source.c line 19, col 29]
+[c:115] identifier (printf) [test/cases/13/source.c line 19, col 30]
+[c:47] lparen (() [test/cases/13/source.c line 19, col 30]
+[c:82] string_literal ("pass\n") [test/cases/13/source.c line 19, col 30]
+[c:48] rparen ()) [test/cases/13/source.c line 19, col 30]
+[c:20] semi (;) [test/cases/13/source.c line 19, col 34]
+[c:50] endif () [test/cases/13/source.c line 19, col 34]
+[c:116] else (else) [test/cases/13/source.c line 19, col 35]
+[c:115] identifier (printf) [test/cases/13/source.c line 19, col 40]
+[c:47] lparen (() [test/cases/13/source.c line 19, col 40]
+[c:82] string_literal ("fail\n") [test/cases/13/source.c line 19, col 40]
+[c:48] rparen ()) [test/cases/13/source.c line 19, col 40]
+[c:20] semi (;) [test/cases/13/source.c line 19, col 44]
+[c:50] endif () [test/cases/13/source.c line 19, col 44]
+[c:89] rbrace (}) [test/cases/13/source.c line 20, col 1]

@@ -1,2 +1,27 @@
-csource,1,1,\n\nint f(void), *fip(), (*pfi)();\n\n/* Array of pointers to three functions that have\n * two integer pointers as parameters and return\n * an int\n */\n\nint (*apfi[3])(int *x, int *y);\n\n/*\n * declares a function fpfi that returns a pointer \n * to a function returning an int. The function \n * fpfi has two parameters: a pointer to a \n * function returning an int (with one parameter \n * of type long int), and an int. The pointer \n * returned by fpfi points to a function that has \n * one int parameter and accepts zero or more \n * additional arguments of any type.\n */\n\nint (*fpfi(int (*)(long), int))(int, ...);\n\nint main() { char str[]={'a','b','c',}; return 0; }\n,test/cases/8/source.c
-separator,26,1,,test/cases/8/source.c
+[pp:18] csource (
+
+int f(void), *fip(), (*pfi)();
+
+/* Array of pointers to three functions that have
+ * two integer pointers as parameters and return
+ * an int
+ */
+
+int (*apfi[3])(int *x, int *y);
+
+/*
+ * declares a function fpfi that returns a pointer 
+ * to a function returning an int. The function 
+ * fpfi has two parameters: a pointer to a 
+ * function returning an int (with one parameter 
+ * of type long int), and an int. The pointer 
+ * returned by fpfi points to a function that has 
+ * one int parameter and accepts zero or more 
+ * additional arguments of any type.
+ */
+
+int (*fpfi(int (*)(long), int))(int, ...);
+
+int main() { char str[]={'a','b','c',}; return 0; }
+) [test/cases/8/source.c line 1, col 1]
+[pp:55] separator () [test/cases/8/source.c line 26, col 1]

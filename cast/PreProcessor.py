@@ -336,16 +336,13 @@ class cPreprocessingEvaluator:
     return ppZero
 
   def eval_cSource(self, cPPAST):
-    tokens = TokenList()
     def preprocess_replace(ctokens):
       return self._eval(ppAst('ReplacementList', {'tokens': ctokens}))
     sourceCode = SourceCodeString(cPPAST.getResource(), cPPAST.getString(), cPPAST.getLine(), cPPAST.getColumn())
-    if '__darwin_nl_item' in cPPAST.getString():
-      pass
     cLex = cLexer(sourceCode, pp_expander=preprocess_replace, context=self.cLexerContext)
     self.cLexerContext = cLex.getContext()
 
-    cLexList = list(cLex)
+    cLexList = TokenList(cLex)
     self.line += len(list(filter(lambda x: x == '\n', cPPAST.getString()))) + 1
     return cLexList
 
