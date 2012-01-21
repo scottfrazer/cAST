@@ -3,9 +3,13 @@ from cast.cParser import Ast as cAst
 from cast.ppParser import ParseTree as ppParseTree
 from cast.cParser import ParseTree as cParseTree
 from cast.Token import Token
+import termcolor
+
+def noColor(string, color):
+  return string
 
 class AstPrettyPrintable:
-  def __init__(self, ast, tokenFormat='type'):
+  def __init__(self, ast, tokenFormat='type', color=False):
     self.__dict__.update(locals())
   def getAttr(self, attr):
     return self.ast.getAttr(attr)
@@ -13,10 +17,13 @@ class AstPrettyPrintable:
     return self._prettyPrint(self.ast, 0)
   def _prettyPrint(self, ast, indent = 0):
     indentStr = ''.join([' ' for x in range(indent)])
+    colored = noColor
+    if self.color:
+      colored = termcolor.colored
     if isinstance(ast, ppAst) or isinstance(ast, cAst):
-      string = '%s(%s:\n' % (indentStr, ast.name)
+      string = '%s(%s:\n' % (indentStr, colored(ast.name, 'blue'))
       string += ',\n'.join([ \
-        '%s  %s=%s' % (indentStr, name, self._prettyPrint(value, indent + 2).lstrip()) for name, value in ast.attributes.items() \
+        '%s  %s=%s' % (indentStr, colored(name, 'green'), self._prettyPrint(value, indent + 2).lstrip()) for name, value in ast.attributes.items() \
       ])
       string += '\n%s)' % (indentStr)
       return string
@@ -28,9 +35,9 @@ class AstPrettyPrintable:
       string += '\n%s]' % (indentStr)
       return string
     elif isinstance(ast, Token):
-      return '%s%s' % (indentStr, ast.toString(self.tokenFormat))
+      return '%s%s' % (indentStr, colored(ast.toString(self.tokenFormat), 'red'))
     else:
-      return '%s%s' % (indentStr, ast)
+      return '%s%s' % (indentStr, colored(ast, 'red'))
 
 class ParseTreePrettyPrintable:
   def __init__(self, ast, tokenFormat='type'):

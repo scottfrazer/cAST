@@ -16,6 +16,9 @@ setup(
     author_email='scott.d.frazer@gmail.com',
     packages=['cast'],
     package_dir={'cast': 'cast'},
+    install_requires=[
+      'termcolor>=1.1.0'
+    ],
     entry_points={
       'console_scripts': [
             'cast = cast.Main:Cli'

@@ -38,27 +38,27 @@ def Cli():
               help = 'C Source File')
   
   parser.add_argument('-d', '--debug',
-              required = False,
+              action='store_true',
               help = 'Writes debug information')
   
   parser.add_argument('--skip-includes',
-              required = False,
               action='store_true',
               help = 'Don\'t process #include directives')
   
   parser.add_argument('-e', '--encoding',
-              required = False,
               help = 'File encoding')
 
   parser.add_argument('-f', '--format',
-              required = False,
               default = 'long',
               help = "'tiny', 'short', 'long' for outputting tokens.")
 
   parser.add_argument('-I', '--include-path',
-              required = False,
               default = '',
               help = "A path containing the list of directories separated by colons.")
+
+  parser.add_argument('-c', '--color',
+              action='store_true',
+              help = "Colorize output to stdout.")
 
   cli = parser.parse_args()
   logger = LoggerFactory().initialize(cli.debug)
@@ -141,7 +141,7 @@ def Cli():
       parser = cParser()
       parsetree = parser.parse(TokenStream(cT))
       ast = parsetree.toAst()
-      print(AstPrettyPrintable(ast, cli.format))
+      print(AstPrettyPrintable(ast, cli.format, color=cli.color))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
