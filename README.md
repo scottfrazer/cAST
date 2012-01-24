@@ -6,7 +6,9 @@ C Preprocessor and Parser
 Example
 -------
 
-    $ cat source.c
+```bash
+$ cat source.c
+```
 
 ```c
 int main( int argc, char * argv[] )
@@ -24,7 +26,9 @@ int factorial(int x)
 }
 ```
 
-    $ cast ast source.c
+```bash
+$ cast ast source.c
+```
 
 ```ast
 (TranslationUnit:
