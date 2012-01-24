@@ -1,5 +1,13 @@
 (PPFile:
   nodes=[
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          string_literal
+        ]
+      ),
+      ident=identifier
+    ),
     csource
   ]
 )

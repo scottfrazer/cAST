@@ -1,7 +1,12 @@
+[pp:27] define (#define) [test/cases/12/source.c line 1, col 1]
+[pp:40] identifier (msg) [test/cases/12/source.c line 1, col 9]
+[pp:13] string_literal ("Hello World\n") [test/cases/12/source.c line 1, col 13]
+[pp:55] separator () [test/cases/12/source.c line 1, col 1]
 [pp:18] csource (int main( int argc, char * argv[] )
 {
   int y;
   y = factorial(6);
+  printf(msg);
   printf("6! = %d\n", y);
 }
 
@@ -11,5 +16,5 @@ int factorial(int x)
     return 1;
   return x * factorial(x-1);
 }
-) [test/cases/12/source.c line 1, col 1]
-[pp:55] separator () [test/cases/12/source.c line 14, col 1]
+) [test/cases/12/source.c line 2, col 1]
+[pp:55] separator () [test/cases/12/source.c line 16, col 1]

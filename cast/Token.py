@@ -1,5 +1,7 @@
 from cast.cParser import Parser as cParser
+from cast.cParser import Ast 
 from cast.ppParser import Parser as ppParser
+import termcolor
 
 class Token:
   def __init__(self, id, resource, terminal_str, source_string, lineno, colno):
@@ -60,6 +62,88 @@ class cToken(Token):
     super().__init__(id, resource, terminal_str, source_string, lineno, colno)
     self.context = context
 
+class Cursor:
+  def __init__(self):
+    self.string = ''
+    self.lineno = 1
+    self.colno = 1
+    c = lambda x: cParser.terminals[x]
+    self.insertSpaceAfter = {
+      c('else')
+    }
+
+  def add(self, token):
+    if token.lineno > self.lineno:
+      self.string += ''.join('\n' for i in range(token.lineno - self.lineno))
+      self.lineno = token.lineno
+      self.colno = 1
+    if token.colno > self.colno:
+      self.string += ''.join(' ' for i in range(token.colno - self.colno))
+      self.colno = token.colno
+    self.string += token.source_string
+    if token.fromPreprocessor or token.id in self.insertSpaceAfter:
+      self.string += ' '
+    self.colno += len(token.source_string)
+  def __str__(self):
+    return self.string
+
+class SourceCodeWriter:
+  def __init__(self, tokenList, ast=None, theme=None, highlight=None):
+    self.__dict__.update(locals())
+    self.string = ''
+    self.lineno = 1
+    self.colno = 1
+    self.ancestors = dict([(t, set()) for t in self.tokenList])
+    self.getTokenAncestors(ast)
+    c = lambda x: cParser.terminals[x]
+    self.insertSpaceAfter = {
+      c('else')
+    }
+
+  def getTokenAncestors(self, ast):
+    self.stack = []
+    self._getTokenAncestors(ast)
+
+  def _getTokenAncestors(self, ast):
+    if not ast:
+      return
+    self.stack.append(ast.name)
+    for (attr, obj) in ast.attributes.items():
+      if isinstance(obj, cToken):
+        self.ancestors[obj] = self.ancestors[obj].union(set(self.stack))
+      elif isinstance(obj, Ast):
+        self._getTokenAncestors(obj)
+      elif isinstance(obj, list):
+        for x in obj:
+          if isinstance(x, cToken):
+            self.ancestors[x] = self.ancestors[x].union(set(self.stack))
+          else:
+            self._getTokenAncestors(x)
+    self.stack.pop()
+
+  def add(self, token):
+    if token.lineno > self.lineno:
+      self.string += ''.join('\n' for i in range(token.lineno - self.lineno))
+      self.lineno = token.lineno
+      self.colno = 1
+    if token.colno > self.colno:
+      self.string += ''.join(' ' for i in range(token.colno - self.colno))
+      self.colno = token.colno
+
+    if self.highlight in self.ancestors[token]:
+      self.string += termcolor.colored(token.source_string, 'green')
+    else:
+      self.string += token.source_string
+
+    if token.fromPreprocessor or token.id in self.insertSpaceAfter:
+      self.string += ' '
+    self.colno += len(token.source_string)
+  def __str__(self):
+    if not len(self.string):
+      for token in self.tokenList:
+        self.add(token)
+    return self.string
+
 class TokenList(list):
   def __init__(self, arg1=[]):
     super().__init__(arg1)
@@ -94,30 +178,9 @@ class TokenList(list):
       return self[self.index + int(whereto) - 1].id in ids
     except:
       return False
-  def toString(self):
-    class Cursor:
-      def __init__(self):
-        self.string = ''
-        self.lineno = 1
-        self.colno = 1
-        c = lambda x: cParser.terminals[x]
-        self.insertSpaceAfter = {
-          c('else')
-        }
-      def add(self, token):
-        if token.lineno > self.lineno:
-          self.string += ''.join('\n' for i in range(token.lineno - self.lineno))
-          self.lineno = token.lineno
-          self.colno = 1
-        if token.colno > self.colno:
-          self.string += ''.join(' ' for i in range(token.colno - self.colno))
-          self.colno = token.colno
-        self.string += token.source_string
-        if token.fromPreprocessor or token.id in self.insertSpaceAfter:
-          self.string += ' '
-        self.colno += len(token.source_string)
-      def __str__(self):
-        return self.string
+  def toString(self, ast=None, theme=None, highlight=None):
+    scw = SourceCodeWriter(self, ast, theme, highlight)
+    return str(scw)
     cursor = Cursor()
     for token in self:
       cursor.add( token )

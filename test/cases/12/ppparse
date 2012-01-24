@@ -2,10 +2,31 @@
   (pp_nodes_list:
     (_gen0:
       (pp_nodes:
-        csource
+        (pp_directive:
+          (control_line:
+            (define_line:
+              define,
+              identifier,
+              (replacement_list:
+                (_gen4:
+                  (pp_tokens:
+                    string_literal
+                  ),
+                  (_gen4: )
+                )
+              )
+            )
+          )
+        )
       ),
       separator,
-      (_gen0: )
+      (_gen0:
+        (pp_nodes:
+          csource
+        ),
+        separator,
+        (_gen0: )
+      )
     )
   )
 )

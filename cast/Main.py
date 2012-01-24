@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 from types import *
 import sys, os, argparse, subprocess, re, logging
 from cast.ppLexer import ppLexer
@@ -9,6 +7,7 @@ from cast.ppParser import TokenStream
 from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.SourceCode import SourceCode
 from cast.Logger import Factory as LoggerFactory
+from cast.cParser import Parser as cParser
 
 def Cli():
 
@@ -31,6 +30,7 @@ def Cli():
   commands['ctok'] = subparsers.add_parser('ctok', help='Preprocess and tokenize C code.')
   commands['cparse'] = subparsers.add_parser('cparse', help='Parse C code')
   commands['ast'] = subparsers.add_parser('ast', help='Parse C code and transform parse tree into an AST')
+  commands['dev'] = subparsers.add_parser('dev', help='Developers test area.')
 
   parser.add_argument('source_file',
               metavar = 'SOURCE_FILE',
@@ -59,6 +59,9 @@ def Cli():
   parser.add_argument('-c', '--color',
               action='store_true',
               help = "Colorize output to stdout.")
+
+  parser.add_argument('--highlight',
+              help = "Colorize tokens belonging to this AST node.")
 
   cli = parser.parse_args()
   logger = LoggerFactory().initialize(cli.debug)
@@ -89,10 +92,19 @@ def Cli():
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create( include_path_global, include_path_local, skipIncludes=cli.skip_includes )
 
+  if cli.command == 'dev':
+    from cast.Theme import XTermColorMapper
+    xterm = XTermColorMapper()
+    converted = xterm.convert(0xff87ff)
+    print(converted)
+
   if cli.command == 'pp':
     try:
-      (cT, symbols) = cPP.process( cSourceCode )
-      print(cT.toString())
+      (cT, symbols) = cPP.process(cSourceCode)
+      parser = cParser()
+      parsetree = parser.parse(TokenStream(cT))
+      ast = parsetree.toAst()
+      print(cT.toString(ast, highlight=cli.highlight))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
@@ -125,17 +137,15 @@ def Cli():
       sys.exit(-1)
 
   if cli.command == 'cparse':
-    from cast.cParser import Parser as cParser
     try:
       cT, symbols = cPP.process( cSourceCode )
       parsetree = cParser().parse(TokenStream(cT))
-      print(ParseTreePrettyPrintable(parsetree, cli.format))
+      print(ParseTreePrettyPrintable(parsetree, cli.format, color=cli.color))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
 
   if cli.command == 'ast':
-    from cast.cParser import Parser as cParser
     try:
       cT, symbols = cPP.process( cSourceCode )
       parser = cParser()

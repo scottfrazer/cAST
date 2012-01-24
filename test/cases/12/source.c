@@ -1,7 +1,9 @@
+#define msg "Hello World\n"
 int main( int argc, char * argv[] )
 {
   int y;
   y = factorial(6);
+  printf(msg);
   printf("6! = %d\n", y);
 }
 

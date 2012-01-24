@@ -171,13 +171,7 @@
                                   (_expr_sans_comma:
                                     string_literal
                                   ),
-                                  (_gen45:
-                                    comma,
-                                    (_expr_sans_comma:
-                                      identifier
-                                    ),
-                                    (_gen45: )
-                                  )
+                                  (_gen45: )
                                 ),
                                 rparen
                               )
@@ -186,7 +180,37 @@
                           )
                         )
                       ),
-                      (_gen40: )
+                      (_gen40:
+                        (block_item:
+                          (statement:
+                            (expression_statement:
+                              (expression_opt:
+                                (_expr:
+                                  (_expr:
+                                    identifier
+                                  ),
+                                  lparen,
+                                  (_gen44:
+                                    (_expr_sans_comma:
+                                      string_literal
+                                    ),
+                                    (_gen45:
+                                      comma,
+                                      (_expr_sans_comma:
+                                        identifier
+                                      ),
+                                      (_gen45: )
+                                    )
+                                  ),
+                                  rparen
+                                )
+                              ),
+                              semi
+                            )
+                          )
+                        ),
+                        (_gen40: )
+                      )
                     )
                   )
                 )

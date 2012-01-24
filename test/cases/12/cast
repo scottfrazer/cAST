@@ -28,6 +28,12 @@
           ),
           (FuncCall:
             params=[
+              string_literal
+            ],
+            name=identifier
+          ),
+          (FuncCall:
+            params=[
               string_literal,
               identifier
             ],

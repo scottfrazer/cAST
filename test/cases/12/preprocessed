@@ -1,7 +1,9 @@
+
 int main( int argc, char * argv[] )
 {
   int y;
   y = factorial(6);
+  printf("Hello World\n");
   printf("6! = %d\n", y);
 }
 
