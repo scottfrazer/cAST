@@ -1,32 +1,32 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/14/source.c line 1, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
-            int
+            <int (int) [test/cases/14/source.c line 1, col 1]>
           )
         ),
         (_gen2: )
       ),
       (external_declaration_sub:
         (external_function:
-          function_definition_hint,
+          <function_definition_hint () [test/cases/14/source.c line 1, col 1]>,
           (declarator:
             (_gen26: ),
             (_direct_declarator:
               (_direct_declarator:
-                identifier
+                <identifier (main) [test/cases/14/source.c line 1, col 5]>
               ),
-              lparen,
+              <lparen (() [test/cases/14/source.c line 1, col 9]>,
               (direct_declarator_parameter_list: ),
-              rparen
+              <rparen ()) [test/cases/14/source.c line 1, col 10]>
             )
           ),
           (_gen5: ),
           (compound_statement:
-            lbrace,
+            <lbrace ({) [test/cases/14/source.c line 2, col 1]>,
             (_gen39:
               (block_item_list:
                 (_gen40:
@@ -35,7 +35,7 @@
                       (_gen1:
                         (declaration_specifier:
                           (type_specifier:
-                            int
+                            <int (int) [test/cases/14/source.c line 3, col 3]>
                           )
                         ),
                         (_gen2: )
@@ -47,16 +47,16 @@
                               (declarator:
                                 (_gen26: ),
                                 (_direct_declarator:
-                                  identifier
+                                  <identifier (a) [test/cases/14/source.c line 3, col 7]>
                                 )
                               ),
                               (_gen11:
                                 (declarator_initializer:
-                                  assign,
+                                  <assign (=) [test/cases/14/source.c line 3, col 9]>,
                                   (initializer:
                                     (_expr_sans_comma:
                                       (constant:
-                                        integer_constant
+                                        <integer_constant (0) [test/cases/14/source.c line 3, col 11]>
                                       )
                                     )
                                   )
@@ -67,24 +67,24 @@
                           )
                         )
                       ),
-                      semi
+                      <semi (;) [test/cases/14/source.c line 3, col 12]>
                     )
                   ),
                   (_gen40:
                     (block_item:
                       (statement:
                         (iteration_statement:
-                          while,
-                          lparen,
+                          <while (while) [test/cases/14/source.c line 4, col 3]>,
+                          <lparen (() [test/cases/14/source.c line 4, col 8]>,
                           (_expr:
                             (constant:
-                              integer_constant
+                              <integer_constant (1) [test/cases/14/source.c line 4, col 9]>
                             )
                           ),
-                          rparen,
+                          <rparen ()) [test/cases/14/source.c line 4, col 10]>,
                           (statement:
                             (compound_statement:
-                              lbrace,
+                              <lbrace ({) [test/cases/14/source.c line 4, col 12]>,
                               (_gen39:
                                 (block_item_list:
                                   (_gen40:
@@ -94,14 +94,14 @@
                                           (expression_opt:
                                             (_expr:
                                               (_expr:
-                                                identifier
+                                                <identifier (func) [test/cases/14/source.c line 5, col 5]>
                                               ),
-                                              lparen,
+                                              <lparen (() [test/cases/14/source.c line 5, col 9]>,
                                               (_gen44: ),
-                                              rparen
+                                              <rparen ()) [test/cases/14/source.c line 5, col 10]>
                                             )
                                           ),
-                                          semi
+                                          <semi (;) [test/cases/14/source.c line 5, col 11]>
                                         )
                                       )
                                     ),
@@ -109,7 +109,7 @@
                                   )
                                 )
                               ),
-                              rbrace
+                              <rbrace (}) [test/cases/14/source.c line 6, col 3]>
                             )
                           )
                         )
@@ -119,10 +119,10 @@
                       (block_item:
                         (statement:
                           (iteration_statement:
-                            do,
+                            <do (do) [test/cases/14/source.c line 8, col 3]>,
                             (statement:
                               (compound_statement:
-                                lbrace,
+                                <lbrace ({) [test/cases/14/source.c line 8, col 6]>,
                                 (_gen39:
                                   (block_item_list:
                                     (_gen40:
@@ -132,14 +132,14 @@
                                             (expression_opt:
                                               (_expr:
                                                 (_expr:
-                                                  identifier
+                                                  <identifier (func) [test/cases/14/source.c line 9, col 5]>
                                                 ),
-                                                lparen,
+                                                <lparen (() [test/cases/14/source.c line 9, col 9]>,
                                                 (_gen44: ),
-                                                rparen
+                                                <rparen ()) [test/cases/14/source.c line 9, col 10]>
                                               )
                                             ),
-                                            semi
+                                            <semi (;) [test/cases/14/source.c line 9, col 11]>
                                           )
                                         )
                                       ),
@@ -150,17 +150,17 @@
                                               (expression_opt:
                                                 (_expr:
                                                   (_expr:
-                                                    identifier
+                                                    <identifier (a) [test/cases/14/source.c line 10, col 5]>
                                                   ),
-                                                  addeq,
+                                                  <addeq (+=) [test/cases/14/source.c line 10, col 7]>,
                                                   (_expr:
                                                     (constant:
-                                                      integer_constant
+                                                      <integer_constant (1) [test/cases/14/source.c line 10, col 10]>
                                                     )
                                                   )
                                                 )
                                               ),
-                                              semi
+                                              <semi (;) [test/cases/14/source.c line 10, col 11]>
                                             )
                                           )
                                         ),
@@ -169,18 +169,18 @@
                                     )
                                   )
                                 ),
-                                rbrace
+                                <rbrace (}) [test/cases/14/source.c line 11, col 3]>
                               )
                             ),
-                            while,
-                            lparen,
+                            <while (while) [test/cases/14/source.c line 11, col 5]>,
+                            <lparen (() [test/cases/14/source.c line 11, col 10]>,
                             (_expr:
                               (constant:
-                                integer_constant
+                                <integer_constant (0) [test/cases/14/source.c line 11, col 11]>
                               )
                             ),
-                            rparen,
-                            semi
+                            <rparen ()) [test/cases/14/source.c line 11, col 12]>,
+                            <semi (;) [test/cases/14/source.c line 11, col 13]>
                           )
                         )
                       ),
@@ -188,41 +188,41 @@
                         (block_item:
                           (statement:
                             (selection_statement:
-                              switch,
-                              lparen,
+                              <switch (switch) [test/cases/14/source.c line 13, col 3]>,
+                              <lparen (() [test/cases/14/source.c line 13, col 9]>,
                               (_expr:
-                                identifier
+                                <identifier (a) [test/cases/14/source.c line 13, col 10]>
                               ),
-                              rparen,
+                              <rparen ()) [test/cases/14/source.c line 13, col 11]>,
                               (statement:
                                 (compound_statement:
-                                  lbrace,
+                                  <lbrace ({) [test/cases/14/source.c line 14, col 3]>,
                                   (_gen39:
                                     (block_item_list:
                                       (_gen40:
                                         (block_item:
                                           (statement:
                                             (labeled_statement:
-                                              case,
+                                              <case (case) [test/cases/14/source.c line 15, col 5]>,
                                               (_expr:
                                                 (constant:
-                                                  integer_constant
+                                                  <integer_constant (0) [test/cases/14/source.c line 15, col 10]>
                                                 )
                                               ),
-                                              colon,
+                                              <colon (:) [test/cases/14/source.c line 15, col 11]>,
                                               (statement:
                                                 (expression_statement:
                                                   (expression_opt:
                                                     (_expr:
                                                       (_expr:
-                                                        identifier
+                                                        <identifier (func) [test/cases/14/source.c line 16, col 7]>
                                                       ),
-                                                      lparen,
+                                                      <lparen (() [test/cases/14/source.c line 16, col 11]>,
                                                       (_gen44: ),
-                                                      rparen
+                                                      <rparen ()) [test/cases/14/source.c line 16, col 12]>
                                                     )
                                                   ),
-                                                  semi
+                                                  <semi (;) [test/cases/14/source.c line 16, col 13]>
                                                 )
                                               )
                                             )
@@ -235,17 +235,17 @@
                                                 (expression_opt:
                                                   (_expr:
                                                     (_expr:
-                                                      identifier
+                                                      <identifier (a) [test/cases/14/source.c line 17, col 7]>
                                                     ),
-                                                    addeq,
+                                                    <addeq (+=) [test/cases/14/source.c line 17, col 9]>,
                                                     (_expr:
                                                       (constant:
-                                                        integer_constant
+                                                        <integer_constant (1) [test/cases/14/source.c line 17, col 12]>
                                                       )
                                                     )
                                                   )
                                                 ),
-                                                semi
+                                                <semi (;) [test/cases/14/source.c line 17, col 13]>
                                               )
                                             )
                                           ),
@@ -253,8 +253,8 @@
                                             (block_item:
                                               (statement:
                                                 (jump_statement:
-                                                  break,
-                                                  semi
+                                                  <break (break) [test/cases/14/source.c line 18, col 7]>,
+                                                  <semi (;) [test/cases/14/source.c line 18, col 12]>
                                                 )
                                               )
                                             ),
@@ -262,26 +262,26 @@
                                               (block_item:
                                                 (statement:
                                                   (labeled_statement:
-                                                    case,
+                                                    <case (case) [test/cases/14/source.c line 19, col 5]>,
                                                     (_expr:
                                                       (constant:
-                                                        integer_constant
+                                                        <integer_constant (1) [test/cases/14/source.c line 19, col 10]>
                                                       )
                                                     ),
-                                                    colon,
+                                                    <colon (:) [test/cases/14/source.c line 19, col 11]>,
                                                     (statement:
                                                       (expression_statement:
                                                         (expression_opt:
                                                           (_expr:
                                                             (_expr:
-                                                              identifier
+                                                              <identifier (func) [test/cases/14/source.c line 20, col 7]>
                                                             ),
-                                                            lparen,
+                                                            <lparen (() [test/cases/14/source.c line 20, col 11]>,
                                                             (_gen44: ),
-                                                            rparen
+                                                            <rparen ()) [test/cases/14/source.c line 20, col 12]>
                                                           )
                                                         ),
-                                                        semi
+                                                        <semi (;) [test/cases/14/source.c line 20, col 13]>
                                                       )
                                                     )
                                                   )
@@ -291,9 +291,9 @@
                                                 (block_item:
                                                   (statement:
                                                     (jump_statement:
-                                                      goto,
-                                                      identifier,
-                                                      semi
+                                                      <goto (goto) [test/cases/14/source.c line 21, col 7]>,
+                                                      <identifier (byebye) [test/cases/14/source.c line 21, col 12]>,
+                                                      <semi (;) [test/cases/14/source.c line 21, col 18]>
                                                     )
                                                   )
                                                 ),
@@ -301,8 +301,8 @@
                                                   (block_item:
                                                     (statement:
                                                       (jump_statement:
-                                                        break,
-                                                        semi
+                                                        <break (break) [test/cases/14/source.c line 22, col 7]>,
+                                                        <semi (;) [test/cases/14/source.c line 22, col 12]>
                                                       )
                                                     )
                                                   ),
@@ -310,12 +310,12 @@
                                                     (block_item:
                                                       (statement:
                                                         (labeled_statement:
-                                                          default,
-                                                          colon,
+                                                          <default (default) [test/cases/14/source.c line 23, col 5]>,
+                                                          <colon (:) [test/cases/14/source.c line 23, col 12]>,
                                                           (statement:
                                                             (jump_statement:
-                                                              break,
-                                                              semi
+                                                              <break (break) [test/cases/14/source.c line 24, col 7]>,
+                                                              <semi (;) [test/cases/14/source.c line 24, col 12]>
                                                             )
                                                           )
                                                         )
@@ -331,7 +331,7 @@
                                       )
                                     )
                                   ),
-                                  rbrace
+                                  <rbrace (}) [test/cases/14/source.c line 25, col 3]>
                                 )
                               )
                             )
@@ -341,27 +341,27 @@
                           (block_item:
                             (statement:
                               (labeled_statement:
-                                label_hint,
-                                identifier,
-                                colon,
+                                <label_hint () [test/cases/14/source.c line 27, col 1]>,
+                                <identifier (byebye) [test/cases/14/source.c line 27, col 1]>,
+                                <colon (:) [test/cases/14/source.c line 27, col 7]>,
                                 (statement:
                                   (expression_statement:
                                     (expression_opt:
                                       (_expr:
                                         (_expr:
-                                          identifier
+                                          <identifier (printf) [test/cases/14/source.c line 28, col 3]>
                                         ),
-                                        lparen,
+                                        <lparen (() [test/cases/14/source.c line 28, col 9]>,
                                         (_gen44:
                                           (_expr_sans_comma:
-                                            string_literal
+                                            <string_literal ("See ya!") [test/cases/14/source.c line 28, col 10]>
                                           ),
                                           (_gen45: )
                                         ),
-                                        rparen
+                                        <rparen ()) [test/cases/14/source.c line 28, col 19]>
                                       )
                                     ),
-                                    semi
+                                    <semi (;) [test/cases/14/source.c line 28, col 20]>
                                   )
                                 )
                               )
@@ -371,15 +371,15 @@
                             (block_item:
                               (statement:
                                 (jump_statement:
-                                  return,
+                                  <return (return) [test/cases/14/source.c line 29, col 3]>,
                                   (expression_opt:
                                     (_expr:
                                       (constant:
-                                        integer_constant
+                                        <integer_constant (0) [test/cases/14/source.c line 29, col 10]>
                                       )
                                     )
                                   ),
-                                  semi
+                                  <semi (;) [test/cases/14/source.c line 29, col 11]>
                                 )
                               )
                             ),
@@ -392,54 +392,54 @@
                 )
               )
             ),
-            rbrace
+            <rbrace (}) [test/cases/14/source.c line 30, col 1]>
           )
         )
       )
     ),
     (_gen0:
       (external_declaration:
-        external_declaration_hint,
+        <external_declaration_hint () [test/cases/14/source.c line 32, col 1]>,
         (_gen1:
           (declaration_specifier:
             (type_specifier:
-              int
+              <int (int) [test/cases/14/source.c line 32, col 1]>
             )
           ),
           (_gen2: )
         ),
         (external_declaration_sub:
           (external_function:
-            function_definition_hint,
+            <function_definition_hint () [test/cases/14/source.c line 32, col 1]>,
             (declarator:
               (_gen26: ),
               (_direct_declarator:
                 (_direct_declarator:
-                  identifier
+                  <identifier (func) [test/cases/14/source.c line 32, col 5]>
                 ),
-                lparen,
+                <lparen (() [test/cases/14/source.c line 32, col 9]>,
                 (direct_declarator_parameter_list: ),
-                rparen
+                <rparen ()) [test/cases/14/source.c line 32, col 10]>
               )
             ),
             (_gen5: ),
             (compound_statement:
-              lbrace,
+              <lbrace ({) [test/cases/14/source.c line 33, col 1]>,
               (_gen39:
                 (block_item_list:
                   (_gen40:
                     (block_item:
                       (statement:
                         (jump_statement:
-                          return,
+                          <return (return) [test/cases/14/source.c line 34, col 3]>,
                           (expression_opt:
                             (_expr:
                               (constant:
-                                integer_constant
+                                <integer_constant (0) [test/cases/14/source.c line 34, col 10]>
                               )
                             )
                           ),
-                          semi
+                          <semi (;) [test/cases/14/source.c line 34, col 11]>
                         )
                       )
                     ),
@@ -447,7 +447,7 @@
                   )
                 )
               ),
-              rbrace
+              <rbrace (}) [test/cases/14/source.c line 35, col 1]>
             )
           )
         )

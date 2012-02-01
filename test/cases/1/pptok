@@ -1,20 +1,17 @@
-[pp:9] define_function (#define) [test/cases/1/source.c line 1, col 1]
-[pp:40] identifier (EXT) [test/cases/1/source.c line 1, col 9]
-[pp:66] lparen (() [test/cases/1/source.c line 1, col 12]
-[pp:40] identifier (a) [test/cases/1/source.c line 1, col 13]
-[pp:41] comma (,) [test/cases/1/source.c line 1, col 14]
-[pp:40] identifier (b) [test/cases/1/source.c line 1, col 15]
-[pp:71] rparen ()) [test/cases/1/source.c line 1, col 16]
-[pp:40] identifier (a) [test/cases/1/source.c line 1, col 18]
-[pp:21] add (+) [test/cases/1/source.c line 1, col 19]
-[pp:40] identifier (b) [test/cases/1/source.c line 1, col 20]
-[pp:55] separator () [test/cases/1/source.c line 1, col 1]
-[pp:27] define (#define) [test/cases/1/source.c line 2, col 1]
-[pp:40] identifier (alias) [test/cases/1/source.c line 2, col 9]
-[pp:40] identifier (EXT) [test/cases/1/source.c line 2, col 15]
-[pp:55] separator () [test/cases/1/source.c line 2, col 1]
-[pp:18] csource (int main() {
-    printf("%d\n", alias(7,8));
-}
-) [test/cases/1/source.c line 3, col 1]
-[pp:55] separator () [test/cases/1/source.c line 6, col 1]
+<define_function (#define) [test/cases/1/source.c line 1, col 1]>
+<identifier (EXT) [test/cases/1/source.c line 1, col 9]>
+<lparen (() [test/cases/1/source.c line 1, col 12]>
+<identifier (a) [test/cases/1/source.c line 1, col 13]>
+<comma (,) [test/cases/1/source.c line 1, col 14]>
+<identifier (b) [test/cases/1/source.c line 1, col 15]>
+<rparen ()) [test/cases/1/source.c line 1, col 16]>
+<identifier (a) [test/cases/1/source.c line 1, col 18]>
+<add (+) [test/cases/1/source.c line 1, col 19]>
+<identifier (b) [test/cases/1/source.c line 1, col 20]>
+<separator () [test/cases/1/source.c line 1, col 1]>
+<define (#define) [test/cases/1/source.c line 2, col 1]>
+<identifier (alias) [test/cases/1/source.c line 2, col 9]>
+<identifier (EXT) [test/cases/1/source.c line 2, col 15]>
+<separator () [test/cases/1/source.c line 2, col 1]>
+<csource (int main()...) [test/cases/1/source.c line 3, col 1]>
+<separator () [test/cases/1/source.c line 6, col 1]>

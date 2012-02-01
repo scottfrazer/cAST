@@ -6,96 +6,96 @@
           (Declaration:
             init_declarators=[
               (InitDeclarator:
-                initializer=integer_constant,
+                initializer=<integer_constant (2) [test/cases/2/source.c line 15, col 13]>,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (foo) [test/cases/2/source.c line 15, col 7]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              int
+              <int (int) [test/cases/2/source.c line 15, col 3]>
             ]
           ),
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("%d\n") [test/cases/2/source.c line 16, col 10]>,
               (Add:
-                right=integer_constant,
-                left=integer_constant
+                right=<integer_constant (7000) [test/cases/2/source.c line 16, col 23]>,
+                left=<integer_constant (1000) [test/cases/2/source.c line 16, col 18]>
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/2/source.c line 16, col 3]>
           ),
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("%d\n") [test/cases/2/source.c line 17, col 10]>,
               (Add:
-                right=integer_constant,
+                right=<integer_constant (4) [test/cases/2/source.c line 17, col 18]>,
                 left=(Add:
-                  right=integer_constant,
+                  right=<integer_constant (7) [test/cases/2/source.c line 17, col 18]>,
                   left=(Add:
-                    right=integer_constant,
-                    left=integer_constant
+                    right=<integer_constant (2) [test/cases/2/source.c line 17, col 18]>,
+                    left=<integer_constant (1) [test/cases/2/source.c line 17, col 18]>
                   )
                 )
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/2/source.c line 17, col 3]>
           ),
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("%d\n") [test/cases/2/source.c line 18, col 10]>,
               (Add:
-                right=integer_constant,
+                right=<integer_constant (8) [test/cases/2/source.c line 18, col 18]>,
                 left=(Sub:
-                  right=integer_constant,
+                  right=<integer_constant (7) [test/cases/2/source.c line 18, col 18]>,
                   left=(Sub:
-                    right=identifier,
+                    right=<identifier (foo) [test/cases/2/source.c line 18, col 18]>,
                     left=(Add:
-                      right=integer_constant,
+                      right=<integer_constant (33) [test/cases/2/source.c line 18, col 18]>,
                       left=(Sub:
-                        right=integer_constant,
-                        left=identifier
+                        right=<integer_constant (66) [test/cases/2/source.c line 18, col 18]>,
+                        left=<identifier (foo) [test/cases/2/source.c line 18, col 18]>
                       )
                     )
                   )
                 )
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/2/source.c line 18, col 3]>
           ),
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("%d\n") [test/cases/2/source.c line 19, col 10]>,
               (Sub:
-                right=integer_constant,
+                right=<integer_constant (1) [test/cases/2/source.c line 19, col 18]>,
                 left=(Add:
-                  right=integer_constant,
+                  right=<integer_constant (7) [test/cases/2/source.c line 19, col 18]>,
                   left=(Add:
-                    right=integer_constant,
-                    left=integer_constant
+                    right=<integer_constant (1) [test/cases/2/source.c line 19, col 18]>,
+                    left=<integer_constant (4) [test/cases/2/source.c line 19, col 18]>
                   )
                 )
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/2/source.c line 19, col 3]>
           ),
           (Return:
-            expr=integer_constant
+            expr=<integer_constant (0) [test/cases/2/source.c line 20, col 10]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/2/source.c line 13, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/2/source.c line 13, col 1]>
       ]
     )
   ]

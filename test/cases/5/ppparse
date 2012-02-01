@@ -5,30 +5,30 @@
         (pp_directive:
           (control_line:
             (define_line:
-              define_function,
-              identifier,
-              lparen,
+              <define_function (#define) [test/cases/5/source.c line 1, col 1]>,
+              <identifier (FOO) [test/cases/5/source.c line 1, col 9]>,
+              <lparen (() [test/cases/5/source.c line 1, col 12]>,
               (_gen2:
                 (define_func_param:
-                  identifier
+                  <identifier (x) [test/cases/5/source.c line 1, col 13]>
                 ),
                 (_gen3: )
               ),
-              rparen,
+              <rparen ()) [test/cases/5/source.c line 1, col 14]>,
               (replacement_list:
                 (_gen4:
                   (pp_tokens:
-                    identifier
+                    <identifier (x) [test/cases/5/source.c line 1, col 16]>
                   ),
                   (_gen4:
                     (pp_tokens:
                       (punctuator:
-                        add
+                        <add (+) [test/cases/5/source.c line 1, col 17]>
                       )
                     ),
                     (_gen4:
                       (pp_tokens:
-                        pp_number
+                        <pp_number (1) [test/cases/5/source.c line 1, col 18]>
                       ),
                       (_gen4: )
                     )
@@ -39,36 +39,36 @@
           )
         )
       ),
-      separator,
+      <separator () [test/cases/5/source.c line 1, col 1]>,
       (_gen0:
         (pp_nodes:
           (pp_directive:
             (control_line:
               (define_line:
-                define_function,
-                identifier,
-                lparen,
+                <define_function (#define) [test/cases/5/source.c line 2, col 1]>,
+                <identifier (BAR) [test/cases/5/source.c line 2, col 9]>,
+                <lparen (() [test/cases/5/source.c line 2, col 12]>,
                 (_gen2:
                   (define_func_param:
-                    identifier
+                    <identifier (y) [test/cases/5/source.c line 2, col 13]>
                   ),
                   (_gen3: )
                 ),
-                rparen,
+                <rparen ()) [test/cases/5/source.c line 2, col 14]>,
                 (replacement_list:
                   (_gen4:
                     (pp_tokens:
-                      identifier
+                      <identifier (y) [test/cases/5/source.c line 2, col 16]>
                     ),
                     (_gen4:
                       (pp_tokens:
                         (punctuator:
-                          add
+                          <add (+) [test/cases/5/source.c line 2, col 17]>
                         )
                       ),
                       (_gen4:
                         (pp_tokens:
-                          pp_number
+                          <pp_number (2) [test/cases/5/source.c line 2, col 18]>
                         ),
                         (_gen4: )
                       )
@@ -79,57 +79,57 @@
             )
           )
         ),
-        separator,
+        <separator () [test/cases/5/source.c line 2, col 1]>,
         (_gen0:
           (pp_nodes:
             (pp_directive:
               (control_line:
                 (define_line:
-                  define_function,
-                  identifier,
-                  lparen,
+                  <define_function (#define) [test/cases/5/source.c line 3, col 1]>,
+                  <identifier (BAZ) [test/cases/5/source.c line 3, col 9]>,
+                  <lparen (() [test/cases/5/source.c line 3, col 12]>,
                   (_gen2:
                     (define_func_param:
-                      identifier
+                      <identifier (z) [test/cases/5/source.c line 3, col 13]>
                     ),
                     (_gen3: )
                   ),
-                  rparen,
+                  <rparen ()) [test/cases/5/source.c line 3, col 14]>,
                   (replacement_list:
                     (_gen4:
                       (pp_tokens:
-                        identifier
+                        <identifier (FOO) [test/cases/5/source.c line 3, col 16]>
                       ),
                       (_gen4:
                         (pp_tokens:
                           (punctuator:
-                            lparen
+                            <lparen (() [test/cases/5/source.c line 3, col 19]>
                           )
                         ),
                         (_gen4:
                           (pp_tokens:
-                            identifier
+                            <identifier (BAR) [test/cases/5/source.c line 3, col 20]>
                           ),
                           (_gen4:
                             (pp_tokens:
                               (punctuator:
-                                lparen
+                                <lparen (() [test/cases/5/source.c line 3, col 23]>
                               )
                             ),
                             (_gen4:
                               (pp_tokens:
-                                identifier
+                                <identifier (z) [test/cases/5/source.c line 3, col 24]>
                               ),
                               (_gen4:
                                 (pp_tokens:
                                   (punctuator:
-                                    rparen
+                                    <rparen ()) [test/cases/5/source.c line 3, col 25]>
                                   )
                                 ),
                                 (_gen4:
                                   (pp_tokens:
                                     (punctuator:
-                                      rparen
+                                      <rparen ()) [test/cases/5/source.c line 3, col 26]>
                                     )
                                   ),
                                   (_gen4: )
@@ -145,12 +145,13 @@
               )
             )
           ),
-          separator,
+          <separator () [test/cases/5/source.c line 3, col 1]>,
           (_gen0:
             (pp_nodes:
-              csource
+              <csource (
+int main(...) [test/cases/5/source.c line 4, col 1]>
             ),
-            separator,
+            <separator () [test/cases/5/source.c line 10, col 1]>,
             (_gen0: )
           )
         )

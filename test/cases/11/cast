@@ -12,17 +12,17 @@
             body=[
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  int
+                  <int (int) [test/cases/11/source.c line 1, col 11]>
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (x) [test/cases/11/source.c line 1, col 15]>,
                     pointer=None
                   )
                 ]
               )
             ],
-            name=identifier
+            name=<identifier (a) [test/cases/11/source.c line 1, col 8]>
           )
         )
       ]
@@ -34,13 +34,13 @@
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/11/source.c line 2, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/11/source.c line 2, col 1]>
       ]
     )
   ]

@@ -5,22 +5,22 @@
         body=[
           (FuncCall:
             params=[
-              string_literal
+              <string_literal ("testing\n...) [test/cases/7/source.c line 7, col 10]>
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/7/source.c line 7, col 3]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/7/source.c line 5, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/7/source.c line 5, col 1]>
       ]
     )
   ]

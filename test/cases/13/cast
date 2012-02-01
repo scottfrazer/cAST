@@ -8,24 +8,24 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (x) [test/cases/13/source.c line 8, col 7]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              int
+              <int (int) [test/cases/13/source.c line 8, col 3]>
             ]
           ),
           (If:
             elseif=None,
             statement=(FuncCall:
               params=[
-                string_literal
+                <string_literal ("pass\n") [test/cases/13/source.c line 10, col 13]>
               ],
-              name=identifier
+              name=<identifier (printf) [test/cases/13/source.c line 10, col 13]>
             ),
-            condition=integer_constant,
+            condition=<integer_constant (1) [test/cases/13/source.c line 10, col 7]>,
             else=None
           ),
           (If:
@@ -33,29 +33,29 @@
             statement=[
               (FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("pass\n") [test/cases/13/source.c line 11, col 14]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 11, col 14]>
               )
             ],
-            condition=integer_constant,
+            condition=<integer_constant (1) [test/cases/13/source.c line 11, col 7]>,
             else=None
           ),
           (If:
             elseif=None,
             statement=(FuncCall:
               params=[
-                string_literal
+                <string_literal ("fail\n") [test/cases/13/source.c line 12, col 14]>
               ],
-              name=identifier
+              name=<identifier (printf) [test/cases/13/source.c line 12, col 14]>
             ),
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 12, col 7]>,
             else=(Else:
               statement=(FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("pass\n") [test/cases/13/source.c line 12, col 25]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 12, col 25]>
               )
             )
           ),
@@ -64,18 +64,18 @@
             statement=[
               (FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("fail\n") [test/cases/13/source.c line 13, col 15]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 13, col 15]>
               )
             ],
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 13, col 7]>,
             else=(Else:
               statement=(FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("pass\n") [test/cases/13/source.c line 13, col 27]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 13, col 27]>
               )
             )
           ),
@@ -84,19 +84,19 @@
             statement=[
               (FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("fail\n") [test/cases/13/source.c line 14, col 15]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 14, col 15]>
               )
             ],
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 14, col 7]>,
             else=(Else:
               statement=[
                 (FuncCall:
                   params=[
-                    string_literal
+                    <string_literal ("pass\n") [test/cases/13/source.c line 14, col 28]>
                   ],
-                  name=identifier
+                  name=<identifier (printf) [test/cases/13/source.c line 14, col 28]>
                 )
               ]
             )
@@ -105,68 +105,68 @@
             elseif=None,
             statement=(For:
               init=(Assign:
-                var=identifier,
-                value=integer_constant
+                var=<identifier (x) [test/cases/13/source.c line 15, col 17]>,
+                value=<integer_constant (0) [test/cases/13/source.c line 15, col 19]>
               ),
               cond=(LessThan:
-                right=integer_constant,
-                left=identifier
+                right=<integer_constant (1) [test/cases/13/source.c line 15, col 23]>,
+                left=<identifier (x) [test/cases/13/source.c line 15, col 21]>
               ),
               incr=(PostIncr:
-                var=identifier
+                var=<identifier (x) [test/cases/13/source.c line 15, col 25]>
               ),
               statement=[
                 (FuncCall:
                   params=[
-                    string_literal
+                    <string_literal ("pass\n") [test/cases/13/source.c line 15, col 30]>
                   ],
-                  name=identifier
+                  name=<identifier (printf) [test/cases/13/source.c line 15, col 30]>
                 )
               ]
             ),
-            condition=integer_constant,
+            condition=<integer_constant (1) [test/cases/13/source.c line 15, col 7]>,
             else=None
           ),
           (If:
             elseif=None,
             statement=(For:
               init=(Assign:
-                var=identifier,
-                value=integer_constant
+                var=<identifier (x) [test/cases/13/source.c line 16, col 18]>,
+                value=<integer_constant (0) [test/cases/13/source.c line 16, col 20]>
               ),
               cond=(LessThan:
-                right=integer_constant,
-                left=identifier
+                right=<integer_constant (1) [test/cases/13/source.c line 16, col 24]>,
+                left=<identifier (x) [test/cases/13/source.c line 16, col 22]>
               ),
               incr=(PostIncr:
-                var=identifier
+                var=<identifier (x) [test/cases/13/source.c line 16, col 26]>
               ),
               statement=(FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("fail\n") [test/cases/13/source.c line 16, col 30]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 16, col 30]>
               )
             ),
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 16, col 7]>,
             else=(Else:
               statement=(For:
                 init=(Assign:
-                  var=identifier,
-                  value=integer_constant
+                  var=<identifier (x) [test/cases/13/source.c line 16, col 45]>,
+                  value=<integer_constant (0) [test/cases/13/source.c line 16, col 47]>
                 ),
                 cond=(LessThan:
-                  right=integer_constant,
-                  left=identifier
+                  right=<integer_constant (1) [test/cases/13/source.c line 16, col 51]>,
+                  left=<identifier (x) [test/cases/13/source.c line 16, col 49]>
                 ),
                 incr=(PostIncr:
-                  var=identifier
+                  var=<identifier (x) [test/cases/13/source.c line 16, col 53]>
                 ),
                 statement=(FuncCall:
                   params=[
-                    string_literal
+                    <string_literal ("pass\n") [test/cases/13/source.c line 16, col 57]>
                   ],
-                  name=identifier
+                  name=<identifier (printf) [test/cases/13/source.c line 16, col 57]>
                 )
               )
             )
@@ -176,47 +176,47 @@
             statement=[
               (For:
                 init=(Assign:
-                  var=identifier,
-                  value=integer_constant
+                  var=<identifier (x) [test/cases/13/source.c line 17, col 19]>,
+                  value=<integer_constant (0) [test/cases/13/source.c line 17, col 21]>
                 ),
                 cond=(LessThan:
-                  right=integer_constant,
-                  left=identifier
+                  right=<integer_constant (1) [test/cases/13/source.c line 17, col 25]>,
+                  left=<identifier (x) [test/cases/13/source.c line 17, col 23]>
                 ),
                 incr=(PostIncr:
-                  var=identifier
+                  var=<identifier (x) [test/cases/13/source.c line 17, col 27]>
                 ),
                 statement=[
                   (FuncCall:
                     params=[
-                      string_literal
+                      <string_literal ("fail\n") [test/cases/13/source.c line 17, col 32]>
                     ],
-                    name=identifier
+                    name=<identifier (printf) [test/cases/13/source.c line 17, col 32]>
                   )
                 ]
               )
             ],
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 17, col 7]>,
             else=(Else:
               statement=[
                 (For:
                   init=(Assign:
-                    var=identifier,
-                    value=integer_constant
+                    var=<identifier (x) [test/cases/13/source.c line 17, col 50]>,
+                    value=<integer_constant (0) [test/cases/13/source.c line 17, col 52]>
                   ),
                   cond=(LessThan:
-                    right=integer_constant,
-                    left=identifier
+                    right=<integer_constant (1) [test/cases/13/source.c line 17, col 56]>,
+                    left=<identifier (x) [test/cases/13/source.c line 17, col 54]>
                   ),
                   incr=(PostIncr:
-                    var=identifier
+                    var=<identifier (x) [test/cases/13/source.c line 17, col 58]>
                   ),
                   statement=[
                     (FuncCall:
                       params=[
-                        string_literal
+                        <string_literal ("pass\n") [test/cases/13/source.c line 17, col 63]>
                       ],
-                      name=identifier
+                      name=<identifier (printf) [test/cases/13/source.c line 17, col 63]>
                     )
                   ]
                 )
@@ -227,45 +227,45 @@
             elseif=None,
             statement=(For:
               init=(Assign:
-                var=identifier,
-                value=integer_constant
+                var=<identifier (x) [test/cases/13/source.c line 18, col 18]>,
+                value=<integer_constant (0) [test/cases/13/source.c line 18, col 20]>
               ),
               cond=(LessThan:
-                right=integer_constant,
-                left=identifier
+                right=<integer_constant (1) [test/cases/13/source.c line 18, col 24]>,
+                left=<identifier (x) [test/cases/13/source.c line 18, col 22]>
               ),
               incr=(PostIncr:
-                var=identifier
+                var=<identifier (x) [test/cases/13/source.c line 18, col 26]>
               ),
               statement=[
                 (FuncCall:
                   params=[
-                    string_literal
+                    <string_literal ("fail\n") [test/cases/13/source.c line 18, col 31]>
                   ],
-                  name=identifier
+                  name=<identifier (printf) [test/cases/13/source.c line 18, col 31]>
                 )
               ]
             ),
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 18, col 7]>,
             else=(Else:
               statement=(For:
                 init=(Assign:
-                  var=identifier,
-                  value=integer_constant
+                  var=<identifier (x) [test/cases/13/source.c line 18, col 47]>,
+                  value=<integer_constant (0) [test/cases/13/source.c line 18, col 49]>
                 ),
                 cond=(LessThan:
-                  right=integer_constant,
-                  left=identifier
+                  right=<integer_constant (1) [test/cases/13/source.c line 18, col 53]>,
+                  left=<identifier (x) [test/cases/13/source.c line 18, col 51]>
                 ),
                 incr=(PostIncr:
-                  var=identifier
+                  var=<identifier (x) [test/cases/13/source.c line 18, col 55]>
                 ),
                 statement=[
                   (FuncCall:
                     params=[
-                      string_literal
+                      <string_literal ("pass\n") [test/cases/13/source.c line 18, col 60]>
                     ],
-                    name=identifier
+                    name=<identifier (printf) [test/cases/13/source.c line 18, col 60]>
                   )
                 ]
               )
@@ -276,26 +276,26 @@
               (ElseIf:
                 statement=(FuncCall:
                   params=[
-                    string_literal
+                    <string_literal ("pass\n") [test/cases/13/source.c line 19, col 30]>
                   ],
-                  name=identifier
+                  name=<identifier (printf) [test/cases/13/source.c line 19, col 30]>
                 ),
-                condition=integer_constant
+                condition=<integer_constant (1) [test/cases/13/source.c line 19, col 25]>
               )
             ],
             statement=(FuncCall:
               params=[
-                string_literal
+                <string_literal ("fail\n") [test/cases/13/source.c line 19, col 12]>
               ],
-              name=identifier
+              name=<identifier (printf) [test/cases/13/source.c line 19, col 12]>
             ),
-            condition=integer_constant,
+            condition=<integer_constant (0) [test/cases/13/source.c line 19, col 6]>,
             else=(Else:
               statement=(FuncCall:
                 params=[
-                  string_literal
+                  <string_literal ("fail\n") [test/cases/13/source.c line 19, col 40]>
                 ],
-                name=identifier
+                name=<identifier (printf) [test/cases/13/source.c line 19, col 40]>
               )
             )
           )
@@ -304,13 +304,13 @@
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/13/source.c line 6, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/13/source.c line 6, col 1]>
       ]
     )
   ]

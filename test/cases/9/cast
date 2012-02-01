@@ -10,12 +10,12 @@
                 parameter_declarations=[
                   (AbstractParameter:
                     declaration_specifiers=[
-                      int
+                      <int (int) [test/cases/9/source.c line 2, col 33]>
                     ],
                     declarator=None
                   )
                 ],
-                va_args=elipsis
+                va_args=<elipsis (...) [test/cases/9/source.c line 2, col 38]>
               ),
               declarator=(Declarator:
                 direct_declarator=(FunctionSignature:
@@ -23,17 +23,17 @@
                     parameter_declarations=[
                       (AbstractParameter:
                         declaration_specifiers=[
-                          int
+                          <int (int) [test/cases/9/source.c line 2, col 12]>
                         ],
                         declarator=(AbstractFunction:
                           object=[
-                            asterisk
+                            <asterisk (*) [test/cases/9/source.c line 2, col 17]>
                           ],
                           params=(ParameterTypeList:
                             parameter_declarations=[
                               (AbstractParameter:
                                 declaration_specifiers=[
-                                  long
+                                  <long (long) [test/cases/9/source.c line 2, col 20]>
                                 ],
                                 declarator=None
                               )
@@ -44,17 +44,17 @@
                       ),
                       (AbstractParameter:
                         declaration_specifiers=[
-                          int
+                          <int (int) [test/cases/9/source.c line 2, col 27]>
                         ],
                         declarator=None
                       )
                     ],
                     va_args=None
                   ),
-                  declarator=identifier
+                  declarator=<identifier (fpfi) [test/cases/9/source.c line 2, col 7]>
                 ),
                 pointer=[
-                  asterisk
+                  <asterisk (*) [test/cases/9/source.c line 2, col 6]>
                 ]
               )
             ),
@@ -63,7 +63,7 @@
         )
       ],
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/9/source.c line 2, col 1]>
       ]
     )
   ]

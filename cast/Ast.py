@@ -10,7 +10,7 @@ def termColor(string, intcolor):
   return "\033[38;5;%dm%s\033[0m" % (intcolor, string)
 
 class AstPrettyPrintable:
-  def __init__(self, ast, tokenFormat='type', color=False):
+  def __init__(self, ast, color=False):
     self.__dict__.update(locals())
   def getAttr(self, attr):
     return self.ast.getAttr(attr)
@@ -36,12 +36,12 @@ class AstPrettyPrintable:
       string += '\n%s]' % (indentStr)
       return string
     elif isinstance(ast, Token):
-      return '%s%s' % (indentStr, colored(ast.toString(self.tokenFormat), 9))
+      return '%s%s' % (indentStr, colored(ast.toString(), 9))
     else:
-      return '%s%s' % (indentStr, colored(ast, 9))
+      return '%s%s' % (indentStr, colored(str(ast), 9))
 
 class ParseTreePrettyPrintable:
-  def __init__(self, ast, tokenFormat='type', color=False):
+  def __init__(self, ast, color=False):
     self.__dict__.update(locals())
   def __str__(self):
     return self._prettyPrint(self.ast, 0)
@@ -60,6 +60,6 @@ class ParseTreePrettyPrintable:
       string += '\n%s)' % (indentStr)
       return string
     elif isinstance(parsetree, Token):
-      return '%s%s' % (indentStr, colored(parsetree.toString(self.tokenFormat), 9))
+      return '%s%s' % (indentStr, colored(parsetree.toString(), 9))
     else:
       return '%s%s' % (indentStr, colored(parsetree, 9))

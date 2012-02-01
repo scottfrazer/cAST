@@ -1,81 +1,69 @@
-[pp:27] define (#define) [test/cases/2/source.c line 1, col 1]
-[pp:40] identifier (qux0) [test/cases/2/source.c line 1, col 9]
-[pp:23] pp_number (7) [test/cases/2/source.c line 1, col 14]
-[pp:55] separator () [test/cases/2/source.c line 1, col 1]
-[pp:27] define (#define) [test/cases/2/source.c line 2, col 1]
-[pp:40] identifier (qux) [test/cases/2/source.c line 2, col 9]
-[pp:40] identifier (qux0) [test/cases/2/source.c line 2, col 13]
-[pp:55] separator () [test/cases/2/source.c line 2, col 1]
-[pp:9] define_function (#define) [test/cases/2/source.c line 3, col 1]
-[pp:40] identifier (foo) [test/cases/2/source.c line 3, col 9]
-[pp:66] lparen (() [test/cases/2/source.c line 3, col 12]
-[pp:40] identifier (x) [test/cases/2/source.c line 3, col 13]
-[pp:41] comma (,) [test/cases/2/source.c line 3, col 14]
-[pp:40] identifier (y) [test/cases/2/source.c line 3, col 16]
-[pp:71] rparen ()) [test/cases/2/source.c line 3, col 17]
-[pp:40] identifier (x) [test/cases/2/source.c line 3, col 19]
-[pp:21] add (+) [test/cases/2/source.c line 3, col 20]
-[pp:40] identifier (y) [test/cases/2/source.c line 3, col 21]
-[pp:55] separator () [test/cases/2/source.c line 3, col 1]
-[pp:18] csource (//          s  s  |c|) [test/cases/2/source.c line 4, col 1]
-[pp:55] separator () [test/cases/2/source.c line 4, col 1]
-[pp:27] define (#define) [test/cases/2/source.c line 5, col 1]
-[pp:40] identifier (bar) [test/cases/2/source.c line 5, col 9]
-[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 13]
-[pp:68] sub (-) [test/cases/2/source.c line 5, col 17]
-[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 19]
-[pp:66] lparen (() [test/cases/2/source.c line 5, col 22]
-[pp:23] pp_number (66) [test/cases/2/source.c line 5, col 23]
-[pp:41] comma (,) [test/cases/2/source.c line 5, col 25]
-[pp:23] pp_number (33) [test/cases/2/source.c line 5, col 26]
-[pp:71] rparen ()) [test/cases/2/source.c line 5, col 28]
-[pp:68] sub (-) [test/cases/2/source.c line 5, col 30]
-[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 32]
-[pp:68] sub (-) [test/cases/2/source.c line 5, col 36]
-[pp:40] identifier (foo) [test/cases/2/source.c line 5, col 38]
-[pp:55] separator () [test/cases/2/source.c line 5, col 1]
-[pp:18] csource (//          |---------c----------|) [test/cases/2/source.c line 6, col 1]
-[pp:55] separator () [test/cases/2/source.c line 6, col 1]
-[pp:27] define (#define) [test/cases/2/source.c line 7, col 1]
-[pp:40] identifier (baz) [test/cases/2/source.c line 7, col 9]
-[pp:40] identifier (foo) [test/cases/2/source.c line 7, col 13]
-[pp:66] lparen (() [test/cases/2/source.c line 7, col 16]
-[pp:23] pp_number (4) [test/cases/2/source.c line 7, col 17]
-[pp:41] comma (,) [test/cases/2/source.c line 7, col 18]
-[pp:23] pp_number (5) [test/cases/2/source.c line 7, col 19]
-[pp:71] rparen ()) [test/cases/2/source.c line 7, col 20]
-[pp:55] separator () [test/cases/2/source.c line 7, col 1]
-[pp:18] csource (//              c c) [test/cases/2/source.c line 8, col 1]
-[pp:55] separator () [test/cases/2/source.c line 8, col 1]
-[pp:9] define_function (#define) [test/cases/2/source.c line 9, col 1]
-[pp:40] identifier (var) [test/cases/2/source.c line 9, col 9]
-[pp:66] lparen (() [test/cases/2/source.c line 9, col 12]
-[pp:40] identifier (s) [test/cases/2/source.c line 9, col 13]
-[pp:41] comma (,) [test/cases/2/source.c line 9, col 14]
-[pp:40] identifier (t) [test/cases/2/source.c line 9, col 16]
-[pp:41] comma (,) [test/cases/2/source.c line 9, col 17]
-[pp:15] elipsis (...) [test/cases/2/source.c line 9, col 19]
-[pp:71] rparen ()) [test/cases/2/source.c line 9, col 22]
-[pp:40] identifier (s) [test/cases/2/source.c line 9, col 24]
-[pp:21] add (+) [test/cases/2/source.c line 9, col 25]
-[pp:40] identifier (t) [test/cases/2/source.c line 9, col 26]
-[pp:21] add (+) [test/cases/2/source.c line 9, col 27]
-[pp:40] identifier (foo) [test/cases/2/source.c line 9, col 28]
-[pp:66] lparen (() [test/cases/2/source.c line 9, col 31]
-[pp:40] identifier (__VA_ARGS__) [test/cases/2/source.c line 9, col 32]
-[pp:71] rparen ()) [test/cases/2/source.c line 9, col 43]
-[pp:55] separator () [test/cases/2/source.c line 9, col 1]
-[pp:18] csource (// functions take ctokens as params, return ctokens.
-// replacement tokens are stored as ctokens.
-
-int main()
-{
-  int foo = 2;
-  printf("%d\n", 1000+7000);
-  printf("%d\n", var(1,2,qux,4));
-  printf("%d\n", bar(7,8));
-  printf("%d\n", foo(4+1,7-1));
-  return 0;
-}
-) [test/cases/2/source.c line 10, col 1]
-[pp:55] separator () [test/cases/2/source.c line 22, col 1]
+<define (#define) [test/cases/2/source.c line 1, col 1]>
+<identifier (qux0) [test/cases/2/source.c line 1, col 9]>
+<pp_number (7) [test/cases/2/source.c line 1, col 14]>
+<separator () [test/cases/2/source.c line 1, col 1]>
+<define (#define) [test/cases/2/source.c line 2, col 1]>
+<identifier (qux) [test/cases/2/source.c line 2, col 9]>
+<identifier (qux0) [test/cases/2/source.c line 2, col 13]>
+<separator () [test/cases/2/source.c line 2, col 1]>
+<define_function (#define) [test/cases/2/source.c line 3, col 1]>
+<identifier (foo) [test/cases/2/source.c line 3, col 9]>
+<lparen (() [test/cases/2/source.c line 3, col 12]>
+<identifier (x) [test/cases/2/source.c line 3, col 13]>
+<comma (,) [test/cases/2/source.c line 3, col 14]>
+<identifier (y) [test/cases/2/source.c line 3, col 16]>
+<rparen ()) [test/cases/2/source.c line 3, col 17]>
+<identifier (x) [test/cases/2/source.c line 3, col 19]>
+<add (+) [test/cases/2/source.c line 3, col 20]>
+<identifier (y) [test/cases/2/source.c line 3, col 21]>
+<separator () [test/cases/2/source.c line 3, col 1]>
+<csource (//        ...) [test/cases/2/source.c line 4, col 1]>
+<separator () [test/cases/2/source.c line 4, col 1]>
+<define (#define) [test/cases/2/source.c line 5, col 1]>
+<identifier (bar) [test/cases/2/source.c line 5, col 9]>
+<identifier (foo) [test/cases/2/source.c line 5, col 13]>
+<sub (-) [test/cases/2/source.c line 5, col 17]>
+<identifier (foo) [test/cases/2/source.c line 5, col 19]>
+<lparen (() [test/cases/2/source.c line 5, col 22]>
+<pp_number (66) [test/cases/2/source.c line 5, col 23]>
+<comma (,) [test/cases/2/source.c line 5, col 25]>
+<pp_number (33) [test/cases/2/source.c line 5, col 26]>
+<rparen ()) [test/cases/2/source.c line 5, col 28]>
+<sub (-) [test/cases/2/source.c line 5, col 30]>
+<identifier (foo) [test/cases/2/source.c line 5, col 32]>
+<sub (-) [test/cases/2/source.c line 5, col 36]>
+<identifier (foo) [test/cases/2/source.c line 5, col 38]>
+<separator () [test/cases/2/source.c line 5, col 1]>
+<csource (//        ...) [test/cases/2/source.c line 6, col 1]>
+<separator () [test/cases/2/source.c line 6, col 1]>
+<define (#define) [test/cases/2/source.c line 7, col 1]>
+<identifier (baz) [test/cases/2/source.c line 7, col 9]>
+<identifier (foo) [test/cases/2/source.c line 7, col 13]>
+<lparen (() [test/cases/2/source.c line 7, col 16]>
+<pp_number (4) [test/cases/2/source.c line 7, col 17]>
+<comma (,) [test/cases/2/source.c line 7, col 18]>
+<pp_number (5) [test/cases/2/source.c line 7, col 19]>
+<rparen ()) [test/cases/2/source.c line 7, col 20]>
+<separator () [test/cases/2/source.c line 7, col 1]>
+<csource (//        ...) [test/cases/2/source.c line 8, col 1]>
+<separator () [test/cases/2/source.c line 8, col 1]>
+<define_function (#define) [test/cases/2/source.c line 9, col 1]>
+<identifier (var) [test/cases/2/source.c line 9, col 9]>
+<lparen (() [test/cases/2/source.c line 9, col 12]>
+<identifier (s) [test/cases/2/source.c line 9, col 13]>
+<comma (,) [test/cases/2/source.c line 9, col 14]>
+<identifier (t) [test/cases/2/source.c line 9, col 16]>
+<comma (,) [test/cases/2/source.c line 9, col 17]>
+<elipsis (...) [test/cases/2/source.c line 9, col 19]>
+<rparen ()) [test/cases/2/source.c line 9, col 22]>
+<identifier (s) [test/cases/2/source.c line 9, col 24]>
+<add (+) [test/cases/2/source.c line 9, col 25]>
+<identifier (t) [test/cases/2/source.c line 9, col 26]>
+<add (+) [test/cases/2/source.c line 9, col 27]>
+<identifier (foo) [test/cases/2/source.c line 9, col 28]>
+<lparen (() [test/cases/2/source.c line 9, col 31]>
+<identifier (__VA_ARGS_...) [test/cases/2/source.c line 9, col 32]>
+<rparen ()) [test/cases/2/source.c line 9, col 43]>
+<separator () [test/cases/2/source.c line 9, col 1]>
+<csource (// functio...) [test/cases/2/source.c line 10, col 1]>
+<separator () [test/cases/2/source.c line 22, col 1]>

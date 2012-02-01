@@ -1,5 +1,5 @@
 (PPFile:
   nodes=[
-    csource
+    <csource (typedef in...) [test/cases/16/source.c line 1, col 1]>
   ]
 )

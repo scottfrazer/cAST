@@ -5,12 +5,12 @@
         (pp_directive:
           (control_line:
             (define_line:
-              define,
-              identifier,
+              <define (#define) [test/cases/13/source.c line 1, col 1]>,
+              <identifier (true) [test/cases/13/source.c line 1, col 9]>,
               (replacement_list:
                 (_gen4:
                   (pp_tokens:
-                    pp_number
+                    <pp_number (1) [test/cases/13/source.c line 1, col 14]>
                   ),
                   (_gen4: )
                 )
@@ -19,18 +19,18 @@
           )
         )
       ),
-      separator,
+      <separator () [test/cases/13/source.c line 1, col 1]>,
       (_gen0:
         (pp_nodes:
           (pp_directive:
             (control_line:
               (define_line:
-                define,
-                identifier,
+                <define (#define) [test/cases/13/source.c line 2, col 1]>,
+                <identifier (false) [test/cases/13/source.c line 2, col 9]>,
                 (replacement_list:
                   (_gen4:
                     (pp_tokens:
-                      pp_number
+                      <pp_number (0) [test/cases/13/source.c line 2, col 15]>
                     ),
                     (_gen4: )
                   )
@@ -39,33 +39,33 @@
             )
           )
         ),
-        separator,
+        <separator () [test/cases/13/source.c line 2, col 1]>,
         (_gen0:
           (pp_nodes:
             (pp_directive:
               (control_line:
                 (define_line:
-                  define,
-                  identifier,
+                  <define (#define) [test/cases/13/source.c line 3, col 1]>,
+                  <identifier (pass) [test/cases/13/source.c line 3, col 9]>,
                   (replacement_list:
                     (_gen4:
                       (pp_tokens:
-                        identifier
+                        <identifier (printf) [test/cases/13/source.c line 3, col 14]>
                       ),
                       (_gen4:
                         (pp_tokens:
                           (punctuator:
-                            lparen
+                            <lparen (() [test/cases/13/source.c line 3, col 20]>
                           )
                         ),
                         (_gen4:
                           (pp_tokens:
-                            string_literal
+                            <string_literal ("pass\n") [test/cases/13/source.c line 3, col 21]>
                           ),
                           (_gen4:
                             (pp_tokens:
                               (punctuator:
-                                rparen
+                                <rparen ()) [test/cases/13/source.c line 3, col 29]>
                               )
                             ),
                             (_gen4: )
@@ -78,33 +78,33 @@
               )
             )
           ),
-          separator,
+          <separator () [test/cases/13/source.c line 3, col 1]>,
           (_gen0:
             (pp_nodes:
               (pp_directive:
                 (control_line:
                   (define_line:
-                    define,
-                    identifier,
+                    <define (#define) [test/cases/13/source.c line 4, col 1]>,
+                    <identifier (fail) [test/cases/13/source.c line 4, col 9]>,
                     (replacement_list:
                       (_gen4:
                         (pp_tokens:
-                          identifier
+                          <identifier (printf) [test/cases/13/source.c line 4, col 14]>
                         ),
                         (_gen4:
                           (pp_tokens:
                             (punctuator:
-                              lparen
+                              <lparen (() [test/cases/13/source.c line 4, col 20]>
                             )
                           ),
                           (_gen4:
                             (pp_tokens:
-                              string_literal
+                              <string_literal ("fail\n") [test/cases/13/source.c line 4, col 21]>
                             ),
                             (_gen4:
                               (pp_tokens:
                                 (punctuator:
-                                  rparen
+                                  <rparen ()) [test/cases/13/source.c line 4, col 29]>
                                 )
                               ),
                               (_gen4: )
@@ -117,12 +117,13 @@
                 )
               )
             ),
-            separator,
+            <separator () [test/cases/13/source.c line 4, col 1]>,
             (_gen0:
               (pp_nodes:
-                csource
+                <csource (
+int main(...) [test/cases/13/source.c line 5, col 1]>
               ),
-              separator,
+              <separator () [test/cases/13/source.c line 22, col 1]>,
               (_gen0: )
             )
           )

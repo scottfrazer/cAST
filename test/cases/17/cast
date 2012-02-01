@@ -6,7 +6,7 @@
           init_declarator=(InitDeclarator:
             initializer=None,
             declarator=(Declarator:
-              direct_declarator=identifier,
+              direct_declarator=<identifier (MILES) [test/cases/17/source.c line 1, col 13]>,
               pointer=None
             )
           )
@@ -16,15 +16,15 @@
           declarator=(Declarator:
             direct_declarator=(FunctionSignature:
               params=None,
-              declarator=identifier
+              declarator=<identifier (KLICKSP) [test/cases/17/source.c line 1, col 20]>
             ),
             pointer=None
           )
         )
       ],
       declaration_specifiers=[
-        typedef,
-        int
+        <typedef (typedef) [test/cases/17/source.c line 1, col 1]>,
+        <int (int) [test/cases/17/source.c line 1, col 9]>
       ]
     ),
     (ExternalDeclaration:
@@ -33,28 +33,28 @@
           init_declarator=(InitDeclarator:
             initializer=None,
             declarator=(Declarator:
-              direct_declarator=identifier,
+              direct_declarator=<identifier (range) [test/cases/17/source.c line 2, col 35]>,
               pointer=None
             )
           )
         )
       ],
       declaration_specifiers=[
-        typedef,
+        <typedef (typedef) [test/cases/17/source.c line 2, col 1]>,
         (Struct:
           definition=(StructOrUnion:
             body=[
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  double
+                  <double (double) [test/cases/17/source.c line 2, col 18]>
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (hi) [test/cases/17/source.c line 2, col 25]>,
                     pointer=None
                   ),
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (lo) [test/cases/17/source.c line 2, col 29]>,
                     pointer=None
                   )
                 ]
@@ -70,7 +70,7 @@
           init_declarator=(InitDeclarator:
             initializer=None,
             declarator=(Declarator:
-              direct_declarator=identifier,
+              direct_declarator=<identifier (t) [test/cases/17/source.c line 3, col 29]>,
               pointer=None
             )
           )
@@ -79,32 +79,32 @@
           init_declarator=(InitDeclarator:
             initializer=None,
             declarator=(Declarator:
-              direct_declarator=identifier,
+              direct_declarator=<identifier (tp) [test/cases/17/source.c line 3, col 34]>,
               pointer=[
-                asterisk
+                <asterisk (*) [test/cases/17/source.c line 3, col 32]>
               ]
             )
           )
         )
       ],
       declaration_specifiers=[
-        typedef,
+        <typedef (typedef) [test/cases/17/source.c line 3, col 1]>,
         (Struct:
           definition=(StructOrUnion:
             body=[
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  int
+                  <int (int) [test/cases/17/source.c line 3, col 20]>
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (x) [test/cases/17/source.c line 3, col 24]>,
                     pointer=None
                   )
                 ]
               )
             ],
-            name=identifier
+            name=<identifier (s) [test/cases/17/source.c line 3, col 16]>
           )
         )
       ]
@@ -117,13 +117,13 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (distance) [test/cases/17/source.c line 7, col 9]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (MILES) [test/cases/17/source.c line 7, col 3]>
             ]
           ),
           (Declaration:
@@ -131,16 +131,16 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (metricp) [test/cases/17/source.c line 8, col 20]>,
                   pointer=[
-                    asterisk
+                    <asterisk (*) [test/cases/17/source.c line 8, col 18]>
                   ]
                 )
               )
             ],
             declaration_specifiers=[
-              extern,
-              typedef_identifier
+              <extern (extern) [test/cases/17/source.c line 8, col 3]>,
+              <typedef_identifier (KLICKSP) [test/cases/17/source.c line 8, col 10]>
             ]
           ),
           (Declaration:
@@ -150,20 +150,20 @@
                   (Initialization:
                     designation=[
                       (MemberAccess:
-                        name=identifier
+                        name=<identifier (x) [test/cases/17/source.c line 9, col 12]>
                       )
                     ],
-                    initializer=integer_constant
+                    initializer=<integer_constant (7) [test/cases/17/source.c line 9, col 16]>
                   )
                 ],
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (w) [test/cases/17/source.c line 9, col 5]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (t) [test/cases/17/source.c line 9, col 3]>
             ]
           ),
           (Declaration:
@@ -171,19 +171,19 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (v) [test/cases/17/source.c line 10, col 6]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (tp) [test/cases/17/source.c line 10, col 3]>
             ]
           ),
           (Assign:
-            var=identifier,
+            var=<identifier (v) [test/cases/17/source.c line 11, col 3]>,
             value=(AddressOf:
-              var=identifier
+              var=<identifier (w) [test/cases/17/source.c line 11, col 8]>
             )
           ),
           (Declaration:
@@ -191,13 +191,13 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (y) [test/cases/17/source.c line 12, col 9]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (range) [test/cases/17/source.c line 12, col 3]>
             ]
           ),
           (Declaration:
@@ -205,53 +205,53 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (z) [test/cases/17/source.c line 13, col 9]>,
                   pointer=None
                 )
               ),
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (zp) [test/cases/17/source.c line 13, col 13]>,
                   pointer=[
-                    asterisk
+                    <asterisk (*) [test/cases/17/source.c line 13, col 12]>
                   ]
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (range) [test/cases/17/source.c line 13, col 3]>
             ]
           ),
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("%d\n") [test/cases/17/source.c line 14, col 10]>,
               (DerefMemberSelect:
-                member=identifier,
-                object=identifier
+                member=<identifier (x) [test/cases/17/source.c line 14, col 21]>,
+                object=<identifier (v) [test/cases/17/source.c line 14, col 18]>
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/17/source.c line 14, col 3]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/17/source.c line 5, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/17/source.c line 5, col 1]>
       ]
     ),
     (ExternalDeclaration:
       declarations=(FunctionDefinition:
         body=[
           (Return:
-            expr=identifier
+            expr=<identifier (a) [test/cases/17/source.c line 19, col 10]>
           )
         ],
         declaration_list=None,
@@ -261,25 +261,25 @@
               parameter_declarations=[
                 (NamedParameter:
                   declaration_specifiers=[
-                    register,
-                    const,
-                    int
+                    <register (register) [test/cases/17/source.c line 17, col 10]>,
+                    <const (const) [test/cases/17/source.c line 17, col 19]>,
+                    <int (int) [test/cases/17/source.c line 17, col 25]>
                   ],
                   declarator=(Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (a) [test/cases/17/source.c line 17, col 29]>,
                     pointer=None
                   )
                 )
               ],
               va_args=None
             ),
-            declarator=identifier
+            declarator=<identifier (test) [test/cases/17/source.c line 17, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/17/source.c line 17, col 1]>
       ]
     )
   ]

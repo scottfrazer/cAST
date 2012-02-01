@@ -3,41 +3,42 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (1) [test/cases/13/source.c line 1, col 14]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (true) [test/cases/13/source.c line 1, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (0) [test/cases/13/source.c line 2, col 15]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (false) [test/cases/13/source.c line 2, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          lparen,
-          string_literal,
-          rparen
+          <identifier (printf) [test/cases/13/source.c line 3, col 14]>,
+          <lparen (() [test/cases/13/source.c line 3, col 20]>,
+          <string_literal ("pass\n") [test/cases/13/source.c line 3, col 21]>,
+          <rparen ()) [test/cases/13/source.c line 3, col 29]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (pass) [test/cases/13/source.c line 3, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          lparen,
-          string_literal,
-          rparen
+          <identifier (printf) [test/cases/13/source.c line 4, col 14]>,
+          <lparen (() [test/cases/13/source.c line 4, col 20]>,
+          <string_literal ("fail\n") [test/cases/13/source.c line 4, col 21]>,
+          <rparen ()) [test/cases/13/source.c line 4, col 29]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (fail) [test/cases/13/source.c line 4, col 9]>
     ),
-    csource
+    <csource (
+int main(...) [test/cases/13/source.c line 5, col 1]>
   ]
 )

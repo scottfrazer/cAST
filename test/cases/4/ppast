@@ -3,15 +3,16 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number,
-          comma,
-          pp_number,
-          comma,
-          pp_number
+          <pp_number (1) [test/cases/4/source.c line 1, col 11]>,
+          <comma (,) [test/cases/4/source.c line 1, col 12]>,
+          <pp_number (2) [test/cases/4/source.c line 2, col 1]>,
+          <comma (,) [test/cases/4/source.c line 2, col 2]>,
+          <pp_number (3) [test/cases/4/source.c line 3, col 1]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (A) [test/cases/4/source.c line 1, col 9]>
     ),
-    csource
+    <csource (
+int main(...) [test/cases/4/source.c line 5, col 1]>
   ]
 )

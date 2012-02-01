@@ -1,29 +1,29 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/15/source.c line 1, col 1]>,
       (_gen1:
         (declaration_specifier:
           (storage_class_specifier:
-            typedef
+            <typedef (typedef) [test/cases/15/source.c line 1, col 1]>
           )
         ),
         (_gen2:
           (declaration_specifier:
             (type_specifier:
               (struct_specifier:
-                struct,
+                <struct (struct) [test/cases/15/source.c line 1, col 9]>,
                 (struct_or_union_sub:
-                  identifier,
+                  <identifier (a) [test/cases/15/source.c line 1, col 16]>,
                   (_gen16:
                     (struct_or_union_body:
-                      lbrace,
+                      <lbrace ({) [test/cases/15/source.c line 1, col 18]>,
                       (_gen17:
                         (struct_declaration:
                           (_gen18:
                             (specifier_qualifier:
                               (type_specifier:
-                                int
+                                <int (int) [test/cases/15/source.c line 2, col 3]>
                               )
                             ),
                             (_gen18: )
@@ -33,21 +33,21 @@
                               (declarator:
                                 (_gen26: ),
                                 (_direct_declarator:
-                                  identifier
+                                  <identifier (x) [test/cases/15/source.c line 2, col 7]>
                                 )
                               ),
                               (_gen21: )
                             ),
                             (_gen20: )
                           ),
-                          semi
+                          <semi (;) [test/cases/15/source.c line 2, col 8]>
                         ),
                         (_gen17:
                           (struct_declaration:
                             (_gen18:
                               (specifier_qualifier:
                                 (type_specifier:
-                                  char
+                                  <char (char) [test/cases/15/source.c line 3, col 3]>
                                 )
                               ),
                               (_gen18: )
@@ -57,19 +57,19 @@
                                 (declarator:
                                   (_gen26: ),
                                   (_direct_declarator:
-                                    identifier
+                                    <identifier (y) [test/cases/15/source.c line 3, col 8]>
                                   )
                                 ),
                                 (_gen21: )
                               ),
                               (_gen20: )
                             ),
-                            semi
+                            <semi (;) [test/cases/15/source.c line 3, col 9]>
                           ),
                           (_gen17: )
                         )
                       ),
-                      rbrace
+                      <rbrace (}) [test/cases/15/source.c line 4, col 1]>
                     )
                   )
                 )
@@ -83,13 +83,13 @@
         (_gen3:
           (external_declaration_sub_sub:
             (external_declarator:
-              declarator_hint,
+              <declarator_hint () [test/cases/15/source.c line 1, col 1]>,
               (_gen6:
                 (init_declarator:
                   (declarator:
                     (_gen26: ),
                     (_direct_declarator:
-                      identifier
+                      <identifier (NAME) [test/cases/15/source.c line 4, col 3]>
                     )
                   ),
                   (_gen11: )
@@ -99,22 +99,22 @@
           ),
           (_gen4: )
         ),
-        semi
+        <semi (;) [test/cases/15/source.c line 4, col 7]>
       )
     ),
     (_gen0:
       (external_declaration:
-        external_declaration_hint,
+        <external_declaration_hint () [test/cases/15/source.c line 5, col 1]>,
         (_gen1:
           (declaration_specifier:
             (storage_class_specifier:
-              typedef
+              <typedef (typedef) [test/cases/15/source.c line 5, col 1]>
             )
           ),
           (_gen2:
             (declaration_specifier:
               (type_specifier:
-                int
+                <int (int) [test/cases/15/source.c line 5, col 9]>
               )
             ),
             (_gen2: )
@@ -124,7 +124,7 @@
           (_gen3:
             (external_declaration_sub_sub:
               (external_declarator:
-                declarator_hint,
+                <declarator_hint () [test/cases/15/source.c line 5, col 1]>,
                 (_gen6:
                   (init_declarator:
                     (declarator:
@@ -132,7 +132,7 @@
                         (pointer:
                           (_gen37:
                             (pointer_sub:
-                              asterisk,
+                              <asterisk (*) [test/cases/15/source.c line 5, col 13]>,
                               (type_qualifier_list_opt: )
                             ),
                             (_gen38: )
@@ -140,7 +140,7 @@
                         )
                       ),
                       (_direct_declarator:
-                        identifier
+                        <identifier (int_ptr) [test/cases/15/source.c line 5, col 15]>
                       )
                     ),
                     (_gen11: )
@@ -150,22 +150,22 @@
             ),
             (_gen4: )
           ),
-          semi
+          <semi (;) [test/cases/15/source.c line 5, col 22]>
         )
       ),
       (_gen0:
         (external_declaration:
-          external_declaration_hint,
+          <external_declaration_hint () [test/cases/15/source.c line 6, col 1]>,
           (_gen1:
             (declaration_specifier:
               (storage_class_specifier:
-                typedef
+                <typedef (typedef) [test/cases/15/source.c line 6, col 1]>
               )
             ),
             (_gen2:
               (declaration_specifier:
                 (type_specifier:
-                  int
+                  <int (int) [test/cases/15/source.c line 6, col 9]>
                 )
               ),
               (_gen2: )
@@ -175,20 +175,20 @@
             (_gen3:
               (external_declaration_sub_sub:
                 (external_declarator:
-                  declarator_hint,
+                  <declarator_hint () [test/cases/15/source.c line 6, col 1]>,
                   (_gen6:
                     (init_declarator:
                       (declarator:
                         (_gen26: ),
                         (_direct_declarator:
                           (_direct_declarator:
-                            lparen,
+                            <lparen (() [test/cases/15/source.c line 6, col 13]>,
                             (declarator:
                               (_gen26:
                                 (pointer:
                                   (_gen37:
                                     (pointer_sub:
-                                      asterisk,
+                                      <asterisk (*) [test/cases/15/source.c line 6, col 14]>,
                                       (type_qualifier_list_opt: )
                                     ),
                                     (_gen38: )
@@ -196,22 +196,22 @@
                                 )
                               ),
                               (_direct_declarator:
-                                identifier
+                                <identifier (pt2Functio...) [test/cases/15/source.c line 6, col 15]>
                               )
                             ),
-                            rparen
+                            <rparen ()) [test/cases/15/source.c line 6, col 26]>
                           ),
-                          lparen,
+                          <lparen (() [test/cases/15/source.c line 6, col 27]>,
                           (direct_declarator_parameter_list:
                             (parameter_type_list:
                               (_gen29:
                                 (parameter_declaration:
                                   (abstract_parameter_declaration:
-                                    abstract_parameter_hint,
+                                    <abstract_parameter_hint () [test/cases/15/source.c line 6, col 28]>,
                                     (_gen1:
                                       (declaration_specifier:
                                         (type_specifier:
-                                          float
+                                          <float (float) [test/cases/15/source.c line 6, col 28]>
                                         )
                                       ),
                                       (_gen2: )
@@ -220,14 +220,14 @@
                                   )
                                 ),
                                 (_gen30:
-                                  comma,
+                                  <comma (,) [test/cases/15/source.c line 6, col 33]>,
                                   (parameter_declaration:
                                     (abstract_parameter_declaration:
-                                      abstract_parameter_hint,
+                                      <abstract_parameter_hint () [test/cases/15/source.c line 6, col 35]>,
                                       (_gen1:
                                         (declaration_specifier:
                                           (type_specifier:
-                                            char
+                                            <char (char) [test/cases/15/source.c line 6, col 35]>
                                           )
                                         ),
                                         (_gen2: )
@@ -236,14 +236,14 @@
                                     )
                                   ),
                                   (_gen30:
-                                    comma,
+                                    <comma (,) [test/cases/15/source.c line 6, col 39]>,
                                     (parameter_declaration:
                                       (abstract_parameter_declaration:
-                                        abstract_parameter_hint,
+                                        <abstract_parameter_hint () [test/cases/15/source.c line 6, col 41]>,
                                         (_gen1:
                                           (declaration_specifier:
                                             (type_specifier:
-                                              char
+                                              <char (char) [test/cases/15/source.c line 6, col 41]>
                                             )
                                           ),
                                           (_gen2: )
@@ -258,7 +258,7 @@
                               (_gen31: )
                             )
                           ),
-                          rparen
+                          <rparen ()) [test/cases/15/source.c line 6, col 45]>
                         )
                       ),
                       (_gen11: )
@@ -268,37 +268,37 @@
               ),
               (_gen4: )
             ),
-            semi
+            <semi (;) [test/cases/15/source.c line 6, col 46]>
           )
         ),
         (_gen0:
           (external_declaration:
-            external_declaration_hint,
+            <external_declaration_hint () [test/cases/15/source.c line 8, col 1]>,
             (_gen1:
               (declaration_specifier:
                 (type_specifier:
-                  int
+                  <int (int) [test/cases/15/source.c line 8, col 1]>
                 )
               ),
               (_gen2: )
             ),
             (external_declaration_sub:
               (external_function:
-                function_definition_hint,
+                <function_definition_hint () [test/cases/15/source.c line 8, col 1]>,
                 (declarator:
                   (_gen26: ),
                   (_direct_declarator:
                     (_direct_declarator:
-                      identifier
+                      <identifier (main) [test/cases/15/source.c line 8, col 5]>
                     ),
-                    lparen,
+                    <lparen (() [test/cases/15/source.c line 8, col 9]>,
                     (direct_declarator_parameter_list: ),
-                    rparen
+                    <rparen ()) [test/cases/15/source.c line 8, col 10]>
                   )
                 ),
                 (_gen5: ),
                 (compound_statement:
-                  lbrace,
+                  <lbrace ({) [test/cases/15/source.c line 9, col 1]>,
                   (_gen39:
                     (block_item_list:
                       (_gen40:
@@ -308,7 +308,7 @@
                               (declaration_specifier:
                                 (type_specifier:
                                   (typedef_name:
-                                    typedef_identifier
+                                    <typedef_identifier (NAME) [test/cases/15/source.c line 10, col 3]>
                                   )
                                 )
                               ),
@@ -321,7 +321,7 @@
                                     (declarator:
                                       (_gen26: ),
                                       (_direct_declarator:
-                                        identifier
+                                        <identifier (b) [test/cases/15/source.c line 10, col 8]>
                                       )
                                     ),
                                     (_gen11: )
@@ -330,7 +330,7 @@
                                 )
                               )
                             ),
-                            semi
+                            <semi (;) [test/cases/15/source.c line 10, col 9]>
                           )
                         ),
                         (_gen40:
@@ -340,7 +340,7 @@
                                 (declaration_specifier:
                                   (type_specifier:
                                     (typedef_name:
-                                      typedef_identifier
+                                      <typedef_identifier (int_ptr) [test/cases/15/source.c line 11, col 3]>
                                     )
                                   )
                                 ),
@@ -353,7 +353,7 @@
                                       (declarator:
                                         (_gen26: ),
                                         (_direct_declarator:
-                                          identifier
+                                          <identifier (c) [test/cases/15/source.c line 11, col 11]>
                                         )
                                       ),
                                       (_gen11: )
@@ -362,7 +362,7 @@
                                   )
                                 )
                               ),
-                              semi
+                              <semi (;) [test/cases/15/source.c line 11, col 12]>
                             )
                           ),
                           (_gen40:
@@ -372,7 +372,7 @@
                                   (declaration_specifier:
                                     (type_specifier:
                                       (typedef_name:
-                                        typedef_identifier
+                                        <typedef_identifier (pt2Functio...) [test/cases/15/source.c line 12, col 3]>
                                       )
                                     )
                                   ),
@@ -385,7 +385,7 @@
                                         (declarator:
                                           (_gen26: ),
                                           (_direct_declarator:
-                                            identifier
+                                            <identifier (d) [test/cases/15/source.c line 12, col 15]>
                                           )
                                         ),
                                         (_gen11: )
@@ -394,7 +394,7 @@
                                     )
                                   )
                                 ),
-                                semi
+                                <semi (;) [test/cases/15/source.c line 12, col 16]>
                               )
                             ),
                             (_gen40: )
@@ -403,7 +403,7 @@
                       )
                     )
                   ),
-                  rbrace
+                  <rbrace (}) [test/cases/15/source.c line 13, col 1]>
                 )
               )
             )

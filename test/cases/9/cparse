@@ -1,11 +1,11 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/9/source.c line 2, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
-            int
+            <int (int) [test/cases/9/source.c line 2, col 1]>
           )
         ),
         (_gen2: )
@@ -14,18 +14,18 @@
         (_gen3:
           (external_declaration_sub_sub:
             (external_prototype:
-              function_prototype_hint,
+              <function_prototype_hint () [test/cases/9/source.c line 2, col 1]>,
               (declarator:
                 (_gen26: ),
                 (_direct_declarator:
                   (_direct_declarator:
-                    lparen,
+                    <lparen (() [test/cases/9/source.c line 2, col 5]>,
                     (declarator:
                       (_gen26:
                         (pointer:
                           (_gen37:
                             (pointer_sub:
-                              asterisk,
+                              <asterisk (*) [test/cases/9/source.c line 2, col 6]>,
                               (type_qualifier_list_opt: )
                             ),
                             (_gen38: )
@@ -34,19 +34,19 @@
                       ),
                       (_direct_declarator:
                         (_direct_declarator:
-                          identifier
+                          <identifier (fpfi) [test/cases/9/source.c line 2, col 7]>
                         ),
-                        lparen,
+                        <lparen (() [test/cases/9/source.c line 2, col 11]>,
                         (direct_declarator_parameter_list:
                           (parameter_type_list:
                             (_gen29:
                               (parameter_declaration:
                                 (abstract_parameter_declaration:
-                                  abstract_parameter_hint,
+                                  <abstract_parameter_hint () [test/cases/9/source.c line 2, col 12]>,
                                   (_gen1:
                                     (declaration_specifier:
                                       (type_specifier:
-                                        int
+                                        <int (int) [test/cases/9/source.c line 2, col 12]>
                                       )
                                     ),
                                     (_gen2: )
@@ -55,12 +55,12 @@
                                     (abstract_declarator:
                                       (_direct_abstract_declarator:
                                         (_direct_abstract_declarator:
-                                          lparen,
+                                          <lparen (() [test/cases/9/source.c line 2, col 16]>,
                                           (abstract_declarator:
                                             (pointer:
                                               (_gen37:
                                                 (pointer_sub:
-                                                  asterisk,
+                                                  <asterisk (*) [test/cases/9/source.c line 2, col 17]>,
                                                   (type_qualifier_list_opt: )
                                                 ),
                                                 (_gen38: )
@@ -68,19 +68,19 @@
                                             ),
                                             (_gen36: )
                                           ),
-                                          rparen
+                                          <rparen ()) [test/cases/9/source.c line 2, col 18]>
                                         ),
-                                        lparen,
+                                        <lparen (() [test/cases/9/source.c line 2, col 19]>,
                                         (_gen46:
                                           (parameter_type_list:
                                             (_gen29:
                                               (parameter_declaration:
                                                 (abstract_parameter_declaration:
-                                                  abstract_parameter_hint,
+                                                  <abstract_parameter_hint () [test/cases/9/source.c line 2, col 20]>,
                                                   (_gen1:
                                                     (declaration_specifier:
                                                       (type_specifier:
-                                                        long
+                                                        <long (long) [test/cases/9/source.c line 2, col 20]>
                                                       )
                                                     ),
                                                     (_gen2: )
@@ -93,21 +93,21 @@
                                             (_gen31: )
                                           )
                                         ),
-                                        rparen
+                                        <rparen ()) [test/cases/9/source.c line 2, col 24]>
                                       )
                                     )
                                   )
                                 )
                               ),
                               (_gen30:
-                                comma,
+                                <comma (,) [test/cases/9/source.c line 2, col 25]>,
                                 (parameter_declaration:
                                   (abstract_parameter_declaration:
-                                    abstract_parameter_hint,
+                                    <abstract_parameter_hint () [test/cases/9/source.c line 2, col 27]>,
                                     (_gen1:
                                       (declaration_specifier:
                                         (type_specifier:
-                                          int
+                                          <int (int) [test/cases/9/source.c line 2, col 27]>
                                         )
                                       ),
                                       (_gen2: )
@@ -121,22 +121,22 @@
                             (_gen31: )
                           )
                         ),
-                        rparen
+                        <rparen ()) [test/cases/9/source.c line 2, col 30]>
                       )
                     ),
-                    rparen
+                    <rparen ()) [test/cases/9/source.c line 2, col 31]>
                   ),
-                  lparen,
+                  <lparen (() [test/cases/9/source.c line 2, col 32]>,
                   (direct_declarator_parameter_list:
                     (parameter_type_list:
                       (_gen29:
                         (parameter_declaration:
                           (abstract_parameter_declaration:
-                            abstract_parameter_hint,
+                            <abstract_parameter_hint () [test/cases/9/source.c line 2, col 33]>,
                             (_gen1:
                               (declaration_specifier:
                                 (type_specifier:
-                                  int
+                                  <int (int) [test/cases/9/source.c line 2, col 33]>
                                 )
                               ),
                               (_gen2: )
@@ -148,13 +148,13 @@
                       ),
                       (_gen31:
                         (va_args:
-                          comma_va_args,
-                          elipsis
+                          <comma_va_args (,) [test/cases/9/source.c line 2, col 36]>,
+                          <elipsis (...) [test/cases/9/source.c line 2, col 38]>
                         )
                       )
                     )
                   ),
-                  rparen
+                  <rparen ()) [test/cases/9/source.c line 2, col 41]>
                 )
               ),
               (_gen5: )
@@ -162,7 +162,7 @@
           ),
           (_gen4: )
         ),
-        semi
+        <semi (;) [test/cases/9/source.c line 2, col 42]>
       )
     ),
     (_gen0: )

@@ -1,47 +1,47 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/6/source.c line 6, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
-            int
+            <int (int) [test/cases/6/source.c line 6, col 1]>
           )
         ),
         (_gen2: )
       ),
       (external_declaration_sub:
         (external_function:
-          function_definition_hint,
+          <function_definition_hint () [test/cases/6/source.c line 6, col 1]>,
           (declarator:
             (_gen26: ),
             (_direct_declarator:
               (_direct_declarator:
-                identifier
+                <identifier (main) [test/cases/6/source.c line 6, col 5]>
               ),
-              lparen,
+              <lparen (() [test/cases/6/source.c line 6, col 9]>,
               (direct_declarator_parameter_list: ),
-              rparen
+              <rparen ()) [test/cases/6/source.c line 6, col 10]>
             )
           ),
           (_gen5: ),
           (compound_statement:
-            lbrace,
+            <lbrace ({) [test/cases/6/source.c line 7, col 1]>,
             (_gen39:
               (block_item_list:
                 (_gen40:
                   (block_item:
                     (statement:
                       (jump_statement:
-                        return,
+                        <return (return) [test/cases/6/source.c line 8, col 3]>,
                         (expression_opt:
                           (_expr:
                             (constant:
-                              integer_constant
+                              <integer_constant (0) [test/cases/6/source.c line 8, col 10]>
                             )
                           )
                         ),
-                        semi
+                        <semi (;) [test/cases/6/source.c line 8, col 11]>
                       )
                     )
                   ),
@@ -49,7 +49,7 @@
                 )
               )
             ),
-            rbrace
+            <rbrace (}) [test/cases/6/source.c line 9, col 1]>
           )
         )
       )

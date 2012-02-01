@@ -2,28 +2,29 @@
   (pp_nodes_list:
     (_gen0:
       (pp_nodes:
-        csource
+        <csource (// no-incl...) [test/cases/7/source.c line 1, col 1]>
       ),
-      separator,
+      <separator () [test/cases/7/source.c line 2, col 1]>,
       (_gen0:
         (pp_nodes:
           (pp_directive:
             (control_line:
               (include_line:
-                include,
+                <include (#include) [test/cases/7/source.c line 3, col 1]>,
                 (include_type:
-                  header_global
+                  <header_global (<stdio.h&g...) [test/cases/7/source.c line 3, col 10]>
                 )
               )
             )
           )
         ),
-        separator,
+        <separator () [test/cases/7/source.c line 3, col 1]>,
         (_gen0:
           (pp_nodes:
-            csource
+            <csource (
+int main(...) [test/cases/7/source.c line 4, col 1]>
           ),
-          separator,
+          <separator () [test/cases/7/source.c line 9, col 1]>,
           (_gen0: )
         )
       )

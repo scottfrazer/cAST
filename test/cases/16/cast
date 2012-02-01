@@ -6,15 +6,15 @@
           init_declarator=(InitDeclarator:
             initializer=None,
             declarator=(Declarator:
-              direct_declarator=identifier,
+              direct_declarator=<identifier (myint) [test/cases/16/source.c line 1, col 13]>,
               pointer=None
             )
           )
         )
       ],
       declaration_specifiers=[
-        typedef,
-        int
+        <typedef (typedef) [test/cases/16/source.c line 1, col 1]>,
+        <int (int) [test/cases/16/source.c line 1, col 9]>
       ]
     ),
     (ExternalDeclaration:
@@ -23,41 +23,41 @@
           init_declarator=(InitDeclarator:
             initializer=None,
             declarator=(Declarator:
-              direct_declarator=identifier,
+              direct_declarator=<identifier (mystruct) [test/cases/16/source.c line 2, col 36]>,
               pointer=None
             )
           )
         )
       ],
       declaration_specifiers=[
-        typedef,
+        <typedef (typedef) [test/cases/16/source.c line 2, col 1]>,
         (Struct:
           definition=(StructOrUnion:
             body=[
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  int
+                  <int (int) [test/cases/16/source.c line 2, col 19]>
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (a) [test/cases/16/source.c line 2, col 23]>,
                     pointer=None
                   )
                 ]
               ),
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  typedef_identifier
+                  <typedef_identifier (myint) [test/cases/16/source.c line 2, col 26]>
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (b) [test/cases/16/source.c line 2, col 32]>,
                     pointer=None
                   )
                 ]
               )
             ],
-            name=identifier
+            name=<identifier (a) [test/cases/16/source.c line 2, col 16]>
           )
         )
       ]
@@ -70,42 +70,42 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (myint_) [test/cases/16/source.c line 6, col 15]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef,
-              int
+              <typedef (typedef) [test/cases/16/source.c line 6, col 3]>,
+              <int (int) [test/cases/16/source.c line 6, col 11]>
             ]
           ),
           (Declaration:
             init_declarators=[
               (InitDeclarator:
-                initializer=integer_constant,
+                initializer=<integer_constant (10) [test/cases/16/source.c line 7, col 13]>,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (x) [test/cases/16/source.c line 7, col 9]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (myint) [test/cases/16/source.c line 7, col 3]>
             ]
           ),
           (Declaration:
             init_declarators=[
               (InitDeclarator:
-                initializer=integer_constant,
+                initializer=<integer_constant (2) [test/cases/16/source.c line 8, col 14]>,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (z) [test/cases/16/source.c line 8, col 10]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (myint_) [test/cases/16/source.c line 8, col 3]>
             ]
           ),
           (Declaration:
@@ -113,46 +113,46 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (y) [test/cases/16/source.c line 9, col 12]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              typedef_identifier
+              <typedef_identifier (mystruct) [test/cases/16/source.c line 9, col 3]>
             ]
           ),
           (Assign:
             var=(MemberSelect:
-              member=identifier,
-              object=identifier
+              member=<identifier (b) [test/cases/16/source.c line 10, col 5]>,
+              object=<identifier (y) [test/cases/16/source.c line 10, col 3]>
             ),
-            value=integer_constant
+            value=<integer_constant (15) [test/cases/16/source.c line 10, col 9]>
           ),
           (FuncCall:
             params=[
-              string_literal,
-              identifier,
-              identifier,
+              <string_literal ("%d %d %d\...) [test/cases/16/source.c line 11, col 10]>,
+              <identifier (z) [test/cases/16/source.c line 11, col 24]>,
+              <identifier (x) [test/cases/16/source.c line 11, col 27]>,
               (MemberSelect:
-                member=identifier,
-                object=identifier
+                member=<identifier (b) [test/cases/16/source.c line 11, col 32]>,
+                object=<identifier (y) [test/cases/16/source.c line 11, col 30]>
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/16/source.c line 11, col 3]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/16/source.c line 4, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/16/source.c line 4, col 1]>
       ]
     )
   ]

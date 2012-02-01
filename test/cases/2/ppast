@@ -3,88 +3,88 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (7) [test/cases/2/source.c line 1, col 14]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (qux0) [test/cases/2/source.c line 1, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier
+          <identifier (qux0) [test/cases/2/source.c line 2, col 13]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (qux) [test/cases/2/source.c line 2, col 9]>
     ),
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          add,
-          identifier
+          <identifier (x) [test/cases/2/source.c line 3, col 19]>,
+          <add (+) [test/cases/2/source.c line 3, col 20]>,
+          <identifier (y) [test/cases/2/source.c line 3, col 21]>
         ]
       ),
-      ident=identifier,
+      ident=<identifier (foo) [test/cases/2/source.c line 3, col 9]>,
       params=[
-        identifier,
-        identifier
+        <identifier (x) [test/cases/2/source.c line 3, col 13]>,
+        <identifier (y) [test/cases/2/source.c line 3, col 16]>
       ]
     ),
-    csource,
+    <csource (//        ...) [test/cases/2/source.c line 4, col 1]>,
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          sub,
-          identifier,
-          lparen,
-          pp_number,
-          comma,
-          pp_number,
-          rparen,
-          sub,
-          identifier,
-          sub,
-          identifier
+          <identifier (foo) [test/cases/2/source.c line 5, col 13]>,
+          <sub (-) [test/cases/2/source.c line 5, col 17]>,
+          <identifier (foo) [test/cases/2/source.c line 5, col 19]>,
+          <lparen (() [test/cases/2/source.c line 5, col 22]>,
+          <pp_number (66) [test/cases/2/source.c line 5, col 23]>,
+          <comma (,) [test/cases/2/source.c line 5, col 25]>,
+          <pp_number (33) [test/cases/2/source.c line 5, col 26]>,
+          <rparen ()) [test/cases/2/source.c line 5, col 28]>,
+          <sub (-) [test/cases/2/source.c line 5, col 30]>,
+          <identifier (foo) [test/cases/2/source.c line 5, col 32]>,
+          <sub (-) [test/cases/2/source.c line 5, col 36]>,
+          <identifier (foo) [test/cases/2/source.c line 5, col 38]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (bar) [test/cases/2/source.c line 5, col 9]>
     ),
-    csource,
+    <csource (//        ...) [test/cases/2/source.c line 6, col 1]>,
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          lparen,
-          pp_number,
-          comma,
-          pp_number,
-          rparen
+          <identifier (foo) [test/cases/2/source.c line 7, col 13]>,
+          <lparen (() [test/cases/2/source.c line 7, col 16]>,
+          <pp_number (4) [test/cases/2/source.c line 7, col 17]>,
+          <comma (,) [test/cases/2/source.c line 7, col 18]>,
+          <pp_number (5) [test/cases/2/source.c line 7, col 19]>,
+          <rparen ()) [test/cases/2/source.c line 7, col 20]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (baz) [test/cases/2/source.c line 7, col 9]>
     ),
-    csource,
+    <csource (//        ...) [test/cases/2/source.c line 8, col 1]>,
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          add,
-          identifier,
-          add,
-          identifier,
-          lparen,
-          identifier,
-          rparen
+          <identifier (s) [test/cases/2/source.c line 9, col 24]>,
+          <add (+) [test/cases/2/source.c line 9, col 25]>,
+          <identifier (t) [test/cases/2/source.c line 9, col 26]>,
+          <add (+) [test/cases/2/source.c line 9, col 27]>,
+          <identifier (foo) [test/cases/2/source.c line 9, col 28]>,
+          <lparen (() [test/cases/2/source.c line 9, col 31]>,
+          <identifier (__VA_ARGS_...) [test/cases/2/source.c line 9, col 32]>,
+          <rparen ()) [test/cases/2/source.c line 9, col 43]>
         ]
       ),
-      ident=identifier,
+      ident=<identifier (var) [test/cases/2/source.c line 9, col 9]>,
       params=[
-        identifier,
-        identifier,
-        elipsis
+        <identifier (s) [test/cases/2/source.c line 9, col 13]>,
+        <identifier (t) [test/cases/2/source.c line 9, col 16]>,
+        <elipsis (...) [test/cases/2/source.c line 9, col 19]>
       ]
     ),
-    csource
+    <csource (// functio...) [test/cases/2/source.c line 10, col 1]>
   ]
 )

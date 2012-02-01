@@ -7,14 +7,14 @@
           declarator=(Declarator:
             direct_declarator=(FunctionSignature:
               params=None,
-              declarator=identifier
+              declarator=<identifier (func) [test/cases/0/source.c line 3, col 5]>
             ),
             pointer=None
           )
         )
       ],
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/0/source.c line 3, col 1]>
       ]
     ),
     (ExternalDeclaration:
@@ -22,8 +22,8 @@
         body=[
           (Return:
             expr=(Add:
-              right=identifier,
-              left=identifier
+              right=<identifier (y) [test/cases/0/source.c line 13, col 33]>,
+              left=<identifier (x) [test/cases/0/source.c line 13, col 31]>
             )
           )
         ],
@@ -34,32 +34,32 @@
               parameter_declarations=[
                 (NamedParameter:
                   declaration_specifiers=[
-                    int
+                    <int (int) [test/cases/0/source.c line 13, col 9]>
                   ],
                   declarator=(Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (x) [test/cases/0/source.c line 13, col 13]>,
                     pointer=None
                   )
                 ),
                 (NamedParameter:
                   declaration_specifiers=[
-                    int
+                    <int (int) [test/cases/0/source.c line 13, col 16]>
                   ],
                   declarator=(Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (y) [test/cases/0/source.c line 13, col 20]>,
                     pointer=None
                   )
                 )
               ],
               va_args=None
             ),
-            declarator=identifier
+            declarator=<identifier (add) [test/cases/0/source.c line 13, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/0/source.c line 13, col 1]>
       ]
     ),
     (ExternalDeclaration:
@@ -67,76 +67,76 @@
         body=[
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("THETA %d\...) [test/cases/0/source.c line 20, col 8]>,
               (Sub:
-                right=integer_constant,
+                right=<integer_constant (2) [test/cases/0/source.c line 20, col 22]>,
                 left=(Add:
-                  right=integer_constant,
-                  left=integer_constant
+                  right=<integer_constant (10) [test/cases/0/source.c line 20, col 22]>,
+                  left=<integer_constant (1) [test/cases/0/source.c line 20, col 22]>
                 )
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/0/source.c line 20, col 1]>
           ),
           (FuncCall:
             params=[
-              string_literal,
-              string_literal
+              <string_literal ("PATH %s\n...) [test/cases/0/source.c line 21, col 8]>,
+              <string_literal ("c.c") [test/cases/0/source.c line 21, col 21]>
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/0/source.c line 21, col 1]>
           ),
           (FuncCall:
             params=[
-              string_literal
+              <string_literal ("first\n") [test/cases/0/source.c line 23, col 12]>
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/0/source.c line 23, col 5]>
           ),
           (Declaration:
             init_declarators=[
               (InitDeclarator:
-                initializer=integer_constant,
+                initializer=<integer_constant (0) [test/cases/0/source.c line 26, col 9]>,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (a) [test/cases/0/source.c line 26, col 5]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              int
+              <int (int) [test/cases/0/source.c line 26, col 1]>
             ]
           ),
           (FuncCall:
             params=[
-              string_literal,
-              integer_constant
+              <string_literal ("second %d...) [test/cases/0/source.c line 31, col 12]>,
+              <integer_constant (1) [test/cases/0/source.c line 31, col 27]>
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/0/source.c line 31, col 5]>
           ),
           (FuncCall:
             params=[
-              string_literal
+              <string_literal ("third\n") [test/cases/0/source.c line 32, col 12]>
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/0/source.c line 32, col 5]>
           ),
           (AddAssign:
-            right=integer_constant,
-            left=identifier
+            right=<integer_constant (1) [test/cases/0/source.c line 40, col 6]>,
+            left=<identifier (a) [test/cases/0/source.c line 40, col 1]>
           ),
           (Return:
-            expr=integer_constant
+            expr=<integer_constant (0) [test/cases/0/source.c line 42, col 12]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/0/source.c line 18, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/0/source.c line 18, col 1]>
       ]
     )
   ]

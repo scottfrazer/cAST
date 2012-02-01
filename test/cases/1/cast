@@ -5,26 +5,26 @@
         body=[
           (FuncCall:
             params=[
-              string_literal,
+              <string_literal ("%d\n") [test/cases/1/source.c line 4, col 12]>,
               (Add:
-                right=integer_constant,
-                left=integer_constant
+                right=<integer_constant (8) [test/cases/1/source.c line 4, col 20]>,
+                left=<integer_constant (7) [test/cases/1/source.c line 4, col 20]>
               )
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/1/source.c line 4, col 5]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/1/source.c line 3, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/1/source.c line 3, col 1]>
       ]
     )
   ]

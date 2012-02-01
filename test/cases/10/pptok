@@ -1,15 +1,3 @@
-[pp:18] csource (int a;
-static int b = 3;
-struct b {
-  int *a;
-  int b;
-};
-int func(int x, char y) {return x+y;}
-int foo(a,b)
-  char a;
-  char b;
-{}
-int (*ptr)(short a, short b, short c);
-int main() {}
-) [test/cases/10/source.c line 1, col 1]
-[pp:55] separator () [test/cases/10/source.c line 14, col 1]
+<csource (int a;
+sta...) [test/cases/10/source.c line 1, col 1]>
+<separator () [test/cases/10/source.c line 14, col 1]>

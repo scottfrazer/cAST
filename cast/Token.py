@@ -29,24 +29,13 @@ class Token:
     return self
   
   def __str__( self ):
-    #return "'%s'" % (self.source_string)
-    #return "'%s'" % (self.terminal_str.lower())
-    #return '\033[1;34m<%s (%s) %d,%d>\033[0m' % ( self.terminal_str.lower(), self.source_string, self.lineno, self.colno )
-    return '[%s:%d] %s (%s) [%s line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.resource, self.lineno, self.colno )
-    return '%s (%s)' % ( self.terminal_str.lower(), self.source_string )
+    return self.toString()
 
-  def toString( self, format = 'long' ):
-    if format == 'tiny':
-      return self.getString()
-    elif format == 'terminal':
-      return self.getTerminalStr()
-    elif format == 'short':
-      if len(self.getString()):
-        return "%s ('%s')" % ( self.getTerminalStr(), self.getString() )
-      else:
-        return "%s" % ( self.getTerminalStr() )
-    else:
-      return '[%s:%d] %s (%s) [%s line %d, col %d]' % ( self.type, self.id, self.terminal_str.lower(), self.source_string, self.resource, self.lineno, self.colno )
+  def toString( self, format='long' ):
+    truncatedSourceString = self.source_string.replace('>', '&gt;')
+    if len(truncatedSourceString) > 10:
+      truncatedSourceString = truncatedSourceString[:10] + '...'
+    return '<%s (%s) [%s line %d, col %d]>' % ( self.terminal_str.lower(), truncatedSourceString, self.resource, self.lineno, self.colno )
 
 class ppToken(Token):
   type = 'pp'

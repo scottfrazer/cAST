@@ -3,25 +3,25 @@
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          add,
-          identifier
+          <identifier (a) [test/cases/1/source.c line 1, col 18]>,
+          <add (+) [test/cases/1/source.c line 1, col 19]>,
+          <identifier (b) [test/cases/1/source.c line 1, col 20]>
         ]
       ),
-      ident=identifier,
+      ident=<identifier (EXT) [test/cases/1/source.c line 1, col 9]>,
       params=[
-        identifier,
-        identifier
+        <identifier (a) [test/cases/1/source.c line 1, col 13]>,
+        <identifier (b) [test/cases/1/source.c line 1, col 15]>
       ]
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier
+          <identifier (EXT) [test/cases/1/source.c line 2, col 15]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (alias) [test/cases/1/source.c line 2, col 9]>
     ),
-    csource
+    <csource (int main()...) [test/cases/1/source.c line 3, col 1]>
   ]
 )

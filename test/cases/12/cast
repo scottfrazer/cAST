@@ -8,26 +8,27 @@
               (InitDeclarator:
                 initializer=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (y) [test/cases/12/source.c line 4, col 7]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              int
+              <int (int) [test/cases/12/source.c line 4, col 3]>
             ]
           ),
           (Assign:
-            var=identifier,
+            var=<identifier (y) [test/cases/12/source.c line 5, col 3]>,
             value=(FuncCall:
               params=[
-                integer_constant
+                <integer_constant (6) [test/cases/12/source.c line 5, col 17]>
               ],
-              name=identifier
+              name=<identifier (factorial) [test/cases/12/source.c line 5, col 7]>
             )
           ),
           (FuncCall:
             params=[
+<<<<<<< Updated upstream
               string_literal
             ],
             name=identifier
@@ -36,8 +37,18 @@
             params=[
               string_literal,
               identifier
+=======
+              <string_literal ("Hello Wor...) [test/cases/12/source.c line 6, col 10]>
+>>>>>>> Stashed changes
             ],
-            name=identifier
+            name=<identifier (printf) [test/cases/12/source.c line 6, col 3]>
+          ),
+          (FuncCall:
+            params=[
+              <string_literal ("6! = %d\n...) [test/cases/12/source.c line 7, col 10]>,
+              <identifier (y) [test/cases/12/source.c line 7, col 23]>
+            ],
+            name=<identifier (printf) [test/cases/12/source.c line 7, col 3]>
           )
         ],
         declaration_list=None,
@@ -47,37 +58,37 @@
               parameter_declarations=[
                 (NamedParameter:
                   declaration_specifiers=[
-                    int
+                    <int (int) [test/cases/12/source.c line 2, col 11]>
                   ],
                   declarator=(Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (argc) [test/cases/12/source.c line 2, col 15]>,
                     pointer=None
                   )
                 ),
                 (NamedParameter:
                   declaration_specifiers=[
-                    char
+                    <char (char) [test/cases/12/source.c line 2, col 21]>
                   ],
                   declarator=(Declarator:
                     direct_declarator=(Array:
-                      name=identifier,
+                      name=<identifier (argv) [test/cases/12/source.c line 2, col 28]>,
                       size=None
                     ),
                     pointer=[
-                      asterisk
+                      <asterisk (*) [test/cases/12/source.c line 2, col 26]>
                     ]
                   )
                 )
               ],
               va_args=None
             ),
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/12/source.c line 2, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/12/source.c line 2, col 1]>
       ]
     ),
     (ExternalDeclaration:
@@ -86,11 +97,11 @@
           (If:
             elseif=None,
             statement=(Return:
-              expr=integer_constant
+              expr=<integer_constant (1) [test/cases/12/source.c line 13, col 12]>
             ),
             condition=(Equals:
-              right=integer_constant,
-              left=identifier
+              right=<integer_constant (1) [test/cases/12/source.c line 12, col 13]>,
+              left=<identifier (x) [test/cases/12/source.c line 12, col 8]>
             ),
             else=None
           ),
@@ -99,13 +110,13 @@
               right=(FuncCall:
                 params=[
                   (Sub:
-                    right=integer_constant,
-                    left=identifier
+                    right=<integer_constant (1) [test/cases/12/source.c line 14, col 26]>,
+                    left=<identifier (x) [test/cases/12/source.c line 14, col 24]>
                   )
                 ],
-                name=identifier
+                name=<identifier (factorial) [test/cases/12/source.c line 14, col 14]>
               ),
-              left=identifier
+              left=<identifier (x) [test/cases/12/source.c line 14, col 10]>
             )
           )
         ],
@@ -116,23 +127,23 @@
               parameter_declarations=[
                 (NamedParameter:
                   declaration_specifiers=[
-                    int
+                    <int (int) [test/cases/12/source.c line 10, col 15]>
                   ],
                   declarator=(Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (x) [test/cases/12/source.c line 10, col 19]>,
                     pointer=None
                   )
                 )
               ],
               va_args=None
             ),
-            declarator=identifier
+            declarator=<identifier (factorial) [test/cases/12/source.c line 10, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/12/source.c line 10, col 1]>
       ]
     )
   ]

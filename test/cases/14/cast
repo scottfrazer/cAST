@@ -6,109 +6,109 @@
           (Declaration:
             init_declarators=[
               (InitDeclarator:
-                initializer=integer_constant,
+                initializer=<integer_constant (0) [test/cases/14/source.c line 3, col 11]>,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (a) [test/cases/14/source.c line 3, col 7]>,
                   pointer=None
                 )
               )
             ],
             declaration_specifiers=[
-              int
+              <int (int) [test/cases/14/source.c line 3, col 3]>
             ]
           ),
           (While:
-            expr=integer_constant,
+            expr=<integer_constant (1) [test/cases/14/source.c line 4, col 9]>,
             statement=[
               (FuncCall:
                 params=[],
-                name=identifier
+                name=<identifier (func) [test/cases/14/source.c line 5, col 5]>
               )
             ]
           ),
           (DoWhile:
-            expr=integer_constant,
+            expr=<integer_constant (0) [test/cases/14/source.c line 11, col 11]>,
             statement=[
               (FuncCall:
                 params=[],
-                name=identifier
+                name=<identifier (func) [test/cases/14/source.c line 9, col 5]>
               ),
               (AddAssign:
-                right=integer_constant,
-                left=identifier
+                right=<integer_constant (1) [test/cases/14/source.c line 10, col 10]>,
+                left=<identifier (a) [test/cases/14/source.c line 10, col 5]>
               )
             ]
           ),
           (Switch:
-            expr=identifier,
+            expr=<identifier (a) [test/cases/14/source.c line 13, col 10]>,
             statment=[
               (Case:
-                expr=integer_constant,
+                expr=<integer_constant (0) [test/cases/14/source.c line 15, col 10]>,
                 statement=(FuncCall:
                   params=[],
-                  name=identifier
+                  name=<identifier (func) [test/cases/14/source.c line 16, col 7]>
                 )
               ),
               (AddAssign:
-                right=integer_constant,
-                left=identifier
+                right=<integer_constant (1) [test/cases/14/source.c line 17, col 12]>,
+                left=<identifier (a) [test/cases/14/source.c line 17, col 7]>
               ),
-              break,
+              <break (break) [test/cases/14/source.c line 18, col 7]>,
               (Case:
-                expr=integer_constant,
+                expr=<integer_constant (1) [test/cases/14/source.c line 19, col 10]>,
                 statement=(FuncCall:
                   params=[],
-                  name=identifier
+                  name=<identifier (func) [test/cases/14/source.c line 20, col 7]>
                 )
               ),
               (Goto:
-                name=identifier
+                name=<identifier (byebye) [test/cases/14/source.c line 21, col 12]>
               ),
-              break,
+              <break (break) [test/cases/14/source.c line 22, col 7]>,
               (DefaultCase:
-                statement=break
+                statement=<break (break) [test/cases/14/source.c line 24, col 7]>
               )
             ]
           ),
           (Label:
-            name=label_hint,
-            statement=identifier
+            name=<label_hint () [test/cases/14/source.c line 27, col 1]>,
+            statement=<identifier (byebye) [test/cases/14/source.c line 27, col 1]>
           ),
           (Return:
-            expr=integer_constant
+            expr=<integer_constant (0) [test/cases/14/source.c line 29, col 10]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/14/source.c line 1, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/14/source.c line 1, col 1]>
       ]
     ),
     (ExternalDeclaration:
       declarations=(FunctionDefinition:
         body=[
           (Return:
-            expr=integer_constant
+            expr=<integer_constant (0) [test/cases/14/source.c line 34, col 10]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (func) [test/cases/14/source.c line 32, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/14/source.c line 32, col 1]>
       ]
     )
   ]

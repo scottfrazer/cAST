@@ -1,22 +1,2 @@
-[pp:18] csource (typedef int MILES, KLICKSP();
-typedef struct { double hi, lo; } range;
-typedef struct s { int x; } t, * tp;
-
-int main()
-{
-  MILES distance; /* int */
-  extern KLICKSP * metricp; /* pointer to function with no parameters returning int */
-  t w = { .x = 7 };
-  tp v;
-  v = &w;
-  range y; /* struct */
-  range z, *zp; /* struct, ptr to struct */
-  printf("%d\n", v->x);
-}
-
-int test(register const int a)
-{
-  return a;
-}
-) [test/cases/17/source.c line 1, col 1]
-[pp:55] separator () [test/cases/17/source.c line 21, col 1]
+<csource (typedef in...) [test/cases/17/source.c line 1, col 1]>
+<separator () [test/cases/17/source.c line 21, col 1]>

@@ -1,39 +1,34 @@
-[pp:9] define_function (#define) [test/cases/5/source.c line 1, col 1]
-[pp:40] identifier (FOO) [test/cases/5/source.c line 1, col 9]
-[pp:66] lparen (() [test/cases/5/source.c line 1, col 12]
-[pp:40] identifier (x) [test/cases/5/source.c line 1, col 13]
-[pp:71] rparen ()) [test/cases/5/source.c line 1, col 14]
-[pp:40] identifier (x) [test/cases/5/source.c line 1, col 16]
-[pp:21] add (+) [test/cases/5/source.c line 1, col 17]
-[pp:23] pp_number (1) [test/cases/5/source.c line 1, col 18]
-[pp:55] separator () [test/cases/5/source.c line 1, col 1]
-[pp:9] define_function (#define) [test/cases/5/source.c line 2, col 1]
-[pp:40] identifier (BAR) [test/cases/5/source.c line 2, col 9]
-[pp:66] lparen (() [test/cases/5/source.c line 2, col 12]
-[pp:40] identifier (y) [test/cases/5/source.c line 2, col 13]
-[pp:71] rparen ()) [test/cases/5/source.c line 2, col 14]
-[pp:40] identifier (y) [test/cases/5/source.c line 2, col 16]
-[pp:21] add (+) [test/cases/5/source.c line 2, col 17]
-[pp:23] pp_number (2) [test/cases/5/source.c line 2, col 18]
-[pp:55] separator () [test/cases/5/source.c line 2, col 1]
-[pp:9] define_function (#define) [test/cases/5/source.c line 3, col 1]
-[pp:40] identifier (BAZ) [test/cases/5/source.c line 3, col 9]
-[pp:66] lparen (() [test/cases/5/source.c line 3, col 12]
-[pp:40] identifier (z) [test/cases/5/source.c line 3, col 13]
-[pp:71] rparen ()) [test/cases/5/source.c line 3, col 14]
-[pp:40] identifier (FOO) [test/cases/5/source.c line 3, col 16]
-[pp:66] lparen (() [test/cases/5/source.c line 3, col 19]
-[pp:40] identifier (BAR) [test/cases/5/source.c line 3, col 20]
-[pp:66] lparen (() [test/cases/5/source.c line 3, col 23]
-[pp:40] identifier (z) [test/cases/5/source.c line 3, col 24]
-[pp:71] rparen ()) [test/cases/5/source.c line 3, col 25]
-[pp:71] rparen ()) [test/cases/5/source.c line 3, col 26]
-[pp:55] separator () [test/cases/5/source.c line 3, col 1]
-[pp:18] csource (
-int main()
-{
-  printf("%d\n", FOO(BAR(1000)));
-  return 0;
-}
-) [test/cases/5/source.c line 4, col 1]
-[pp:55] separator () [test/cases/5/source.c line 10, col 1]
+<define_function (#define) [test/cases/5/source.c line 1, col 1]>
+<identifier (FOO) [test/cases/5/source.c line 1, col 9]>
+<lparen (() [test/cases/5/source.c line 1, col 12]>
+<identifier (x) [test/cases/5/source.c line 1, col 13]>
+<rparen ()) [test/cases/5/source.c line 1, col 14]>
+<identifier (x) [test/cases/5/source.c line 1, col 16]>
+<add (+) [test/cases/5/source.c line 1, col 17]>
+<pp_number (1) [test/cases/5/source.c line 1, col 18]>
+<separator () [test/cases/5/source.c line 1, col 1]>
+<define_function (#define) [test/cases/5/source.c line 2, col 1]>
+<identifier (BAR) [test/cases/5/source.c line 2, col 9]>
+<lparen (() [test/cases/5/source.c line 2, col 12]>
+<identifier (y) [test/cases/5/source.c line 2, col 13]>
+<rparen ()) [test/cases/5/source.c line 2, col 14]>
+<identifier (y) [test/cases/5/source.c line 2, col 16]>
+<add (+) [test/cases/5/source.c line 2, col 17]>
+<pp_number (2) [test/cases/5/source.c line 2, col 18]>
+<separator () [test/cases/5/source.c line 2, col 1]>
+<define_function (#define) [test/cases/5/source.c line 3, col 1]>
+<identifier (BAZ) [test/cases/5/source.c line 3, col 9]>
+<lparen (() [test/cases/5/source.c line 3, col 12]>
+<identifier (z) [test/cases/5/source.c line 3, col 13]>
+<rparen ()) [test/cases/5/source.c line 3, col 14]>
+<identifier (FOO) [test/cases/5/source.c line 3, col 16]>
+<lparen (() [test/cases/5/source.c line 3, col 19]>
+<identifier (BAR) [test/cases/5/source.c line 3, col 20]>
+<lparen (() [test/cases/5/source.c line 3, col 23]>
+<identifier (z) [test/cases/5/source.c line 3, col 24]>
+<rparen ()) [test/cases/5/source.c line 3, col 25]>
+<rparen ()) [test/cases/5/source.c line 3, col 26]>
+<separator () [test/cases/5/source.c line 3, col 1]>
+<csource (
+int main(...) [test/cases/5/source.c line 4, col 1]>
+<separator () [test/cases/5/source.c line 10, col 1]>

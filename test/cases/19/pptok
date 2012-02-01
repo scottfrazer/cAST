@@ -1,8 +1,2 @@
-[pp:18] csource (struct mystruct 
-{
-  void (*func)(void *);
-  void * arg;
-  struct mystruct *next;
-};
-) [test/cases/19/source.c line 1, col 1]
-[pp:55] separator () [test/cases/19/source.c line 7, col 1]
+<csource (struct mys...) [test/cases/19/source.c line 1, col 1]>
+<separator () [test/cases/19/source.c line 7, col 1]>

@@ -1,6 +1,2 @@
-[pp:18] csource (int main()
-{
-  a.b = 0;
-}
-) [test/cases/18/source.c line 1, col 1]
-[pp:55] separator () [test/cases/18/source.c line 5, col 1]
+<csource (int main()...) [test/cases/18/source.c line 1, col 1]>
+<separator () [test/cases/18/source.c line 5, col 1]>

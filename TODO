@@ -1,55 +1,14 @@
+TODO
+----
+
 1.  Implement
 	a.  Pragma
 	b.  Error
 	c.  Warning
 	d.  Line
 	e.  FuncCall
-
-2.  AST Transformations.  Possible formats:
-
-  FunctionDefinition( name=declarator.identifier, parameters=declarator.find(ParameterList), return=)
-
-3.  AST Constraints.  Possible formats:
-
-  FunctionDefinition.body == CompoundExpression
-  "A function body must be a compound statement"
-
-4.  function_definition and declaration?
-
-both start with a list of declaration_specifiers
-
-function := list(declaration_specifier) + declarator + declaration_list_opt + compound_statement
-
-<decl_spec>inline</decl_spec>
-<declarator>int func(a,b,c)</declarator>
-<decl_list>
-int a;
-int * b;
-char c;
-<decl_list>
-<compound_statement>
-{
-  return a;
-}
-</compound_statement>
-
-declaration := list(declaration_specifier) + init_declarator_list_opt + 'semi'
-
-extern extern int b = 3;
-static struct b {
-  int a;
-  int b;
-};
-int func() {}
-int foo(a,b)
-  char a;
-  char b;
-{}
-
-int (*ptr)(short a, short b, short c);
-
-When you see a lbrace, enqueue tokens until corresponding rbrace.  If next token is a semi-colon, it's a declaration.  If not, it's a function definition
-
+2.  Consolidate TokenStream and TokenList
+3.  Eliminate duplicate AstPrettyPrintable objects
 
 C Helper Tokens
 ---------------
@@ -61,96 +20,3 @@ function_definition_hint
 defined_separator
 typedef_identifier - parsed like an identifier, but is a typedef name.
 endif - for ending if,elif,else blocks.
-
-Typedefs, how do they work?
----------------------------
-
-A typedef_identifier looks like it's the last identifier before a semi-colon at brace level 0;
-  1) Read ahead and cache everything until a semi-colon at brace level 0.
-  2) Loop through stack backwards (from the semi-colon to the current token)
-    if token == identifier:
-      token = typedef_identifier
-
-examples:
-
-typedef struct a {
-  int x;
-  char y;
-} NAME;
-
-typedef int * int_ptr;
-
-typedef int (*pt2Function)(float, char, char);
-
-IF statements: how do they work?
---------------------------------
-#define true 1
-#define false 0
-#define pass printf("pass\n")
-#define fail printf("fail\n")
-
-int main()
-{
-  int x;
-
-  if (true) pass;
-  if (true) {pass;}
-  if (false) fail; else pass;
-  if (false) {fail;} else pass;
-  if (false) {fail;} else {pass;}
-  if (true) for(x=0;x<1;x++){pass;}
-  if (false) for(x=0;x<1;x++)fail; else for(x=0;x<1;x++)pass;
-  if (false) {for(x=0;x<1;x++){fail;}} else {for(x=0;x<1;x++){pass;}}
-  if (false) for(x=0;x<1;x++){fail;} else for(x=0;x<1;x++){pass;}
-  if(false)fail;else if(true)pass;else fail;
-}
-
-initialization:
-ifBlocks = set()
-endifTokens = set()
-
-algorithm:
-
-def markIf():
-  ifBlocks ∪= {(braceLevel, parenLevel)}
-def unmarkIf():
-  ifBlocks /= {(braceLevel, parenLevel)}
-def isIf():
-  return (braceLevel, parenLevel) in ifBlocks
-def addEndif(lexer):
-  unmarkIf()
-  ntok = lexer.peek() # does not change state
-  t = {}
-  if ntok == 'lbrace':
-    t = {('rbrace', braceLevel)}
-  elif ntok not in {'for', 'if', 'while', 'do'}:
-    t = {('semi', braceLevel)}
-  else:
-    markIf()
-  endifTokens ∪= t
-
-upon {'if', 'elif'}:
-  ...
-  markIf()
-  ...
-upon {'else'}:
-  ...
-  addEndif(lexer)
-  ...
-upon {'rparen'}:
-  ... subtract 1 from parenLevel ...
-  if isIf():
-    addEndif(lexer)
-  ...
-upon {'rbrace'} as token:
-  ... {subtract 1 from braceLevel, emit token} ...
-  if {'rbrace', braceLevel} in endifTokens:
-    endifTokens /= {('rbrace', braceLevel)} 
-    emit 'endif'
-  ...
-upon {'semi'} as token:
-  ... {emit token} ...
-  if {'semi', braceLevel} in endifTokens:
-    endifTokens /= {('semi', braceLevel)} 
-    emit 'endif'
-  ...

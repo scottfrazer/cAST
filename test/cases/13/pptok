@@ -1,41 +1,25 @@
-[pp:27] define (#define) [test/cases/13/source.c line 1, col 1]
-[pp:40] identifier (true) [test/cases/13/source.c line 1, col 9]
-[pp:23] pp_number (1) [test/cases/13/source.c line 1, col 14]
-[pp:55] separator () [test/cases/13/source.c line 1, col 1]
-[pp:27] define (#define) [test/cases/13/source.c line 2, col 1]
-[pp:40] identifier (false) [test/cases/13/source.c line 2, col 9]
-[pp:23] pp_number (0) [test/cases/13/source.c line 2, col 15]
-[pp:55] separator () [test/cases/13/source.c line 2, col 1]
-[pp:27] define (#define) [test/cases/13/source.c line 3, col 1]
-[pp:40] identifier (pass) [test/cases/13/source.c line 3, col 9]
-[pp:40] identifier (printf) [test/cases/13/source.c line 3, col 14]
-[pp:66] lparen (() [test/cases/13/source.c line 3, col 20]
-[pp:13] string_literal ("pass\n") [test/cases/13/source.c line 3, col 21]
-[pp:71] rparen ()) [test/cases/13/source.c line 3, col 29]
-[pp:55] separator () [test/cases/13/source.c line 3, col 1]
-[pp:27] define (#define) [test/cases/13/source.c line 4, col 1]
-[pp:40] identifier (fail) [test/cases/13/source.c line 4, col 9]
-[pp:40] identifier (printf) [test/cases/13/source.c line 4, col 14]
-[pp:66] lparen (() [test/cases/13/source.c line 4, col 20]
-[pp:13] string_literal ("fail\n") [test/cases/13/source.c line 4, col 21]
-[pp:71] rparen ()) [test/cases/13/source.c line 4, col 29]
-[pp:55] separator () [test/cases/13/source.c line 4, col 1]
-[pp:18] csource (
-int main()
-{
-  int x;
-
-  if (true) pass;
-  if (true) {pass;}
-  if (false) fail; else pass;
-  if (false) {fail;} else pass;
-  if (false) {fail;} else {pass;}
-  if (true) for(x=0;x<1;x++){pass;}
-  if (false) for(x=0;x<1;x++)fail; else for(x=0;x<1;x++)pass;
-  if (false) {for(x=0;x<1;x++){fail;}} else {for(x=0;x<1;x++){pass;}}
-  if (false) for(x=0;x<1;x++){fail;} else for(x=0;x<1;x++){pass;}
-  if(false)fail;else if(true)pass;else fail;
-}
-
-) [test/cases/13/source.c line 5, col 1]
-[pp:55] separator () [test/cases/13/source.c line 22, col 1]
+<define (#define) [test/cases/13/source.c line 1, col 1]>
+<identifier (true) [test/cases/13/source.c line 1, col 9]>
+<pp_number (1) [test/cases/13/source.c line 1, col 14]>
+<separator () [test/cases/13/source.c line 1, col 1]>
+<define (#define) [test/cases/13/source.c line 2, col 1]>
+<identifier (false) [test/cases/13/source.c line 2, col 9]>
+<pp_number (0) [test/cases/13/source.c line 2, col 15]>
+<separator () [test/cases/13/source.c line 2, col 1]>
+<define (#define) [test/cases/13/source.c line 3, col 1]>
+<identifier (pass) [test/cases/13/source.c line 3, col 9]>
+<identifier (printf) [test/cases/13/source.c line 3, col 14]>
+<lparen (() [test/cases/13/source.c line 3, col 20]>
+<string_literal ("pass\n") [test/cases/13/source.c line 3, col 21]>
+<rparen ()) [test/cases/13/source.c line 3, col 29]>
+<separator () [test/cases/13/source.c line 3, col 1]>
+<define (#define) [test/cases/13/source.c line 4, col 1]>
+<identifier (fail) [test/cases/13/source.c line 4, col 9]>
+<identifier (printf) [test/cases/13/source.c line 4, col 14]>
+<lparen (() [test/cases/13/source.c line 4, col 20]>
+<string_literal ("fail\n") [test/cases/13/source.c line 4, col 21]>
+<rparen ()) [test/cases/13/source.c line 4, col 29]>
+<separator () [test/cases/13/source.c line 4, col 1]>
+<csource (
+int main(...) [test/cases/13/source.c line 5, col 1]>
+<separator () [test/cases/13/source.c line 22, col 1]>

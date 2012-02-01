@@ -1,18 +1,18 @@
-[c:75] external_declaration_hint () [test/cases/11/source.c line 1, col 1]
-[c:2] struct (struct) [test/cases/11/source.c line 1, col 1]
-[c:115] identifier (a) [test/cases/11/source.c line 1, col 8]
-[c:59] lbrace ({) [test/cases/11/source.c line 1, col 10]
-[c:13] int (int) [test/cases/11/source.c line 1, col 11]
-[c:115] identifier (x) [test/cases/11/source.c line 1, col 15]
-[c:20] semi (;) [test/cases/11/source.c line 1, col 16]
-[c:89] rbrace (}) [test/cases/11/source.c line 1, col 17]
-[c:63] declarator_hint () [test/cases/11/source.c line 1, col 1]
-[c:20] semi (;) [test/cases/11/source.c line 1, col 18]
-[c:75] external_declaration_hint () [test/cases/11/source.c line 2, col 1]
-[c:13] int (int) [test/cases/11/source.c line 2, col 1]
-[c:42] function_definition_hint () [test/cases/11/source.c line 2, col 1]
-[c:115] identifier (main) [test/cases/11/source.c line 2, col 5]
-[c:47] lparen (() [test/cases/11/source.c line 2, col 9]
-[c:48] rparen ()) [test/cases/11/source.c line 2, col 10]
-[c:59] lbrace ({) [test/cases/11/source.c line 2, col 12]
-[c:89] rbrace (}) [test/cases/11/source.c line 2, col 13]
+<external_declaration_hint () [test/cases/11/source.c line 1, col 1]>
+<struct (struct) [test/cases/11/source.c line 1, col 1]>
+<identifier (a) [test/cases/11/source.c line 1, col 8]>
+<lbrace ({) [test/cases/11/source.c line 1, col 10]>
+<int (int) [test/cases/11/source.c line 1, col 11]>
+<identifier (x) [test/cases/11/source.c line 1, col 15]>
+<semi (;) [test/cases/11/source.c line 1, col 16]>
+<rbrace (}) [test/cases/11/source.c line 1, col 17]>
+<declarator_hint () [test/cases/11/source.c line 1, col 1]>
+<semi (;) [test/cases/11/source.c line 1, col 18]>
+<external_declaration_hint () [test/cases/11/source.c line 2, col 1]>
+<int (int) [test/cases/11/source.c line 2, col 1]>
+<function_definition_hint () [test/cases/11/source.c line 2, col 1]>
+<identifier (main) [test/cases/11/source.c line 2, col 5]>
+<lparen (() [test/cases/11/source.c line 2, col 9]>
+<rparen ()) [test/cases/11/source.c line 2, col 10]>
+<lbrace ({) [test/cases/11/source.c line 2, col 12]>
+<rbrace (}) [test/cases/11/source.c line 2, col 13]>

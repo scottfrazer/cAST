@@ -10,14 +10,14 @@
                 parameter_declarations=[
                   (AbstractParameter:
                     declaration_specifiers=[
-                      void
+                      <void (void) [test/cases/8/source.c line 3, col 7]>
                     ],
                     declarator=None
                   )
                 ],
                 va_args=None
               ),
-              declarator=identifier
+              declarator=<identifier (f) [test/cases/8/source.c line 3, col 5]>
             ),
             pointer=None
           )
@@ -27,10 +27,10 @@
           declarator=(Declarator:
             direct_declarator=(FunctionSignature:
               params=None,
-              declarator=identifier
+              declarator=<identifier (fip) [test/cases/8/source.c line 3, col 15]>
             ),
             pointer=[
-              asterisk
+              <asterisk (*) [test/cases/8/source.c line 3, col 14]>
             ]
           )
         ),
@@ -41,9 +41,9 @@
               direct_declarator=(FunctionSignature:
                 params=None,
                 declarator=(Declarator:
-                  direct_declarator=identifier,
+                  direct_declarator=<identifier (pfi) [test/cases/8/source.c line 3, col 24]>,
                   pointer=[
-                    asterisk
+                    <asterisk (*) [test/cases/8/source.c line 3, col 23]>
                   ]
                 )
               ),
@@ -53,7 +53,7 @@
         )
       ],
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/8/source.c line 3, col 1]>
       ]
     ),
     (ExternalDeclaration:
@@ -67,23 +67,23 @@
                   parameter_declarations=[
                     (NamedParameter:
                       declaration_specifiers=[
-                        int
+                        <int (int) [test/cases/8/source.c line 10, col 16]>
                       ],
                       declarator=(Declarator:
-                        direct_declarator=identifier,
+                        direct_declarator=<identifier (x) [test/cases/8/source.c line 10, col 21]>,
                         pointer=[
-                          asterisk
+                          <asterisk (*) [test/cases/8/source.c line 10, col 20]>
                         ]
                       )
                     ),
                     (NamedParameter:
                       declaration_specifiers=[
-                        int
+                        <int (int) [test/cases/8/source.c line 10, col 24]>
                       ],
                       declarator=(Declarator:
-                        direct_declarator=identifier,
+                        direct_declarator=<identifier (y) [test/cases/8/source.c line 10, col 29]>,
                         pointer=[
-                          asterisk
+                          <asterisk (*) [test/cases/8/source.c line 10, col 28]>
                         ]
                       )
                     )
@@ -92,14 +92,14 @@
                 ),
                 declarator=(Declarator:
                   direct_declarator=(Array:
-                    name=identifier,
+                    name=<identifier (apfi) [test/cases/8/source.c line 10, col 7]>,
                     size=(DirectDeclaratorExpression:
                       modifiers=None,
-                      value=integer_constant
+                      value=<integer_constant (3) [test/cases/8/source.c line 10, col 12]>
                     )
                   ),
                   pointer=[
-                    asterisk
+                    <asterisk (*) [test/cases/8/source.c line 10, col 6]>
                   ]
                 )
               ),
@@ -109,7 +109,7 @@
         )
       ],
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/8/source.c line 10, col 1]>
       ]
     ),
     (ExternalDeclaration:
@@ -122,12 +122,12 @@
                 parameter_declarations=[
                   (AbstractParameter:
                     declaration_specifiers=[
-                      int
+                      <int (int) [test/cases/8/source.c line 23, col 33]>
                     ],
                     declarator=None
                   )
                 ],
-                va_args=elipsis
+                va_args=<elipsis (...) [test/cases/8/source.c line 23, col 38]>
               ),
               declarator=(Declarator:
                 direct_declarator=(FunctionSignature:
@@ -135,17 +135,17 @@
                     parameter_declarations=[
                       (AbstractParameter:
                         declaration_specifiers=[
-                          int
+                          <int (int) [test/cases/8/source.c line 23, col 12]>
                         ],
                         declarator=(AbstractFunction:
                           object=[
-                            asterisk
+                            <asterisk (*) [test/cases/8/source.c line 23, col 17]>
                           ],
                           params=(ParameterTypeList:
                             parameter_declarations=[
                               (AbstractParameter:
                                 declaration_specifiers=[
-                                  long
+                                  <long (long) [test/cases/8/source.c line 23, col 20]>
                                 ],
                                 declarator=None
                               )
@@ -156,17 +156,17 @@
                       ),
                       (AbstractParameter:
                         declaration_specifiers=[
-                          int
+                          <int (int) [test/cases/8/source.c line 23, col 27]>
                         ],
                         declarator=None
                       )
                     ],
                     va_args=None
                   ),
-                  declarator=identifier
+                  declarator=<identifier (fpfi) [test/cases/8/source.c line 23, col 7]>
                 ),
                 pointer=[
-                  asterisk
+                  <asterisk (*) [test/cases/8/source.c line 23, col 6]>
                 ]
               )
             ),
@@ -175,7 +175,7 @@
         )
       ],
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/8/source.c line 23, col 1]>
       ]
     ),
     (ExternalDeclaration:
@@ -187,20 +187,20 @@
                 initializer=[
                   (Initialization:
                     designation=None,
-                    initializer=character_constant
+                    initializer=<character_constant ('a') [test/cases/8/source.c line 25, col 26]>
                   ),
                   (Initialization:
                     designation=None,
-                    initializer=character_constant
+                    initializer=<character_constant ('b') [test/cases/8/source.c line 25, col 30]>
                   ),
                   (Initialization:
                     designation=None,
-                    initializer=character_constant
+                    initializer=<character_constant ('c') [test/cases/8/source.c line 25, col 34]>
                   )
                 ],
                 declarator=(Declarator:
                   direct_declarator=(Array:
-                    name=identifier,
+                    name=<identifier (str) [test/cases/8/source.c line 25, col 19]>,
                     size=None
                   ),
                   pointer=None
@@ -208,24 +208,24 @@
               )
             ],
             declaration_specifiers=[
-              char
+              <char (char) [test/cases/8/source.c line 25, col 14]>
             ]
           ),
           (Return:
-            expr=integer_constant
+            expr=<integer_constant (0) [test/cases/8/source.c line 25, col 48]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/8/source.c line 25, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/8/source.c line 25, col 1]>
       ]
     )
   ]

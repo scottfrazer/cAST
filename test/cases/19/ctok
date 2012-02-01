@@ -1,27 +1,27 @@
-[c:75] external_declaration_hint () [test/cases/19/source.c line 1, col 1]
-[c:2] struct (struct) [test/cases/19/source.c line 1, col 1]
-[c:115] identifier (mystruct) [test/cases/19/source.c line 1, col 8]
-[c:59] lbrace ({) [test/cases/19/source.c line 2, col 1]
-[c:117] void (void) [test/cases/19/source.c line 3, col 3]
-[c:47] lparen (() [test/cases/19/source.c line 3, col 8]
-[c:92] asterisk (*) [test/cases/19/source.c line 3, col 9]
-[c:115] identifier (func) [test/cases/19/source.c line 3, col 10]
-[c:48] rparen ()) [test/cases/19/source.c line 3, col 14]
-[c:47] lparen (() [test/cases/19/source.c line 3, col 15]
-[c:85] abstract_parameter_hint () [test/cases/19/source.c line 3, col 16]
-[c:117] void (void) [test/cases/19/source.c line 3, col 16]
-[c:92] asterisk (*) [test/cases/19/source.c line 3, col 21]
-[c:48] rparen ()) [test/cases/19/source.c line 3, col 22]
-[c:20] semi (;) [test/cases/19/source.c line 3, col 23]
-[c:117] void (void) [test/cases/19/source.c line 4, col 3]
-[c:92] asterisk (*) [test/cases/19/source.c line 4, col 8]
-[c:115] identifier (arg) [test/cases/19/source.c line 4, col 10]
-[c:20] semi (;) [test/cases/19/source.c line 4, col 13]
-[c:2] struct (struct) [test/cases/19/source.c line 5, col 3]
-[c:115] identifier (mystruct) [test/cases/19/source.c line 5, col 10]
-[c:92] asterisk (*) [test/cases/19/source.c line 5, col 19]
-[c:115] identifier (next) [test/cases/19/source.c line 5, col 20]
-[c:20] semi (;) [test/cases/19/source.c line 5, col 24]
-[c:89] rbrace (}) [test/cases/19/source.c line 6, col 1]
-[c:63] declarator_hint () [test/cases/19/source.c line 1, col 1]
-[c:20] semi (;) [test/cases/19/source.c line 6, col 2]
+<external_declaration_hint () [test/cases/19/source.c line 1, col 1]>
+<struct (struct) [test/cases/19/source.c line 1, col 1]>
+<identifier (mystruct) [test/cases/19/source.c line 1, col 8]>
+<lbrace ({) [test/cases/19/source.c line 2, col 1]>
+<void (void) [test/cases/19/source.c line 3, col 3]>
+<lparen (() [test/cases/19/source.c line 3, col 8]>
+<asterisk (*) [test/cases/19/source.c line 3, col 9]>
+<identifier (func) [test/cases/19/source.c line 3, col 10]>
+<rparen ()) [test/cases/19/source.c line 3, col 14]>
+<lparen (() [test/cases/19/source.c line 3, col 15]>
+<abstract_parameter_hint () [test/cases/19/source.c line 3, col 16]>
+<void (void) [test/cases/19/source.c line 3, col 16]>
+<asterisk (*) [test/cases/19/source.c line 3, col 21]>
+<rparen ()) [test/cases/19/source.c line 3, col 22]>
+<semi (;) [test/cases/19/source.c line 3, col 23]>
+<void (void) [test/cases/19/source.c line 4, col 3]>
+<asterisk (*) [test/cases/19/source.c line 4, col 8]>
+<identifier (arg) [test/cases/19/source.c line 4, col 10]>
+<semi (;) [test/cases/19/source.c line 4, col 13]>
+<struct (struct) [test/cases/19/source.c line 5, col 3]>
+<identifier (mystruct) [test/cases/19/source.c line 5, col 10]>
+<asterisk (*) [test/cases/19/source.c line 5, col 19]>
+<identifier (next) [test/cases/19/source.c line 5, col 20]>
+<semi (;) [test/cases/19/source.c line 5, col 24]>
+<rbrace (}) [test/cases/19/source.c line 6, col 1]>
+<declarator_hint () [test/cases/19/source.c line 1, col 1]>
+<semi (;) [test/cases/19/source.c line 6, col 2]>

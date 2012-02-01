@@ -3,25 +3,25 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number,
-          comma,
-          pp_number
+          <pp_number (2) [test/cases/3/source.c line 4, col 11]>,
+          <comma (,) [test/cases/3/source.c line 4, col 14]>,
+          <pp_number (4) [test/cases/3/source.c line 4, col 16]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (A) [test/cases/3/source.c line 4, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (2) [test/cases/3/source.c line 5, col 11]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (B) [test/cases/3/source.c line 5, col 9]>
     ),
-    csource,
+    <csource () [test/cases/3/source.c line 6, col 1]>,
     (Include:
-      file=header_local
+      file=<header_local ("test.h") [test/cases/3/source.c line 7, col 10]>
     ),
-    csource
+    <csource (int main()...) [test/cases/3/source.c line 8, col 1]>
   ]
 )

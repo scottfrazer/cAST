@@ -5,22 +5,22 @@
         (pp_directive:
           (control_line:
             (define_line:
-              define,
-              identifier,
+              <define (#define) [test/cases/3/source.c line 4, col 1]>,
+              <identifier (A) [test/cases/3/source.c line 4, col 9]>,
               (replacement_list:
                 (_gen4:
                   (pp_tokens:
-                    pp_number
+                    <pp_number (2) [test/cases/3/source.c line 4, col 11]>
                   ),
                   (_gen4:
                     (pp_tokens:
                       (punctuator:
-                        comma
+                        <comma (,) [test/cases/3/source.c line 4, col 14]>
                       )
                     ),
                     (_gen4:
                       (pp_tokens:
-                        pp_number
+                        <pp_number (4) [test/cases/3/source.c line 4, col 16]>
                       ),
                       (_gen4: )
                     )
@@ -31,18 +31,18 @@
           )
         )
       ),
-      separator,
+      <separator () [test/cases/3/source.c line 4, col 1]>,
       (_gen0:
         (pp_nodes:
           (pp_directive:
             (control_line:
               (define_line:
-                define,
-                identifier,
+                <define (#define) [test/cases/3/source.c line 5, col 1]>,
+                <identifier (B) [test/cases/3/source.c line 5, col 9]>,
                 (replacement_list:
                   (_gen4:
                     (pp_tokens:
-                      pp_number
+                      <pp_number (2) [test/cases/3/source.c line 5, col 11]>
                     ),
                     (_gen4: )
                   )
@@ -51,31 +51,31 @@
             )
           )
         ),
-        separator,
+        <separator () [test/cases/3/source.c line 5, col 1]>,
         (_gen0:
           (pp_nodes:
-            csource
+            <csource () [test/cases/3/source.c line 6, col 1]>
           ),
-          separator,
+          <separator () [test/cases/3/source.c line 6, col 1]>,
           (_gen0:
             (pp_nodes:
               (pp_directive:
                 (control_line:
                   (include_line:
-                    include,
+                    <include (#include) [test/cases/3/source.c line 7, col 1]>,
                     (include_type:
-                      header_local
+                      <header_local ("test.h") [test/cases/3/source.c line 7, col 10]>
                     )
                   )
                 )
               )
             ),
-            separator,
+            <separator () [test/cases/3/source.c line 7, col 1]>,
             (_gen0:
               (pp_nodes:
-                csource
+                <csource (int main()...) [test/cases/3/source.c line 8, col 1]>
               ),
-              separator,
+              <separator () [test/cases/3/source.c line 13, col 1]>,
               (_gen0: )
             )
           )

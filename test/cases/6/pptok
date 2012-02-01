@@ -1,11 +1,2 @@
-[pp:18] csource (/* #define FOO(x) x+1
-#define BAR(y) y+2
-#define BAZ(z) FOO(BAR(z))
-*/
-
-int main()
-{
-  return 0;
-}
-) [test/cases/6/source.c line 1, col 1]
-[pp:55] separator () [test/cases/6/source.c line 10, col 1]
+<csource (/* #define...) [test/cases/6/source.c line 1, col 1]>
+<separator () [test/cases/6/source.c line 10, col 1]>

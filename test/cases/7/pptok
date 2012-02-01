@@ -1,13 +1,8 @@
-[pp:18] csource (// no-includes no-gcc
-) [test/cases/7/source.c line 1, col 1]
-[pp:55] separator () [test/cases/7/source.c line 2, col 1]
-[pp:74] include (#include) [test/cases/7/source.c line 3, col 1]
-[pp:48] header_global (<stdio.h>) [test/cases/7/source.c line 3, col 10]
-[pp:55] separator () [test/cases/7/source.c line 3, col 1]
-[pp:18] csource (
-int main()
-{
-  printf("testing\n");
-}
-) [test/cases/7/source.c line 4, col 1]
-[pp:55] separator () [test/cases/7/source.c line 9, col 1]
+<csource (// no-incl...) [test/cases/7/source.c line 1, col 1]>
+<separator () [test/cases/7/source.c line 2, col 1]>
+<include (#include) [test/cases/7/source.c line 3, col 1]>
+<header_global (<stdio.h&g...) [test/cases/7/source.c line 3, col 10]>
+<separator () [test/cases/7/source.c line 3, col 1]>
+<csource (
+int main(...) [test/cases/7/source.c line 4, col 1]>
+<separator () [test/cases/7/source.c line 9, col 1]>

@@ -2,9 +2,10 @@
   (pp_nodes_list:
     (_gen0:
       (pp_nodes:
-        csource
+        <csource (int a;
+sta...) [test/cases/10/source.c line 1, col 1]>
       ),
-      separator,
+      <separator () [test/cases/10/source.c line 14, col 1]>,
       (_gen0: )
     )
   )

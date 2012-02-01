@@ -1,23 +1,23 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/11/source.c line 1, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
             (struct_specifier:
-              struct,
+              <struct (struct) [test/cases/11/source.c line 1, col 1]>,
               (struct_or_union_sub:
-                identifier,
+                <identifier (a) [test/cases/11/source.c line 1, col 8]>,
                 (_gen16:
                   (struct_or_union_body:
-                    lbrace,
+                    <lbrace ({) [test/cases/11/source.c line 1, col 10]>,
                     (_gen17:
                       (struct_declaration:
                         (_gen18:
                           (specifier_qualifier:
                             (type_specifier:
-                              int
+                              <int (int) [test/cases/11/source.c line 1, col 11]>
                             )
                           ),
                           (_gen18: )
@@ -27,18 +27,18 @@
                             (declarator:
                               (_gen26: ),
                               (_direct_declarator:
-                                identifier
+                                <identifier (x) [test/cases/11/source.c line 1, col 15]>
                               )
                             ),
                             (_gen21: )
                           ),
                           (_gen20: )
                         ),
-                        semi
+                        <semi (;) [test/cases/11/source.c line 1, col 16]>
                       ),
                       (_gen17: )
                     ),
-                    rbrace
+                    <rbrace (}) [test/cases/11/source.c line 1, col 17]>
                   )
                 )
               )
@@ -51,45 +51,45 @@
         (_gen3:
           (external_declaration_sub_sub:
             (external_declarator:
-              declarator_hint,
+              <declarator_hint () [test/cases/11/source.c line 1, col 1]>,
               (_gen6: )
             )
           ),
           (_gen4: )
         ),
-        semi
+        <semi (;) [test/cases/11/source.c line 1, col 18]>
       )
     ),
     (_gen0:
       (external_declaration:
-        external_declaration_hint,
+        <external_declaration_hint () [test/cases/11/source.c line 2, col 1]>,
         (_gen1:
           (declaration_specifier:
             (type_specifier:
-              int
+              <int (int) [test/cases/11/source.c line 2, col 1]>
             )
           ),
           (_gen2: )
         ),
         (external_declaration_sub:
           (external_function:
-            function_definition_hint,
+            <function_definition_hint () [test/cases/11/source.c line 2, col 1]>,
             (declarator:
               (_gen26: ),
               (_direct_declarator:
                 (_direct_declarator:
-                  identifier
+                  <identifier (main) [test/cases/11/source.c line 2, col 5]>
                 ),
-                lparen,
+                <lparen (() [test/cases/11/source.c line 2, col 9]>,
                 (direct_declarator_parameter_list: ),
-                rparen
+                <rparen ()) [test/cases/11/source.c line 2, col 10]>
               )
             ),
             (_gen5: ),
             (compound_statement:
-              lbrace,
+              <lbrace ({) [test/cases/11/source.c line 2, col 12]>,
               (_gen39: ),
-              rbrace
+              <rbrace (}) [test/cases/11/source.c line 2, col 13]>
             )
           )
         )

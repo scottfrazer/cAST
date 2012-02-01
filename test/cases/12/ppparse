@@ -5,12 +5,21 @@
         (pp_directive:
           (control_line:
             (define_line:
+<<<<<<< Updated upstream
               define,
               identifier,
               (replacement_list:
                 (_gen4:
                   (pp_tokens:
                     string_literal
+=======
+              <define (#define) [test/cases/12/source.c line 1, col 1]>,
+              <identifier (msg) [test/cases/12/source.c line 1, col 9]>,
+              (replacement_list:
+                (_gen4:
+                  (pp_tokens:
+                    <string_literal ("Hello Wor...) [test/cases/12/source.c line 1, col 13]>
+>>>>>>> Stashed changes
                   ),
                   (_gen4: )
                 )
@@ -19,12 +28,21 @@
           )
         )
       ),
+<<<<<<< Updated upstream
       separator,
       (_gen0:
         (pp_nodes:
           csource
         ),
         separator,
+=======
+      <separator () [test/cases/12/source.c line 1, col 1]>,
+      (_gen0:
+        (pp_nodes:
+          <csource (int main( ...) [test/cases/12/source.c line 2, col 1]>
+        ),
+        <separator () [test/cases/12/source.c line 16, col 1]>,
+>>>>>>> Stashed changes
         (_gen0: )
       )
     )

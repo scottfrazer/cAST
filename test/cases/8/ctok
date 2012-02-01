@@ -1,98 +1,98 @@
-[c:75] external_declaration_hint () [test/cases/8/source.c line 3, col 1]
-[c:13] int (int) [test/cases/8/source.c line 3, col 1]
-[c:88] function_prototype_hint () [test/cases/8/source.c line 3, col 1]
-[c:115] identifier (f) [test/cases/8/source.c line 3, col 5]
-[c:47] lparen (() [test/cases/8/source.c line 3, col 6]
-[c:85] abstract_parameter_hint () [test/cases/8/source.c line 3, col 7]
-[c:117] void (void) [test/cases/8/source.c line 3, col 7]
-[c:48] rparen ()) [test/cases/8/source.c line 3, col 11]
-[c:28] comma (,) [test/cases/8/source.c line 3, col 12]
-[c:88] function_prototype_hint () [test/cases/8/source.c line 3, col 14]
-[c:92] asterisk (*) [test/cases/8/source.c line 3, col 14]
-[c:115] identifier (fip) [test/cases/8/source.c line 3, col 15]
-[c:47] lparen (() [test/cases/8/source.c line 3, col 18]
-[c:48] rparen ()) [test/cases/8/source.c line 3, col 19]
-[c:28] comma (,) [test/cases/8/source.c line 3, col 20]
-[c:63] declarator_hint () [test/cases/8/source.c line 3, col 22]
-[c:47] lparen (() [test/cases/8/source.c line 3, col 22]
-[c:92] asterisk (*) [test/cases/8/source.c line 3, col 23]
-[c:115] identifier (pfi) [test/cases/8/source.c line 3, col 24]
-[c:48] rparen ()) [test/cases/8/source.c line 3, col 27]
-[c:47] lparen (() [test/cases/8/source.c line 3, col 28]
-[c:48] rparen ()) [test/cases/8/source.c line 3, col 29]
-[c:20] semi (;) [test/cases/8/source.c line 3, col 30]
-[c:75] external_declaration_hint () [test/cases/8/source.c line 10, col 1]
-[c:13] int (int) [test/cases/8/source.c line 10, col 1]
-[c:63] declarator_hint () [test/cases/8/source.c line 10, col 1]
-[c:47] lparen (() [test/cases/8/source.c line 10, col 5]
-[c:92] asterisk (*) [test/cases/8/source.c line 10, col 6]
-[c:115] identifier (apfi) [test/cases/8/source.c line 10, col 7]
-[c:55] lsquare ([) [test/cases/8/source.c line 10, col 11]
-[c:49] integer_constant (3) [test/cases/8/source.c line 10, col 12]
-[c:70] rsquare (]) [test/cases/8/source.c line 10, col 13]
-[c:48] rparen ()) [test/cases/8/source.c line 10, col 14]
-[c:47] lparen (() [test/cases/8/source.c line 10, col 15]
-[c:31] named_parameter_hint () [test/cases/8/source.c line 10, col 16]
-[c:13] int (int) [test/cases/8/source.c line 10, col 16]
-[c:92] asterisk (*) [test/cases/8/source.c line 10, col 20]
-[c:115] identifier (x) [test/cases/8/source.c line 10, col 21]
-[c:28] comma (,) [test/cases/8/source.c line 10, col 22]
-[c:31] named_parameter_hint () [test/cases/8/source.c line 10, col 24]
-[c:13] int (int) [test/cases/8/source.c line 10, col 24]
-[c:92] asterisk (*) [test/cases/8/source.c line 10, col 28]
-[c:115] identifier (y) [test/cases/8/source.c line 10, col 29]
-[c:48] rparen ()) [test/cases/8/source.c line 10, col 30]
-[c:20] semi (;) [test/cases/8/source.c line 10, col 31]
-[c:75] external_declaration_hint () [test/cases/8/source.c line 23, col 1]
-[c:13] int (int) [test/cases/8/source.c line 23, col 1]
-[c:88] function_prototype_hint () [test/cases/8/source.c line 23, col 1]
-[c:47] lparen (() [test/cases/8/source.c line 23, col 5]
-[c:92] asterisk (*) [test/cases/8/source.c line 23, col 6]
-[c:115] identifier (fpfi) [test/cases/8/source.c line 23, col 7]
-[c:47] lparen (() [test/cases/8/source.c line 23, col 11]
-[c:85] abstract_parameter_hint () [test/cases/8/source.c line 23, col 12]
-[c:13] int (int) [test/cases/8/source.c line 23, col 12]
-[c:47] lparen (() [test/cases/8/source.c line 23, col 16]
-[c:92] asterisk (*) [test/cases/8/source.c line 23, col 17]
-[c:48] rparen ()) [test/cases/8/source.c line 23, col 18]
-[c:47] lparen (() [test/cases/8/source.c line 23, col 19]
-[c:85] abstract_parameter_hint () [test/cases/8/source.c line 23, col 20]
-[c:26] long (long) [test/cases/8/source.c line 23, col 20]
-[c:48] rparen ()) [test/cases/8/source.c line 23, col 24]
-[c:28] comma (,) [test/cases/8/source.c line 23, col 25]
-[c:85] abstract_parameter_hint () [test/cases/8/source.c line 23, col 27]
-[c:13] int (int) [test/cases/8/source.c line 23, col 27]
-[c:48] rparen ()) [test/cases/8/source.c line 23, col 30]
-[c:48] rparen ()) [test/cases/8/source.c line 23, col 31]
-[c:47] lparen (() [test/cases/8/source.c line 23, col 32]
-[c:85] abstract_parameter_hint () [test/cases/8/source.c line 23, col 33]
-[c:13] int (int) [test/cases/8/source.c line 23, col 33]
-[c:5] comma_va_args (,) [test/cases/8/source.c line 23, col 36]
-[c:53] elipsis (...) [test/cases/8/source.c line 23, col 38]
-[c:48] rparen ()) [test/cases/8/source.c line 23, col 41]
-[c:20] semi (;) [test/cases/8/source.c line 23, col 42]
-[c:75] external_declaration_hint () [test/cases/8/source.c line 25, col 1]
-[c:13] int (int) [test/cases/8/source.c line 25, col 1]
-[c:42] function_definition_hint () [test/cases/8/source.c line 25, col 1]
-[c:115] identifier (main) [test/cases/8/source.c line 25, col 5]
-[c:47] lparen (() [test/cases/8/source.c line 25, col 9]
-[c:48] rparen ()) [test/cases/8/source.c line 25, col 10]
-[c:59] lbrace ({) [test/cases/8/source.c line 25, col 12]
-[c:43] char (char) [test/cases/8/source.c line 25, col 14]
-[c:115] identifier (str) [test/cases/8/source.c line 25, col 19]
-[c:55] lsquare ([) [test/cases/8/source.c line 25, col 22]
-[c:70] rsquare (]) [test/cases/8/source.c line 25, col 23]
-[c:91] assign (=) [test/cases/8/source.c line 25, col 24]
-[c:59] lbrace ({) [test/cases/8/source.c line 25, col 25]
-[c:18] character_constant ('a') [test/cases/8/source.c line 25, col 26]
-[c:28] comma (,) [test/cases/8/source.c line 25, col 29]
-[c:18] character_constant ('b') [test/cases/8/source.c line 25, col 30]
-[c:28] comma (,) [test/cases/8/source.c line 25, col 33]
-[c:18] character_constant ('c') [test/cases/8/source.c line 25, col 34]
-[c:105] trailing_comma (,) [test/cases/8/source.c line 25, col 37]
-[c:89] rbrace (}) [test/cases/8/source.c line 25, col 38]
-[c:20] semi (;) [test/cases/8/source.c line 25, col 39]
-[c:118] return (return) [test/cases/8/source.c line 25, col 41]
-[c:49] integer_constant (0) [test/cases/8/source.c line 25, col 48]
-[c:20] semi (;) [test/cases/8/source.c line 25, col 49]
-[c:89] rbrace (}) [test/cases/8/source.c line 25, col 51]
+<external_declaration_hint () [test/cases/8/source.c line 3, col 1]>
+<int (int) [test/cases/8/source.c line 3, col 1]>
+<function_prototype_hint () [test/cases/8/source.c line 3, col 1]>
+<identifier (f) [test/cases/8/source.c line 3, col 5]>
+<lparen (() [test/cases/8/source.c line 3, col 6]>
+<abstract_parameter_hint () [test/cases/8/source.c line 3, col 7]>
+<void (void) [test/cases/8/source.c line 3, col 7]>
+<rparen ()) [test/cases/8/source.c line 3, col 11]>
+<comma (,) [test/cases/8/source.c line 3, col 12]>
+<function_prototype_hint () [test/cases/8/source.c line 3, col 14]>
+<asterisk (*) [test/cases/8/source.c line 3, col 14]>
+<identifier (fip) [test/cases/8/source.c line 3, col 15]>
+<lparen (() [test/cases/8/source.c line 3, col 18]>
+<rparen ()) [test/cases/8/source.c line 3, col 19]>
+<comma (,) [test/cases/8/source.c line 3, col 20]>
+<declarator_hint () [test/cases/8/source.c line 3, col 22]>
+<lparen (() [test/cases/8/source.c line 3, col 22]>
+<asterisk (*) [test/cases/8/source.c line 3, col 23]>
+<identifier (pfi) [test/cases/8/source.c line 3, col 24]>
+<rparen ()) [test/cases/8/source.c line 3, col 27]>
+<lparen (() [test/cases/8/source.c line 3, col 28]>
+<rparen ()) [test/cases/8/source.c line 3, col 29]>
+<semi (;) [test/cases/8/source.c line 3, col 30]>
+<external_declaration_hint () [test/cases/8/source.c line 10, col 1]>
+<int (int) [test/cases/8/source.c line 10, col 1]>
+<declarator_hint () [test/cases/8/source.c line 10, col 1]>
+<lparen (() [test/cases/8/source.c line 10, col 5]>
+<asterisk (*) [test/cases/8/source.c line 10, col 6]>
+<identifier (apfi) [test/cases/8/source.c line 10, col 7]>
+<lsquare ([) [test/cases/8/source.c line 10, col 11]>
+<integer_constant (3) [test/cases/8/source.c line 10, col 12]>
+<rsquare (]) [test/cases/8/source.c line 10, col 13]>
+<rparen ()) [test/cases/8/source.c line 10, col 14]>
+<lparen (() [test/cases/8/source.c line 10, col 15]>
+<named_parameter_hint () [test/cases/8/source.c line 10, col 16]>
+<int (int) [test/cases/8/source.c line 10, col 16]>
+<asterisk (*) [test/cases/8/source.c line 10, col 20]>
+<identifier (x) [test/cases/8/source.c line 10, col 21]>
+<comma (,) [test/cases/8/source.c line 10, col 22]>
+<named_parameter_hint () [test/cases/8/source.c line 10, col 24]>
+<int (int) [test/cases/8/source.c line 10, col 24]>
+<asterisk (*) [test/cases/8/source.c line 10, col 28]>
+<identifier (y) [test/cases/8/source.c line 10, col 29]>
+<rparen ()) [test/cases/8/source.c line 10, col 30]>
+<semi (;) [test/cases/8/source.c line 10, col 31]>
+<external_declaration_hint () [test/cases/8/source.c line 23, col 1]>
+<int (int) [test/cases/8/source.c line 23, col 1]>
+<function_prototype_hint () [test/cases/8/source.c line 23, col 1]>
+<lparen (() [test/cases/8/source.c line 23, col 5]>
+<asterisk (*) [test/cases/8/source.c line 23, col 6]>
+<identifier (fpfi) [test/cases/8/source.c line 23, col 7]>
+<lparen (() [test/cases/8/source.c line 23, col 11]>
+<abstract_parameter_hint () [test/cases/8/source.c line 23, col 12]>
+<int (int) [test/cases/8/source.c line 23, col 12]>
+<lparen (() [test/cases/8/source.c line 23, col 16]>
+<asterisk (*) [test/cases/8/source.c line 23, col 17]>
+<rparen ()) [test/cases/8/source.c line 23, col 18]>
+<lparen (() [test/cases/8/source.c line 23, col 19]>
+<abstract_parameter_hint () [test/cases/8/source.c line 23, col 20]>
+<long (long) [test/cases/8/source.c line 23, col 20]>
+<rparen ()) [test/cases/8/source.c line 23, col 24]>
+<comma (,) [test/cases/8/source.c line 23, col 25]>
+<abstract_parameter_hint () [test/cases/8/source.c line 23, col 27]>
+<int (int) [test/cases/8/source.c line 23, col 27]>
+<rparen ()) [test/cases/8/source.c line 23, col 30]>
+<rparen ()) [test/cases/8/source.c line 23, col 31]>
+<lparen (() [test/cases/8/source.c line 23, col 32]>
+<abstract_parameter_hint () [test/cases/8/source.c line 23, col 33]>
+<int (int) [test/cases/8/source.c line 23, col 33]>
+<comma_va_args (,) [test/cases/8/source.c line 23, col 36]>
+<elipsis (...) [test/cases/8/source.c line 23, col 38]>
+<rparen ()) [test/cases/8/source.c line 23, col 41]>
+<semi (;) [test/cases/8/source.c line 23, col 42]>
+<external_declaration_hint () [test/cases/8/source.c line 25, col 1]>
+<int (int) [test/cases/8/source.c line 25, col 1]>
+<function_definition_hint () [test/cases/8/source.c line 25, col 1]>
+<identifier (main) [test/cases/8/source.c line 25, col 5]>
+<lparen (() [test/cases/8/source.c line 25, col 9]>
+<rparen ()) [test/cases/8/source.c line 25, col 10]>
+<lbrace ({) [test/cases/8/source.c line 25, col 12]>
+<char (char) [test/cases/8/source.c line 25, col 14]>
+<identifier (str) [test/cases/8/source.c line 25, col 19]>
+<lsquare ([) [test/cases/8/source.c line 25, col 22]>
+<rsquare (]) [test/cases/8/source.c line 25, col 23]>
+<assign (=) [test/cases/8/source.c line 25, col 24]>
+<lbrace ({) [test/cases/8/source.c line 25, col 25]>
+<character_constant ('a') [test/cases/8/source.c line 25, col 26]>
+<comma (,) [test/cases/8/source.c line 25, col 29]>
+<character_constant ('b') [test/cases/8/source.c line 25, col 30]>
+<comma (,) [test/cases/8/source.c line 25, col 33]>
+<character_constant ('c') [test/cases/8/source.c line 25, col 34]>
+<trailing_comma (,) [test/cases/8/source.c line 25, col 37]>
+<rbrace (}) [test/cases/8/source.c line 25, col 38]>
+<semi (;) [test/cases/8/source.c line 25, col 39]>
+<return (return) [test/cases/8/source.c line 25, col 41]>
+<integer_constant (0) [test/cases/8/source.c line 25, col 48]>
+<semi (;) [test/cases/8/source.c line 25, col 49]>
+<rbrace (}) [test/cases/8/source.c line 25, col 51]>

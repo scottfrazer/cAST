@@ -1,22 +1,17 @@
-[pp:27] define (#define) [test/cases/3/source.c line 4, col 1]
-[pp:40] identifier (A) [test/cases/3/source.c line 4, col 9]
-[pp:23] pp_number (2) [test/cases/3/source.c line 4, col 11]
-[pp:41] comma (,) [test/cases/3/source.c line 4, col 14]
-[pp:23] pp_number (4) [test/cases/3/source.c line 4, col 16]
-[pp:55] separator () [test/cases/3/source.c line 4, col 1]
-[pp:27] define (#define) [test/cases/3/source.c line 5, col 1]
-[pp:40] identifier (B) [test/cases/3/source.c line 5, col 9]
-[pp:23] pp_number (2) [test/cases/3/source.c line 5, col 11]
-[pp:55] separator () [test/cases/3/source.c line 5, col 1]
-[pp:18] csource () [test/cases/3/source.c line 6, col 1]
-[pp:55] separator () [test/cases/3/source.c line 6, col 1]
-[pp:74] include (#include) [test/cases/3/source.c line 7, col 1]
-[pp:53] header_local ("test.h") [test/cases/3/source.c line 7, col 10]
-[pp:55] separator () [test/cases/3/source.c line 7, col 1]
-[pp:18] csource (int main()
-{
-    printf("%d %d %d\n", A, B);
-    return 0;
-}
-) [test/cases/3/source.c line 8, col 1]
-[pp:55] separator () [test/cases/3/source.c line 13, col 1]
+<define (#define) [test/cases/3/source.c line 4, col 1]>
+<identifier (A) [test/cases/3/source.c line 4, col 9]>
+<pp_number (2) [test/cases/3/source.c line 4, col 11]>
+<comma (,) [test/cases/3/source.c line 4, col 14]>
+<pp_number (4) [test/cases/3/source.c line 4, col 16]>
+<separator () [test/cases/3/source.c line 4, col 1]>
+<define (#define) [test/cases/3/source.c line 5, col 1]>
+<identifier (B) [test/cases/3/source.c line 5, col 9]>
+<pp_number (2) [test/cases/3/source.c line 5, col 11]>
+<separator () [test/cases/3/source.c line 5, col 1]>
+<csource () [test/cases/3/source.c line 6, col 1]>
+<separator () [test/cases/3/source.c line 6, col 1]>
+<include (#include) [test/cases/3/source.c line 7, col 1]>
+<header_local ("test.h") [test/cases/3/source.c line 7, col 10]>
+<separator () [test/cases/3/source.c line 7, col 1]>
+<csource (int main()...) [test/cases/3/source.c line 8, col 1]>
+<separator () [test/cases/3/source.c line 13, col 1]>

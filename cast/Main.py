@@ -116,11 +116,9 @@ def Cli():
   if cli.command == 'ppast':
     from cast.ppParser import Parser as ppParser
     try:
-      cPPLFactory = ppLexerFactory()
-      cPPL = cPPLFactory.create()
-      cPPL.setSourceCode(cSourceCode)
+      cPPL = TokenStream(ppLexer(cSourceCode))
       parser = ppParser()
-      parsetree = parser.parse(cPPL, 'pp_file')
+      parsetree = parser.parse(cPPL)
       ast = parsetree.toAst()
       print(AstPrettyPrintable(ast, cli.format))
     except Exception as e:

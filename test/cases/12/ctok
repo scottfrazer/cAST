@@ -1,71 +1,71 @@
-[c:75] external_declaration_hint () [test/cases/12/source.c line 2, col 1]
-[c:13] int (int) [test/cases/12/source.c line 2, col 1]
-[c:42] function_definition_hint () [test/cases/12/source.c line 2, col 1]
-[c:115] identifier (main) [test/cases/12/source.c line 2, col 5]
-[c:47] lparen (() [test/cases/12/source.c line 2, col 9]
-[c:31] named_parameter_hint () [test/cases/12/source.c line 2, col 11]
-[c:13] int (int) [test/cases/12/source.c line 2, col 11]
-[c:115] identifier (argc) [test/cases/12/source.c line 2, col 15]
-[c:28] comma (,) [test/cases/12/source.c line 2, col 19]
-[c:31] named_parameter_hint () [test/cases/12/source.c line 2, col 21]
-[c:43] char (char) [test/cases/12/source.c line 2, col 21]
-[c:92] asterisk (*) [test/cases/12/source.c line 2, col 26]
-[c:115] identifier (argv) [test/cases/12/source.c line 2, col 28]
-[c:55] lsquare ([) [test/cases/12/source.c line 2, col 32]
-[c:70] rsquare (]) [test/cases/12/source.c line 2, col 33]
-[c:48] rparen ()) [test/cases/12/source.c line 2, col 35]
-[c:59] lbrace ({) [test/cases/12/source.c line 3, col 1]
-[c:13] int (int) [test/cases/12/source.c line 4, col 3]
-[c:115] identifier (y) [test/cases/12/source.c line 4, col 7]
-[c:20] semi (;) [test/cases/12/source.c line 4, col 8]
-[c:115] identifier (y) [test/cases/12/source.c line 5, col 3]
-[c:91] assign (=) [test/cases/12/source.c line 5, col 5]
-[c:115] identifier (factorial) [test/cases/12/source.c line 5, col 7]
-[c:47] lparen (() [test/cases/12/source.c line 5, col 16]
-[c:49] integer_constant (6) [test/cases/12/source.c line 5, col 17]
-[c:48] rparen ()) [test/cases/12/source.c line 5, col 18]
-[c:20] semi (;) [test/cases/12/source.c line 5, col 19]
-[c:115] identifier (printf) [test/cases/12/source.c line 6, col 3]
-[c:47] lparen (() [test/cases/12/source.c line 6, col 9]
-[c:82] string_literal ("Hello World\n") [test/cases/12/source.c line 6, col 10]
-[c:48] rparen ()) [test/cases/12/source.c line 6, col 13]
-[c:20] semi (;) [test/cases/12/source.c line 6, col 14]
-[c:115] identifier (printf) [test/cases/12/source.c line 7, col 3]
-[c:47] lparen (() [test/cases/12/source.c line 7, col 9]
-[c:82] string_literal ("6! = %d\n") [test/cases/12/source.c line 7, col 10]
-[c:28] comma (,) [test/cases/12/source.c line 7, col 21]
-[c:115] identifier (y) [test/cases/12/source.c line 7, col 23]
-[c:48] rparen ()) [test/cases/12/source.c line 7, col 24]
-[c:20] semi (;) [test/cases/12/source.c line 7, col 25]
-[c:89] rbrace (}) [test/cases/12/source.c line 8, col 1]
-[c:75] external_declaration_hint () [test/cases/12/source.c line 10, col 1]
-[c:13] int (int) [test/cases/12/source.c line 10, col 1]
-[c:42] function_definition_hint () [test/cases/12/source.c line 10, col 1]
-[c:115] identifier (factorial) [test/cases/12/source.c line 10, col 5]
-[c:47] lparen (() [test/cases/12/source.c line 10, col 14]
-[c:31] named_parameter_hint () [test/cases/12/source.c line 10, col 15]
-[c:13] int (int) [test/cases/12/source.c line 10, col 15]
-[c:115] identifier (x) [test/cases/12/source.c line 10, col 19]
-[c:48] rparen ()) [test/cases/12/source.c line 10, col 20]
-[c:59] lbrace ({) [test/cases/12/source.c line 11, col 1]
-[c:45] if (if) [test/cases/12/source.c line 12, col 3]
-[c:47] lparen (() [test/cases/12/source.c line 12, col 6]
-[c:115] identifier (x) [test/cases/12/source.c line 12, col 8]
-[c:21] eq (==) [test/cases/12/source.c line 12, col 10]
-[c:49] integer_constant (1) [test/cases/12/source.c line 12, col 13]
-[c:48] rparen ()) [test/cases/12/source.c line 12, col 15]
-[c:118] return (return) [test/cases/12/source.c line 13, col 5]
-[c:49] integer_constant (1) [test/cases/12/source.c line 13, col 12]
-[c:20] semi (;) [test/cases/12/source.c line 13, col 13]
-[c:50] endif () [test/cases/12/source.c line 13, col 13]
-[c:118] return (return) [test/cases/12/source.c line 14, col 3]
-[c:115] identifier (x) [test/cases/12/source.c line 14, col 10]
-[c:92] asterisk (*) [test/cases/12/source.c line 14, col 12]
-[c:115] identifier (factorial) [test/cases/12/source.c line 14, col 14]
-[c:47] lparen (() [test/cases/12/source.c line 14, col 23]
-[c:115] identifier (x) [test/cases/12/source.c line 14, col 24]
-[c:101] sub (-) [test/cases/12/source.c line 14, col 25]
-[c:49] integer_constant (1) [test/cases/12/source.c line 14, col 26]
-[c:48] rparen ()) [test/cases/12/source.c line 14, col 27]
-[c:20] semi (;) [test/cases/12/source.c line 14, col 28]
-[c:89] rbrace (}) [test/cases/12/source.c line 15, col 1]
+<external_declaration_hint () [test/cases/12/source.c line 2, col 1]>
+<int (int) [test/cases/12/source.c line 2, col 1]>
+<function_definition_hint () [test/cases/12/source.c line 2, col 1]>
+<identifier (main) [test/cases/12/source.c line 2, col 5]>
+<lparen (() [test/cases/12/source.c line 2, col 9]>
+<named_parameter_hint () [test/cases/12/source.c line 2, col 11]>
+<int (int) [test/cases/12/source.c line 2, col 11]>
+<identifier (argc) [test/cases/12/source.c line 2, col 15]>
+<comma (,) [test/cases/12/source.c line 2, col 19]>
+<named_parameter_hint () [test/cases/12/source.c line 2, col 21]>
+<char (char) [test/cases/12/source.c line 2, col 21]>
+<asterisk (*) [test/cases/12/source.c line 2, col 26]>
+<identifier (argv) [test/cases/12/source.c line 2, col 28]>
+<lsquare ([) [test/cases/12/source.c line 2, col 32]>
+<rsquare (]) [test/cases/12/source.c line 2, col 33]>
+<rparen ()) [test/cases/12/source.c line 2, col 35]>
+<lbrace ({) [test/cases/12/source.c line 3, col 1]>
+<int (int) [test/cases/12/source.c line 4, col 3]>
+<identifier (y) [test/cases/12/source.c line 4, col 7]>
+<semi (;) [test/cases/12/source.c line 4, col 8]>
+<identifier (y) [test/cases/12/source.c line 5, col 3]>
+<assign (=) [test/cases/12/source.c line 5, col 5]>
+<identifier (factorial) [test/cases/12/source.c line 5, col 7]>
+<lparen (() [test/cases/12/source.c line 5, col 16]>
+<integer_constant (6) [test/cases/12/source.c line 5, col 17]>
+<rparen ()) [test/cases/12/source.c line 5, col 18]>
+<semi (;) [test/cases/12/source.c line 5, col 19]>
+<identifier (printf) [test/cases/12/source.c line 6, col 3]>
+<lparen (() [test/cases/12/source.c line 6, col 9]>
+<string_literal ("Hello Wor...) [test/cases/12/source.c line 6, col 10]>
+<rparen ()) [test/cases/12/source.c line 6, col 13]>
+<semi (;) [test/cases/12/source.c line 6, col 14]>
+<identifier (printf) [test/cases/12/source.c line 7, col 3]>
+<lparen (() [test/cases/12/source.c line 7, col 9]>
+<string_literal ("6! = %d\n...) [test/cases/12/source.c line 7, col 10]>
+<comma (,) [test/cases/12/source.c line 7, col 21]>
+<identifier (y) [test/cases/12/source.c line 7, col 23]>
+<rparen ()) [test/cases/12/source.c line 7, col 24]>
+<semi (;) [test/cases/12/source.c line 7, col 25]>
+<rbrace (}) [test/cases/12/source.c line 8, col 1]>
+<external_declaration_hint () [test/cases/12/source.c line 10, col 1]>
+<int (int) [test/cases/12/source.c line 10, col 1]>
+<function_definition_hint () [test/cases/12/source.c line 10, col 1]>
+<identifier (factorial) [test/cases/12/source.c line 10, col 5]>
+<lparen (() [test/cases/12/source.c line 10, col 14]>
+<named_parameter_hint () [test/cases/12/source.c line 10, col 15]>
+<int (int) [test/cases/12/source.c line 10, col 15]>
+<identifier (x) [test/cases/12/source.c line 10, col 19]>
+<rparen ()) [test/cases/12/source.c line 10, col 20]>
+<lbrace ({) [test/cases/12/source.c line 11, col 1]>
+<if (if) [test/cases/12/source.c line 12, col 3]>
+<lparen (() [test/cases/12/source.c line 12, col 6]>
+<identifier (x) [test/cases/12/source.c line 12, col 8]>
+<eq (==) [test/cases/12/source.c line 12, col 10]>
+<integer_constant (1) [test/cases/12/source.c line 12, col 13]>
+<rparen ()) [test/cases/12/source.c line 12, col 15]>
+<return (return) [test/cases/12/source.c line 13, col 5]>
+<integer_constant (1) [test/cases/12/source.c line 13, col 12]>
+<semi (;) [test/cases/12/source.c line 13, col 13]>
+<endif () [test/cases/12/source.c line 13, col 13]>
+<return (return) [test/cases/12/source.c line 14, col 3]>
+<identifier (x) [test/cases/12/source.c line 14, col 10]>
+<asterisk (*) [test/cases/12/source.c line 14, col 12]>
+<identifier (factorial) [test/cases/12/source.c line 14, col 14]>
+<lparen (() [test/cases/12/source.c line 14, col 23]>
+<identifier (x) [test/cases/12/source.c line 14, col 24]>
+<sub (-) [test/cases/12/source.c line 14, col 25]>
+<integer_constant (1) [test/cases/12/source.c line 14, col 26]>
+<rparen ()) [test/cases/12/source.c line 14, col 27]>
+<semi (;) [test/cases/12/source.c line 14, col 28]>
+<rbrace (}) [test/cases/12/source.c line 15, col 1]>

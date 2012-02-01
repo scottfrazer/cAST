@@ -1,32 +1,32 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/4/source.c line 6, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
-            int
+            <int (int) [test/cases/4/source.c line 6, col 1]>
           )
         ),
         (_gen2: )
       ),
       (external_declaration_sub:
         (external_function:
-          function_definition_hint,
+          <function_definition_hint () [test/cases/4/source.c line 6, col 1]>,
           (declarator:
             (_gen26: ),
             (_direct_declarator:
               (_direct_declarator:
-                identifier
+                <identifier (main) [test/cases/4/source.c line 6, col 5]>
               ),
-              lparen,
+              <lparen (() [test/cases/4/source.c line 6, col 9]>,
               (direct_declarator_parameter_list: ),
-              rparen
+              <rparen ()) [test/cases/4/source.c line 6, col 10]>
             )
           ),
           (_gen5: ),
           (compound_statement:
-            lbrace,
+            <lbrace ({) [test/cases/4/source.c line 7, col 1]>,
             (_gen39:
               (block_item_list:
                 (_gen40:
@@ -36,32 +36,32 @@
                         (expression_opt:
                           (_expr:
                             (_expr:
-                              identifier
+                              <identifier (printf) [test/cases/4/source.c line 8, col 5]>
                             ),
-                            lparen,
+                            <lparen (() [test/cases/4/source.c line 8, col 11]>,
                             (_gen44:
                               (_expr_sans_comma:
-                                string_literal
+                                <string_literal ("%d %d %d\...) [test/cases/4/source.c line 8, col 12]>
                               ),
                               (_gen45:
-                                comma,
+                                <comma (,) [test/cases/4/source.c line 8, col 24]>,
                                 (_expr_sans_comma:
                                   (constant:
-                                    integer_constant
+                                    <integer_constant (1) [test/cases/4/source.c line 8, col 26]>
                                   )
                                 ),
                                 (_gen45:
-                                  comma,
+                                  <comma (,) [test/cases/4/source.c line 8, col 26]>,
                                   (_expr_sans_comma:
                                     (constant:
-                                      integer_constant
+                                      <integer_constant (2) [test/cases/4/source.c line 8, col 26]>
                                     )
                                   ),
                                   (_gen45:
-                                    comma,
+                                    <comma (,) [test/cases/4/source.c line 8, col 26]>,
                                     (_expr_sans_comma:
                                       (constant:
-                                        integer_constant
+                                        <integer_constant (3) [test/cases/4/source.c line 8, col 26]>
                                       )
                                     ),
                                     (_gen45: )
@@ -69,10 +69,10 @@
                                 )
                               )
                             ),
-                            rparen
+                            <rparen ()) [test/cases/4/source.c line 8, col 27]>
                           )
                         ),
-                        semi
+                        <semi (;) [test/cases/4/source.c line 8, col 28]>
                       )
                     )
                   ),
@@ -80,15 +80,15 @@
                     (block_item:
                       (statement:
                         (jump_statement:
-                          return,
+                          <return (return) [test/cases/4/source.c line 9, col 5]>,
                           (expression_opt:
                             (_expr:
                               (constant:
-                                integer_constant
+                                <integer_constant (0) [test/cases/4/source.c line 9, col 12]>
                               )
                             )
                           ),
-                          semi
+                          <semi (;) [test/cases/4/source.c line 9, col 13]>
                         )
                       )
                     ),
@@ -97,7 +97,7 @@
                 )
               )
             ),
-            rbrace
+            <rbrace (}) [test/cases/4/source.c line 10, col 1]>
           )
         )
       )

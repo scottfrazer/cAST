@@ -1,32 +1,32 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/18/source.c line 1, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
-            int
+            <int (int) [test/cases/18/source.c line 1, col 1]>
           )
         ),
         (_gen2: )
       ),
       (external_declaration_sub:
         (external_function:
-          function_definition_hint,
+          <function_definition_hint () [test/cases/18/source.c line 1, col 1]>,
           (declarator:
             (_gen26: ),
             (_direct_declarator:
               (_direct_declarator:
-                identifier
+                <identifier (main) [test/cases/18/source.c line 1, col 5]>
               ),
-              lparen,
+              <lparen (() [test/cases/18/source.c line 1, col 9]>,
               (direct_declarator_parameter_list: ),
-              rparen
+              <rparen ()) [test/cases/18/source.c line 1, col 10]>
             )
           ),
           (_gen5: ),
           (compound_statement:
-            lbrace,
+            <lbrace ({) [test/cases/18/source.c line 2, col 1]>,
             (_gen39:
               (block_item_list:
                 (_gen40:
@@ -37,22 +37,22 @@
                           (_expr:
                             (_expr:
                               (_expr:
-                                identifier
+                                <identifier (a) [test/cases/18/source.c line 3, col 3]>
                               ),
-                              dot,
+                              <dot (.) [test/cases/18/source.c line 3, col 4]>,
                               (_expr:
-                                identifier
+                                <identifier (b) [test/cases/18/source.c line 3, col 5]>
                               )
                             ),
-                            assign,
+                            <assign (=) [test/cases/18/source.c line 3, col 7]>,
                             (_expr:
                               (constant:
-                                integer_constant
+                                <integer_constant (0) [test/cases/18/source.c line 3, col 9]>
                               )
                             )
                           )
                         ),
-                        semi
+                        <semi (;) [test/cases/18/source.c line 3, col 10]>
                       )
                     )
                   ),
@@ -60,7 +60,7 @@
                 )
               )
             ),
-            rbrace
+            <rbrace (}) [test/cases/18/source.c line 4, col 1]>
           )
         )
       )

@@ -1,23 +1,23 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/19/source.c line 1, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
             (struct_specifier:
-              struct,
+              <struct (struct) [test/cases/19/source.c line 1, col 1]>,
               (struct_or_union_sub:
-                identifier,
+                <identifier (mystruct) [test/cases/19/source.c line 1, col 8]>,
                 (_gen16:
                   (struct_or_union_body:
-                    lbrace,
+                    <lbrace ({) [test/cases/19/source.c line 2, col 1]>,
                     (_gen17:
                       (struct_declaration:
                         (_gen18:
                           (specifier_qualifier:
                             (type_specifier:
-                              void
+                              <void (void) [test/cases/19/source.c line 3, col 3]>
                             )
                           ),
                           (_gen18: )
@@ -28,13 +28,13 @@
                               (_gen26: ),
                               (_direct_declarator:
                                 (_direct_declarator:
-                                  lparen,
+                                  <lparen (() [test/cases/19/source.c line 3, col 8]>,
                                   (declarator:
                                     (_gen26:
                                       (pointer:
                                         (_gen37:
                                           (pointer_sub:
-                                            asterisk,
+                                            <asterisk (*) [test/cases/19/source.c line 3, col 9]>,
                                             (type_qualifier_list_opt: )
                                           ),
                                           (_gen38: )
@@ -42,22 +42,22 @@
                                       )
                                     ),
                                     (_direct_declarator:
-                                      identifier
+                                      <identifier (func) [test/cases/19/source.c line 3, col 10]>
                                     )
                                   ),
-                                  rparen
+                                  <rparen ()) [test/cases/19/source.c line 3, col 14]>
                                 ),
-                                lparen,
+                                <lparen (() [test/cases/19/source.c line 3, col 15]>,
                                 (direct_declarator_parameter_list:
                                   (parameter_type_list:
                                     (_gen29:
                                       (parameter_declaration:
                                         (abstract_parameter_declaration:
-                                          abstract_parameter_hint,
+                                          <abstract_parameter_hint () [test/cases/19/source.c line 3, col 16]>,
                                           (_gen1:
                                             (declaration_specifier:
                                               (type_specifier:
-                                                void
+                                                <void (void) [test/cases/19/source.c line 3, col 16]>
                                               )
                                             ),
                                             (_gen2: )
@@ -67,7 +67,7 @@
                                               (pointer:
                                                 (_gen37:
                                                   (pointer_sub:
-                                                    asterisk,
+                                                    <asterisk (*) [test/cases/19/source.c line 3, col 21]>,
                                                     (type_qualifier_list_opt: )
                                                   ),
                                                   (_gen38: )
@@ -83,21 +83,21 @@
                                     (_gen31: )
                                   )
                                 ),
-                                rparen
+                                <rparen ()) [test/cases/19/source.c line 3, col 22]>
                               )
                             ),
                             (_gen21: )
                           ),
                           (_gen20: )
                         ),
-                        semi
+                        <semi (;) [test/cases/19/source.c line 3, col 23]>
                       ),
                       (_gen17:
                         (struct_declaration:
                           (_gen18:
                             (specifier_qualifier:
                               (type_specifier:
-                                void
+                                <void (void) [test/cases/19/source.c line 4, col 3]>
                               )
                             ),
                             (_gen18: )
@@ -109,7 +109,7 @@
                                   (pointer:
                                     (_gen37:
                                       (pointer_sub:
-                                        asterisk,
+                                        <asterisk (*) [test/cases/19/source.c line 4, col 8]>,
                                         (type_qualifier_list_opt: )
                                       ),
                                       (_gen38: )
@@ -117,14 +117,14 @@
                                   )
                                 ),
                                 (_direct_declarator:
-                                  identifier
+                                  <identifier (arg) [test/cases/19/source.c line 4, col 10]>
                                 )
                               ),
                               (_gen21: )
                             ),
                             (_gen20: )
                           ),
-                          semi
+                          <semi (;) [test/cases/19/source.c line 4, col 13]>
                         ),
                         (_gen17:
                           (struct_declaration:
@@ -132,9 +132,9 @@
                               (specifier_qualifier:
                                 (type_specifier:
                                   (struct_specifier:
-                                    struct,
+                                    <struct (struct) [test/cases/19/source.c line 5, col 3]>,
                                     (struct_or_union_sub:
-                                      identifier,
+                                      <identifier (mystruct) [test/cases/19/source.c line 5, col 10]>,
                                       (_gen16: )
                                     )
                                   )
@@ -149,7 +149,7 @@
                                     (pointer:
                                       (_gen37:
                                         (pointer_sub:
-                                          asterisk,
+                                          <asterisk (*) [test/cases/19/source.c line 5, col 19]>,
                                           (type_qualifier_list_opt: )
                                         ),
                                         (_gen38: )
@@ -157,20 +157,20 @@
                                     )
                                   ),
                                   (_direct_declarator:
-                                    identifier
+                                    <identifier (next) [test/cases/19/source.c line 5, col 20]>
                                   )
                                 ),
                                 (_gen21: )
                               ),
                               (_gen20: )
                             ),
-                            semi
+                            <semi (;) [test/cases/19/source.c line 5, col 24]>
                           ),
                           (_gen17: )
                         )
                       )
                     ),
-                    rbrace
+                    <rbrace (}) [test/cases/19/source.c line 6, col 1]>
                   )
                 )
               )
@@ -183,13 +183,13 @@
         (_gen3:
           (external_declaration_sub_sub:
             (external_declarator:
-              declarator_hint,
+              <declarator_hint () [test/cases/19/source.c line 1, col 1]>,
               (_gen6: )
             )
           ),
           (_gen4: )
         ),
-        semi
+        <semi (;) [test/cases/19/source.c line 6, col 2]>
       )
     ),
     (_gen0: )

@@ -12,7 +12,7 @@
             body=[
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  void
+                  <void (void) [test/cases/19/source.c line 3, col 3]>
                 ],
                 declarators=[
                   (Declarator:
@@ -21,19 +21,19 @@
                         parameter_declarations=[
                           (AbstractParameter:
                             declaration_specifiers=[
-                              void
+                              <void (void) [test/cases/19/source.c line 3, col 16]>
                             ],
                             declarator=[
-                              asterisk
+                              <asterisk (*) [test/cases/19/source.c line 3, col 21]>
                             ]
                           )
                         ],
                         va_args=None
                       ),
                       declarator=(Declarator:
-                        direct_declarator=identifier,
+                        direct_declarator=<identifier (func) [test/cases/19/source.c line 3, col 10]>,
                         pointer=[
-                          asterisk
+                          <asterisk (*) [test/cases/19/source.c line 3, col 9]>
                         ]
                       )
                     ),
@@ -43,13 +43,13 @@
               ),
               (StructOrUnionDeclaration:
                 specifier_qualifiers=[
-                  void
+                  <void (void) [test/cases/19/source.c line 4, col 3]>
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (arg) [test/cases/19/source.c line 4, col 10]>,
                     pointer=[
-                      asterisk
+                      <asterisk (*) [test/cases/19/source.c line 4, col 8]>
                     ]
                   )
                 ]
@@ -59,21 +59,21 @@
                   (Struct:
                     definition=(StructOrUnion:
                       body=None,
-                      name=identifier
+                      name=<identifier (mystruct) [test/cases/19/source.c line 5, col 10]>
                     )
                   )
                 ],
                 declarators=[
                   (Declarator:
-                    direct_declarator=identifier,
+                    direct_declarator=<identifier (next) [test/cases/19/source.c line 5, col 20]>,
                     pointer=[
-                      asterisk
+                      <asterisk (*) [test/cases/19/source.c line 5, col 19]>
                     ]
                   )
                 ]
               )
             ],
-            name=identifier
+            name=<identifier (mystruct) [test/cases/19/source.c line 1, col 8]>
           )
         )
       ]

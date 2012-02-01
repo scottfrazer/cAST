@@ -72,13 +72,13 @@ def pptok(sourcecode, skipIncludes=False):
 def ppparse(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   parsetree = ppParser().parse(TokenStream(cPPL))
-  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'terminal'))
+  prettyprint = str(ParseTreePrettyPrintable(parsetree))
   return prettyprint
 
 def ppast(sourcecode, skipIncludes=False):
   cPPL = ppLexer(sourcecode)
   ast = ppParser().parse(TokenStream(cPPL)).toAst()
-  prettyprint = str(AstPrettyPrintable(ast, 'terminal'))
+  prettyprint = str(AstPrettyPrintable(ast))
   return prettyprint
 
 def ctok(sourcecode, skipIncludes=False):
@@ -93,7 +93,7 @@ def cparse(sourcecode, skipIncludes=False):
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)], skipIncludes=skipIncludes)
   cT, symbols = cPP.process( sourcecode, dict() )
   parsetree = cParser().parse(TokenStream(cT))
-  prettyprint = str(ParseTreePrettyPrintable(parsetree, 'terminal'))
+  prettyprint = str(ParseTreePrettyPrintable(parsetree))
   return prettyprint
 
 def cast(sourcecode, skipIncludes=False):
@@ -101,7 +101,7 @@ def cast(sourcecode, skipIncludes=False):
   cPP = cPPFactory.create([], [os.path.dirname(sourcecode.resource)], skipIncludes=skipIncludes)
   cT, symbols = cPP.process( sourcecode, dict() )
   ast = cParser().parse(TokenStream(cT)).toAst()
-  prettyprint = str(AstPrettyPrintable(ast, 'terminal'))
+  prettyprint = str(AstPrettyPrintable(ast))
   return prettyprint
 
 def preprocessed(sourcecode, skipIncludes=False):

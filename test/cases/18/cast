@@ -5,23 +5,23 @@
         body=[
           (Assign:
             var=(MemberSelect:
-              member=identifier,
-              object=identifier
+              member=<identifier (b) [test/cases/18/source.c line 3, col 5]>,
+              object=<identifier (a) [test/cases/18/source.c line 3, col 3]>
             ),
-            value=integer_constant
+            value=<integer_constant (0) [test/cases/18/source.c line 3, col 9]>
           )
         ],
         declaration_list=None,
         signature=(Declarator:
           direct_declarator=(FunctionSignature:
             params=None,
-            declarator=identifier
+            declarator=<identifier (main) [test/cases/18/source.c line 1, col 5]>
           ),
           pointer=None
         )
       ),
       declaration_specifiers=[
-        int
+        <int (int) [test/cases/18/source.c line 1, col 1]>
       ]
     )
   ]

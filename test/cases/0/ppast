@@ -3,189 +3,189 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-          lparen,
-          bitand,
-          identifier,
-          lsquare,
-          pp_number,
-          rsquare,
-          rparen
+          <lparen (() [test/cases/0/source.c line 1, col 17]>,
+          <bitand (&) [test/cases/0/source.c line 1, col 18]>,
+          <identifier (__sF) [test/cases/0/source.c line 1, col 19]>,
+          <lsquare ([) [test/cases/0/source.c line 1, col 23]>,
+          <pp_number (0) [test/cases/0/source.c line 1, col 24]>,
+          <rsquare (]) [test/cases/0/source.c line 1, col 25]>,
+          <rparen ()) [test/cases/0/source.c line 1, col 26]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (stdin) [test/cases/0/source.c line 1, col 9]>
     ),
     (IfSection:
       elif=[],
       else=(Else:
         nodes=[
-          csource
+          <csource (int func1(...) [test/cases/0/source.c line 5, col 1]>
         ]
       ),
       if=(IfDef:
         nodes=[
-          csource
+          <csource (int func()...) [test/cases/0/source.c line 3, col 1]>
         ],
-        ident=identifier
+        ident=<identifier (stdin) [test/cases/0/source.c line 2, col 8]>
       )
     ),
-    csource,
+    <csource (/* this is...) [test/cases/0/source.c line 7, col 1]>,
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          add,
-          identifier
+          <identifier (A) [test/cases/0/source.c line 8, col 19]>,
+          <add (+) [test/cases/0/source.c line 8, col 20]>,
+          <identifier (B) [test/cases/0/source.c line 8, col 21]>
         ]
       ),
-      ident=identifier,
+      ident=<identifier (FUNC) [test/cases/0/source.c line 8, col 9]>,
       params=[
-        identifier,
-        identifier
+        <identifier (A) [test/cases/0/source.c line 8, col 14]>,
+        <identifier (B) [test/cases/0/source.c line 8, col 16]>
       ]
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (7) [test/cases/0/source.c line 9, col 11]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (Y) [test/cases/0/source.c line 9, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (2) [test/cases/0/source.c line 10, col 11]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (J) [test/cases/0/source.c line 10, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          string_literal
+          <string_literal ("b.c") [test/cases/0/source.c line 11, col 14]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (PATH) [test/cases/0/source.c line 11, col 9]>
     ),
     (DefineFunction:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          sub,
-          identifier
+          <identifier (X) [test/cases/0/source.c line 12, col 19]>,
+          <sub (-) [test/cases/0/source.c line 12, col 20]>,
+          <identifier (Y) [test/cases/0/source.c line 12, col 21]>
         ]
       ),
-      ident=identifier,
+      ident=<identifier (PHI) [test/cases/0/source.c line 12, col 9]>,
       params=[
-        identifier,
-        identifier
+        <identifier (X) [test/cases/0/source.c line 12, col 13]>,
+        <identifier (Y) [test/cases/0/source.c line 12, col 16]>
       ]
     ),
-    csource,
+    <csource (int add(in...) [test/cases/0/source.c line 13, col 1]>,
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          lparen,
-          pp_number,
-          comma,
-          identifier,
-          rparen,
-          add,
-          identifier
+          <identifier (FUNC) [test/cases/0/source.c line 14, col 11]>,
+          <lparen (() [test/cases/0/source.c line 14, col 15]>,
+          <pp_number (1) [test/cases/0/source.c line 14, col 16]>,
+          <comma (,) [test/cases/0/source.c line 14, col 17]>,
+          <identifier (J) [test/cases/0/source.c line 14, col 18]>,
+          <rparen ()) [test/cases/0/source.c line 14, col 19]>,
+          <add (+) [test/cases/0/source.c line 14, col 21]>,
+          <identifier (Y) [test/cases/0/source.c line 14, col 23]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (X) [test/cases/0/source.c line 14, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          identifier,
-          lparen,
-          pp_number,
-          comma,
-          pp_number,
-          rparen
+          <identifier (add) [test/cases/0/source.c line 15, col 11]>,
+          <lparen (() [test/cases/0/source.c line 15, col 14]>,
+          <pp_number (1) [test/cases/0/source.c line 15, col 15]>,
+          <comma (,) [test/cases/0/source.c line 15, col 16]>,
+          <pp_number (2) [test/cases/0/source.c line 15, col 17]>,
+          <rparen ()) [test/cases/0/source.c line 15, col 18]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (Z) [test/cases/0/source.c line 15, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number,
-          add,
-          identifier,
-          lparen,
-          pp_number,
-          comma,
-          pp_number,
-          rparen
+          <pp_number (1) [test/cases/0/source.c line 16, col 15]>,
+          <add (+) [test/cases/0/source.c line 16, col 17]>,
+          <identifier (PHI) [test/cases/0/source.c line 16, col 19]>,
+          <lparen (() [test/cases/0/source.c line 16, col 22]>,
+          <pp_number (10) [test/cases/0/source.c line 16, col 23]>,
+          <comma (,) [test/cases/0/source.c line 16, col 25]>,
+          <pp_number (2) [test/cases/0/source.c line 16, col 27]>,
+          <rparen ()) [test/cases/0/source.c line 16, col 28]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (THETA) [test/cases/0/source.c line 16, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          string_literal
+          <string_literal ("c.c") [test/cases/0/source.c line 17, col 14]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (PATH) [test/cases/0/source.c line 17, col 9]>
     ),
-    csource,
+    <csource (int main()...) [test/cases/0/source.c line 18, col 1]>,
     (IfSection:
       elif=[],
       else=None,
       if=(If:
         expr=(Equals:
-          right=pp_number,
-          left=identifier
+          right=<pp_number (10) [test/cases/0/source.c line 22, col 8]>,
+          left=<identifier (X) [test/cases/0/source.c line 22, col 5]>
         ),
         nodes=[
-          csource
+          <csource (    printf...) [test/cases/0/source.c line 23, col 1]>
         ]
       )
     ),
-    csource,
+    <csource (int a = 0;) [test/cases/0/source.c line 26, col 1]>,
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (1) [test/cases/0/source.c line 27, col 11]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (A) [test/cases/0/source.c line 27, col 9]>
     ),
     (Define:
       body=(ReplacementList:
         tokens=[
-          pp_number
+          <pp_number (1) [test/cases/0/source.c line 28, col 13]>
         ]
       ),
-      ident=identifier
+      ident=<identifier (FOO) [test/cases/0/source.c line 28, col 9]>
     ),
     (IfSection:
       elif=[
         (ElseIf:
-          expr=pp_number,
+          expr=<pp_number (0) [test/cases/0/source.c line 34, col 7]>,
           nodes=None
         ),
         (ElseIf:
           expr=(Sub:
-            right=pp_number,
-            left=pp_number
+            right=<pp_number (1) [test/cases/0/source.c line 35, col 9]>,
+            left=<pp_number (2) [test/cases/0/source.c line 35, col 7]>
           ),
           nodes=[
-            csource
+            <csource (printf("el...) [test/cases/0/source.c line 36, col 1]>
           ]
         ),
         (ElseIf:
           expr=(Sub:
-            right=pp_number,
-            left=pp_number
+            right=<pp_number (1) [test/cases/0/source.c line 37, col 9]>,
+            left=<pp_number (3) [test/cases/0/source.c line 37, col 7]>
           ),
           nodes=[
-            csource
+            <csource (printf("el...) [test/cases/0/source.c line 38, col 1]>
           ]
         )
       ],
@@ -197,23 +197,24 @@
             else=None,
             if=(IfNDef:
               nodes=[
-                csource
+                <csource (    printf...) [test/cases/0/source.c line 31, col 1]>
               ],
-              ident=identifier
+              ident=<identifier (B) [test/cases/0/source.c line 30, col 13]>
             )
           )
         ],
-        ident=identifier
+        ident=<identifier (FOO) [test/cases/0/source.c line 29, col 8]>
       )
     ),
-    csource,
+    <csource (a += 1;) [test/cases/0/source.c line 40, col 1]>,
     (Undef:
-      ident=identifier
+      ident=<identifier (A) [test/cases/0/source.c line 41, col 8]>
     ),
-    csource,
+    <csource (    return...) [test/cases/0/source.c line 42, col 1]>,
     (Undef:
-      ident=identifier
+      ident=<identifier (FOO) [test/cases/0/source.c line 43, col 8]>
     ),
-    csource
+    <csource (}
+) [test/cases/0/source.c line 44, col 1]>
   ]
 )

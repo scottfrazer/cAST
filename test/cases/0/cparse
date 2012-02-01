@@ -1,11 +1,11 @@
 (translation_unit:
   (_gen0:
     (external_declaration:
-      external_declaration_hint,
+      <external_declaration_hint () [test/cases/0/source.c line 3, col 1]>,
       (_gen1:
         (declaration_specifier:
           (type_specifier:
-            int
+            <int (int) [test/cases/0/source.c line 3, col 1]>
           )
         ),
         (_gen2: )
@@ -14,16 +14,16 @@
         (_gen3:
           (external_declaration_sub_sub:
             (external_prototype:
-              function_prototype_hint,
+              <function_prototype_hint () [test/cases/0/source.c line 3, col 1]>,
               (declarator:
                 (_gen26: ),
                 (_direct_declarator:
                   (_direct_declarator:
-                    identifier
+                    <identifier (func) [test/cases/0/source.c line 3, col 5]>
                   ),
-                  lparen,
+                  <lparen (() [test/cases/0/source.c line 3, col 9]>,
                   (direct_declarator_parameter_list: ),
-                  rparen
+                  <rparen ()) [test/cases/0/source.c line 3, col 10]>
                 )
               ),
               (_gen5: )
@@ -31,40 +31,40 @@
           ),
           (_gen4: )
         ),
-        semi
+        <semi (;) [test/cases/0/source.c line 3, col 11]>
       )
     ),
     (_gen0:
       (external_declaration:
-        external_declaration_hint,
+        <external_declaration_hint () [test/cases/0/source.c line 13, col 1]>,
         (_gen1:
           (declaration_specifier:
             (type_specifier:
-              int
+              <int (int) [test/cases/0/source.c line 13, col 1]>
             )
           ),
           (_gen2: )
         ),
         (external_declaration_sub:
           (external_function:
-            function_definition_hint,
+            <function_definition_hint () [test/cases/0/source.c line 13, col 1]>,
             (declarator:
               (_gen26: ),
               (_direct_declarator:
                 (_direct_declarator:
-                  identifier
+                  <identifier (add) [test/cases/0/source.c line 13, col 5]>
                 ),
-                lparen,
+                <lparen (() [test/cases/0/source.c line 13, col 8]>,
                 (direct_declarator_parameter_list:
                   (parameter_type_list:
                     (_gen29:
                       (parameter_declaration:
                         (named_parameter_declaration:
-                          named_parameter_hint,
+                          <named_parameter_hint () [test/cases/0/source.c line 13, col 9]>,
                           (_gen1:
                             (declaration_specifier:
                               (type_specifier:
-                                int
+                                <int (int) [test/cases/0/source.c line 13, col 9]>
                               )
                             ),
                             (_gen2: )
@@ -73,21 +73,21 @@
                             (declarator:
                               (_gen26: ),
                               (_direct_declarator:
-                                identifier
+                                <identifier (x) [test/cases/0/source.c line 13, col 13]>
                               )
                             )
                           )
                         )
                       ),
                       (_gen30:
-                        comma,
+                        <comma (,) [test/cases/0/source.c line 13, col 14]>,
                         (parameter_declaration:
                           (named_parameter_declaration:
-                            named_parameter_hint,
+                            <named_parameter_hint () [test/cases/0/source.c line 13, col 16]>,
                             (_gen1:
                               (declaration_specifier:
                                 (type_specifier:
-                                  int
+                                  <int (int) [test/cases/0/source.c line 13, col 16]>
                                 )
                               ),
                               (_gen2: )
@@ -96,7 +96,7 @@
                               (declarator:
                                 (_gen26: ),
                                 (_direct_declarator:
-                                  identifier
+                                  <identifier (y) [test/cases/0/source.c line 13, col 20]>
                                 )
                               )
                             )
@@ -108,31 +108,31 @@
                     (_gen31: )
                   )
                 ),
-                rparen
+                <rparen ()) [test/cases/0/source.c line 13, col 21]>
               )
             ),
             (_gen5: ),
             (compound_statement:
-              lbrace,
+              <lbrace ({) [test/cases/0/source.c line 13, col 23]>,
               (_gen39:
                 (block_item_list:
                   (_gen40:
                     (block_item:
                       (statement:
                         (jump_statement:
-                          return,
+                          <return (return) [test/cases/0/source.c line 13, col 24]>,
                           (expression_opt:
                             (_expr:
                               (_expr:
-                                identifier
+                                <identifier (x) [test/cases/0/source.c line 13, col 31]>
                               ),
-                              add,
+                              <add (+) [test/cases/0/source.c line 13, col 32]>,
                               (_expr:
-                                identifier
+                                <identifier (y) [test/cases/0/source.c line 13, col 33]>
                               )
                             )
                           ),
-                          semi
+                          <semi (;) [test/cases/0/source.c line 13, col 34]>
                         )
                       )
                     ),
@@ -140,39 +140,39 @@
                   )
                 )
               ),
-              rbrace
+              <rbrace (}) [test/cases/0/source.c line 13, col 35]>
             )
           )
         )
       ),
       (_gen0:
         (external_declaration:
-          external_declaration_hint,
+          <external_declaration_hint () [test/cases/0/source.c line 18, col 1]>,
           (_gen1:
             (declaration_specifier:
               (type_specifier:
-                int
+                <int (int) [test/cases/0/source.c line 18, col 1]>
               )
             ),
             (_gen2: )
           ),
           (external_declaration_sub:
             (external_function:
-              function_definition_hint,
+              <function_definition_hint () [test/cases/0/source.c line 18, col 1]>,
               (declarator:
                 (_gen26: ),
                 (_direct_declarator:
                   (_direct_declarator:
-                    identifier
+                    <identifier (main) [test/cases/0/source.c line 18, col 5]>
                   ),
-                  lparen,
+                  <lparen (() [test/cases/0/source.c line 18, col 9]>,
                   (direct_declarator_parameter_list: ),
-                  rparen
+                  <rparen ()) [test/cases/0/source.c line 18, col 10]>
                 )
               ),
               (_gen5: ),
               (compound_statement:
-                lbrace,
+                <lbrace ({) [test/cases/0/source.c line 19, col 1]>,
                 (_gen39:
                   (block_item_list:
                     (_gen40:
@@ -182,43 +182,43 @@
                             (expression_opt:
                               (_expr:
                                 (_expr:
-                                  identifier
+                                  <identifier (printf) [test/cases/0/source.c line 20, col 1]>
                                 ),
-                                lparen,
+                                <lparen (() [test/cases/0/source.c line 20, col 7]>,
                                 (_gen44:
                                   (_expr_sans_comma:
-                                    string_literal
+                                    <string_literal ("THETA %d\...) [test/cases/0/source.c line 20, col 8]>
                                   ),
                                   (_gen45:
-                                    comma,
+                                    <comma (,) [test/cases/0/source.c line 20, col 20]>,
                                     (_expr_sans_comma:
                                       (_expr_sans_comma:
                                         (_expr_sans_comma:
                                           (constant:
-                                            integer_constant
+                                            <integer_constant (1) [test/cases/0/source.c line 20, col 22]>
                                           )
                                         ),
-                                        add,
+                                        <add (+) [test/cases/0/source.c line 20, col 22]>,
                                         (_expr_sans_comma:
                                           (constant:
-                                            integer_constant
+                                            <integer_constant (10) [test/cases/0/source.c line 20, col 22]>
                                           )
                                         )
                                       ),
-                                      sub,
+                                      <sub (-) [test/cases/0/source.c line 20, col 22]>,
                                       (_expr_sans_comma:
                                         (constant:
-                                          integer_constant
+                                          <integer_constant (2) [test/cases/0/source.c line 20, col 22]>
                                         )
                                       )
                                     ),
                                     (_gen45: )
                                   )
                                 ),
-                                rparen
+                                <rparen ()) [test/cases/0/source.c line 20, col 27]>
                               )
                             ),
-                            semi
+                            <semi (;) [test/cases/0/source.c line 20, col 28]>
                           )
                         )
                       ),
@@ -229,25 +229,25 @@
                               (expression_opt:
                                 (_expr:
                                   (_expr:
-                                    identifier
+                                    <identifier (printf) [test/cases/0/source.c line 21, col 1]>
                                   ),
-                                  lparen,
+                                  <lparen (() [test/cases/0/source.c line 21, col 7]>,
                                   (_gen44:
                                     (_expr_sans_comma:
-                                      string_literal
+                                      <string_literal ("PATH %s\n...) [test/cases/0/source.c line 21, col 8]>
                                     ),
                                     (_gen45:
-                                      comma,
+                                      <comma (,) [test/cases/0/source.c line 21, col 19]>,
                                       (_expr_sans_comma:
-                                        string_literal
+                                        <string_literal ("c.c") [test/cases/0/source.c line 21, col 21]>
                                       ),
                                       (_gen45: )
                                     )
                                   ),
-                                  rparen
+                                  <rparen ()) [test/cases/0/source.c line 21, col 25]>
                                 )
                               ),
-                              semi
+                              <semi (;) [test/cases/0/source.c line 21, col 26]>
                             )
                           )
                         ),
@@ -258,19 +258,19 @@
                                 (expression_opt:
                                   (_expr:
                                     (_expr:
-                                      identifier
+                                      <identifier (printf) [test/cases/0/source.c line 23, col 5]>
                                     ),
-                                    lparen,
+                                    <lparen (() [test/cases/0/source.c line 23, col 11]>,
                                     (_gen44:
                                       (_expr_sans_comma:
-                                        string_literal
+                                        <string_literal ("first\n") [test/cases/0/source.c line 23, col 12]>
                                       ),
                                       (_gen45: )
                                     ),
-                                    rparen
+                                    <rparen ()) [test/cases/0/source.c line 23, col 21]>
                                   )
                                 ),
-                                semi
+                                <semi (;) [test/cases/0/source.c line 23, col 22]>
                               )
                             )
                           ),
@@ -280,7 +280,7 @@
                                 (_gen1:
                                   (declaration_specifier:
                                     (type_specifier:
-                                      int
+                                      <int (int) [test/cases/0/source.c line 26, col 1]>
                                     )
                                   ),
                                   (_gen2: )
@@ -292,16 +292,16 @@
                                         (declarator:
                                           (_gen26: ),
                                           (_direct_declarator:
-                                            identifier
+                                            <identifier (a) [test/cases/0/source.c line 26, col 5]>
                                           )
                                         ),
                                         (_gen11:
                                           (declarator_initializer:
-                                            assign,
+                                            <assign (=) [test/cases/0/source.c line 26, col 7]>,
                                             (initializer:
                                               (_expr_sans_comma:
                                                 (constant:
-                                                  integer_constant
+                                                  <integer_constant (0) [test/cases/0/source.c line 26, col 9]>
                                                 )
                                               )
                                             )
@@ -312,7 +312,7 @@
                                     )
                                   )
                                 ),
-                                semi
+                                <semi (;) [test/cases/0/source.c line 26, col 10]>
                               )
                             ),
                             (_gen40:
@@ -322,27 +322,27 @@
                                     (expression_opt:
                                       (_expr:
                                         (_expr:
-                                          identifier
+                                          <identifier (printf) [test/cases/0/source.c line 31, col 5]>
                                         ),
-                                        lparen,
+                                        <lparen (() [test/cases/0/source.c line 31, col 11]>,
                                         (_gen44:
                                           (_expr_sans_comma:
-                                            string_literal
+                                            <string_literal ("second %d...) [test/cases/0/source.c line 31, col 12]>
                                           ),
                                           (_gen45:
-                                            comma,
+                                            <comma (,) [test/cases/0/source.c line 31, col 25]>,
                                             (_expr_sans_comma:
                                               (constant:
-                                                integer_constant
+                                                <integer_constant (1) [test/cases/0/source.c line 31, col 27]>
                                               )
                                             ),
                                             (_gen45: )
                                           )
                                         ),
-                                        rparen
+                                        <rparen ()) [test/cases/0/source.c line 31, col 28]>
                                       )
                                     ),
-                                    semi
+                                    <semi (;) [test/cases/0/source.c line 31, col 29]>
                                   )
                                 )
                               ),
@@ -353,19 +353,19 @@
                                       (expression_opt:
                                         (_expr:
                                           (_expr:
-                                            identifier
+                                            <identifier (printf) [test/cases/0/source.c line 32, col 5]>
                                           ),
-                                          lparen,
+                                          <lparen (() [test/cases/0/source.c line 32, col 11]>,
                                           (_gen44:
                                             (_expr_sans_comma:
-                                              string_literal
+                                              <string_literal ("third\n") [test/cases/0/source.c line 32, col 12]>
                                             ),
                                             (_gen45: )
                                           ),
-                                          rparen
+                                          <rparen ()) [test/cases/0/source.c line 32, col 21]>
                                         )
                                       ),
-                                      semi
+                                      <semi (;) [test/cases/0/source.c line 32, col 22]>
                                     )
                                   )
                                 ),
@@ -376,17 +376,17 @@
                                         (expression_opt:
                                           (_expr:
                                             (_expr:
-                                              identifier
+                                              <identifier (a) [test/cases/0/source.c line 40, col 1]>
                                             ),
-                                            addeq,
+                                            <addeq (+=) [test/cases/0/source.c line 40, col 3]>,
                                             (_expr:
                                               (constant:
-                                                integer_constant
+                                                <integer_constant (1) [test/cases/0/source.c line 40, col 6]>
                                               )
                                             )
                                           )
                                         ),
-                                        semi
+                                        <semi (;) [test/cases/0/source.c line 40, col 7]>
                                       )
                                     )
                                   ),
@@ -394,15 +394,15 @@
                                     (block_item:
                                       (statement:
                                         (jump_statement:
-                                          return,
+                                          <return (return) [test/cases/0/source.c line 42, col 5]>,
                                           (expression_opt:
                                             (_expr:
                                               (constant:
-                                                integer_constant
+                                                <integer_constant (0) [test/cases/0/source.c line 42, col 12]>
                                               )
                                             )
                                           ),
-                                          semi
+                                          <semi (;) [test/cases/0/source.c line 42, col 13]>
                                         )
                                       )
                                     ),
@@ -417,7 +417,7 @@
                     )
                   )
                 ),
-                rbrace
+                <rbrace (}) [test/cases/0/source.c line 44, col 1]>
               )
             )
           )
