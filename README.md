@@ -10,6 +10,7 @@ Example
 $ cat source.c
 ```
 
+
 ```c
 int main( int argc, char * argv[] )
 {
@@ -26,9 +27,11 @@ int factorial(int x)
 }
 ```
 
+
 ```bash
 $ cast ast source.c
 ```
+
 
 ```ast
 (TranslationUnit:
