@@ -187,19 +187,6 @@
                               (expression_opt:
                                 (_expr:
                                   (_expr:
-<<<<<<< Updated upstream
-                                    identifier
-                                  ),
-                                  lparen,
-                                  (_gen44:
-                                    (_expr_sans_comma:
-                                      string_literal
-                                    ),
-                                    (_gen45:
-                                      comma,
-                                      (_expr_sans_comma:
-                                        identifier
-=======
                                     <identifier (printf) [test/cases/12/source.c line 7, col 3]>
                                   ),
                                   <lparen (() [test/cases/12/source.c line 7, col 9]>,
@@ -211,22 +198,14 @@
                                       <comma (,) [test/cases/12/source.c line 7, col 21]>,
                                       (_expr_sans_comma:
                                         <identifier (y) [test/cases/12/source.c line 7, col 23]>
->>>>>>> Stashed changes
                                       ),
                                       (_gen45: )
                                     )
                                   ),
-<<<<<<< Updated upstream
-                                  rparen
-                                )
-                              ),
-                              semi
-=======
                                   <rparen ()) [test/cases/12/source.c line 7, col 24]>
                                 )
                               ),
                               <semi (;) [test/cases/12/source.c line 7, col 25]>
->>>>>>> Stashed changes
                             )
                           )
                         ),

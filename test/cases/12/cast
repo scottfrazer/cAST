@@ -28,18 +28,7 @@
           ),
           (FuncCall:
             params=[
-<<<<<<< Updated upstream
-              string_literal
-            ],
-            name=identifier
-          ),
-          (FuncCall:
-            params=[
-              string_literal,
-              identifier
-=======
               <string_literal ("Hello Wor...) [test/cases/12/source.c line 6, col 10]>
->>>>>>> Stashed changes
             ],
             name=<identifier (printf) [test/cases/12/source.c line 6, col 3]>
           ),

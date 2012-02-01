@@ -3,20 +3,11 @@
     (Define:
       body=(ReplacementList:
         tokens=[
-<<<<<<< Updated upstream
-          string_literal
-        ]
-      ),
-      ident=identifier
-    ),
-    csource
-=======
           <string_literal ("Hello Wor...) [test/cases/12/source.c line 1, col 13]>
         ]
       ),
       ident=<identifier (msg) [test/cases/12/source.c line 1, col 9]>
     ),
     <csource (int main( ...) [test/cases/12/source.c line 2, col 1]>
->>>>>>> Stashed changes
   ]
 )
