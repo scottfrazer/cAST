@@ -1,7 +1,7 @@
 from cast.cParser import Parser as cParser
 from cast.cParser import Ast 
 from cast.ppParser import Parser as ppParser
-import termcolor
+from xtermcolor.ColorMap import XTermColorMap
 
 class Token:
   def __init__(self, id, resource, terminal_str, source_string, lineno, colno):
@@ -84,6 +84,7 @@ class SourceCodeWriter:
     self.colno = 1
     self.ancestors = dict([(t, set()) for t in self.tokenList])
     self.getTokenAncestors(ast)
+    self.termcolor = XTermColorMap()
     c = lambda x: cParser.terminals[x]
     self.insertSpaceAfter = {
       c('else')
@@ -120,7 +121,7 @@ class SourceCodeWriter:
       self.colno = token.colno
 
     if self.highlight in self.ancestors[token]:
-      self.string += termcolor.colored(token.source_string, 'green')
+      self.string += self.termcolor.colorize(token.source_string, 0x87ff00)
     else:
       self.string += token.source_string
 

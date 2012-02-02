@@ -17,13 +17,14 @@ setup(
     packages=['cast'],
     package_dir={'cast': 'cast'},
     install_requires=[
-      'termcolor>=1.1.0'
+      'xtermcolor>=1.0.1'
     ],
     entry_points={
-      'console_scripts': [
-            'cast = cast.Main:Cli'
-        ]
-      },
+    'console_scripts': [
+        'cast = cast.Main:Cli'
+      ]
+    },
+    test_suite='test.CastTest',
     license = "GPL",
     keywords = "C, preprocessor, parser, C99",
     url = "http://scottfrazer.net/cast",
