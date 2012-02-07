@@ -83,6 +83,7 @@ class SourceCodeWriter:
     self.lineno = 1
     self.colno = 1
     self.ancestors = dict([(t, set()) for t in self.tokenList])
+    self.parents = dict([(t, set()) for t in self.tokenList])
     self.getTokenAncestors(ast)
     self.termcolor = XTermColorMap()
     c = lambda x: cParser.terminals[x]
@@ -101,6 +102,7 @@ class SourceCodeWriter:
     for (attr, obj) in ast.attributes.items():
       if isinstance(obj, cToken):
         self.ancestors[obj] = self.ancestors[obj].union(set(self.stack))
+        self.parent[obj] = (self.stack[-1], attr)
       elif isinstance(obj, Ast):
         self._getTokenAncestors(obj)
       elif isinstance(obj, list):
