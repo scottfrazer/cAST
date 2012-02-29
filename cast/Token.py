@@ -77,7 +77,7 @@ class Cursor:
     return self.string
 
 class SourceCodeWriter:
-  def __init__(self, tokenList, ast=None, theme=None, highlight=None):
+  def __init__(self, tokenList, parsetree=None, grammar=None, ast=None, theme=None, highlight=False):
     self.__dict__.update(locals())
     self.string = ''
     self.lineno = 1
@@ -91,6 +91,9 @@ class SourceCodeWriter:
       c('else')
     }
 
+    # bah, cruft
+    self.keywords = []
+
   def getTokenAncestors(self, ast):
     self.stack = []
     self._getTokenAncestors(ast)
@@ -102,13 +105,14 @@ class SourceCodeWriter:
     for (attr, obj) in ast.attributes.items():
       if isinstance(obj, cToken):
         self.ancestors[obj] = self.ancestors[obj].union(set(self.stack))
-        self.parent[obj] = (self.stack[-1], attr)
+        self.parents[obj] = (self.stack[-1], attr)
       elif isinstance(obj, Ast):
         self._getTokenAncestors(obj)
       elif isinstance(obj, list):
         for x in obj:
           if isinstance(x, cToken):
             self.ancestors[x] = self.ancestors[x].union(set(self.stack))
+            self.parents[x] = (self.stack[-1], attr)
           else:
             self._getTokenAncestors(x)
     self.stack.pop()
@@ -122,14 +126,39 @@ class SourceCodeWriter:
       self.string += ''.join(' ' for i in range(token.colno - self.colno))
       self.colno = token.colno
 
-    if self.highlight in self.ancestors[token]:
-      self.string += self.termcolor.colorize(token.source_string, 0x87ff00)
-    else:
-      self.string += token.source_string
+    self.string += self.doHighlight(token)
 
     if token.fromPreprocessor or token.id in self.insertSpaceAfter:
       self.string += ' '
     self.colno += len(token.source_string)
+
+  def doHighlight(self, token):
+    if not self.highlight:
+      return token.source_string
+
+    if token in self.parents and len(self.parents[token]):
+      (parent, attr) = self.parents[token]
+      if attr == 'declaration_specifiers':
+        return self.termcolor.colorize(token.source_string, 0x0087ff)
+      if parent == 'FuncCall' and attr == 'name':
+        return self.termcolor.colorize(token.source_string, 0x8700ff)
+      if parent == 'FunctionSignature' and attr == 'declarator':
+        return self.termcolor.colorize(token.source_string, 0xff8700)
+    if self.grammar:
+      if not len(self.keywords):
+        for rule in self.grammar.getRules():
+          terminal = rule.isTokenAlias()
+          if terminal and rule.nonterminal.string == 'keyword':
+            self.keywords.append(terminal.string)
+      if token.terminal_str in self.keywords:
+        return self.termcolor.colorize(token.source_string, 0xffff00)
+    if token.terminal_str == 'string_literal':
+      return self.termcolor.colorize(token.source_string, 0xff0000)
+    if token.terminal_str == 'identifier':
+      return self.termcolor.colorize(token.source_string, 0x00ff00)
+
+    return token.source_string
+
   def __str__(self):
     if not len(self.string):
       for token in self.tokenList:
@@ -170,8 +199,10 @@ class TokenList(list):
       return self[self.index + int(whereto) - 1].id in ids
     except:
       return False
-  def toString(self, ast=None, theme=None, highlight=None):
-    scw = SourceCodeWriter(self, ast, theme, highlight)
+  def toString(self, parsetree=None, grammar=None, ast=None, theme=None, highlight=False):
+    kwargs = locals()
+    del kwargs['self']
+    scw = SourceCodeWriter(self, **kwargs)
     return str(scw)
     cursor = Cursor()
     for token in self:

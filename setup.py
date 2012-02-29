@@ -15,7 +15,7 @@ setup(
   author='Scott Frazer',
   author_email='scott.d.frazer@gmail.com',
   packages=['cast'],
-  package_dir={'cast': 'cast'},
+  package_data={'cast': ['grammars/*.zgr']},
   install_requires=[
     'xtermcolor>=1.0.1'
   ],

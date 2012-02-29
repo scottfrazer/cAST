@@ -1,4 +1,3 @@
-from types import *
 import sys, os, argparse, subprocess, re, logging
 from cast.ppLexer import ppLexer
 from cast.PreProcessor import Factory as PreProcessorFactory
@@ -9,6 +8,8 @@ from cast.SourceCode import SourceCode
 from cast.Logger import Factory as LoggerFactory
 from cast.cParser import Parser as cParser
 
+from hermes.GrammarFileParser import GrammarFileParser, HermesParserFactory
+
 def Cli():
 
   ver = sys.version_info
@@ -18,10 +19,7 @@ def Cli():
     print("Python 3.2+ required. %d.%d.%d installed" %(ver.major, ver.minor, ver.micro))
     sys.exit(-1)
 
-  parser = argparse.ArgumentParser(
-              description = 'cAST: C Preprocessor and Parser',
-              epilog = '(c) 2011 Scott Frazer')
-
+  parser = argparse.ArgumentParser(description = 'cAST: C Preprocessor and Parser')
   commands = dict()
   subparsers = parser.add_subparsers(help='Available actions', dest='command')
   commands['pp'] = subparsers.add_parser('pp', help='Preprocess.')
@@ -30,7 +28,6 @@ def Cli():
   commands['ctok'] = subparsers.add_parser('ctok', help='Preprocess and tokenize C code.')
   commands['cparse'] = subparsers.add_parser('cparse', help='Parse C code')
   commands['ast'] = subparsers.add_parser('ast', help='Parse C code and transform parse tree into an AST')
-  commands['dev'] = subparsers.add_parser('dev', help='Developers test area.')
 
   parser.add_argument('source_file',
               metavar = 'SOURCE_FILE',
@@ -61,11 +58,12 @@ def Cli():
               help = "Colorize output to stdout.")
 
   parser.add_argument('--highlight',
+              action='store_true',
               help = "Colorize tokens belonging to this AST node.")
 
   cli = parser.parse_args()
   logger = LoggerFactory().initialize(cli.debug)
-  logger.debug('CLI Parameters: %s' % (cli))
+  #logger.debug('CLI Parameters: {}'.format(cli))
 
   if not os.path.isfile( cli.source_file[0] ) and \
      not os.path.islink( cli.source_file[0] ):
@@ -92,19 +90,21 @@ def Cli():
   cPPFactory = PreProcessorFactory()
   cPP = cPPFactory.create( include_path_global, include_path_local, skipIncludes=cli.skip_includes )
 
-  if cli.command == 'dev':
-    from cast.Theme import XTermColorMapper
-    xterm = XTermColorMapper()
-    converted = xterm.convert(0xff87ff)
-    print(converted)
-
   if cli.command == 'pp':
     try:
       (cT, symbols) = cPP.process(cSourceCode)
       parser = cParser()
       parsetree = parser.parse(TokenStream(cT))
       ast = parsetree.toAst()
-      print(cT.toString(ast, highlight=cli.highlight))
+
+      factory = HermesParserFactory()   
+      fp = GrammarFileParser(factory.create())
+
+      from pkg_resources import Requirement, resource_filename
+      filename = resource_filename(__name__, '../grammars/c.zgr')
+
+      grammar = fp.parse( 'c', open(filename) )
+      print(cT.toString(parsetree=parsetree, grammar=grammar, ast=ast, highlight=cli.highlight))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
@@ -149,7 +149,7 @@ def Cli():
       parser = cParser()
       parsetree = parser.parse(TokenStream(cT))
       ast = parsetree.toAst()
-      print(AstPrettyPrintable(ast, cli.format, color=cli.color))
+      print(AstPrettyPrintable(ast, color=cli.color))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)

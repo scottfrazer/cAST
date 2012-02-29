@@ -1,18 +1,18 @@
 import logging
 
+from xtermcolor.ColorMap import XTermColorMap
+
 class Factory:
   def initialize(self, debug):
     logger = logging.getLogger('cast')
     logger.setLevel(logging.DEBUG)
-    fileLogger = logging.FileHandler('cast.log')
-    fileLogger.setLevel(logging.DEBUG)
     stdoutLogger = logging.StreamHandler()
     stdoutLogger.setLevel(logging.DEBUG)
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-    fileLogger.setFormatter(formatter)
+    colormap = XTermColorMap()
+    debug = '[%10s]' % (colormap.colorize('debug', 0x00ff00))
+    formatter = logging.Formatter('%s%(levelname)-10s%s %(message)s')
     stdoutLogger.setFormatter(formatter)
     if debug:
-      logger.addHandler(fileLogger)
       logger.addHandler(stdoutLogger)
     return logger
   def getProgramLogger(self):

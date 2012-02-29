@@ -1,5 +1,6 @@
 import sys
 import inspect
+sys.setrecursionlimit(sys.getrecursionlimit()*2)
 def whoami():
   return inspect.stack()[1][3]
 def whosdaddy():
