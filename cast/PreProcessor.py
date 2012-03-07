@@ -1,12 +1,13 @@
 import sys, re, os
 from itertools import zip_longest, islice
 from copy import copy, deepcopy
-from cast.cParser import TokenStream
-from cast.cParser import Parser as cParser
-from cast.ppParser import Parser as ppParser
-from cast.ppParser import Ast as ppAst
+
 from cast.cLexer import cLexer
 from cast.ppLexer import ppLexer
+from cast.c_Parser import c_Parser
+from cast.pp_Parser import pp_Parser
+from cast.ParserCommon import Ast as ppAst
+from cast.ParserCommon import TokenStream
 from cast.Token import Token, cToken, ppToken, TokenList
 from cast.SourceCode import SourceCode, SourceCodeString, SourceCodeEmpty
 
@@ -31,8 +32,8 @@ sys.setrecursionlimit(2000)
 
 class Factory:
   def create(self, includePathGlobal=['.'], includePathLocal=['.'], skipIncludes=False):
-    cPPP = ppParser()
-    cP = cParser()
+    cPPP = pp_Parser()
+    cP = c_Parser()
     cPE = cPreprocessingEvaluator( cPPP, cP, self, includePathGlobal, includePathLocal )
     return PreProcessor( cPPP, cPE, skipIncludes=skipIncludes )
 
@@ -130,13 +131,13 @@ class cPreprocessingEvaluator:
     for pp_token, c_token in tokenMap.items():
       ppVarName = 'TERMINAL_' + pp_token
       cVarName = 'TERMINAL_' + c_token
-      self.cPPTtocT[ppParser.__dict__[ppVarName]] = cParser.__dict__[cVarName]
-      self.cTtocPPT[cParser.__dict__[cVarName]] = ppParser.__dict__[ppVarName]
+      self.cPPTtocT[pp_Parser.__dict__[ppVarName]] = c_Parser.__dict__[cVarName]
+      self.cTtocPPT[c_Parser.__dict__[cVarName]] = pp_Parser.__dict__[ppVarName]
 
     self.tokenActions = {
-      ppParser.TERMINAL_PP_NUMBER: self.eval_ppNumber,
-      ppParser.TERMINAL_IDENTIFIER: self.eval_identifier,
-      ppParser.TERMINAL_CSOURCE: self.eval_cSource
+      pp_Parser.TERMINAL_PP_NUMBER: self.eval_ppNumber,
+      pp_Parser.TERMINAL_IDENTIFIER: self.eval_identifier,
+      pp_Parser.TERMINAL_CSOURCE: self.eval_cSource
     }
 
     self.astActions = {
@@ -246,15 +247,15 @@ class cPreprocessingEvaluator:
     params = []
 
     for token, plookahead in cLexer:
-      if token.id == cParser.TERMINAL_LPAREN:
+      if token.id == c_Parser.TERMINAL_LPAREN:
         lparen += 1
         if lparen == 1:
           continue # Just skip the first left paren, then start algorithm
 
-      if token.id == cParser.TERMINAL_RPAREN:
+      if token.id == c_Parser.TERMINAL_RPAREN:
         lparen -= 1
 
-      if (token.id == cParser.TERMINAL_RPAREN and lparen == 0) or (token.id == cParser.TERMINAL_COMMA and lparen == 1):
+      if (token.id == c_Parser.TERMINAL_RPAREN and lparen == 0) or (token.id == c_Parser.TERMINAL_COMMA and lparen == 1):
         params.append( buf )
         buf = []
       else:
@@ -262,7 +263,7 @@ class cPreprocessingEvaluator:
         token.fromPreprocessor = True
         buf.append(token)
 
-      if token.id == cParser.TERMINAL_RPAREN and lparen == 0:
+      if token.id == c_Parser.TERMINAL_RPAREN and lparen == 0:
         break
 
     return params
@@ -323,7 +324,7 @@ class cPreprocessingEvaluator:
    
     def tokenize(token):
       tId = self.cTtocPPT[token.id]
-      return ppToken(tId, token.resource, ppParser.terminals[tId], token.source_string, token.lineno, token.colno)
+      return ppToken(tId, token.resource, pp_Parser.terminals[tId], token.source_string, token.lineno, token.colno)
 
     self.cPPP.tokens = TokenStream(list(map(tokenize, replacementList)))
     parsetree = self.cPPP.parse__expr()
@@ -497,7 +498,7 @@ class cPreprocessingEvaluator:
       if token.type == 'c':
         return copy(token)
       newId = self.cPPTtocT[token.id]
-      return cToken( newId, token.resource, cParser.terminals[newId], token.source_string, token.lineno, token.colno, None )
+      return cToken( newId, token.resource, c_Parser.terminals[newId], token.source_string, token.lineno, token.colno, None )
 
     tokens = list(map(make_cToken, cPPAST.getAttr('tokens')))
     rtokens = []
@@ -505,10 +506,10 @@ class cPreprocessingEvaluator:
 
     tokensWithLookahead = zip_longest(tokens, tokens[1:])
     for token, lookahead in tokensWithLookahead:
-      if token.id == cParser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
+      if token.id == c_Parser.TERMINAL_IDENTIFIER and token.getString() in self.symbols:
         replacement = self.symbols[token.getString()]
         if isinstance(replacement, self.cPFF.cPreprocessorFunction):
-          if lookahead and lookahead.id == cParser.TERMINAL_LPAREN:
+          if lookahead and lookahead.id == c_Parser.TERMINAL_LPAREN:
             params = self._getMacroFunctionParams(tokensWithLookahead)
             result = replacement.run(params, token.lineno, token.colno)
             newTokens.extend(result)
@@ -526,7 +527,7 @@ class cPreprocessingEvaluator:
           tmp = []
           for (rtoken, next_rtoken) in zip_longest(replacement, replacement[1:]):
             if not next_rtoken:
-              if isinstance(rtoken, self.cPFF.cPreprocessorFunction) and lookahead.id == cParser.TERMINAL_LPAREN:
+              if isinstance(rtoken, self.cPFF.cPreprocessorFunction) and lookahead.id == c_Parser.TERMINAL_LPAREN:
                  params = self._getMacroFunctionParams(tokensWithLookahead)
                  result = rtoken.run(params, token.lineno, token.colno)
                  tmp.extend(result)
@@ -534,8 +535,8 @@ class cPreprocessingEvaluator:
             new_token = copy(rtoken)
             new_token.colno = token.colno
             new_token.lineno = token.lineno
-            if new_token.id == ppParser.TERMINAL_PP_NUMBER:
-              new_token.id = cParser.TERMINAL_INTEGER_CONSTANT
+            if new_token.id == pp_Parser.TERMINAL_PP_NUMBER:
+              new_token.id = c_Parser.TERMINAL_INTEGER_CONSTANT
             tmp.append(new_token)
           newTokens.extend(tmp)
           continue

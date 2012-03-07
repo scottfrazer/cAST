@@ -17,7 +17,7 @@ int (*fpfi(int (*)(long), int))(int, ...);
  *       hint = ABSTRACT_PARAMETER_HINT
  *       if token == rparen:
  *         break
- *     if token.id == cParser.TERMINAL_IDENTIFIER:
+ *     if token.id == c_Parser.TERMINAL_IDENTIFIER:
  *       hint = NAMED_PARAMETER_HINT
  *   return params
  *

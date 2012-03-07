@@ -1,12 +1,11 @@
 import sys, os, argparse, subprocess, re, logging
 from cast.ppLexer import ppLexer
 from cast.PreProcessor import Factory as PreProcessorFactory
-from cast.ppParser import Parser as ppParser
-from cast.ppParser import TokenStream
-from cast.Ast import AstPrettyPrintable, ParseTreePrettyPrintable
+from cast.pp_Parser import pp_Parser
+from cast.c_Parser import c_Parser
+from cast.ParserCommon import TokenStream, AstPrettyPrintable, ParseTreePrettyPrintable
 from cast.SourceCode import SourceCode
 from cast.Logger import Factory as LoggerFactory
-from cast.cParser import Parser as cParser
 
 from hermes.GrammarFileParser import GrammarFileParser, HermesParserFactory
 
@@ -44,10 +43,6 @@ def Cli():
   
   parser.add_argument('-e', '--encoding',
               help = 'File encoding')
-
-  parser.add_argument('-f', '--format',
-              default = 'long',
-              help = "'tiny', 'short', 'long' for outputting tokens.")
 
   parser.add_argument('-I', '--include-path',
               default = '',
@@ -93,7 +88,7 @@ def Cli():
   if cli.command == 'pp':
     try:
       (cT, symbols) = cPP.process(cSourceCode)
-      parser = cParser()
+      parser = c_Parser()
       parsetree = parser.parse(TokenStream(cT))
       ast = parsetree.toAst()
 
@@ -111,16 +106,15 @@ def Cli():
 
   if cli.command == 'pptok':
     for token in ppLexer(cSourceCode):
-      print(token.toString(cli.format))
+      print(token.toString())
 
   if cli.command == 'ppast':
-    from cast.ppParser import Parser as ppParser
     try:
       cPPL = TokenStream(ppLexer(cSourceCode))
-      parser = ppParser()
+      parser = pp_Parser()
       parsetree = parser.parse(cPPL)
       ast = parsetree.toAst()
-      print(AstPrettyPrintable(ast, cli.format))
+      print(AstPrettyPrintable(ast))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
@@ -129,7 +123,7 @@ def Cli():
     try:
       cT, symbols = cPP.process( cSourceCode )
       for token in cT:
-        print(token.toString(cli.format))
+        print(token.toString())
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
@@ -137,8 +131,8 @@ def Cli():
   if cli.command == 'cparse':
     try:
       cT, symbols = cPP.process( cSourceCode )
-      parsetree = cParser().parse(TokenStream(cT))
-      print(ParseTreePrettyPrintable(parsetree, cli.format, color=cli.color))
+      parsetree = c_Parser().parse(TokenStream(cT))
+      print(ParseTreePrettyPrintable(parsetree, color=cli.color))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
@@ -146,7 +140,7 @@ def Cli():
   if cli.command == 'ast':
     try:
       cT, symbols = cPP.process( cSourceCode )
-      parser = cParser()
+      parser = c_Parser()
       parsetree = parser.parse(TokenStream(cT))
       ast = parsetree.toAst()
       print(AstPrettyPrintable(ast, color=cli.color))

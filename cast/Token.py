@@ -1,6 +1,6 @@
-from cast.cParser import Parser as cParser
-from cast.cParser import Ast 
-from cast.ppParser import Parser as ppParser
+from cast.c_Parser import c_Parser
+from cast.pp_Parser import pp_Parser
+from cast.ParserCommon import Ast
 from xtermcolor.ColorMap import XTermColorMap
 
 class Token:
@@ -56,7 +56,7 @@ class Cursor:
     self.string = ''
     self.lineno = 1
     self.colno = 1
-    c = lambda x: cParser.terminals[x]
+    c = lambda x: c_Parser.terminals[x]
     self.insertSpaceAfter = {
       c('else')
     }
@@ -86,7 +86,7 @@ class SourceCodeWriter:
     self.parents = dict([(t, set()) for t in self.tokenList])
     self.getTokenAncestors(ast)
     self.termcolor = XTermColorMap()
-    c = lambda x: cParser.terminals[x]
+    c = lambda x: c_Parser.terminals[x]
     self.insertSpaceAfter = {
       c('else')
     }
