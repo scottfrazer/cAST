@@ -1,0 +1,32 @@
+(pp_file:
+  (pp_nodes_list:
+    (_gen0:
+      (pp_nodes:
+        (pp_directive:
+          (control_line:
+            (define_line:
+              <define (#define) [test/cases/21/source.c line 1, col 1]>,
+              <identifier (__signed) [test/cases/21/source.c line 1, col 9]>,
+              (replacement_list:
+                (_gen4:
+                  (pp_tokens:
+                    <identifier (signed) [test/cases/21/source.c line 1, col 21]>
+                  ),
+                  (_gen4: )
+                )
+              )
+            )
+          )
+        )
+      ),
+      <separator () [test/cases/21/source.c line 1, col 1]>,
+      (_gen0:
+        (pp_nodes:
+          <csource (int main()...) [test/cases/21/source.c line 2, col 1]>
+        ),
+        <separator () [test/cases/21/source.c line 8, col 1]>,
+        (_gen0: )
+      )
+    )
+  )
+)
