@@ -83,7 +83,8 @@ def Cli():
   include_path_local = [os.path.dirname(os.path.abspath(cSourcePath))]
 
   cPPFactory = PreProcessorFactory()
-  cPP = cPPFactory.create( include_path_global, include_path_local, skipIncludes=cli.skip_includes )
+  #cPP = cPPFactory.create( include_path_global, include_path_local, skipIncludes=cli.skip_includes )
+  cPP = cPPFactory.createLikeGcc()
 
   if cli.command == 'pp':
     try:

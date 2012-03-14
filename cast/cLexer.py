@@ -103,6 +103,12 @@ def token(string, lineno, colno, terminalId, lexer):
 
 identifierRegex = r'([a-zA-Z_]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)([a-zA-Z_0-9]|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*'
 
+class Factory():
+  def createLexer(self, sourceCode, pp_expander=None, context=None):
+    return cLexer(sourceCode, pp_expander, context)
+  def createStatelessLexer(self, sourceCode):
+    return StatelessCLexer(sourceCode)
+
 class cLexer(PatternMatchingLexer):
   type_specifier = ['void', 'char', 'short', 'int', 'long', 'float', 'double', 'signed', 'unsigned', '_Bool', '_Complex']
   cRegex = [
@@ -169,7 +175,6 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'\['), c_Parser.TERMINAL_LSQUARE, token ),
       ( re.compile(r'\]'), c_Parser.TERMINAL_RSQUARE, token ),
       ( re.compile(r'\((?=\s*' + 'void[\s]*\))'), c_Parser.TERMINAL_LPAREN, parseLparen ),
-      #( re.compile(r'\((?=\s*' + '(' +'|'.join(type_specifier) + ')[\*\s]*\))'), c_Parser.TERMINAL_LPAREN_CAST, parseLparenCast ),
       ( re.compile(r'\('), c_Parser.TERMINAL_LPAREN, parseLparen ),
       ( re.compile(r'\)'), c_Parser.TERMINAL_RPAREN, parseRparen ),
       ( re.compile(r'\{'), c_Parser.TERMINAL_LBRACE, parseLbrace ),
@@ -493,3 +498,9 @@ class cLexer(PatternMatchingLexer):
 
   def getContext(self):
     return self.__dict__
+
+class StatelessCLexer(cLexer):
+  def __init__(self):
+    pass
+  def match(self, string):
+    pass

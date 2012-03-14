@@ -2,29 +2,32 @@ from cast.Token import Token, cToken
 from cast.SourceCode import SourceCode
 
 class Lexer:
-  def __init__(self, sourceCode):
-    self.__dict__.update(locals())
-    self.string = sourceCode.getString()
-    self.resource = sourceCode.getResource()
-    self.colno = sourceCode.getColumn()
-    self.lineno = sourceCode.getLine()
-
   def __iter__(self):
     return self
   
   def __next__(self):
     raise StopIteration()
 
-  def setString(self, string):
-    self.string = string
+class StatelessPatternMatchingLexer(Lexer):
+  def __init__(self, regex):
+    self.__dict__.update(locals())
+  def match(self, string, wholeStringOnly=False):
+    for (regex, terminalId, function) in self.regex:
+      match = regex.match(string)
+      if match:
+        sourceString = match.group(0)
+        if wholeStringOnly and sourceString != string:
+          continue
+        return (sourceString, terminalId, function)
+    return (None, None, None)
 
-  def getString(self):
-    return self.string
-
-class PatternMatchingLexer(Lexer):
+class PatternMatchingLexer(StatelessPatternMatchingLexer):
   def __init__(self, sourceCode, regex):
     self.__dict__.update(locals())
-    super().__init__(sourceCode)
+    self.string = sourceCode.getString()
+    self.resource = sourceCode.getResource()
+    self.colno = sourceCode.getColumn()
+    self.lineno = sourceCode.getLine()
     self.cache = []
   
   def addToken(self, token):
@@ -42,13 +45,7 @@ class PatternMatchingLexer(Lexer):
     token = self.cache[0]
     self.cache = self.cache[1:]
     return token
-  
-  def setLine(self, lineno):
-    self.lineno = lineno
-  
-  def setColumn(self, colno):
-    self.colno = colno
-  
+
   def advance(self, string):
     self.string = self.string[len(string):]
     newlines = len(list(filter(lambda x: x == '\n', string)))
@@ -58,8 +55,8 @@ class PatternMatchingLexer(Lexer):
     else:
       self.colno += len(string)
 
-  # returns an n-item list of tuples: (terminalId, length)
   def peek(self, n=1):
+    # returns an n-item list of tuples: (terminalId, length)
     lookahead = list()
     loc = 0
     for i in range(n):
@@ -80,19 +77,15 @@ class PatternMatchingLexer(Lexer):
       activity = False
       if not len(self.string):
         raise StopIteration()
-      for (regex, terminalId, function) in self.regex:
-        match = regex.match(self.string)
-        if match:
-          activity = True
-          sourceString = match.group(0)
-          lineno = self.lineno
-          colno = self.colno
-          # TODO: debug output of this format might be helpful.
-          # print("[{:<30}]\t'{}'".format(self.string[:30], match.group(0)))
-          self.advance( sourceString )
-          if function:
-            function(sourceString, lineno, colno, terminalId, self)
-            return self.nextToken()
+      (string, terminalId, function) = self.match(self.string)
+      if string is not None:
+        activity = True
+        lineno = self.lineno
+        colno = self.colno
+        self.advance( string )
+        if function:
+          function(string, lineno, colno, terminalId, self)
+          return self.nextToken()
     return None
   
   def __iter__(self):

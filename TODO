@@ -38,6 +38,8 @@ cAST
 
 4) Remove cast/Ast.py
 
+5) use `gcc -dM -E - < /dev/null` to get initial preprocessor directives
+
 hermes
 -------------
 

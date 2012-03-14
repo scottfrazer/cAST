@@ -1,4 +1,4 @@
-import sys, re, os
+import sys, re, os, subprocess
 from itertools import zip_longest, islice
 from copy import copy, deepcopy
 
@@ -36,6 +36,17 @@ class Factory:
     cP = c_Parser()
     cPE = cPreprocessingEvaluator( cPPP, cP, self, includePathGlobal, includePathLocal )
     return PreProcessor( cPPP, cPE, skipIncludes=skipIncludes )
+  def createLikeGcc(self):
+    cPPP = pp_Parser()
+    cP = c_Parser()
+    cPE = cPreprocessingEvaluator( cPPP, cP, self, ['/usr/local/include', '/usr/include'], ['.'] )
+    cPP = PreProcessor( cPPP, cPE, skipIncludes=False )
+    
+    defaultIncludesText = subprocess.check_output(['gcc', '-dM', '-E', '-'], stderr=None, stdin=open('/dev/null')).decode('ascii')
+    defaultIncludesSource = SourceCodeString('command: `gcc -dM -E - < /dev/null`', defaultIncludesText)
+    (tokens, symbols) = cPP.process(defaultIncludesSource)
+
+    return cPP
 
 # Also called 'source file' in ISO docs.
 # Takes C source code, pre-processes, returns C tokens
@@ -57,8 +68,8 @@ class PreProcessor:
   
   def process( self, sourceCode, symbols = {}, lineno = 1 ):
     # Phase 1: Replace trigraphs with single-character equivalents
-    for (trigraph, replacement) in self.trigraphs.items():
-      sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
+    #for (trigraph, replacement) in self.trigraphs.items():
+    #  sourceCode.sourceCode = sourceCode.sourceCode.replace(trigraph, replacement)
     # Phase 3: Tokenize, preprocessing directives executed, macro invocations expanded, expand _Pragma
     parsetree = self.cPPP.parse( TokenStream(ppLexer(sourceCode)) )
     ast = parsetree.toAst()
@@ -418,6 +429,7 @@ class cPreprocessingEvaluator:
     if self.skipIncludes:
       return list()
     filename = cPPAST.getAttr('file').getString()
+    #print('start #include ' + filename)
     if (filename[0], filename[-1]) == ('"', '"'):
       filename = filename.strip('"')
       for directory in self.includePathLocal:
@@ -430,6 +442,7 @@ class cPreprocessingEvaluator:
           sourceCode = SourceCode( path, open(path) )
           (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
           self.symbols = symbolTable
+          #print('end #include ' + filename)
           return tokens
       raise NameError(filename + ' not found in include path')
     elif (filename[0], filename[-1]) == ('<', '>'):
@@ -444,6 +457,7 @@ class cPreprocessingEvaluator:
           sourceCode = SourceCode( path, open(path) )
           (tokens, symbolTable) = preprocessor.process( sourceCode, self.symbols )
           self.symbols = symbolTable
+          #print('end #include ' + filename)
           return tokens
       raise NameError(filename + ' not found in include path')
     else:
@@ -453,6 +467,7 @@ class cPreprocessingEvaluator:
     ident = cPPAST.getAttr('ident')
     body = cPPAST.getAttr('body')
     self.symbols[ident.getString()] = self._eval(body)
+    #print('#define %s as %s' % (ident.getString(), body))
     self.line += 1
 
   def eval_DefineFunction(self, cPPAST):

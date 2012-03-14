@@ -118,20 +118,18 @@ class ppLexer(Lexer):
     ( re.compile(r'/='), pp_Parser.TERMINAL_DIVEQ, token ),
     ( re.compile(r'/'), pp_Parser.TERMINAL_DIV, token )
   ]
+
   def __init__(self, sourceCode):
     self.__dict__.update(locals())
-    super().__init__(sourceCode)
+    self.string = sourceCode.getString()
+    self.resource = sourceCode.getResource()
+    self.colno = sourceCode.getColumn()
+    self.lineno = sourceCode.getLine()
     self.cST_lines = self.string.split('\n')
     self.lineno -= 1
     self.logger = LoggerFactory().getClassLogger(__name__, self.__class__.__name__)
     self.tokenBuffer = []
-  
-  def setLine(self, lineno):
-    self.lineno = lineno
-  
-  def setColumn(self, colno):
-    self.colno = colno
-  
+
   def matchString(self, string):
     for (regex, terminalId, function) in self.regex:
       match = regex.match(string)
