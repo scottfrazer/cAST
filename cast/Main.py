@@ -115,7 +115,7 @@ def Cli():
       parser = pp_Parser()
       parsetree = parser.parse(cPPL)
       ast = parsetree.toAst()
-      print(AstPrettyPrintable(ast))
+      print(AstPrettyPrintable(ast, color=cli.color))
     except Exception as e:
       print(e, '\n', e.tracer)
       sys.exit(-1)
