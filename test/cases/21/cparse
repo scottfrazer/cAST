@@ -1,0 +1,158 @@
+(translation_unit:
+  (_gen0:
+    (external_declaration:
+      <external_declaration_hint () [test/cases/21/source.c line 2, col 1]>,
+      (_gen1:
+        (declaration_specifier:
+          (type_specifier:
+            <int (int) [test/cases/21/source.c line 2, col 1]>
+          )
+        ),
+        (_gen2: )
+      ),
+      (external_declaration_sub:
+        (external_function:
+          <function_definition_hint () [test/cases/21/source.c line 2, col 1]>,
+          (declarator:
+            (_gen26: ),
+            (_direct_declarator:
+              (_direct_declarator:
+                <identifier (main) [test/cases/21/source.c line 2, col 5]>
+              ),
+              <lparen (() [test/cases/21/source.c line 2, col 9]>,
+              (direct_declarator_parameter_list: ),
+              <rparen ()) [test/cases/21/source.c line 2, col 10]>
+            )
+          ),
+          (_gen5: ),
+          (compound_statement:
+            <lbrace ({) [test/cases/21/source.c line 2, col 12]>,
+            (_gen39:
+              (block_item_list:
+                (_gen40:
+                  (block_item:
+                    (declaration:
+                      (_gen1:
+                        (declaration_specifier:
+                          (type_specifier:
+                            <signed (signed) [test/cases/21/source.c line 3, col 3]>
+                          )
+                        ),
+                        (_gen2:
+                          (declaration_specifier:
+                            (type_specifier:
+                              <char (char) [test/cases/21/source.c line 3, col 12]>
+                            )
+                          ),
+                          (_gen2: )
+                        )
+                      ),
+                      (_gen8:
+                        (init_declarator_list:
+                          (_gen9:
+                            (init_declarator:
+                              (declarator:
+                                (_gen26: ),
+                                (_direct_declarator:
+                                  <identifier (x) [test/cases/21/source.c line 3, col 17]>
+                                )
+                              ),
+                              (_gen11: )
+                            ),
+                            (_gen10: )
+                          )
+                        )
+                      ),
+                      <semi (;) [test/cases/21/source.c line 3, col 18]>
+                    )
+                  ),
+                  (_gen40:
+                    (block_item:
+                      (declaration:
+                        (_gen1:
+                          (declaration_specifier:
+                            (storage_class_specifier:
+                              <typedef (typedef) [test/cases/21/source.c line 5, col 3]>
+                            )
+                          ),
+                          (_gen2:
+                            (declaration_specifier:
+                              (type_specifier:
+                                <signed (signed) [test/cases/21/source.c line 5, col 11]>
+                              )
+                            ),
+                            (_gen2:
+                              (declaration_specifier:
+                                (type_specifier:
+                                  <char (char) [test/cases/21/source.c line 5, col 20]>
+                                )
+                              ),
+                              (_gen2: )
+                            )
+                          )
+                        ),
+                        (_gen8:
+                          (init_declarator_list:
+                            (_gen9:
+                              (init_declarator:
+                                (declarator:
+                                  (_gen26: ),
+                                  (_direct_declarator:
+                                    <identifier (__int8_t) [test/cases/21/source.c line 5, col 25]>
+                                  )
+                                ),
+                                (_gen11: )
+                              ),
+                              (_gen10: )
+                            )
+                          )
+                        ),
+                        <semi (;) [test/cases/21/source.c line 5, col 33]>
+                      )
+                    ),
+                    (_gen40:
+                      (block_item:
+                        (declaration:
+                          (_gen1:
+                            (declaration_specifier:
+                              (type_specifier:
+                                (typedef_name:
+                                  <typedef_identifier (__int8_t) [test/cases/21/source.c line 6, col 3]>
+                                )
+                              )
+                            ),
+                            (_gen2: )
+                          ),
+                          (_gen8:
+                            (init_declarator_list:
+                              (_gen9:
+                                (init_declarator:
+                                  (declarator:
+                                    (_gen26: ),
+                                    (_direct_declarator:
+                                      <identifier (y) [test/cases/21/source.c line 6, col 12]>
+                                    )
+                                  ),
+                                  (_gen11: )
+                                ),
+                                (_gen10: )
+                              )
+                            )
+                          ),
+                          <semi (;) [test/cases/21/source.c line 6, col 13]>
+                        )
+                      ),
+                      (_gen40: )
+                    )
+                  )
+                )
+              )
+            ),
+            <rbrace (}) [test/cases/21/source.c line 7, col 1]>
+          )
+        )
+      )
+    ),
+    (_gen0: )
+  )
+)

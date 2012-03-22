@@ -1,0 +1,6 @@
+<define (#define) [test/cases/21/source.c line 1, col 1]>
+<identifier (__signed) [test/cases/21/source.c line 1, col 9]>
+<identifier (signed) [test/cases/21/source.c line 1, col 21]>
+<separator () [test/cases/21/source.c line 1, col 1]>
+<csource (int main()...) [test/cases/21/source.c line 2, col 1]>
+<separator () [test/cases/21/source.c line 8, col 1]>

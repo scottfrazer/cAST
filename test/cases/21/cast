@@ -1,0 +1,66 @@
+(TranslationUnit:
+  external_declarations=[
+    (ExternalDeclaration:
+      declarations=(FunctionDefinition:
+        body=[
+          (Declaration:
+            init_declarators=[
+              (InitDeclarator:
+                initializer=None,
+                declarator=(Declarator:
+                  direct_declarator=<identifier (x) [test/cases/21/source.c line 3, col 17]>,
+                  pointer=None
+                )
+              )
+            ],
+            declaration_specifiers=[
+              <signed (signed) [test/cases/21/source.c line 3, col 3]>,
+              <char (char) [test/cases/21/source.c line 3, col 12]>
+            ]
+          ),
+          (Declaration:
+            init_declarators=[
+              (InitDeclarator:
+                initializer=None,
+                declarator=(Declarator:
+                  direct_declarator=<identifier (__int8_t) [test/cases/21/source.c line 5, col 25]>,
+                  pointer=None
+                )
+              )
+            ],
+            declaration_specifiers=[
+              <typedef (typedef) [test/cases/21/source.c line 5, col 3]>,
+              <signed (signed) [test/cases/21/source.c line 5, col 11]>,
+              <char (char) [test/cases/21/source.c line 5, col 20]>
+            ]
+          ),
+          (Declaration:
+            init_declarators=[
+              (InitDeclarator:
+                initializer=None,
+                declarator=(Declarator:
+                  direct_declarator=<identifier (y) [test/cases/21/source.c line 6, col 12]>,
+                  pointer=None
+                )
+              )
+            ],
+            declaration_specifiers=[
+              <typedef_identifier (__int8_t) [test/cases/21/source.c line 6, col 3]>
+            ]
+          )
+        ],
+        declaration_list=None,
+        signature=(Declarator:
+          direct_declarator=(FunctionSignature:
+            params=None,
+            declarator=<identifier (main) [test/cases/21/source.c line 2, col 5]>
+          ),
+          pointer=None
+        )
+      ),
+      declaration_specifiers=[
+        <int (int) [test/cases/21/source.c line 2, col 1]>
+      ]
+    )
+  ]
+)

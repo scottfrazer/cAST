@@ -1,0 +1,1006 @@
+(PPFile:
+  nodes=[
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 1, col 25]>,
+          <sub (-) [test/cases/22/source.c line 1, col 26]>,
+          <pp_number (1021) [test/cases/22/source.c line 1, col 27]>,
+          <rparen ()) [test/cases/22/source.c line 1, col 31]>
+        ]
+      ),
+      ident=<identifier (__DBL_MIN_...) [test/cases/22/source.c line 1, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1.17549435...) [test/cases/22/source.c line 2, col 21]>
+        ]
+      ),
+      ident=<identifier (__FLT_MIN_...) [test/cases/22/source.c line 2, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (0.00000000...) [test/cases/22/source.c line 3, col 23]>
+        ]
+      ),
+      ident=<identifier (__DEC64_DE...) [test/cases/22/source.c line 3, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (8) [test/cases/22/source.c line 4, col 22]>
+        ]
+      ),
+      ident=<identifier (__CHAR_BIT...) [test/cases/22/source.c line 4, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2147483647) [test/cases/22/source.c line 5, col 23]>
+        ]
+      ),
+      ident=<identifier (__WCHAR_MA...) [test/cases/22/source.c line 5, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (4.94065645...) [test/cases/22/source.c line 6, col 28]>
+        ]
+      ),
+      ident=<identifier (__DBL_DENO...) [test/cases/22/source.c line 6, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (0) [test/cases/22/source.c line 7, col 29]>
+        ]
+      ),
+      ident=<identifier (__FLT_EVAL...) [test/cases/22/source.c line 7, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 8, col 28]>,
+          <sub (-) [test/cases/22/source.c line 8, col 29]>,
+          <pp_number (307) [test/cases/22/source.c line 8, col 30]>,
+          <rparen ()) [test/cases/22/source.c line 8, col 33]>
+        ]
+      ),
+      ident=<identifier (__DBL_MIN_...) [test/cases/22/source.c line 8, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (0) [test/cases/22/source.c line 9, col 30]>
+        ]
+      ),
+      ident=<identifier (__FINITE_M...) [test/cases/22/source.c line 9, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (384) [test/cases/22/source.c line 10, col 27]>
+        ]
+      ),
+      ident=<identifier (__DEC64_MA...) [test/cases/22/source.c line 10, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (32767) [test/cases/22/source.c line 11, col 22]>
+        ]
+      ),
+      ident=<identifier (__SHRT_MAX...) [test/cases/22/source.c line 11, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1.18973149...) [test/cases/22/source.c line 12, col 22]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MAX...) [test/cases/22/source.c line 12, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (5666) [test/cases/22/source.c line 13, col 22]>
+        ]
+      ),
+      ident=<identifier (__APPLE_CC...) [test/cases/22/source.c line 13, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (long) [test/cases/22/source.c line 14, col 26]>,
+          <identifier (unsigned) [test/cases/22/source.c line 14, col 31]>,
+          <identifier (int) [test/cases/22/source.c line 14, col 40]>
+        ]
+      ),
+      ident=<identifier (__UINTMAX_...) [test/cases/22/source.c line 14, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1E-6DF) [test/cases/22/source.c line 15, col 27]>
+        ]
+      ),
+      ident=<identifier (__DEC32_EP...) [test/cases/22/source.c line 15, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (__attribut...) [test/cases/22/source.c line 16, col 17]>,
+          <lparen (() [test/cases/22/source.c line 16, col 30]>,
+          <lparen (() [test/cases/22/source.c line 16, col 31]>,
+          <identifier (__blocks__) [test/cases/22/source.c line 16, col 32]>,
+          <lparen (() [test/cases/22/source.c line 16, col 42]>,
+          <identifier (byref) [test/cases/22/source.c line 16, col 43]>,
+          <rparen ()) [test/cases/22/source.c line 16, col 48]>,
+          <rparen ()) [test/cases/22/source.c line 16, col 49]>,
+          <rparen ()) [test/cases/22/source.c line 16, col 50]>
+        ]
+      ),
+      ident=<identifier (__block) [test/cases/22/source.c line 16, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (127) [test/cases/22/source.c line 17, col 23]>
+        ]
+      ),
+      ident=<identifier (__SCHAR_MA...) [test/cases/22/source.c line 17, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (_) [test/cases/22/source.c line 18, col 31]>
+        ]
+      ),
+      ident=<identifier (__USER_LAB...) [test/cases/22/source.c line 18, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 19, col 25]>
+        ]
+      ),
+      ident=<identifier (__STDC_HOS...) [test/cases/22/source.c line 19, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 20, col 27]>,
+          <sub (-) [test/cases/22/source.c line 20, col 28]>,
+          <pp_number (383) [test/cases/22/source.c line 20, col 29]>,
+          <rparen ()) [test/cases/22/source.c line 20, col 32]>
+        ]
+      ),
+      ident=<identifier (__DEC64_MI...) [test/cases/22/source.c line 20, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (15) [test/cases/22/source.c line 21, col 21]>
+        ]
+      ),
+      ident=<identifier (__DBL_DIG_...) [test/cases/22/source.c line 21, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1.19209290...) [test/cases/22/source.c line 22, col 25]>
+        ]
+      ),
+      ident=<identifier (__FLT_EPSI...) [test/cases/22/source.c line 22, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (3.36210314...) [test/cases/22/source.c line 23, col 22]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MIN...) [test/cases/22/source.c line 23, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (9.999999E9...) [test/cases/22/source.c line 24, col 23]>
+        ]
+      ),
+      ident=<identifier (__DEC32_MA...) [test/cases/22/source.c line 24, col 9]>
+    ),
+    (Define:
+      body=None,
+      ident=<identifier (__strong) [test/cases/22/source.c line 25, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 26, col 19]>
+        ]
+      ),
+      ident=<identifier (__APPLE__) [test/cases/22/source.c line 26, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (21) [test/cases/22/source.c line 27, col 25]>
+        ]
+      ),
+      ident=<identifier (__DECIMAL_...) [test/cases/22/source.c line 27, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 28, col 32]>
+        ]
+      ),
+      ident=<identifier (__LDBL_HAS...) [test/cases/22/source.c line 28, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 29, col 21]>
+        ]
+      ),
+      ident=<identifier (__DYNAMIC_...) [test/cases/22/source.c line 29, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (4) [test/cases/22/source.c line 30, col 18]>
+        ]
+      ),
+      ident=<identifier (__GNUC__) [test/cases/22/source.c line 30, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 31, col 17]>
+        ]
+      ),
+      ident=<identifier (__MMX__) [test/cases/22/source.c line 31, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 32, col 28]>
+        ]
+      ),
+      ident=<identifier (__FLT_HAS_...) [test/cases/22/source.c line 32, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1.79769313...) [test/cases/22/source.c line 33, col 21]>
+        ]
+      ),
+      ident=<identifier (__DBL_MAX_...) [test/cases/22/source.c line 33, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 34, col 30]>
+        ]
+      ),
+      ident=<identifier (__DBL_HAS_...) [test/cases/22/source.c line 34, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 35, col 27]>,
+          <sub (-) [test/cases/22/source.c line 35, col 28]>,
+          <pp_number (95) [test/cases/22/source.c line 35, col 29]>,
+          <rparen ()) [test/cases/22/source.c line 35, col 31]>
+        ]
+      ),
+      ident=<identifier (__DEC32_MI...) [test/cases/22/source.c line 35, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 36, col 29]>
+        ]
+      ),
+      ident=<identifier (OBJC_NEW_P...) [test/cases/22/source.c line 36, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 37, col 29]>
+        ]
+      ),
+      ident=<identifier (__LDBL_HAS...) [test/cases/22/source.c line 37, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1E-95DF) [test/cases/22/source.c line 38, col 23]>
+        ]
+      ),
+      ident=<identifier (__DEC32_MI...) [test/cases/22/source.c line 38, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (__attribut...) [test/cases/22/source.c line 39, col 16]>,
+          <lparen (() [test/cases/22/source.c line 39, col 29]>,
+          <lparen (() [test/cases/22/source.c line 39, col 30]>,
+          <identifier (objc_gc) [test/cases/22/source.c line 39, col 31]>,
+          <lparen (() [test/cases/22/source.c line 39, col 38]>,
+          <identifier (weak) [test/cases/22/source.c line 39, col 39]>,
+          <rparen ()) [test/cases/22/source.c line 39, col 43]>,
+          <rparen ()) [test/cases/22/source.c line 39, col 44]>,
+          <rparen ()) [test/cases/22/source.c line 39, col 45]>
+        ]
+      ),
+      ident=<identifier (__weak) [test/cases/22/source.c line 39, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1024) [test/cases/22/source.c line 40, col 25]>
+        ]
+      ),
+      ident=<identifier (__DBL_MAX_...) [test/cases/22/source.c line 40, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1E-33DL) [test/cases/22/source.c line 41, col 28]>
+        ]
+      ),
+      ident=<identifier (__DEC128_E...) [test/cases/22/source.c line 41, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 42, col 23]>
+        ]
+      ),
+      ident=<identifier (__SSE2_MAT...) [test/cases/22/source.c line 42, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 43, col 17]>
+        ]
+      ),
+      ident=<identifier (__amd64) [test/cases/22/source.c line 43, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 44, col 24]>
+        ]
+      ),
+      ident=<identifier (__tune_cor...) [test/cases/22/source.c line 44, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (9223372036...) [test/cases/22/source.c line 45, col 27]>
+        ]
+      ),
+      ident=<identifier (__LONG_LON...) [test/cases/22/source.c line 45, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1002) [test/cases/22/source.c line 46, col 27]>
+        ]
+      ),
+      ident=<identifier (__GXX_ABI_...) [test/cases/22/source.c line 46, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 47, col 25]>,
+          <sub (-) [test/cases/22/source.c line 47, col 26]>,
+          <pp_number (125) [test/cases/22/source.c line 47, col 27]>,
+          <rparen ()) [test/cases/22/source.c line 47, col 30]>
+        ]
+      ),
+      ident=<identifier (__FLT_MIN_...) [test/cases/22/source.c line 47, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 48, col 18]>
+        ]
+      ),
+      ident=<identifier (__x86_64) [test/cases/22/source.c line 48, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2.22507385...) [test/cases/22/source.c line 49, col 21]>
+        ]
+      ),
+      ident=<identifier (__DBL_MIN_...) [test/cases/22/source.c line 49, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 50, col 18]>
+        ]
+      ),
+      ident=<identifier (__LP64__) [test/cases/22/source.c line 50, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 51, col 31]>
+        ]
+      ),
+      ident=<identifier (__DBL_HAS_...) [test/cases/22/source.c line 51, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1E-6143DL) [test/cases/22/source.c line 52, col 24]>
+        ]
+      ),
+      ident=<identifier (__DEC128_M...) [test/cases/22/source.c line 52, col 9]>
+    ),
+    (Define:
+      body=None,
+      ident=<identifier (__REGISTER...) [test/cases/22/source.c line 53, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 54, col 28]>
+        ]
+      ),
+      ident=<identifier (__DBL_HAS_...) [test/cases/22/source.c line 54, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 55, col 23]>
+        ]
+      ),
+      ident=<identifier (__NO_INLIN...) [test/cases/22/source.c line 55, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2) [test/cases/22/source.c line 56, col 29]>
+        ]
+      ),
+      ident=<identifier (__DEC_EVAL...) [test/cases/22/source.c line 56, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (9.99999999...) [test/cases/22/source.c line 57, col 24]>
+        ]
+      ),
+      ident=<identifier (__DEC128_M...) [test/cases/22/source.c line 57, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (24) [test/cases/22/source.c line 58, col 26]>
+        ]
+      ),
+      ident=<identifier (__FLT_MANT...) [test/cases/22/source.c line 58, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <string_literal ("4.2.1 (Ap...) [test/cases/22/source.c line 59, col 21]>
+        ]
+      ),
+      ident=<identifier (__VERSION_...) [test/cases/22/source.c line 59, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1E-15DD) [test/cases/22/source.c line 60, col 27]>
+        ]
+      ),
+      ident=<identifier (__DEC64_EP...) [test/cases/22/source.c line 60, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 61, col 28]>,
+          <sub (-) [test/cases/22/source.c line 61, col 29]>,
+          <pp_number (6143) [test/cases/22/source.c line 61, col 30]>,
+          <rparen ()) [test/cases/22/source.c line 61, col 34]>
+        ]
+      ),
+      ident=<identifier (__DEC128_M...) [test/cases/22/source.c line 61, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1068) [test/cases/22/source.c line 62, col 55]>
+        ]
+      ),
+      ident=<identifier (__ENVIRONM...) [test/cases/22/source.c line 62, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (long) [test/cases/22/source.c line 63, col 23]>,
+          <identifier (unsigned) [test/cases/22/source.c line 63, col 28]>,
+          <identifier (int) [test/cases/22/source.c line 63, col 37]>
+        ]
+      ),
+      ident=<identifier (__SIZE_TYP...) [test/cases/22/source.c line 63, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (0.000001E-...) [test/cases/22/source.c line 64, col 23]>
+        ]
+      ),
+      ident=<identifier (__DEC32_DE...) [test/cases/22/source.c line 64, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2) [test/cases/22/source.c line 65, col 23]>
+        ]
+      ),
+      ident=<identifier (__FLT_RADI...) [test/cases/22/source.c line 65, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1.08420217...) [test/cases/22/source.c line 66, col 26]>
+        ]
+      ),
+      ident=<identifier (__LDBL_EPS...) [test/cases/22/source.c line 66, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 67, col 22]>
+        ]
+      ),
+      ident=<identifier (__SSE_MATH...) [test/cases/22/source.c line 67, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 68, col 14]>
+        ]
+      ),
+      ident=<identifier (__k8) [test/cases/22/source.c line 68, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (18) [test/cases/22/source.c line 69, col 22]>
+        ]
+      ),
+      ident=<identifier (__LDBL_DIG...) [test/cases/22/source.c line 69, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 70, col 20]>
+        ]
+      ),
+      ident=<identifier (__x86_64__) [test/cases/22/source.c line 70, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 71, col 31]>
+        ]
+      ),
+      ident=<identifier (__FLT_HAS_...) [test/cases/22/source.c line 71, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (38) [test/cases/22/source.c line 72, col 28]>
+        ]
+      ),
+      ident=<identifier (__FLT_MAX_...) [test/cases/22/source.c line 72, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (9223372036...) [test/cases/22/source.c line 73, col 22]>
+        ]
+      ),
+      ident=<identifier (__LONG_MAX...) [test/cases/22/source.c line 73, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 74, col 30]>
+        ]
+      ),
+      ident=<identifier (__FLT_HAS_...) [test/cases/22/source.c line 74, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (9.99999999...) [test/cases/22/source.c line 75, col 23]>
+        ]
+      ),
+      ident=<identifier (__DEC64_MA...) [test/cases/22/source.c line 75, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (16) [test/cases/22/source.c line 76, col 28]>
+        ]
+      ),
+      ident=<identifier (__DEC64_MA...) [test/cases/22/source.c line 76, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (96) [test/cases/22/source.c line 77, col 27]>
+        ]
+      ),
+      ident=<identifier (__DEC32_MA...) [test/cases/22/source.c line 77, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (0.00000000...) [test/cases/22/source.c line 78, col 24]>
+        ]
+      ),
+      ident=<identifier (__DEC128_D...) [test/cases/22/source.c line 78, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 79, col 27]>
+        ]
+      ),
+      ident=<identifier (__LITTLE_E...) [test/cases/22/source.c line 79, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (64) [test/cases/22/source.c line 80, col 27]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MAN...) [test/cases/22/source.c line 80, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 81, col 32]>
+        ]
+      ),
+      ident=<identifier (__CONSTANT...) [test/cases/22/source.c line 81, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (7) [test/cases/22/source.c line 82, col 28]>
+        ]
+      ),
+      ident=<identifier (__DEC32_MA...) [test/cases/22/source.c line 82, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 83, col 16]>
+        ]
+      ),
+      ident=<identifier (__k8__) [test/cases/22/source.c line 83, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (int) [test/cases/22/source.c line 84, col 24]>
+        ]
+      ),
+      ident=<identifier (__WCHAR_TY...) [test/cases/22/source.c line 84, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2) [test/cases/22/source.c line 85, col 17]>
+        ]
+      ),
+      ident=<identifier (__pic__) [test/cases/22/source.c line 85, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (6) [test/cases/22/source.c line 86, col 21]>
+        ]
+      ),
+      ident=<identifier (__FLT_DIG_...) [test/cases/22/source.c line 86, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2147483647) [test/cases/22/source.c line 87, col 21]>
+        ]
+      ),
+      ident=<identifier (__INT_MAX_...) [test/cases/22/source.c line 87, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (128) [test/cases/22/source.c line 88, col 25]>
+        ]
+      ),
+      ident=<identifier (__FLT_MAX_...) [test/cases/22/source.c line 88, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 89, col 20]>
+        ]
+      ),
+      ident=<identifier (__BLOCKS__) [test/cases/22/source.c line 89, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (53) [test/cases/22/source.c line 90, col 26]>
+        ]
+      ),
+      ident=<identifier (__DBL_MANT...) [test/cases/22/source.c line 90, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1E-383DD) [test/cases/22/source.c line 91, col 23]>
+        ]
+      ),
+      ident=<identifier (__DEC64_MI...) [test/cases/22/source.c line 91, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (int) [test/cases/22/source.c line 92, col 23]>
+        ]
+      ),
+      ident=<identifier (__WINT_TYP...) [test/cases/22/source.c line 92, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 93, col 17]>
+        ]
+      ),
+      ident=<identifier (__SSE__) [test/cases/22/source.c line 93, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 94, col 26]>,
+          <sub (-) [test/cases/22/source.c line 94, col 27]>,
+          <pp_number (16381) [test/cases/22/source.c line 94, col 28]>,
+          <rparen ()) [test/cases/22/source.c line 94, col 33]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MIN...) [test/cases/22/source.c line 94, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 95, col 18]>
+        ]
+      ),
+      ident=<identifier (__MACH__) [test/cases/22/source.c line 95, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 96, col 19]>
+        ]
+      ),
+      ident=<identifier (__amd64__) [test/cases/22/source.c line 96, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (16384) [test/cases/22/source.c line 97, col 26]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MAX...) [test/cases/22/source.c line 97, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 98, col 17]>
+        ]
+      ),
+      ident=<identifier (__SSP__) [test/cases/22/source.c line 98, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (4932) [test/cases/22/source.c line 99, col 29]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MAX...) [test/cases/22/source.c line 99, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2.22044604...) [test/cases/22/source.c line 100, col 25]>
+        ]
+      ),
+      ident=<identifier (__DBL_EPSI...) [test/cases/22/source.c line 100, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 101, col 15]>
+        ]
+      ),
+      ident=<identifier (_LP64) [test/cases/22/source.c line 101, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 102, col 29]>
+        ]
+      ),
+      ident=<identifier (__GNUC_PAT...) [test/cases/22/source.c line 102, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 103, col 31]>
+        ]
+      ),
+      ident=<identifier (__LDBL_HAS...) [test/cases/22/source.c line 103, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (9223372036...) [test/cases/22/source.c line 104, col 24]>
+        ]
+      ),
+      ident=<identifier (__INTMAX_M...) [test/cases/22/source.c line 104, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1.40129846...) [test/cases/22/source.c line 105, col 28]>
+        ]
+      ),
+      ident=<identifier (__FLT_DENO...) [test/cases/22/source.c line 105, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2) [test/cases/22/source.c line 106, col 17]>
+        ]
+      ),
+      ident=<identifier (__PIC__) [test/cases/22/source.c line 106, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (3.40282347...) [test/cases/22/source.c line 107, col 21]>
+        ]
+      ),
+      ident=<identifier (__FLT_MAX_...) [test/cases/22/source.c line 107, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 108, col 18]>
+        ]
+      ),
+      ident=<identifier (__SSE2__) [test/cases/22/source.c line 108, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 109, col 28]>,
+          <sub (-) [test/cases/22/source.c line 109, col 29]>,
+          <pp_number (37) [test/cases/22/source.c line 109, col 30]>,
+          <rparen ()) [test/cases/22/source.c line 109, col 32]>
+        ]
+      ),
+      ident=<identifier (__FLT_MIN_...) [test/cases/22/source.c line 109, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (long) [test/cases/22/source.c line 110, col 25]>,
+          <identifier (int) [test/cases/22/source.c line 110, col 30]>
+        ]
+      ),
+      ident=<identifier (__INTMAX_T...) [test/cases/22/source.c line 110, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (6144) [test/cases/22/source.c line 111, col 28]>
+        ]
+      ),
+      ident=<identifier (__DEC128_M...) [test/cases/22/source.c line 111, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (2) [test/cases/22/source.c line 112, col 24]>
+        ]
+      ),
+      ident=<identifier (__GNUC_MIN...) [test/cases/22/source.c line 112, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (308) [test/cases/22/source.c line 113, col 28]>
+        ]
+      ),
+      ident=<identifier (__DBL_MAX_...) [test/cases/22/source.c line 113, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (3.64519953...) [test/cases/22/source.c line 114, col 29]>
+        ]
+      ),
+      ident=<identifier (__LDBL_DEN...) [test/cases/22/source.c line 114, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 115, col 18]>
+        ]
+      ),
+      ident=<identifier (__STDC__) [test/cases/22/source.c line 115, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <identifier (long) [test/cases/22/source.c line 116, col 26]>,
+          <identifier (int) [test/cases/22/source.c line 116, col 31]>
+        ]
+      ),
+      ident=<identifier (__PTRDIFF_...) [test/cases/22/source.c line 116, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (34) [test/cases/22/source.c line 117, col 29]>
+        ]
+      ),
+      ident=<identifier (__DEC128_M...) [test/cases/22/source.c line 117, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <lparen (() [test/cases/22/source.c line 118, col 29]>,
+          <sub (-) [test/cases/22/source.c line 118, col 30]>,
+          <pp_number (4931) [test/cases/22/source.c line 118, col 31]>,
+          <rparen ()) [test/cases/22/source.c line 118, col 35]>
+        ]
+      ),
+      ident=<identifier (__LDBL_MIN...) [test/cases/22/source.c line 118, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 119, col 29]>
+        ]
+      ),
+      ident=<identifier (__GNUC_GNU...) [test/cases/22/source.c line 119, col 9]>
+    ),
+    (Define:
+      body=(ReplacementList:
+        tokens=[
+          <pp_number (1) [test/cases/22/source.c line 120, col 18]>
+        ]
+      ),
+      ident=<identifier (__SSE3__) [test/cases/22/source.c line 120, col 9]>
+    ),
+    <csource () [test/cases/22/source.c line 121, col 1]>
+  ]
+)

@@ -1,5 +1,5 @@
 import re
-from cast.Lexer import PatternMatchingLexer
+from cast.Lexer import PatternMatchingLexer, StatelessPatternMatchingLexer
 from cast.Token import cToken, TokenList
 from cast.c_Parser import c_Parser
 
@@ -117,44 +117,44 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'//.*', 0), None, None ),
 
       # Keywords
-      ( re.compile(r'auto(?=[^a-zA-Z_])'), c_Parser.TERMINAL_AUTO, token ),
-      ( re.compile(r'_Bool(?=[^a-zA-Z_])'), c_Parser.TERMINAL_BOOL, token ),
-      ( re.compile(r'break(?=[^a-zA-Z_])'), c_Parser.TERMINAL_BREAK, token ),
-      ( re.compile(r'case(?=[^a-zA-Z_])'), c_Parser.TERMINAL_CASE, token ),
-      ( re.compile(r'char(?=[^a-zA-Z_])'), c_Parser.TERMINAL_CHAR, token ),
-      ( re.compile(r'_Complex(?=[^a-zA-Z_])'), c_Parser.TERMINAL_COMPLEX, token ),
-      ( re.compile(r'const(?=[^a-zA-Z_])'), c_Parser.TERMINAL_CONST, token ),
-      ( re.compile(r'continue(?=[^a-zA-Z_])'), c_Parser.TERMINAL_CONTINUE, token ),
-      ( re.compile(r'default(?=[^a-zA-Z_])'), c_Parser.TERMINAL_DEFAULT, token ),
-      ( re.compile(r'do(?=[^a-zA-Z_])'), c_Parser.TERMINAL_DO, token ),
-      ( re.compile(r'double(?=[^a-zA-Z_])'), c_Parser.TERMINAL_DOUBLE, token ),
-      ( re.compile(r'else\s+if(?=[^a-zA-Z_])'), c_Parser.TERMINAL_ELSE_IF, parseIf ),
-      ( re.compile(r'else(?=[^a-zA-Z_])'), c_Parser.TERMINAL_ELSE, parseElse ),
-      ( re.compile(r'enum(?=[^a-zA-Z_])'), c_Parser.TERMINAL_ENUM, token ),
-      ( re.compile(r'extern(?=[^a-zA-Z_])'), c_Parser.TERMINAL_EXTERN, token ),
-      ( re.compile(r'float(?=[^a-zA-Z_])'), c_Parser.TERMINAL_FLOAT, token ),
-      ( re.compile(r'for(?=[^a-zA-Z_])'), c_Parser.TERMINAL_FOR, token ),
-      ( re.compile(r'goto(?=[^a-zA-Z_])'), c_Parser.TERMINAL_GOTO, token ),
-      ( re.compile(r'if(?=[^a-zA-Z_])'), c_Parser.TERMINAL_IF, parseIf ),
-      ( re.compile(r'_Imaginary(?=[^a-zA-Z_])'), c_Parser.TERMINAL_IMAGINARY, token ),
-      ( re.compile(r'inline(?=[^a-zA-Z_])'), c_Parser.TERMINAL_INLINE, token ),
-      ( re.compile(r'int(?=[^a-zA-Z_])'), c_Parser.TERMINAL_INT, token ),
-      ( re.compile(r'long(?=[^a-zA-Z_])'), c_Parser.TERMINAL_LONG, token ),
-      ( re.compile(r'register(?=[^a-zA-Z_])'), c_Parser.TERMINAL_REGISTER, token ),
-      ( re.compile(r'restrict(?=[^a-zA-Z_])'), c_Parser.TERMINAL_RESTRICT, token ),
-      ( re.compile(r'return(?=[^a-zA-Z_])'), c_Parser.TERMINAL_RETURN, token ),
-      ( re.compile(r'short(?=[^a-zA-Z_])'), c_Parser.TERMINAL_SHORT, token ),
-      ( re.compile(r'signed(?=[^a-zA-Z_])'), c_Parser.TERMINAL_SIGNED, token ),
-      ( re.compile(r'sizeof(?=[^a-zA-Z_])'), c_Parser.TERMINAL_SIZEOF, token ),
-      ( re.compile(r'static(?=[^a-zA-Z_])'), c_Parser.TERMINAL_STATIC, token ),
-      ( re.compile(r'struct(?=[^a-zA-Z_])'), c_Parser.TERMINAL_STRUCT, token ),
-      ( re.compile(r'switch(?=[^a-zA-Z_])'), c_Parser.TERMINAL_SWITCH, token ),
-      ( re.compile(r'typedef(?=[^a-zA-Z_])'), c_Parser.TERMINAL_TYPEDEF, parseTypedef ),
-      ( re.compile(r'union(?=[^a-zA-Z_])'), c_Parser.TERMINAL_UNION, token ),
-      ( re.compile(r'unsigned(?=[^a-zA-Z_])'), c_Parser.TERMINAL_UNSIGNED, token ),
-      ( re.compile(r'void(?=[^a-zA-Z_])'), c_Parser.TERMINAL_VOID, token ),
-      ( re.compile(r'volatile(?=[^a-zA-Z_])'), c_Parser.TERMINAL_VOLATILE, token ),
-      ( re.compile(r'while(?=[^a-zA-Z_])'), c_Parser.TERMINAL_WHILE, token ),
+      ( re.compile(r'auto(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_AUTO, token ),
+      ( re.compile(r'_Bool(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_BOOL, token ),
+      ( re.compile(r'break(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_BREAK, token ),
+      ( re.compile(r'case(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_CASE, token ),
+      ( re.compile(r'char(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_CHAR, token ),
+      ( re.compile(r'_Complex(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_COMPLEX, token ),
+      ( re.compile(r'const(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_CONST, token ),
+      ( re.compile(r'continue(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_CONTINUE, token ),
+      ( re.compile(r'default(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_DEFAULT, token ),
+      ( re.compile(r'do(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_DO, token ),
+      ( re.compile(r'double(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_DOUBLE, token ),
+      ( re.compile(r'else\s+if(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_ELSE_IF, parseIf ),
+      ( re.compile(r'else(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_ELSE, parseElse ),
+      ( re.compile(r'enum(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_ENUM, token ),
+      ( re.compile(r'extern(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_EXTERN, token ),
+      ( re.compile(r'float(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_FLOAT, token ),
+      ( re.compile(r'for(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_FOR, token ),
+      ( re.compile(r'goto(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_GOTO, token ),
+      ( re.compile(r'if(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_IF, parseIf ),
+      ( re.compile(r'_Imaginary(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_IMAGINARY, token ),
+      ( re.compile(r'inline(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_INLINE, token ),
+      ( re.compile(r'int(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_INT, token ),
+      ( re.compile(r'long(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_LONG, token ),
+      ( re.compile(r'register(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_REGISTER, token ),
+      ( re.compile(r'restrict(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_RESTRICT, token ),
+      ( re.compile(r'return(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_RETURN, token ),
+      ( re.compile(r'short(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_SHORT, token ),
+      ( re.compile(r'signed(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_SIGNED, token ),
+      ( re.compile(r'sizeof(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_SIZEOF, token ),
+      ( re.compile(r'static(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_STATIC, token ),
+      ( re.compile(r'struct(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_STRUCT, token ),
+      ( re.compile(r'switch(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_SWITCH, token ),
+      ( re.compile(r'typedef(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_TYPEDEF, parseTypedef ),
+      ( re.compile(r'union(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_UNION, token ),
+      ( re.compile(r'unsigned(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_UNSIGNED, token ),
+      ( re.compile(r'void(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_VOID, token ),
+      ( re.compile(r'volatile(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_VOLATILE, token ),
+      ( re.compile(r'while(?=[^a-zA-Z_]|$)'), c_Parser.TERMINAL_WHILE, token ),
 
       # Identifiers
       ( re.compile('%s(?=\s*:)' % (identifierRegex)), c_Parser.TERMINAL_IDENTIFIER, parseLabelIdentifier ),
@@ -225,9 +225,9 @@ class cLexer(PatternMatchingLexer):
       ( re.compile(r'#(?!#)'), c_Parser.TERMINAL_POUND, token ),
 
       # Constants, Literals
-      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.)([eE][-+]?[0-9]+)?[flFL]?'), c_Parser.TERMINAL_DECIMAL_FLOATING_CONSTANT, token ),
-      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), c_Parser.TERMINAL_STRING_LITERAL, token ),
       ( re.compile(r'([1-9][0-9]*|0[xX][0-9a-fA-F]+|0[0-7]*)([uU](ll|LL)|[uU][lL]?|(ll|LL)[uU]?|[lL][uU])?'), c_Parser.TERMINAL_INTEGER_CONSTANT, token ),
+      ( re.compile(r'(([0-9]+)?\.([0-9]+)|[0-9]+\.|[0-9]+)([eE][-+]?[0-9]+)?([flFL]|[dD][fFdDlL])?'), c_Parser.TERMINAL_DECIMAL_FLOATING_CONSTANT, token ),
+      ( re.compile(r'[L]?"([^\\\"\n]|\\[\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)*"'), c_Parser.TERMINAL_STRING_LITERAL, token ),
       ( re.compile(r'0[xX](([0-9a-fA-F]+)?\.([0-9a-fA-F]+)|[0-9a-fA-F]+\.)[pP][-+]?[0-9]+[flFL]?'), c_Parser.TERMINAL_HEXADECIMAL_FLOATING_CONSTANT, token ),
       ( re.compile(r"[L]?'([^\\'\n]|\\[\\\"\'nrbtfav\?]|\\[0-7]{1,3}|\\x[0-9a-fA-F]+|\\[uU]([0-9a-fA-F]{4})([0-9a-fA-F]{4})?)+'"), c_Parser.TERMINAL_CHARACTER_CONSTANT, token ),
 
@@ -499,8 +499,6 @@ class cLexer(PatternMatchingLexer):
   def getContext(self):
     return self.__dict__
 
-class StatelessCLexer(cLexer):
+class StatelessCLexer(StatelessPatternMatchingLexer):
   def __init__(self):
-    pass
-  def match(self, string):
-    pass
+    super().__init__(cLexer.cRegex)

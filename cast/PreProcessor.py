@@ -2,7 +2,7 @@ import sys, re, os, subprocess
 from itertools import zip_longest, islice
 from copy import copy, deepcopy
 
-from cast.cLexer import cLexer
+from cast.cLexer import cLexer, StatelessCLexer
 from cast.ppLexer import ppLexer
 from cast.c_Parser import c_Parser
 from cast.pp_Parser import pp_Parser
@@ -21,6 +21,7 @@ sys.setrecursionlimit(2000)
 # cTU = C Translation Unit
 # cT = C Token
 # cL = C Lexer
+# cLS = Stateless C Lexer
 # cPPL = C Pre-Processor Lexer
 # cP = C Parser
 # cPPP = C Pre-Processor Parser
@@ -34,16 +35,18 @@ class Factory:
   def create(self, includePathGlobal=['.'], includePathLocal=['.'], skipIncludes=False):
     cPPP = pp_Parser()
     cP = c_Parser()
-    cPE = cPreprocessingEvaluator( cPPP, cP, self, includePathGlobal, includePathLocal )
+    cLS = StatelessCLexer()
+    cPE = cPreprocessingEvaluator( cPPP, cP, cLS, self, includePathGlobal, includePathLocal )
     return PreProcessor( cPPP, cPE, skipIncludes=skipIncludes )
   def createLikeGcc(self):
     cPPP = pp_Parser()
     cP = c_Parser()
-    cPE = cPreprocessingEvaluator( cPPP, cP, self, ['/usr/local/include', '/usr/include'], ['.'] )
+    cLS = StatelessCLexer()
+    cPE = cPreprocessingEvaluator( cPPP, cP, cLS, self, ['/usr/local/include', '/usr/include'], ['.'] )
     cPP = PreProcessor( cPPP, cPE, skipIncludes=False )
     
     defaultIncludesText = subprocess.check_output(['gcc', '-dM', '-E', '-'], stderr=None, stdin=open('/dev/null')).decode('ascii')
-    defaultIncludesSource = SourceCodeString('command: `gcc -dM -E - < /dev/null`', defaultIncludesText)
+    defaultIncludesSource = SourceCodeString('{gcc -dM -E - < /dev/null}', defaultIncludesText)
     (tokens, symbols) = cPP.process(defaultIncludesSource)
 
     return cPP
@@ -127,7 +130,7 @@ class cPreprocessorFunctionFactory:
     return self.cPreprocessorFunction(name, params, body, self.cP, self.cPE, self.logger)
 
 class cPreprocessingEvaluator:
-  def __init__(self, cPPP, cP, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
+  def __init__(self, cPPP, cP, cLS, preProcessorFactory, includePathGlobal = ['.'], includePathLocal = ['.'], logger = None):
     self.__dict__.update(locals())
     self.cLexerContext = None
     self.skipIncludes = False
@@ -512,8 +515,10 @@ class cPreprocessingEvaluator:
     def make_cToken(token):
       if token.type == 'c':
         return copy(token)
-      newId = self.cPPTtocT[token.id]
-      return cToken( newId, token.resource, c_Parser.terminals[newId], token.source_string, token.lineno, token.colno, None )
+      (string, terminalId, function) = self.cLS.match(token.source_string, True)
+      #print(token.source_string, terminalId, token.resource, token.lineno, token.colno)
+      #newId = self.cPPTtocT[token.id]
+      return cToken( terminalId, token.resource, c_Parser.terminals[terminalId], string, token.lineno, token.colno, None )
 
     tokens = list(map(make_cToken, cPPAST.getAttr('tokens')))
     rtokens = []

@@ -1,0 +1,7 @@
+
+int main() {
+  signed   char x;
+
+  typedef signed   char __int8_t;
+  __int8_t y;
+}
