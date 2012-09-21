@@ -3,6 +3,8 @@ cAST
 
 C Preprocessor and Parser
 
+[![Build Status](https://secure.travis-ci.org/scottfrazer/cAST.png)](http://travis-ci.org/scottfrazer/cAST)
+
 Example
 -------
 
